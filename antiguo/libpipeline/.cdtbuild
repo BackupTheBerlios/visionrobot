@@ -3,27 +3,26 @@
 
 <ManagedProjectBuildInfo>
 <project id="libpipeline.cdt.managedbuild.target.gnu.cygwin.lib.1538154270" name="Static Library (Gnu on Windows)" projectType="cdt.managedbuild.target.gnu.cygwin.lib">
-<configuration artifactExtension="a" artifactName="pipeline" cleanCommand="rm -rf" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.cygwin.lib.debug.155204236" name="Debug" parent="cdt.managedbuild.config.gnu.cygwin.lib.debug">
-<toolChain id="cdt.managedbuild.toolchain.gnu.cygwin.lib.debug.1485463530" name="%ToolChainName.Dbg" superClass="cdt.managedbuild.toolchain.gnu.cygwin.lib.debug">
-<builder id="cdt.managedbuild.target.gnu.builder.cygwin.lib.debug.1984340158" name="%BuilderName.Dbg.Debug" superClass="cdt.managedbuild.target.gnu.builder.cygwin.lib.debug"/>
-<tool id="cdt.managedbuild.tool.gnu.c.compiler.cygwin.lib.debug.521046161" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.cygwin.lib.debug">
-<option id="gnu.c.compiler.option.include.paths.1487428234" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
-<listOptionValue builtIn="false" value="/home/carlos/workspace/libpipeline/include"/>
-<listOptionValue builtIn="false" value="/usr/include"/>
-<listOptionValue builtIn="false" value="/usr/include/libxml2"/>
+<configuration id="cdt.managedbuild.config.gnu.cygwin.lib.debug.155204236" name="Debug" parent="cdt.managedbuild.config.gnu.cygwin.lib.debug" artifactName="pipeline" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" artifactExtension="a" cleanCommand="rm -rf">
+<toolChain superClass="cdt.managedbuild.toolchain.gnu.cygwin.lib.debug" id="cdt.managedbuild.toolchain.gnu.cygwin.lib.debug.1485463530" name="%ToolChainName.Dbg">
+<builder superClass="cdt.managedbuild.target.gnu.builder.cygwin.lib.debug" id="cdt.managedbuild.target.gnu.builder.cygwin.lib.debug.1984340158" name="%BuilderName.Dbg.Debug"/>
+<tool superClass="cdt.managedbuild.tool.gnu.c.compiler.cygwin.lib.debug" id="cdt.managedbuild.tool.gnu.c.compiler.cygwin.lib.debug.521046161" name="GCC C Compiler">
+<option superClass="gnu.c.compiler.option.include.paths" id="gnu.c.compiler.option.include.paths.1487428234" valueType="includePath">
+<listOptionValue value="&quot;C:\eclipse\include&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\workspace\libpipeline\include&quot;" builtIn="false"/>
 </option>
 </tool>
-<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.lib.debug.102473807" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.lib.debug"/>
-<tool id="cdt.managedbuild.tool.gnu.archiver.cygwin.lib.debug.235442157" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.cygwin.lib.debug"/>
-<tool id="cdt.managedbuild.tool.gnu.assembler.cygwin.lib.debug.1443559379" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.cygwin.lib.debug"/>
+<tool superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.lib.debug" id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.lib.debug.102473807" name="GCC C++ Compiler"/>
+<tool superClass="cdt.managedbuild.tool.gnu.archiver.cygwin.lib.debug" id="cdt.managedbuild.tool.gnu.archiver.cygwin.lib.debug.235442157" name="GCC Archiver"/>
+<tool superClass="cdt.managedbuild.tool.gnu.assembler.cygwin.lib.debug" id="cdt.managedbuild.tool.gnu.assembler.cygwin.lib.debug.1443559379" name="GCC Assembler"/>
 </toolChain>
 </configuration>
-<configuration artifactExtension="a" artifactName="libpipeline" cleanCommand="rm -rf" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.cygwin.lib.release.1400212657" name="Release" parent="cdt.managedbuild.config.gnu.cygwin.lib.release">
-<toolChain id="cdt.managedbuild.toolchain.gnu.cygwin.lib.release.1044776422" name="%ToolChainName.Rel" superClass="cdt.managedbuild.toolchain.gnu.cygwin.lib.release">
-<tool id="cdt.managedbuild.tool.gnu.c.compiler.cygwin.lib.release.455644410" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.cygwin.lib.release"/>
-<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.lib.release.469407723" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.lib.release"/>
-<tool id="cdt.managedbuild.tool.gnu.archiver.cygwin.lib.release.203286378" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.cygwin.lib.release"/>
-<tool id="cdt.managedbuild.tool.gnu.assembler.cygwin.lib.release.623521672" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.cygwin.lib.release"/>
+<configuration id="cdt.managedbuild.config.gnu.cygwin.lib.release.1400212657" name="Release" parent="cdt.managedbuild.config.gnu.cygwin.lib.release" artifactName="libpipeline" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" artifactExtension="a" cleanCommand="rm -rf">
+<toolChain superClass="cdt.managedbuild.toolchain.gnu.cygwin.lib.release" id="cdt.managedbuild.toolchain.gnu.cygwin.lib.release.1044776422" name="%ToolChainName.Rel">
+<tool superClass="cdt.managedbuild.tool.gnu.c.compiler.cygwin.lib.release" id="cdt.managedbuild.tool.gnu.c.compiler.cygwin.lib.release.455644410" name="GCC C Compiler"/>
+<tool superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.lib.release" id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.lib.release.469407723" name="GCC C++ Compiler"/>
+<tool superClass="cdt.managedbuild.tool.gnu.archiver.cygwin.lib.release" id="cdt.managedbuild.tool.gnu.archiver.cygwin.lib.release.203286378" name="GCC Archiver"/>
+<tool superClass="cdt.managedbuild.tool.gnu.assembler.cygwin.lib.release" id="cdt.managedbuild.tool.gnu.assembler.cygwin.lib.release.623521672" name="GCC Assembler"/>
 </toolChain>
 </configuration>
 </project>

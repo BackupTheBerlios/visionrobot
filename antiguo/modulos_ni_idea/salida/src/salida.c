@@ -20,12 +20,9 @@ cerrar_ventana(GtkWidget * widget,
 			  return TRUE;
 }  
 
-int ciclo () {
-  return 0;
-}
+char* ciclo (const void *in, void **out){
 
-int set_datos(const void * datos) {
-  const gchar * valor = (const gchar *)datos;
+  const gchar * valor = (const gchar *)in;
   if(valor) {
     GtkTextIter iter;
     GtkTextBuffer * buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(texto));
@@ -37,18 +34,13 @@ int set_datos(const void * datos) {
 				   &iter,
 				   valor,
 				   -1);
-	return 0;
+    return "biennn";	
  }
- else {
- 	return -1;
- }
+ return 0;
 }
 
-void * get_datos() {
-  return 0;
-}
 
-int iniciar(const char **argumentos) {
+char* iniciar(int argc, const char **argv){
   ventana = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   scroll = gtk_scrolled_window_new(NULL, NULL);
   gtk_widget_show(scroll);
@@ -62,15 +54,11 @@ int iniciar(const char **argumentos) {
   g_signal_connect((gpointer) ventana, "delete_event",
 		     G_CALLBACK(cerrar_ventana), 0);
 		     gtk_widget_show(ventana);
+    gtk_widget_show(ventana);             
   return 0;
 }
 
-int propiedades() {
-  gtk_widget_show(ventana);
-  return 0;
-}
-
-int cerrar() {
+char* cerrar() {
   gtk_widget_destroy(ventana);
   return 0;
 }
@@ -99,6 +87,3 @@ BOOL APIENTRY DllMain (HINSTANCE hInst     /* Library instance handle. */ ,
     return TRUE;
 }
 
-char * error() {
-  return 0;
-}
