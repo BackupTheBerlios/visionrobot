@@ -12,7 +12,7 @@ gboolean abrir_preferencias(respuesta_t * respuesta) {
   
   if(respuesta) {
     gtk_color_button_set_color (GTK_COLOR_BUTTON(dialogo->bot_color_ordenes), &respuesta->orden.color);
-    gtk_color_button_set_color (GTK_COLOR_BUTTON(dialogo->bot_color_ordenes), &respuesta->argumento.color);
+    gtk_color_button_set_color (GTK_COLOR_BUTTON(dialogo->bot_color_argumentos), &respuesta->argumento.color);
     gtk_range_set_value(GTK_RANGE(dialogo->sld_tolerancia_ordenes), respuesta->orden.tolerancia);
     gtk_range_set_value(GTK_RANGE(dialogo->sld_tolerancia_argumentos), respuesta->argumento.tolerancia);
   }
