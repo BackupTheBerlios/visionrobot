@@ -35,6 +35,7 @@ static int valor(const char *tipo, int argc, const char **argv)
 
 static char *ciclo(modulo_t* modulo, const pipeline_dato_t *in, pipeline_dato_t *out)
 {
+  generar_imagen(modulo);
   out->m_tipo = PIPELINE_IMAGENES;
   filtro_gestos_in_t* imagen = (filtro_gestos_in_t*)modulo->m_dato;
   out->m_dato = imagen;

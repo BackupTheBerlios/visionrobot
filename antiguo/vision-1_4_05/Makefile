@@ -25,7 +25,7 @@ imagenes.so: imagenes.c
 #	g++ $(OPTS) -shared -o camara.so camara.cpp Captura.cpp -lstrmiids -luuid -loleaut32 -lole32 -lquartz
 
 pipeline: main.c libpipeline.a
-	gcc $(OPTS) main.c -o pipeline -L ./ -lpipeline -lxml2 $(LIBS)
+	gcc $(OPTS) main.c -o pipeline -L ./ -lpipeline -lxml2 $(LIBS) 
 
 libpipeline.a: pipeline.c
 	gcc $(OPTS) -c pipeline.c -o libpipeline.a `xml2-config --cflags`
