@@ -2,6 +2,23 @@
 
 #include <stdlib.h>
 
+#include "dialogo_abrir.h"
+
+void boton_abrir(GtkButton * button, gpointer user_data){
+// a ver si hay que cargarse algo
+  dialogo_propiedades_red_t *dialogo_propiedades_red = (dialogo_propiedades_red_t *)user_data;
+  dialogo_abrir_t * dialogo_abrir = dialogo_abrir_crear();
+  GtkWidget *dialog = dialogo_abrir->filechooserdialog1;
+  char *filename = 0;
+  if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
+    filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+    gtk_entry_set_text(GTK_ENTRY(dialogo_propiedades_red->entry_ruta), filename);
+    g_free(filename);
+  }
+  //gtk_widget_destroy(dialog);
+  dialogo_abrir_cerrar(dialogo_abrir);
+}
+
 void dialogo_propiedades_red_cerrar(dialogo_propiedades_red_t * dialogo) {
   gtk_widget_destroy(dialogo->dlg_propiedades_red);
   g_free(dialogo);
@@ -95,6 +112,9 @@ dialogo_propiedades_red->rbt_ordenes_group = NULL;
   gtk_widget_show (dialogo_propiedades_red->okbutton1);
   gtk_dialog_add_action_widget (GTK_DIALOG (dialogo_propiedades_red->dlg_propiedades_red), dialogo_propiedades_red->okbutton1, GTK_RESPONSE_OK);
   GTK_WIDGET_SET_FLAGS (dialogo_propiedades_red->okbutton1, GTK_CAN_DEFAULT);
+  
+      g_signal_connect((gpointer) dialogo_propiedades_red->button1, "clicked",
+		     G_CALLBACK(boton_abrir), dialogo_propiedades_red);
 
   return dialogo_propiedades_red;
 

@@ -1,7 +1,7 @@
 [Project]
 FileName=red_neuronal.dev
 Name=red_neuronal
-UnitCount=13
+UnitCount=15
 Type=3
 Ver=1
 ObjFiles=
@@ -176,4 +176,24 @@ OriginalFilename=
 ProductName=
 ProductVersion=
 AutoIncBuildNr=0
+
+[Unit14]
+FileName=dialogo_abrir.h
+CompileCpp=1
+Folder=red_neuronal
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit15]
+FileName=dialogo_abrir.c
+CompileCpp=1
+Folder=red_neuronal
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
 
