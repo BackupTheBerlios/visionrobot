@@ -44,7 +44,20 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <sane/sane.h>
 #include <unistd.h>
+
+//#if HAY_XINE == 1
 #include <xine.h>
+//! Estructura de datos para el video.
+typedef struct {
+  xine_t              *xine;
+  xine_stream_t       *stream;
+  xine_video_port_t   *vo_port;
+  xine_audio_port_t   *ao_port;
+  xine_event_queue_t  *event_queue;
+  uint8_t *yuv;
+} video_t;
+
+//#endif
 
 
 //! Tipo enumerado que define qué tipo de función va a realizar el módulo en una instancia determinada
@@ -55,15 +68,6 @@ typedef enum {CAMARA,		/*!< Si se usa el método de captura directa de cámara. */
 	      VIDEO		/*!< Si se reproduce un video. */
 } tipo_imagen_t;
 
-//! Estructura de datos para el video.
-typedef struct {
-  xine_t              *xine;
-  xine_stream_t       *stream;
-  xine_video_port_t   *vo_port;
-  xine_audio_port_t   *ao_port;
-  xine_event_queue_t  *event_queue;
-  uint8_t *yuv;
-} video_t;
 
 /*! \brief La estructura de datos que tiene cada módulo. */
 typedef struct {
@@ -77,7 +81,9 @@ typedef struct {
   char m_buffer_error[128];	/*!< El buffer donde guardamos los mensajes de error, para devolverlos. */
   tipo_imagen_t m_tipo;         /*!< El tipo de función que hemos elegido. */
   SANE_Handle m_handle;		/*!< El <em>handle</em> de la interfaz con SANE. */
+  //#if HAY_XINE == 1
   video_t m_video;
+  //#endif
 } dato_imagenes_t;
 
 /*! \brief El nombre del puerto de salida de una imagen */
@@ -101,10 +107,12 @@ static char* imagenes_generar_imagen(modulo_t *modulo) {
   int tam;
   int width, height, ratio_code, format;
 
+  //#if HAY_XINE == 1
   uint8_t *im;   
   uint8_t *fin = &imagen->m_imagen[imagen->m_ancho * imagen->m_alto * imagen->m_bytes];
   uint8_t *yu;
   uint8_t y, u, v;
+  //#endif
   
   switch(dato->m_tipo) {
   case CAMARA:    
@@ -149,6 +157,7 @@ static char* imagenes_generar_imagen(modulo_t *modulo) {
     }
     break;
   case VIDEO:
+    //#if HAY_XINE == 1
     xine_get_current_frame (dato->m_video.stream,			    
 			    &width, &height,
 			    &ratio_code, &format,
@@ -172,7 +181,6 @@ static char* imagenes_generar_imagen(modulo_t *modulo) {
 	*(im + 2) = *yu;
 	im += 3; yu++;
       }
-
       break;
     case XINE_IMGFMT_YUY2:
       break;
@@ -181,6 +189,7 @@ static char* imagenes_generar_imagen(modulo_t *modulo) {
     case XINE_IMGFMT_XXMC:
       break;
     }
+    //#endif
     devolver = 0;
     break;
   case COLOR:    
@@ -232,6 +241,7 @@ static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
   SANE_Int info;
   if(camara) cam = atoi(camara);
   if(video) {
+    //#if HAY_XINE == 1
     dato->m_tipo = VIDEO;    
     char *vo_driver    = "auto";
     char *ao_driver    = "auto";
@@ -249,6 +259,7 @@ static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
     dato->m_video.event_queue = xine_event_new_queue(dato->m_video.stream);
     xine_open(dato->m_video.stream, video);
     xine_play(dato->m_video.stream, 0, 0);
+    //#endif
   }
   else if(cam) {
     dato->m_tipo = CAMARA;
@@ -362,6 +373,7 @@ static char *imagenes_cerrar(modulo_t* modulo)
     sane_exit();
   }
   else if(VIDEO == dato->m_tipo) {
+    //#if HAY_XINE == 1
     xine_close(dato->m_video.stream);
     xine_event_dispose_queue(dato->m_video.event_queue);
     xine_dispose(dato->m_video.stream);
@@ -370,6 +382,7 @@ static char *imagenes_cerrar(modulo_t* modulo)
     xine_close_video_driver(dato->m_video.xine, dato->m_video.vo_port);  
     xine_exit(dato->m_video.xine);
     free(dato->m_video.yuv);
+    //#endif
   }
   free(dato->m_buffer_camara);
   filtro_gestos_in_imagen_t* imagen = &dato->m_filtro;

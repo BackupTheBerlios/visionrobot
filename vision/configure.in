@@ -1,6 +1,6 @@
 AC_INIT(configure.in)
 
-AC_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS(config.h)
 
 AC_DEFUN([AC_DEFINE_DIR], [
   prefix_NONE=
@@ -16,7 +16,6 @@ AC_DEFUN([AC_DEFINE_DIR], [
 
 AC_DEFINE_DIR(DATADIR, datadir, [Directorio de datos])
 AC_DEFINE_DIR(LIBDIR, libdir, [Directorio de datos])
-
 
 
 # Glib 2
@@ -53,4 +52,4 @@ AM_PROG_LIBTOOL
 AC_ARG_VAR([DOXYGEN], [Doxygen documentation generator])
 AC_PATH_PROG([DOXYGEN], [doxygen])
 
-AC_OUTPUT(Makefile src/Makefile src/libpipeline/Makefile src/pipeline/Makefile src/gestion/Makefile src/imagenes/Makefile src/ventana_imagen/Makefile src/filtro_gestos/Makefile src/ocr/Makefile src/prolog/Makefile src/red_neuronal/Makefile src/robot/Makefile src/salida/Makefile src/ventana_parametros/Makefile src/post_gestion/Makefile doc/Makefile)
+AC_OUTPUT(Makefile src/Makefile src/libpipeline/Makefile src/pipeline/Makefile src/gestion/Makefile src/imagenes/Makefile src/ventana_imagen/Makefile src/filtro_gestos/Makefile src/ocr/Makefile src/prolog/Makefile src/red_neuronal/Makefile src/robot/Makefile src/salida/Makefile src/ventana_parametros/Makefile src/post_gestion/Makefile src/entorno_3d/Makefile doc/Makefile)
