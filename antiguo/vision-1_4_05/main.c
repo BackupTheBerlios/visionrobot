@@ -106,7 +106,7 @@ int main(int argc, char **argv)
   dato_timer_t dato_timer = {1000, TRUE};
 #if OPCIONES_LINEA
   const GOptionEntry entries[] = {
-    { "timer", 't', 0, G_OPTION_ARG_INT, &dato_timer->m_timer, "Establece el intervalo del temporizador generador de ciclos, en milisegundos", "T" },
+    { "timer", 't', 0, G_OPTION_ARG_INT, &dato_timer.m_timer, "Establece el intervalo del temporizador generador de ciclos, en milisegundos", "T" },
     { NULL }
   };  
   GOptionContext* contexto = g_option_context_new (" <pipeline> - ejecuta un pipeline definido en un XML válido");

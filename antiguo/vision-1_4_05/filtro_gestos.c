@@ -239,15 +239,23 @@ static int filtro_gestos_buscar_limites(lua_State *L)
  int d= out->ii.y-out->si.y;
  int c= out->ii.x-out->si.x;
  double divis,divis2;
- (a==0)?divis=0:divis=(double)b/a;
- (c==0)?divis2=0:divis2=(double)d/c;
+ 
+ // Tenías esto, el compilador da un warning
+ // se suele usar sólo para asignaciones como te lo he puesto
+ // Carlos
+ // (a==0)?divis=0:divis=(double)b/a;
+ //(c==0)?divis2=0:divis2=(double)d/c;
+ // hasta aquí
+ divis = (a == 0) ? 0 : (double)b / a;
+ divis2 = (c == 0) ? 0 : (double)d / c;
+ // esto de antes es lo nuevo, así no se queja
  double angulo= atan(divis);
  double angulo2= atan(divis2);
  out->grados= (angulo*180)/M_PI;
  int grados1= abs(out->grados);
  int grados2= abs((angulo2*180)/M_PI);
  lua_pushlightuserdata(L, out);
- if(grados1+grados2>80 && grados1+grados2<100 || !op)return 1;
+ if((grados1+grados2>80 && grados1+grados2<100) || !op)return 1;
  else return 0;
 }
 
@@ -830,6 +838,7 @@ static lua_State *filtro_abrir_lua(modulo_t *modulo, const char *ruta) {
     {"buscar_limites", filtro_gestos_buscar_limites},
     {"clean", filtro_gestos_clean},
     {"make_up", filtro_gestos_make_up},
+    {"on_border", filtro_gestos_on_border},
     {NULL, NULL}
   };
 

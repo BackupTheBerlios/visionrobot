@@ -35,7 +35,7 @@ typedef struct {
   GHashTable *m_argumentos;
   GHashTable *m_enlaces;
   const char *m_nombre;
-  gboolean m_activado;
+  //  gboolean m_activado;
 } elemento_t;
 
 typedef struct {
@@ -50,7 +50,7 @@ struct pipeline_s {
 };
 
 static void pipeline_salida_error(const pipeline_t *pipeline, const char *nombre, const char *nombre2, const char *texto) {
-    pipeline->m_funcion_error(nombre, nombre2, texto);
+    pipeline->m_funcion_error(nombre, nombre2, texto, pipeline->m_dato_funcion_error);
 }
 
 

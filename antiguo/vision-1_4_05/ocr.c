@@ -45,7 +45,7 @@ static char *ocr_ciclo(modulo_t *modulo, const char *puerto, const void *value)
     filtro_gestos_in_imagen_t *ocr_in = (filtro_gestos_in_imagen_t *)value;
 
     if(pack_init && ocr_in) {
-      sprintf(dato->m_out, "%s", ocr_semantic_match(ocr_in, pack_init);
+      sprintf(dato->m_out, "%s", ocr_semantic_match(ocr_in, pack_init));
       g_hash_table_insert(modulo->m_tabla, PUERTO_TEXTO, &dato->m_out);
     }
     else {

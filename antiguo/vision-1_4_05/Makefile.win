@@ -1,12 +1,16 @@
 OPTS=-g -Wall
 
-all: pipeline.exe libsalida.dll libventana_parametros.dll libfiltro_gestos.dll libred_neuronal.dll libimagenes.dll libventana_imagen.dll libimagenes.dll libgestion.dll
+all: pipeline.exe libsalida.dll libventana_parametros.dll libfiltro_gestos.dll libred_neuronal.dll libimagenes.dll libventana_imagen.dll libimagenes.dll libgestion.dll libocr.dll
 
 libventana_imagen.dll: ventana_imagen.c
 	gcc $(OPTS) -shared -o libventana_imagen.dll ventana_imagen.c `pkg-config --cflags gtk+-2.0  --define-variable=prefix=/c/MinGW/` `pkg-config --libs gtk+-2.0`  `pkg-config libglade-2.0 --cflags --libs --define-variable=prefix=/c/MinGW/`
 
 libsalida.dll: salida.c
 	gcc $(OPTS) -shared -o libsalida.dll salida.c `pkg-config glib-2.0 --cflags --libs --define-variable=prefix=/c/MinGW/` `pkg-config libglade-2.0 --cflags --libs --define-variable=prefix=/c/MinGW/`
+
+
+libocr.dll: ocr.c ocr_code.c
+	gcc $(OPTS) -shared -o libocr.dll ocr.c ocr_code.c `pkg-config glib-2.0 --cflags --libs --define-variable=prefix=/c/MinGW/`
 
 libfiltro_gestos.dll: filtro_gestos.c
 	gcc $(OPTS) -shared -o libfiltro_gestos.dll filtro_gestos.c `pkg-config glib-2.0 --cflags --libs --define-variable=prefix=/c/MinGW/` -llua -llualib

@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <values.h>
+#include <string.h>
 
 //---------------------------------------------------------------------------
 
@@ -33,7 +34,8 @@
 const char* FREC_CAR="ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+-*/=%";
 const  int LONG_CAR= 42;
 const double FACTOR= 1.9;
-const int FIELDS=30;
+//const int FIELDS=30;
+#define FIELDS 30
 const int NUMWORDS=22;
 
 typedef struct {
@@ -62,7 +64,7 @@ typedef struct{
 double v_abs(double in){if(in<0)return -in; else return in;}
 
 
-double match(hexadecagon_t* local,hexadecagon_t* visitor)
+double match_hexadecagon(hexadecagon_t* local,hexadecagon_t* visitor)
 {
   double result=0; int i;
   for(i=0; i<NUMPTOS; i++)
@@ -71,13 +73,13 @@ double match(hexadecagon_t* local,hexadecagon_t* visitor)
 }
 
 
-char match(constellation_t* local, hexadecagon_t* visitor)
+char match_constallation(constellation_t* local, hexadecagon_t* visitor)
 {
   int pos,i;
   double smaller,dif;
   pos=0; smaller=MAXFLOAT;
   for(i=0; i<local->m_top;i++){
-     dif= match(local->m_list[i],visitor);
+     dif= match_hexadecagon(local->m_list[i],visitor);
      if(dif<smaller){smaller=dif; pos=i;}
   }
   return local->m_list[pos]->m_id;
@@ -132,7 +134,7 @@ fields_t* limits(filtro_gestos_in_imagen_t* image)
        }
      }
    }
-   (l>0) ? caracXfila[l]=fields->cimaCI-caracXfila[l-1]: caracXfila[l]=fields->cimaCI;
+   caracXfila[l] = (l>0) ? fields->cimaCI-caracXfila[l-1]: fields->cimaCI;
  }
 
  fields->ptosSI= (coord_t**)malloc(sizeof(coord_t*)*fields->cimaCD);
@@ -162,7 +164,12 @@ fields_t* limits(filtro_gestos_in_imagen_t* image)
    dif= fields->ptosSI[i+1]->m_x-fields->ptosID[i]->m_x;
    if(dif<0){fields->espacios[i]=1;jumps++;}else media+=dif;
  }
- (fields->cimaCI-jumps>0)?media/=fields->cimaCI-jumps:media=0;
+ if(fields->cimaCI-jumps>0) {
+   media/=fields->cimaCI-jumps;
+ }
+ else {
+   media=0;
+ }
  for(i=0; i<fields->cimaCI-1; i++){
    dif= fields->ptosSI[i+1]->m_x-fields->ptosID[i]->m_x;
    if(dif>media*FACTOR)fields->espacios[i]=1;
@@ -305,7 +312,7 @@ double numHits(char* word1, int size, char* word2,int k, constellation_t* dataBa
  cont=0;
  for(i=0; i<size; i++){
    if(!(word1[i]==word2[i] || word1[i]==word2[i]+('a'-'A')))
-      out+=match(dataBase->m_list[numCar(word1[i])],constellation->m_list[k+i]);
+      out+=match_hexadecagon(dataBase->m_list[numCar(word1[i])],constellation->m_list[k+i]);
    if(word2[i]>='0' && word2[i+1]<='9')cont++;
  }
  if(cont==size)return -1;
@@ -318,7 +325,8 @@ char* MatchDicc(char* text, int size, int k, pack_init_t* packInit, constellatio
  if(size<NUMWORDS+1){
    int num; double cota=MAXFLOAT; int pos=0;
    //Verificar q ya existe (HashTable)
-   for(int i=0; i<packInit->list[size-1]; i++){
+   int i;
+   for(i=0; i<packInit->list[size-1]; i++){
      num= numHits(packInit->blocks[size-1][i],size,text,k,packInit->dataBase,constellation);
      if(num<0)return text;
      if(num<cota){cota=num; pos=i; if(num==0)break;}
@@ -349,7 +357,7 @@ const char* ocr_semantic_match(filtro_gestos_in_imagen_t* dibujo, pack_init_t* p
     fields_t* fields= limits(dibujo);
     constellation_t* constelacion= makeConstellation(fields,dibujo);
     for(i=0; i<constelacion->m_top; i++){
-      buffer[size]= match(packInit->dataBase,constelacion->m_list[i]);
+      buffer[size]= match_constallation(packInit->dataBase,constelacion->m_list[i]);
       if(i<constelacion->m_top-1 && fields->espacios[i]){size++; buffer[size]=' ';}
       size++;
     }

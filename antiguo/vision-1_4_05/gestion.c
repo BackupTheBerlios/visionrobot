@@ -61,7 +61,7 @@ static void gestion_sumar(gpointer key, gpointer value, gpointer user_data) {
     argumento->m_maximo = key;
     argumento->m_valor = estado->m_valor;
   }
-  sprintf(argumento->m_error, "%s[%s=%i] ", argumento->m_error, (char *)key, estado->m_valor);
+  //sprintf(argumento->m_error, "%s[%s=%i] ", argumento->m_error, (char *)key, estado->m_valor);
 }
 
 static char *gestion_ciclo(modulo_t *modulo, const char *puerto, const void *entrada)
@@ -96,7 +96,7 @@ static char *gestion_ciclo(modulo_t *modulo, const char *puerto, const void *ent
       }      
     }
     
-    devolver = dato->m_buffer_error;
+    devolver = 0;//dato->m_buffer_error;
     g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, resultado);    
   }
   else {

@@ -31,7 +31,8 @@
 #include "filtro_gestos_sdk.h"
 
 
-const int NUMPTOS=16;
+//const int NUMPTOS=16;
+#define NUMPTOS 16
 
 typedef struct{
         char m_id;

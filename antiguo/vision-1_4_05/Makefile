@@ -1,15 +1,21 @@
 OPTS=-Wall -g
 
-all: libsalida.so libfiltro_gestos.so libred_neuronal.so libimagenes.so libventana_imagen.so libventana_parametros.so pipeline libprolog.so libgestion.so
+all: etags libsalida.so libfiltro_gestos.so libred_neuronal.so libimagenes.so libventana_imagen.so libventana_parametros.so pipeline libprolog.so libgestion.so librobot.so libocr.so
 
 etags:	
 	etags *.c
+
+librobot.so: robot.c
+	gcc $(OPTS) -shared -o librobot.so robot.c `pkg-config glib-2.0 --cflags --libs`
 
 libventana_imagen.so: ventana_imagen.c
 	gcc $(OPTS) -shared -o libventana_imagen.so ventana_imagen.c `pkg-config --cflags gtk+-2.0` `pkg-config --libs gtk+-2.0`  `pkg-config libglade-2.0 --cflags --libs`
 
 libventana_parametros.so: ventana_parametros.c
 	gcc $(OPTS) -shared -o libventana_parametros.so ventana_parametros.c `pkg-config --cflags gtk+-2.0` `pkg-config --libs gtk+-2.0`  `pkg-config libglade-2.0 --cflags --libs`
+
+libocr.so: ocr.c ocr_code.c
+	gcc $(OPTS) -shared -o libocr.so ocr.c ocr_code.c `pkg-config glib-2.0 --cflags --libs`
 
 libsalida.so: salida.c
 	gcc $(OPTS) -shared -o libsalida.so salida.c `pkg-config glib-2.0 --cflags --libs` `pkg-config libglade-2.0 --cflags --libs`

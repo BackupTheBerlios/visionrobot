@@ -5,9 +5,9 @@
 
   <!-- Ventana de parametros de las ordenes -->
   <modulo ruta="ventana_parametros" nombre="parametros_orden" inicio="1">
-    <argumento nombre="rojo">189</argumento>
-    <argumento nombre="verde">166</argumento>
-    <argumento nombre="azul">156</argumento>
+    <argumento nombre="rojo">255</argumento>
+    <argumento nombre="verde">255</argumento>
+    <argumento nombre="azul">255</argumento>
     <argumento nombre="tolerancia_rojo">10</argumento>
     <argumento nombre="tolerancia_verde">10</argumento>
     <argumento nombre="tolerancia_azul">10</argumento>
@@ -71,17 +71,18 @@
   <!-- Modulo de control de mensajes de la red de ordenes -->
  <modulo ruta="gestion" nombre="gestion_orden">
     <argumento nombre="maximo">7</argumento>
-    <argumento nombre="tolerancia">5</argumento>
+    <argumento nombre="tolerancia">4</argumento>
     <argumento nombre="neutro">no_gesto</argumento>
     <conexion puerto="salida_texto">
       <destino puerto="entrada_texto">salida</destino>
+      <destino puerto="entrada_texto">robot</destino>
     </conexion>
   </modulo>
 
   <!-- Modulo de control de mensajes de la red de parametros -->
   <modulo ruta="gestion" nombre="gestion_param">
     <argumento nombre="maximo">7</argumento>
-    <argumento nombre="tolerancia">5</argumento>
+    <argumento nombre="tolerancia">3</argumento>
     <argumento nombre="neutro">no_gesto</argumento>
     <conexion puerto="salida_texto">
       <destino puerto="entrada_texto">salida</destino>
@@ -90,8 +91,8 @@
   
   <!-- Generador de imagenes -->
   <modulo ruta="imagenes" nombre="imagenes" inicio="1">
-    <argumento nombre="camara">1</argumento>
-    <argumento nombre="archivo">foto.xpm</argumento>
+<!--    <argumento nombre="camara">1</argumento> -->
+    <argumento nombre="archivo">avanzar.xpm</argumento>
     <argumento nombre="rojo">32</argumento>
     <argumento nombre="verde">45</argumento>
     <argumento nombre="azul">123</argumento>
@@ -142,5 +143,12 @@
   <modulo ruta="salida" nombre="salida">
     <argumento nombre="texto">Vision por computador</argumento>
   </modulo>
-  
+
+  <!-- Modulo del robot -->
+  <modulo ruta="robot" nombre="robot">
+    <argumento nombre="guion">robot.lua</argumento>
+    <argumento nombre="funcion">ciclo</argumento>
+    <argumento nombre="dispositivo">/dev/ttyS0</argumento>
+    <argumento nombre="timer">1</argumento>
+  </modulo>  
 </pipeline>

@@ -20,9 +20,9 @@ token([[*] | CS], [*], CS).
 
 haz_token([], []).
 
-haz_token(C, [[ ] | TS]) :-
-	!,
-	haz_token(C, TS).
+%haz_token(C, [[ ] | TS]) :-
+%	!,
+%	haz_token(C, TS).
 
 haz_token(C, [T | TS]) :-
 	token(C, T, CS),
