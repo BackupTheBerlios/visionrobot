@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?fileVersion 2.1.0?>
+
+<ManagedProjectBuildInfo>
+<project id="libpipeline.cdt.managedbuild.target.gnu.lib.550385906" name="Static Library (Gnu)" projectType="cdt.managedbuild.target.gnu.lib">
+<configuration artifactExtension="a" artifactName="pipeline" cleanCommand="rm -rf" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.lib.debug.1457777306" name="Debug" parent="cdt.managedbuild.config.gnu.lib.debug">
+<toolChain id="cdt.managedbuild.toolchain.gnu.lib.debug.1851934286" name="%ToolChainName.Dbg" superClass="cdt.managedbuild.toolchain.gnu.lib.debug">
+<builder id="cdt.managedbuild.target.gnu.builder.lib.debug.130231003" name="%BuilderName.Dbg.Debug" superClass="cdt.managedbuild.target.gnu.builder.lib.debug"/>
+<tool id="cdt.managedbuild.tool.gnu.c.compiler.lib.debug.730903657" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.lib.debug">
+<option id="gnu.c.compiler.option.include.paths.998663792" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="/home/carlos/workspace/libpipeline/include"/>
+<listOptionValue builtIn="false" value="/usr/include/libxml2"/>
+<listOptionValue builtIn="false" value="/usr/include"/>
+</option>
+</tool>
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.lib.debug.1655208150" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.lib.debug"/>
+<tool id="cdt.managedbuild.tool.gnu.archiver.lib.debug.1023859086" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.lib.debug"/>
+<tool id="cdt.managedbuild.tool.gnu.assembler.lib.debug.1558331563" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.lib.debug"/>
+</toolChain>
+</configuration>
+<configuration artifactExtension="a" artifactName="libpipeline" cleanCommand="rm -rf" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.lib.release.1360491042" name="Release" parent="cdt.managedbuild.config.gnu.lib.release">
+<toolChain id="cdt.managedbuild.toolchain.gnu.lib.release.641151626" name="%ToolChainName.Rel" superClass="cdt.managedbuild.toolchain.gnu.lib.release">
+<tool id="cdt.managedbuild.tool.gnu.c.compiler.lib.release.1903831038" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.lib.release"/>
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.lib.release.317300861" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.lib.release"/>
+<tool id="cdt.managedbuild.tool.gnu.archiver.lib.release.514418189" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.lib.release"/>
+<tool id="cdt.managedbuild.tool.gnu.assembler.lib.release.1258824494" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.lib.release"/>
+</toolChain>
+</configuration>
+</project>
+</ManagedProjectBuildInfo>
