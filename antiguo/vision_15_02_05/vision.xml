@@ -2,7 +2,7 @@
 <!DOCTYPE pipeline SYSTEM "pipeline.dtd">
 
 <pipeline>
-  
+
   <modulo ruta="ventana_parametros" nombre="parametros" inicio="1">
     <argumento nombre="orden_rojo">32</argumento>
     <argumento nombre="orden_verde">45</argumento>
@@ -22,15 +22,17 @@
     <argumento nombre="reduccion">10</argumento>
     <conexion puerto="salida_imagen_orden">
       <destino puerto="entrada_imagen">ventana_filtro_orden</destino>
-    </conexion>
-    
+    </conexion>	   
     <conexion puerto="salida_imagen_param">
       <destino puerto="entrada_imagen">ventana_filtro_param</destino>
+    </conexion>	   
+    <conexion puerto="salida_red">
+      <destino puerto="entrada_imagen">red</destino>
     </conexion>
-    
-    <!-- <conexion puerto_origen="A" destino="red_neuronal" puerto_destino="entrada_imagen"/> -->
   </modulo>
-  
+
+
+
   <modulo ruta="ventana_imagen" nombre="ventana_filtro_param">
     <argumento nombre="nombre_foto">filtro_param.png</argumento>
     <argumento nombre="extension">png</argumento>
@@ -41,7 +43,7 @@
     <argumento nombre="extension">png</argumento>
   </modulo>
 
- <modulo ruta="imagenes" nombre="imagenes" inicio="1">
+<!-- <modulo ruta="imagenes" nombre="imagenes" inicio="1">
     <argumento nombre="archivo">foto.xpm</argumento>
     <argumento nombre="rojo">32</argumento>
     <argumento nombre="verde">45</argumento>
@@ -56,30 +58,35 @@
       <destino puerto="entrada_imagen">ventana_imagenes</destino>
     </conexion>
   </modulo>
+-->
 
   <modulo ruta="ventana_imagen" nombre="ventana_imagenes">
     <argumento nombre="nombre_foto">imagenes.png</argumento>
     <argumento nombre="extension">png</argumento>
   </modulo>
 
-
-<!--  <modulo ruta="camara" nombre="camara" inicio="1">
+   <modulo ruta="camara" nombre="camara" inicio="1">
     <argumento nombre="ancho">320</argumento>
     <argumento nombre="alto">240</argumento>
     <argumento nombre="camara">0</argumento>
-    <conexion puerto_origen="A" destino="filtro_gestos" puerto_destino="A"/>
-    <conexion puerto_origen="A" destino="ventana_imagenes" puerto_destino="A"/>
+    <conexion puerto="salida_filtro">
+      <destino puerto="entrada_imagen">filtro_gestos</destino>
+    </conexion>
+    <conexion puerto="salida_ventana">
+      <destino puerto="entrada_imagen">ventana_imagenes</destino>
+    </conexion>
   </modulo>
-
-  <modulo ruta="red_neuronal" nombre="red" inicio="1">
+  
+  <modulo ruta="red_neuronal" nombre="red">
     <argumento nombre="archivo_ordenes">orden_net</argumento> 
     <argumento nombre="archivo_parametros">param_net</argumento> 
-    <conexion puerto_origen="salida_texto" destino="filtro_gestos" puerto_destino="entrada_texto"/>
+    <conexion puerto="salida_texto">
+        <destino puerto="entrada_texto">salida</destino>
+    </conexion> 
   </modulo> 
-
-
+  
   <modulo ruta="salida" nombre="salida">
     <argumento nombre="texto">Vision por computador</argumento>
-  </modulo> -->
+  </modulo>
 
 </pipeline>
