@@ -1,7 +1,7 @@
 [Project]
 FileName=plugin_nulo.dev
 Name=plugin_nulo
-UnitCount=2
+UnitCount=1
 Type=3
 Ver=1
 ObjFiles=
@@ -31,16 +31,6 @@ CompilerSettings=0000000000000000000000
 
 [Unit1]
 FileName=dllmain.c
-CompileCpp=0
-Folder=
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit2]
-FileName=dll.h
 CompileCpp=0
 Folder=
 Compile=1
