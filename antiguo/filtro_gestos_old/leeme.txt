@@ -1,0 +1,13 @@
+No he puesto un .h porque no hay ninguna estructura de datos q deba saberse.
+
+Lo unico...
+
+1) __declspec (dllexport) int iniciar(const void * datos) 
+
+	datos es de tipo TPicture*, es una imagen auxiliar xa el filtro, solo se carga una vez y al principio
+
+
+2)__declspec (dllexport) int set_datos(const void * datos)
+  __declspec (dllexport) void * get_datos()
+	
+	La entrada y salida de este modulo es tb de tipo TPicture*
