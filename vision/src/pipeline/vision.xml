@@ -31,7 +31,7 @@
     </conexion>
   </modulo>
 
-  <!-- Filtro de gestos de las ordenes -->
+<!--   Filtro de gestos de las ordenes -->
   <modulo ruta="filtro_gestos" nombre="filtro_gestos_orden">
     <argumento nombre="guion">share/vision/filtro.lua</argumento>
     <argumento nombre="filtrar">filtrar</argumento>
@@ -73,8 +73,7 @@
     <argumento nombre="maximo">7</argumento>
     <argumento nombre="tolerancia">4</argumento>
     <argumento nombre="neutro">no_gesto</argumento>
-    <conexion puerto="salida_texto">
-      <destino puerto="entrada_texto">salida</destino>
+   <conexion puerto="salida_texto">
       <destino puerto="entrada_orden">post_gestion</destino>
     </conexion>
   </modulo>
@@ -84,27 +83,28 @@
     <argumento nombre="maximo">7</argumento>
     <argumento nombre="tolerancia">3</argumento>
     <argumento nombre="neutro">no_gesto</argumento>
-    <conexion puerto="salida_texto">
-      <destino puerto="entrada_texto">salida</destino>
+   <conexion puerto="salida_texto">
       <destino puerto="entrada_param">post_gestion</destino>
     </conexion>
   </modulo>
 
   <!-- Modulo de post-gestion, se encarga de unir las ordenes con los parametros -->
-  <modulo ruta="post_gestion" nombre="post_gestion">
+ <modulo ruta="post_gestion" nombre="post_gestion">
+    <argumento nombre="orden_defecto">parar</argumento>
+    <argumento nombre="param_defecto">nula</argumento>
     <conexion puerto="salida_robot">
       <destino puerto="entrada_robot">robot</destino>
+    </conexion>
+    <conexion puerto="salida_texto">
+      <destino puerto="entrada_texto">salida_pipeline</destino>
     </conexion>
   </modulo>
   
   <!-- Generador de imagenes -->
   <modulo ruta="imagenes" nombre="imagenes" inicio="1">
-    <argumento nombre="video">share/vision/robot.mpg</argumento>
-    <argumento nombre="camara">1</argumento>
-    <argumento nombre="archivo">avanzar.xpm</argumento>
-    <argumento nombre="rojo">32</argumento>
-    <argumento nombre="verde">45</argumento>
-    <argumento nombre="azul">123</argumento>
+     <argumento nombre="video">share/vision/robot.mpg</argumento>
+<!--    <argumento nombre="camara">1</argumento> -->
+<!--     <argumento nombre="archivo">share/vision/avanzar.xpm</argumento> -->
     <argumento nombre="ancho">320</argumento>
     <argumento nombre="alto">240</argumento>
     <argumento nombre="bytes">3</argumento>
@@ -149,8 +149,8 @@
   </modulo>
   
   <!-- Modulo de salida -->
-  <modulo ruta="salida" nombre="salida">
-    <argumento nombre="texto">Vision por computador</argumento>
+  <modulo ruta="salida" nombre="salida_pipeline">
+   <argumento nombre="texto">Vision por computador</argumento>
   </modulo>
 
   <!-- Modulo del robot -->
@@ -158,5 +158,5 @@
     <argumento nombre="guion">share/vision/robot.lua</argumento>
     <argumento nombre="funcion">ciclo</argumento>
     <argumento nombre="puerto">1</argumento>
-  </modulo>  
+  </modulo>
 </pipeline>

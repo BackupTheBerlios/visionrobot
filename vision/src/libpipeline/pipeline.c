@@ -108,8 +108,8 @@ static void pipeline_cerrar_elemento(elemento_t *dato)
 {
   if (dato->m_modulo && dato->m_modulo->m_cerrar)   {
     char *nombre = strdup(dato->m_modulo->m_nombre);
-    char *cadena = strdup(dato->m_modulo->m_cerrar(dato->m_modulo));    
     g_hash_table_destroy(dato->m_modulo->m_tabla);
+    char *cadena = strdup(dato->m_modulo->m_cerrar(dato->m_modulo));    
     pipeline_salida_error(dato->m_pipeline, dato->m_nombre, nombre,
 			  cadena);
     free(cadena);
@@ -152,7 +152,7 @@ static pipeline_t * pipeline_annadir(pipeline_t * p, const char *nombre, const c
   p->m_nombres[g_hash_table_size(p->m_modulos)] = (char *)nombre;
   dato->m_pipeline = p;
   dato->m_argumentos = argumentos;
-  g_hash_table_insert(p->m_modulos, (gpointer)nombre, (gpointer)dato);
+  g_hash_table_insert(p->m_modulos, (gpointer)strdup(nombre), (gpointer)dato);
   pipeline_set_ruta(p, nombre, ruta, dir);
   dato->m_enlaces = g_hash_table_new_full(g_str_hash, g_str_equal, pipeline_borrar_cadena, pipeline_borrar_conexion);
   return p;
@@ -249,6 +249,7 @@ pipeline_t * pipeline_cargar(const char *ruta, const char *dir, funcion_error_t 
 	cur = cur->next;
     }
     xmlFreeDoc(doc);
+    p->m_nombres = (char **)realloc(p->m_nombres, sizeof(char **) * (g_hash_table_size(p->m_modulos) + 1));
     p->m_nombres[g_hash_table_size(p->m_modulos)] = 0;
     return p;
 }

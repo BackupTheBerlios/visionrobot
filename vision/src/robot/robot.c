@@ -43,7 +43,7 @@ static char *robot_ciclo(modulo_t *modulo, const char *puerto, const void *dato)
     lua_getglobal(L, dato_robot->m_funcion);
     lua_pushstring(L, (const char *)entrada->m_orden);
     lua_pushstring(L, (const char *)entrada->m_parametro);
-    lua_pcall(L, 1, 1, 0);
+    lua_pcall(L, 2, 1, 0);
     strcpy(dato_robot->m_error, (char *)lua_tostring(L, -1));
     return dato_robot->m_error;
   }
@@ -60,7 +60,7 @@ static char *robot_ciclo(modulo_t *modulo, const char *puerto, const void *dato)
 \return El número de argumentos que se devuelven.
 */
 static int robot_avanzar (lua_State *L) {
-  char param = (char)luaL_checkint(L, 2);
+  char param = (char)luaL_checkint(L, 1);
   clear_pin(RETROCEDER | GIRAR_DERECHA | GIRAR_IZQUIERDA);
   set_pin(AVANZAR);
   return 0;
@@ -75,7 +75,7 @@ static int robot_avanzar (lua_State *L) {
 */
 
 static int robot_retroceder (lua_State *L) {
-  char param = (char)luaL_checkint(L, 2);
+  char param = (char)luaL_checkint(L, 1);
   clear_pin(AVANZAR | GIRAR_DERECHA | GIRAR_IZQUIERDA);
   set_pin(RETROCEDER);
   return 0;
@@ -90,7 +90,7 @@ static int robot_retroceder (lua_State *L) {
 */
 
 static int robot_girar_izquierda (lua_State *L) {
-  char param = (char)luaL_checkint(L, 2);
+  char param = (char)luaL_checkint(L, 1);
   clear_pin(RETROCEDER | GIRAR_DERECHA | AVANZAR);
   set_pin(GIRAR_IZQUIERDA);
   return 0;
@@ -105,7 +105,7 @@ static int robot_girar_izquierda (lua_State *L) {
 */
 
 static int robot_girar_derecha (lua_State *L) {
-  char param = (char)luaL_checkint(L, 2);
+  char param = (char)luaL_checkint(L, 1);
   clear_pin(RETROCEDER | AVANZAR | GIRAR_IZQUIERDA);
   set_pin(GIRAR_DERECHA);
   return 0;
@@ -121,7 +121,6 @@ static int robot_girar_derecha (lua_State *L) {
 */
 
 static int robot_parar (lua_State *L) {
-  char param = (char)luaL_checkint(L, 2);
   clear_pin(RETROCEDER | AVANZAR | GIRAR_IZQUIERDA | GIRAR_DERECHA);
   return 0;
 }

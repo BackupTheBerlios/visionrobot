@@ -55,7 +55,7 @@ void funcion_error(const char *nombre, const char *modulo, const char *textos, v
   GladeXML  *xml = (GladeXML *)dato;
   if(xml && nombre && textos && modulo) {
     GString *valor = g_string_new("");
-    g_string_sprintf(valor, "%s [%s]: %s\n", strdup(nombre), strdup(modulo), strdup(textos));
+    g_string_sprintf(valor, "%s [%s]: %s\n", nombre, modulo, textos);
     // Sacar la salida por pantalla hace fácil redirigir el resultado de depuración
     // a un archivo de texto: pipeline --timer=500 vision.xml > vision.log
     printf("%s", valor->str);
