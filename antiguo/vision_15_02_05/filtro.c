@@ -73,10 +73,10 @@ red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro)
 	    int verde = 0;
 	    int azul = 0;
 
-	    if (y - 2 >= 0 && y + 2 < h) {
-	      for (i = y - 2; i < y + 2; i++) {
-		if (x - 8 >= 0 && x + 10 < w * bytes) {
-		  for (j = x - 8; j < x + 10; j++) {
+	    /*if (y - 2 >= 0 && y + 2 <= h) {
+	      for (i = y - 2; i <= y + 2; i++) {
+		if (x - 8 >= 0 && x + 10 <= w * bytes) {
+		  for (j = x - 8; j <= x + 10; j++) {
 		    rojo += buffer[(i * w * bytes) + j];
 		    verde += buffer[(i * w * bytes) + j + 1];
 		    azul += buffer[(i * w * bytes) + j + 2];
@@ -84,26 +84,28 @@ red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro)
 		  }
 		}
 	      }
-	    }
+	      }
 
 	    rojo = ((int)floor(rojo / 25));
 	    verde = ((int) floor(verde / 25));
-	    azul = ((int) floor(azul / 25));
+	    azul = ((int) floor(azul / 25));*/
+
+	    
+
+	    /* Código de prueba, para depurar, no tiene validez
+	       no borrar porque es útil tenerlo
+	       Carlos */
+	    rojo = buffer[y * w * bytes + x];
+	    verde = buffer[y * w * bytes + x + 1];
+	    azul = buffer[y * w * bytes + x + 2];
+	    /* Hasta aquí */
 
 	    while (rojo % 10 && rojo > 1)
 	      rojo--;
 	    while (verde % 10 && verde > 1)
 	      verde--;
 	    while (azul % 10 && azul > 1)
-	      azul--;
-
-	    /* Código de prueba, para depurar, no tiene validez
-	       no borrar porque es útil tenerlo
-	       Carlos */
-	    /*rojo = buffer[y * w * bytes + x];
-	    verde = buffer[y * w * bytes + x + 1];
-	    azul = buffer[y * w * bytes + x + 2];*/
-	    /* Hasta aquí */
+	    azul--;
 	     
 	    posY = y * w * bytes;
 	    /* Atención: los colores rojo y azul están cambiados,

@@ -18,7 +18,7 @@
     <argumento tipo="camara">0</argumento>
   </modulo> -->
   <modulo ruta="imagenes" nombre="imagenes">
-    <argumento tipo="archivo">mano.xpm</argumento>
+    <argumento tipo="archivo">no_gesto_112.xpm</argumento>
     <argumento tipo="rojo">32</argumento>
     <argumento tipo="verde">45</argumento>
     <argumento tipo="azul">123</argumento>
@@ -26,9 +26,9 @@
     <argumento tipo="alto">240</argumento>
     <argumento tipo="bytes">3</argumento>
   </modulo>
-<!--  <modulo ruta="red_neuronal" nombre="red">
-    <argumento tipo="archivo">orden.net</argumento> 
-  </modulo> -->
+  <modulo ruta="red_neuronal" nombre="red">
+    <argumento tipo="archivo">orden_net</argumento> 
+  </modulo> 
   <modulo ruta="ventana_imagen" nombre="ventana_imagenes">
     <argumento tipo="nombre_foto">imagenes.png</argumento>
     <argumento tipo="extension">png</argumento>
@@ -39,9 +39,9 @@
     <argumento tipo="nombre_foto">filtro.png</argumento>
     <argumento tipo="extension">png</argumento>
   </modulo>
-<!--  <modulo ruta="salida" nombre="salida">
+  <modulo ruta="salida" nombre="salida">
     <argumento tipo="texto">Vision por computador</argumento>
-  </modulo> -->
+  </modulo>
   <conexion origen="imagenes" destino="ventana_imagenes"/>
   <conexion origen="pipeline" destino="imagenes"/>
   <conexion origen="imagenes" destino="filtro_gestos"/>
@@ -51,6 +51,6 @@
   <conexion origen="pipeline" destino="parametros"/>
   <conexion origen="parametros" destino="filtro_gestos"/>
   <conexion origen="filtro_gestos" destino="ventana_filtro"/>
-  <!-- <conexion origen="filtro_gestos" destino="red"/> -->
-  <!-- <conexion origen="red" destino="salida"/> -->
+  <conexion origen="filtro_gestos" destino="red"/>
+  <conexion origen="red" destino="salida"/>
 </pipeline>
