@@ -99,7 +99,7 @@
     </conexion> 
   </modulo> 
 
-<!-- Red neuronal de los parametros -->
+  <!-- Red neuronal de los parametros -->
   <modulo ruta="red_neuronal" nombre="red_param">
     <argumento nombre="archivo">param_net</argumento> 
     <argumento nombre="salida1">nula</argumento>

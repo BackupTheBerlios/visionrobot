@@ -20,7 +20,7 @@ static char *red_ciclo(modulo_t *modulo, const char *puerto, const void *value)
     red_dato_t * dato = (red_dato_t*)modulo->m_dato;
     red_neuronal_t *red = dato->m_red;
     red_neuronal_in_t * red_in = (red_neuronal_in_t *)value;
-    if(red) {
+    if(red && red_in) {
       sprintf(dato->m_salida, "salida = %s", 
 	      red_neuronal_reconocer(red, red_in->m_imagen,
 				     red_in->m_ancho, red_in->m_alto,

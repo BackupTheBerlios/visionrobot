@@ -103,7 +103,18 @@ static char *filtro_ciclo(modulo_t *modulo, const char *puerto, const void *valu
 			      dato->m_salida.m_imagen, dato->m_salida.m_ancho, dato->m_salida.m_alto, dato->m_salida.m_bytes);
       }
       if(dato->m_buffer.m_imagen) {
-	filtro_llamar_funcion(dato->m_lua, dato->m_filtrar, "");
+	// El filtro espera que la funcion de filtro le devuelva
+	// 0 si todo es negro
+	// 1 si no todo es negro
+	int color;
+	filtro_llamar_funcion(dato->m_lua, dato->m_filtrar, ">i", &color);
+	GHashTable *tabla = modulo->m_tabla;
+	if(!color) {
+	  g_hash_table_insert(tabla, PUERTO_SALIDA, 0);
+	}
+	else {
+	  g_hash_table_insert(tabla, PUERTO_SALIDA, &dato->m_salida);
+	}
 	dato->m_error = 0;
       }
     }

@@ -14,6 +14,9 @@ libventana_parametros.so: ventana_parametros.c
 libsalida.so: salida.c
 	gcc $(OPTS) -shared -o libsalida.so salida.c `pkg-config glib-2.0 --cflags --libs` `pkg-config libglade-2.0 --cflags --libs`
 
+libprolog.so: prolog.c
+	gcc $(OPTS) -shared -o libprolog.so prolog.c
+
 libfiltro_gestos.so: filtro_gestos.c
 	gcc $(OPTS) -I../include -shared -o libfiltro_gestos.so filtro_gestos.c -L../lib -llua -llualib `pkg-config glib-2.0 --cflags --libs` 
 libred_neuronal.so: red.c red_neuronal.c
