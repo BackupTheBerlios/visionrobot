@@ -20,14 +20,28 @@
   *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
   */
 #include "auxiliar.h"
-#include "interface.h"
-#include "support.h"
+#include "dialogo_abrir.h"
+#include "dialogo_guardar.h"
+#include "dialogo_conectar.h"
+#include "propiedades_modulo.h"
 #include <string.h>
 #include <sys/time.h>
 #include <signal.h>
 #include <stdlib.h>
 
-extern pipeline_t *pipeline;
+
+ventana_principal_t * ventana;
+#ifdef WIN32
+#include <windows.h>
+VOID CALLBACK catch_alarm(HWND hwnd,
+			  UINT uMsg,
+			  UINT idEvent,
+			  DWORD dwTime);
+UINT myTimer;
+#else 
+void catch_alarm(int sig);
+#endif
+
 
 gboolean confirmacion(GtkWidget * w, const gchar * texto)
 {
@@ -70,27 +84,30 @@ void acerca_de(GtkWidget * w)
 
 char *abrir_ventana(GtkWidget * w)
 {
-    GtkWidget *dialog = create_filechooserdialog1();
+  dialogo_abrir_t * dialogo_abrir = dialogo_abrir_crear();
+  GtkWidget *dialog = dialogo_abrir->filechooserdialog1;
     char *filename = 0;
     if (gtk_dialog_run(GTK_DIALOG(dialog)) != GTK_RESPONSE_CANCEL) {
 	filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
     }
-    gtk_widget_destroy(dialog);
+    //gtk_widget_destroy(dialog);
+    dialogo_abrir_cerrar(dialogo_abrir);
     return filename;
 }
 
 char *guardar_ventana(GtkWidget * w)
 {
-    GtkWidget *dialog = create_filechooserdialog2();
+  dialogo_guardar_t *dialogo_guardar = dialogo_guardar_crear();
+  GtkWidget *dialog = dialogo_guardar->filechooserdialog2;
     char *filename = 0;
     if (gtk_dialog_run(GTK_DIALOG(dialog)) != GTK_RESPONSE_CANCEL) {
 	filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
     }
-    gtk_widget_destroy(dialog);
+    dialogo_guardar_cerrar(dialogo_guardar);
     return filename;
 }
 
-gchar *entrada(GtkWidget * w, const gchar * pregunta)
+/*gchar *entrada(GtkWidget * w, const gchar * pregunta)
 {
     GtkWidget *d = create_dialog1();
     gchar *respuesta = 0;
@@ -105,7 +122,7 @@ gchar *entrada(GtkWidget * w, const gchar * pregunta)
 
     gtk_widget_destroy(d);
     return res;
-}
+}*/
 
 void insertar(GtkFixed * fixed, pipeline_t * pipeline)
 {
@@ -121,11 +138,12 @@ void insertar(GtkFixed * fixed, pipeline_t * pipeline)
 void propiedades(gint id_elemento, GtkFixed * fixed, pipeline_t * pipeline,
 		 gboolean * mod)
 {
-    GtkWidget *dialog = create_propiedades_modulo();
-    GtkWidget *nombre = lookup_widget(dialog, "entry2");
-    GtkWidget *x = lookup_widget(dialog, "entry3");
-    GtkWidget *y = lookup_widget(dialog, "entry4");
-    GtkWidget *modulo = lookup_widget(dialog, "entry5");
+  propiedades_modulo_t * propiedades_modulo_ = propiedades_modulo_crear();
+  GtkWidget *dialog = propiedades_modulo_->propiedades_modulo;
+  GtkWidget *nombre = propiedades_modulo_->entry2;
+  GtkWidget *x = propiedades_modulo_->entry3;
+  GtkWidget *y = propiedades_modulo_->entry4;
+  GtkWidget *modulo = propiedades_modulo_->entry5;
     gchar buffer[8];
     if (id_elemento != -1) {
 	gtk_entry_set_text(GTK_ENTRY(nombre),
@@ -174,7 +192,7 @@ void propiedades(gint id_elemento, GtkFixed * fixed, pipeline_t * pipeline,
     } else {
 	*mod = FALSE;
     }
-    gtk_widget_destroy(dialog);
+    propiedades_modulo_cerrar(propiedades_modulo_);
 }
 void mostrar(GtkStatusbar * b, const char *info, guint * id)
 {
@@ -188,7 +206,7 @@ void mostrar(GtkStatusbar * b, const char *info, guint * id)
 }
 
 
-void establecer(pipeline_t * pipeline, GtkWidget * window1)
+void establecer(pipeline_t * pipeline, ventana_principal_t * ventana_principal)
 {
     int i, si = 0, cual;
     gboolean todas_iniciadas = TRUE;
@@ -207,46 +225,43 @@ void establecer(pipeline_t * pipeline, GtkWidget * window1)
 	}
     }
     gboolean b = pipeline->m_numero > 0;
-    gtk_widget_set_sensitive(lookup_widget
-			     (window1, "iniciar_todas_biblioteca"), b
+    gtk_widget_set_sensitive(ventana_principal->iniciar_todas_biblioteca, b
 			     && !todas_iniciadas);
-    gtk_widget_set_sensitive(lookup_widget
-			     (window1, "cerrar_todas_biblioteca"), b
+    gtk_widget_set_sensitive(ventana_principal->cerrar_todas_biblioteca, b
 			     && !todas_paradas);
-    gtk_widget_set_sensitive(lookup_widget(window1, "ciclos_biblioteca"),
+    gtk_widget_set_sensitive(ventana_principal->ciclos_biblioteca,
 			     b);
-    gtk_widget_set_sensitive(lookup_widget(window1, "ciclo_biblioteca"),
+    gtk_widget_set_sensitive(ventana_principal->ciclo_biblioteca,
 			     b);
-    gtk_widget_set_sensitive(lookup_widget(window1, "parar_biblioteca"),
+    gtk_widget_set_sensitive(ventana_principal->parar_biblioteca,
 			     b);
 
-    gtk_widget_set_sensitive(lookup_widget(window1, "conectar1"), si == 1);
-    gtk_widget_set_sensitive(lookup_widget(window1, "propiedades1"),
+    gtk_widget_set_sensitive(ventana_principal->conectar1, si == 1);
+    gtk_widget_set_sensitive(ventana_principal->propiedades1,
 			     si == 1);
-    gtk_widget_set_sensitive(lookup_widget
-			     (window1, "propiedades_biblioteca"), si == 1);
-    gtk_widget_set_sensitive(lookup_widget(window1, "iniciar_biblioteca"),
+    gtk_widget_set_sensitive(ventana_principal->propiedades_biblioteca, si == 1);
+    gtk_widget_set_sensitive(ventana_principal->iniciar_biblioteca,
 			     si == 1
 			     && pipeline->m_elemento[cual].m_iniciado ==
 			     0);
-    gtk_widget_set_sensitive(lookup_widget(window1, "cerrar_biblioteca"),
+    gtk_widget_set_sensitive(ventana_principal->cerrar_biblioteca,
 			     si == 1
 			     && pipeline->m_elemento[cual].m_iniciado ==
 			     1);
 
-    gtk_widget_set_sensitive(lookup_widget(window1, "borrar1"), si > 0);
+    gtk_widget_set_sensitive(ventana_principal->borrar1, si > 0);
 }
 
 void guardar_como_aux(pipeline_t * pipeline, char *file,
 		      GtkWidget * window1, GtkWidget * status_bar,
-		      char *archivo, guint * id, gboolean * modificado)
+		      char *archivo, guint * id, gboolean * modificado, ventana_principal_t * ventana_principal)
 {
     if (file != 0) {
 	guardar(pipeline, file);
 	strcpy(archivo, file);
 	*modificado = FALSE;
 	mostrar(GTK_STATUSBAR(status_bar), archivo, id);
-	gtk_widget_set_sensitive(lookup_widget(window1, "guardar2"),
+	gtk_widget_set_sensitive(ventana_principal->guardar2,
 				 FALSE);
     }
 }
@@ -279,61 +294,87 @@ int iniciar(elemento_t * elemento)
 
 int crear_timer(long int retardo)
 {
+#ifndef WIN32
     struct itimerval t;
     t.it_interval.tv_usec = retardo;
     t.it_interval.tv_sec = 0;
     t.it_value.tv_usec = 1;
     t.it_value.tv_sec = 0;
     setitimer(ITIMER_REAL, &t, 0);
+#else
+    myTimer = SetTimer(0, 0, retardo, catch_alarm);
+#endif
     return 0;
 }
 
 int parar_timer()
 {
+#ifndef WIN32
     struct itimerval t;
     t.it_interval.tv_usec = 0;
     t.it_interval.tv_sec = 0;
     t.it_value.tv_usec = 0;
     t.it_value.tv_sec = 0;
     setitimer(ITIMER_REAL, &t, 0);
+#else
+    KillTimer(0, myTimer);
+#endif
     return 0;
 }
 
+#ifndef WIN32
 void catch_alarm(int sig)
 {
-    haz_un_ciclo(pipeline);
+    haz_un_ciclo(ventana->pipeline);
     signal(sig, catch_alarm);
 }
-
-int senyal()
+#else 
+VOID CALLBACK catch_alarm(HWND hwnd,
+		 UINT uMsg,
+		 UINT idEvent,
+		 DWORD dwTime)
 {
+  haz_un_ciclo(ventana->pipeline);
+}
+#endif
+
+int senyal(ventana_principal_t * v)
+{
+  ventana = v;
+#ifndef WIN32
     signal(SIGALRM, catch_alarm);
+#else
+#endif
     return 0;
 }
 
 
 int haz_un_ciclo(pipeline_t * pipeline)
 {
-    char *buffer = "Saludo";
-    g_print("PIPELINE\n");
-    pipeline->m_elemento[0].m_funcion_set_datos(buffer);
-
+  //char *buffer = "Saludo";
+    //g_print("PIPELINE\n");
+    //pipeline->m_elemento[0].m_funcion_set_datos(buffer);
+    //g_print("Ciclo!!!!");
     int i;
     int j;
     for (i = 0; i < pipeline->m_numero; ++i) {
 	if (pipeline->m_elemento[i].m_iniciado) {
-	    g_print("Elemento %s\n", pipeline->m_elemento[i].m_nombre);
+	  //g_print("Elemento %s\n", pipeline->m_elemento[i].m_nombre);
+	  if(pipeline->m_elemento[i].m_funcion_get_datos) {
 	    void *datos = pipeline->m_elemento[i].m_funcion_get_datos();
 	    for (j = 0; j < pipeline->m_elemento[i].m_numero_conexiones;
 		 ++j) {
+	      if(pipeline->m_elemento[j].m_destino[j]->m_funcion_set_datos) {
 		pipeline->m_elemento[j].m_destino[j]->
-		    m_funcion_set_datos(datos);
+		  m_funcion_set_datos(datos);
+	      }
 	    }
+	  }
 	}
     }
     for (i = 0; i < pipeline->m_numero; ++i) {
 	if (pipeline->m_elemento[i].m_iniciado) {
-	    g_print("Elemento %s\n", pipeline->m_elemento[i].m_nombre);
+	  //g_print("Elemento %s\n", pipeline->m_elemento[i].m_nombre);
 	    if (pipeline->m_elemento[i].m_funcion_ciclo) {
 		pipeline->m_elemento[i].m_funcion_ciclo();
 	    }
@@ -345,8 +386,9 @@ int haz_un_ciclo(pipeline_t * pipeline)
 int elegir_modulo(GtkWidget * window1, pipeline_t * pipeline)
 {
 
-    GtkWidget *dialog = create_dialog2();
-    GtkWidget *combo = lookup_widget(dialog, "comboboxentry1");
+  dialogo_conectar_t * dialogo_conectar = dialogo_conectar_crear();
+  GtkWidget *dialog = dialogo_conectar->dialog1;
+  GtkWidget *combo = dialogo_conectar->comboboxentry1;//lookup_widget(dialog, "comboboxentry1");
 
     int i;
     for (i = 0; i < pipeline->m_numero; ++i) {
@@ -358,7 +400,8 @@ int elegir_modulo(GtkWidget * window1, pipeline_t * pipeline)
 	gtk_dialog_run(GTK_DIALOG(dialog)) != GTK_RESPONSE_CANCEL ?
 	respuesta = gtk_combo_box_get_active(GTK_COMBO_BOX(combo)) : -1;
 
-    gtk_widget_destroy(dialog);
+    //gtk_widget_destroy(dialog);
+    dialogo_conectar_cerrar(dialogo_conectar);
 
     return respuesta;
 }

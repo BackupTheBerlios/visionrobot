@@ -26,6 +26,7 @@ extern "C" {
 
 #include <gtk/gtk.h>
 #include <stdio.h>
+#include "ventana_principal.h"
 #include "pipeline.h"
 
 /*! \brief Presenta un mensaje de entrada, y devuelve la respuesta
@@ -33,7 +34,7 @@ extern "C" {
     \param pregunta El texto que se presenta
     \return La cadena que el usuario escribe
 */
-    gchar *entrada(GtkWidget * w, const gchar * pregunta);
+//    gchar *entrada(GtkWidget * w, const gchar * pregunta);
 
 /*! \brief Presenta un mensaje de confirmación, y devuelve la respuesta
     \param w La ventana padre
@@ -99,7 +100,7 @@ extern "C" {
     \param pipeline Hay que pasarle un pipeline para que tenga control de los botones    
     \param window Y una ventana donde están los botones
 */
-    void establecer(pipeline_t * pipeline, GtkWidget * window);
+    void establecer(pipeline_t * pipeline, ventana_principal_t * ventana_principal);
 
 /*! \brief Guarda un pipeline - Se usa para hacer iguales el guardar y el guardar como     
     \param pipeline El pipe que se guarda  
@@ -113,7 +114,7 @@ extern "C" {
     void guardar_como_aux(pipeline_t * pipeline, char *file,
 			  GtkWidget * window, GtkWidget * status_bar,
 			  char *archivo, guint * id,
-			  gboolean * modificado);
+			  gboolean * modificado, ventana_principal_t * ventana_principal);
 
     /*! \brief Desactiva la ejecución de un elemento
        \param elemento El elemento que paramos
@@ -137,10 +138,11 @@ extern "C" {
 
     int parar_timer();
     /*!\brief Inicia el sistema de señales
+      \param v La ventana principal que gestionará las señales
        \return 0 si todo va bien, -1 en caso de error
      */
 
-    int senyal();
+    int senyal(ventana_principal_t * v);
     /*!\brief Efectúa un único ciclo del pipeline
        \param pipeline El pipe sobre el que se ejecuta el ciclo
        \return 0 si todo va bien, -1 en caso de error
@@ -148,6 +150,11 @@ extern "C" {
 
     int haz_un_ciclo(pipeline_t * pipeline);
 
+  /*!\brief Presenta una ventana para elegir un módulo destino del pipe
+    \param window1 La ventana padre del diálogo
+    \param pipeline El pipeline sobre el que se trabaja
+    \return El índice del elemento escogido
+  */
     int elegir_modulo(GtkWidget * window1, pipeline_t * pipeline);
 
 #ifdef __cplusplus

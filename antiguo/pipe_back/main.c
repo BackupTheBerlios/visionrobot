@@ -29,24 +29,20 @@
 
 #include <gtk/gtk.h>
 
-#include "interface.h"
-#include "support.h"
-#include "pipeline.h"
-#include "callbacks.h"
-#include "auxiliar.h"
-
-GtkWidget *window1;
+#include "ventana_principal.h"
 
 int main(int argc, char *argv[])
 {
     gtk_set_locale();
     gtk_init(&argc, &argv);
-    add_pixmap_directory("./");
 
-    window1 = create_window1(argc > 1 ? argv[1] : 0);
+    ventana_principal_t * ventana_principal = ventana_principal_crear();
 
-    gtk_widget_show(window1);
+    gtk_widget_show(ventana_principal->window1);
 
     gtk_main();
+
+    ventana_principal_borrar(ventana_principal);
+
     return 0;
 }

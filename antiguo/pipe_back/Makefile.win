@@ -7,7 +7,7 @@ OUTPUT = pipeline.exe
 TAGS = ctags
 DOXYGEN = doxygen
 INDENT = indent
-OBJS = callbacks.o main.o interface.o auxiliar.o support.o pipeline.o
+OBJS = main.o pipeline.o dialogo_conectar.o dialogo_guardar.o propiedades_modulo.o dialogo_abrir.o ventana_principal.o funciones.o auxiliar.o
 
 all:	$(OBJS) tags
 	$(GCC) $(OBJS) -o $(OUTPUT) $(OPTS) $(LIBS)
@@ -29,21 +29,30 @@ tags:
 doxygen:
 	$(DOXYGEN)
 
-callbacks.o: callbacks.c
-	$(GCC) -c -o callbacks.o callbacks.c $(OPTS) $(CFLAGS)
-
 main.o: main.c
 	$(GCC) -c -o main.o main.c $(OPTS) $(CFLAGS)
-
-support.o: support.c
-	$(GCC) -c -o support.o support.c $(OPTS) $(CFLAGS)
 
 pipeline.o: pipeline.c
 	$(GCC) -c -o pipeline.o pipeline.c $(OPTS) $(CFLAGS)
 
+dialogo_conectar.o: dialogo_conectar.c
+	$(GCC) -c -o dialogo_conectar.o dialogo_conectar.c $(OPTS) $(CFLAGS)
+
+dialogo_guardar.o: dialogo_guardar.c
+	$(GCC) -c -o dialogo_guardar.o dialogo_guardar.c $(OPTS) $(CFLAGS)
+
+propiedades_modulo.o: propiedades_modulo.c
+	$(GCC) -c -o propiedades_modulo.o propiedades_modulo.c $(OPTS) $(CFLAGS)
+
+dialogo_abrir.o: dialogo_abrir.c
+	$(GCC) -c -o dialogo_abrir.o dialogo_abrir.c $(OPTS) $(CFLAGS)
+
+ventana_principal.o: ventana_principal.c
+	$(GCC) -c -o ventana_principal.o ventana_principal.c $(OPTS) $(CFLAGS)
+
+funciones.o: funciones.c
+	$(GCC) -c -o funciones.o funciones.c $(OPTS) $(CFLAGS)
+
 auxiliar.o: auxiliar.c
 	$(GCC) -c -o auxiliar.o auxiliar.c $(OPTS) $(CFLAGS)
-
-interface.o: interface.c
-	$(GCC) -c -o interface.o interface.c $(OPTS) $(CFLAGS)
 
