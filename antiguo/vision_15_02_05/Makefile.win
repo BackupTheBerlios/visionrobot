@@ -1,30 +1,31 @@
 OPTS=-g -Wall
 
-all: pipeline.exe etags salida.dll filtro_gestos.dll red_neuronal.dll imagenes.dll ventana_imagen.dll camara.dll
+all: pipeline.exe libsalida.dll libventana_parametros.dll libfiltro_gestos.dll libred_neuronal.dll libimagenes.dll libventana_imagen.dll libcamara.dll
 
-etags:	
-#	etags *.c
+libventana_imagen.dll: ventana_imagen.c
+	gcc $(OPTS) -shared -o libventana_imagen.dll ventana_imagen.c `pkg-config --cflags gtk+-2.0  --define-variable=prefix=/c/MinGW` `pkg-config --libs gtk+-2.0`  `pkg-config libglade-win32-2.0 --cflags --libs --define-variable=prefix=/c/MinGW`
 
-ventana_imagen.dll: ventana_imagen.c
-	gcc $(OPTS) -shared -o ventana_imagen.dll ventana_imagen.c `pkg-config --cflags gtk+-2.0  --define-variable=prefix=/c/MinGW` `pkg-config --libs gtk+-2.0`  `pkg-config libglade-win32-2.0 --cflags --libs --define-variable=prefix=/c/MinGW`
+libsalida.dll: salida.c
+	gcc $(OPTS) -shared -o libsalida.dll salida.c `pkg-config glib-2.0 --cflags --libs --define-variable=prefix=/c/MinGW` `pkg-config libglade-win32-2.0 --cflags --libs --define-variable=prefix=/c/MinGW`
 
-salida.dll: salida.c
-	gcc $(OPTS) -shared -o salida.dll salida.c `pkg-config glib-2.0 --cflags --libs --define-variable=prefix=/c/MinGW` `pkg-config libglade-win32-2.0 --cflags --libs --define-variable=prefix=/c/MinGW`
+libfiltro_gestos.dll: filtro_gestos.c filtro.c
+	gcc $(OPTS) -shared -o libfiltro_gestos.dll filtro.c filtro_gestos.c `pkg-config glib-2.0 --cflags --libs --define-variable=prefix=/c/MinGW`
 
-filtro_gestos.dll: filtro_gestos.c filtro.c
-	gcc $(OPTS) -shared -o filtro_gestos.dll filtro.c filtro_gestos.c `pkg-config glib-2.0 --cflags --libs --define-variable=prefix=/c/MinGW`
+libred_neuronal.dll: red.c red_neuronal.c
+	gcc $(OPTS) -shared -o libred_neuronal.dll red.c red_neuronal.c `pkg-config glib-2.0 --cflags --libs --define-variable=prefix=/c/MinGW`
 
-red_neuronal.dll: red.c red_neuronal.c
-	gcc $(OPTS) -shared -o red_neuronal.dll red.c red_neuronal.c `pkg-config glib-2.0 --cflags --libs --define-variable=prefix=/c/MinGW`
+libimagenes.dll: imagenes.c
+	gcc $(OPTS) -shared -o libimagenes.dll imagenes.c `pkg-config glib-2.0 --cflags --libs --define-variable=prefix=/c/MinGW`
 
-imagenes.dll: imagenes.c
-	gcc $(OPTS) -shared -o imagenes.dll imagenes.c `pkg-config glib-2.0 --cflags --libs --define-variable=prefix=/c/MinGW`
-
-camara.dll: camara.cpp Captura.cpp
-	g++ $(OPTS) -shared -o camara.dll camara.cpp Captura.cpp -lstrmiids -luuid -loleaut32 -lole32 -lquartz `pkg-config glib-2.0 --cflags --libs --define-variable=prefix=/c/MinGW`
+libcamara.dll: camara.cpp Captura.cpp
+	g++ $(OPTS) -shared -o libcamara.dll camara.cpp Captura.cpp -lstrmiids -luuid -loleaut32 -lole32 -lquartz `pkg-config glib-2.0 --cflags --libs --define-variable=prefix=/c/MinGW`
 
 pipeline.exe: main.c libpipeline.a
 	gcc $(OPTS) main.c -o pipeline.exe -L ./ -lpipeline `pkg-config libxml-win32-2.0 --libs --define-variable=prefix=/c/MinGW` `pkg-config --cflags gtk+-2.0 --define-variable=prefix=/c/MinGW` `pkg-config --libs gtk+-2.0 --define-variable=prefix=/c/MinGW` `pkg-config libglade-win32-2.0 --cflags --libs --define-variable=prefix=/c/MinGW`  -mms-bitfields
+
+libventana_parametros.dll: ventana_parametros.c
+	gcc $(OPTS) -shared -o libventana_parametros.dll ventana_parametros.c `pkg-config --cflags gtk+-2.0 --define-variable=prefix=/c/MinGW` `pkg-config --libs gtk+-2.0 --define-variable=prefix=/c/MinGW`  `pkg-config libglade-win32-2.0 --cflags --libs --define-variable=prefix=/c/MinGW`
+
 
 libpipeline.a: pipeline.c
 	gcc $(OPTS) -c pipeline.c -o libpipeline.a `pkg-config libxml-win32-2.0 --cflags --define-variable=prefix=/c/MinGW` `pkg-config --cflags gmodule-2.0 --define-variable=prefix=/c/MinGW`

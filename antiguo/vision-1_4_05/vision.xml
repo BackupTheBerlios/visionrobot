@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE pipeline SYSTEM "pipeline.dtd">
+
 <pipeline>
   <modulo ruta="ventana_parametros" nombre="parametros">
     <argumento tipo="orden_rojo">32</argumento>
@@ -11,27 +12,44 @@
     <argumento tipo="orden_tolerancia">4</argumento>
     <argumento tipo="param_tolerancia">4</argumento>
   </modulo>
+  <modulo ruta="camara" nombre="camara">
+    <argumento tipo="ancho">320</argumento>
+    <argumento tipo="alto">240</argumento>
+    <argumento tipo="camara">0</argumento>
+  </modulo>
   <modulo ruta="imagenes" nombre="imagenes">
     <argumento tipo="rojo">32</argumento>
     <argumento tipo="verde">45</argumento>
-<!--    <argumento tipo="azul">123</argumento>-->
+    <argumento tipo="azul">123</argumento>
     <argumento tipo="ancho">320</argumento>
     <argumento tipo="alto">240</argumento>
     <argumento tipo="bytes">3</argumento>
+  </modulo>
+  <modulo ruta="red_neuronal" nombre="red">
+    <argumento tipo="archivo">orden.net</argumento>
   </modulo>
   <modulo ruta="ventana_imagen" nombre="ventana_imagenes">
     <argumento tipo="nombre_foto">imagenes.png</argumento>
     <argumento tipo="extension">png</argumento>
   </modulo>
-  <modulo ruta="filtro_gestos" nombre="filtro_gestos"></modulo>
+  <modulo ruta="filtro_gestos" nombre="filtro_gestos">
+  </modulo>
   <modulo ruta="ventana_imagen" nombre="ventana_filtro">
     <argumento tipo="nombre_foto">filtro.png</argumento>
     <argumento tipo="extension">png</argumento>
   </modulo>
-  <conexion origen="imagenes" destino="ventana_imagenes"/>
-  <conexion origen="pipeline" destino="imagenes"/>
+  <modulo ruta="salida" nombre="salida">
+    <argumento tipo="texto">Vision por computador</argumento>
+  </modulo>
+  <!-- <conexion origen="imagenes" destino="ventana_imagenes"/> -->
+  <!-- <conexion origen="pipeline" destino="imagenes"/> -->
+  <!-- <conexion origen="imagenes" destino="filtro_gestos"/> -->
+  <conexion origen="pipeline" destino="camara"/>
+  <conexion origen="camara" destino="filtro_gestos"/> 
+  <conexion origen="camara" destino="ventana_imagenes"/> 
   <conexion origen="pipeline" destino="parametros"/>
   <conexion origen="parametros" destino="filtro_gestos"/>
-  <conexion origen="imagenes" destino="filtro_gestos"/>
   <conexion origen="filtro_gestos" destino="ventana_filtro"/>
+  <conexion origen="filtro_gestos" destino="red"/>
+  <conexion origen="red" destino="salida"/>
 </pipeline>

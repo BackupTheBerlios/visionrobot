@@ -16,12 +16,12 @@ static char buffer_error[128];
 static char* camara_ciclo (modulo_t *modulo, char tipo, GHashTable *lista){
   c->CogerFrame();
   int tam = c->GetFrame((BYTE**)&imagen.m_dato.imagen.m_imagen);
-  ventana.m_imagen = imagen.m_dato.imagen.m_imagen;
+  ventana.m_imagen = (char *)imagen.m_dato.imagen.m_imagen;
   imagen.m_dato.imagen.m_bytes = (tam / imagen.m_dato.imagen.m_alto) / imagen.m_dato.imagen.m_ancho;
   ventana.m_bytes = imagen.m_dato.imagen.m_bytes;
-  sprintf(buffer_error, "[%p, %ix%ix%i] - [%p, %ix%ix%i]", imagen.m_dato.imagen.m_imagen, imagen.m_dato.imagen.m_ancho,
-	  imagen.m_dato.imagen.m_alto, imagen.m_dato.imagen.m_bytes, ventana.m_imagen, ventana.m_ancho, ventana.m_alto, ventana.m_bytes);
-  return buffer_error;
+  /*sprintf(buffer_error, "[%p, %ix%ix%i] - [%p, %ix%ix%i]", imagen.m_dato.imagen.m_imagen, imagen.m_dato.imagen.m_ancho,
+    imagen.m_dato.imagen.m_alto, imagen.m_dato.imagen.m_bytes, ventana.m_imagen, ventana.m_ancho, ventana.m_alto, ventana.m_bytes);*/
+  return 0;//buffer_error;
 }
 
 static char* camara_iniciar(modulo_t *modulo, GHashTable *argumentos) {
@@ -30,7 +30,7 @@ static char* camara_iniciar(modulo_t *modulo, GHashTable *argumentos) {
   imagen.m_dato.imagen.m_alto = atoi((const char *)g_hash_table_lookup(argumentos,"alto"));
   imagen.m_dato.imagen.m_imagen = 0;
   imagen.m_tipo = PIPELINE_FILTRO_GESTOS_IMAGEN;
-  ventana.m_imagen = imagen.m_dato.imagen.m_imagen;
+  ventana.m_imagen = (char *)imagen.m_dato.imagen.m_imagen;
   ventana.m_alto = imagen.m_dato.imagen.m_alto;
   ventana.m_ancho = imagen.m_dato.imagen.m_ancho;
   ventana.m_bytes = imagen.m_dato.imagen.m_bytes;

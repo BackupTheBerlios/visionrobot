@@ -53,6 +53,7 @@ static int  pipeline_set_ruta(elemento_t * dato, const char *ruta, const char *d
     }
     char *ruta_modulo = g_module_build_path(dir, ruta);
     dato->m_handler = g_module_open(ruta_modulo, G_MODULE_BIND_LAZY);
+
     if (dato->m_handler) {
       typedef modulo_t *(*funcion_modulo_t) ();
       funcion_modulo_t f;

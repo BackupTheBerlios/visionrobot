@@ -66,12 +66,14 @@ gboolean ventana_foto(GtkWidget *w, GdkEventKey *event, gpointer data) {
 
 static void ventana_ajustar_tamanno(modulo_t * modulo) {
   datos_ventana_t * datos = (datos_ventana_t *)modulo->m_dato;
-  GtkWindow *ventana = GTK_WINDOW(datos->ventana);
   ventana_imagen_in_t *imagen = datos->m_imagen;
-  gint ancho, alto;
-  gtk_window_get_size(ventana, &ancho, &alto);
-  if(ancho != imagen->m_ancho || alto != imagen->m_alto) {
-    gtk_window_resize(ventana, imagen->m_ancho, imagen->m_alto);
+  if(imagen && imagen->m_imagen) {
+    GtkWindow *ventana = GTK_WINDOW(datos->ventana);
+    gint ancho, alto;
+    gtk_window_get_size(ventana, &ancho, &alto);
+    if(ancho != imagen->m_ancho || alto != imagen->m_alto) {
+      gtk_window_resize(ventana, imagen->m_ancho, imagen->m_alto);
+    }
   }
 }
 
