@@ -16,7 +16,13 @@
 #include <string.h>
 #include <math.h>
 
-#define OPCIONES_LINEA ((GLIB_MAJOR_VERSION==2 && GLIB_MINOR_VERSION >= 6) || (GLIB_MAJOR_VERSION>2))
+#define OPCIONES_LINEA ((GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION >= 6) || (GLIB_MAJOR_VERSION > 2))
+
+typedef struct {
+  guint m_timer;
+  gboolean m_seguir;
+} dato_timer_t;
+
 
 void funcion_error(const char *nombre, const char *modulo, const char *textos, void *dato) {
   GladeXML  *xml = (GladeXML *)dato;
@@ -38,26 +44,69 @@ void funcion_error(const char *nombre, const char *modulo, const char *textos, v
 
 gboolean tick(gpointer data)
 {
-    pipeline_t *p = (pipeline_t *)g_object_get_data(G_OBJECT(data), "pipeline");
+  gboolean seguir = FALSE;
+  pipeline_t *p = (pipeline_t *)g_object_get_data(G_OBJECT(data), "pipeline");
+  if(p) {
+    dato_timer_t *t = (dato_timer_t *)g_object_get_data(G_OBJECT(data), "timer");
     pipeline_ciclo(p);
-    return TRUE;
+    seguir = t->m_seguir;
+    if(!t->m_seguir) {
+      g_timeout_add(t->m_timer, tick, data);
+      t->m_seguir = TRUE;
+    }      
+  }
+  return seguir;
 }
 
-void on_hsc_tolerancia_rojo_value_changed(GtkRange *range, gpointer user_data){
+
+void abrir_pipe(const char *ruta, GladeXML *xml) {
+  GtkWidget *ventana = glade_xml_get_widget(xml, "win_pipeline");
+  pipeline_t *p = (pipeline_t *)g_object_get_data(G_OBJECT(ventana), "pipeline");
+  dato_timer_t *t = (dato_timer_t *)g_object_get_data(G_OBJECT(ventana), "timer");
+  pipeline_borrar(p);  
+  p = pipeline_cargar(ruta, g_get_current_dir(), funcion_error, xml);
+  g_object_set_data(G_OBJECT(ventana), "pipeline", p);
+  pipeline_iniciar(p);
+  g_timeout_add(t->m_timer, tick, ventana);
+}
+
+void on_bot_abrir_clicked(GtkButton *button, gpointer user_data) {
+  GladeXML *xml = glade_get_widget_tree(GTK_WIDGET(button));
+  GtkWidget *ventana = glade_xml_get_widget(xml, "win_pipeline");
+  GtkWidget*  dialogo = gtk_file_chooser_dialog_new("Abrir pipeline...",
+						    GTK_WINDOW(ventana),
+						    GTK_FILE_CHOOSER_ACTION_OPEN,
+						    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+						    GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+						    NULL);
+  if (gtk_dialog_run (GTK_DIALOG (dialogo)) == GTK_RESPONSE_ACCEPT) {
+    char *filename;
+    
+    filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialogo));
+    abrir_pipe (filename, xml);
+    g_free (filename);
+  }
+  
+  gtk_widget_destroy (dialogo);
+}
+
+
+void on_hsc_temporizador_value_changed(GtkRange *range, gpointer user_data){
   GladeXML *xml = glade_get_widget_tree(GTK_WIDGET(range));
   GtkWidget *ventana = glade_xml_get_widget(xml, "win_pipeline");
-  g_timeout_add((int)floor(gtk_range_get_value(range)), tick, ventana);
+  guint timer = (guint)floor(gtk_range_get_value(range));
+  dato_timer_t *t = (dato_timer_t *)g_object_get_data(G_OBJECT(ventana), "timer");
+  t->m_timer = timer;
+  t->m_seguir = FALSE;
 }
 
 
 int main(int argc, char **argv)
 {
-  int valor;
-  guint timer = 1000;
-
+  dato_timer_t dato_timer = {1000, TRUE};
 #if OPCIONES_LINEA
   const GOptionEntry entries[] = {
-    { "timer", 't', 0, G_OPTION_ARG_INT, &timer, "Establece el intervalo del temporizador generador de ciclos, en milisegundos", "T" },
+    { "timer", 't', 0, G_OPTION_ARG_INT, &dato_timer->m_timer, "Establece el intervalo del temporizador generador de ciclos, en milisegundos", "T" },
     { NULL }
   };  
   GOptionContext* contexto = g_option_context_new (" <pipeline> - ejecuta un pipeline definido en un XML válido");
@@ -67,37 +116,27 @@ int main(int argc, char **argv)
   g_option_context_set_help_enabled (contexto, TRUE);
 #endif
 
-  if (argc < 2) {
-    printf("Faltan argumentos. Uso: %s <pipeline>.\n", argv[0]);
-    return -1;
-  }  
-  else {
-    gtk_init(&argc, &argv);
-    glade_init();
-    GladeXML *xml = glade_xml_new("ventana_pipeline.glade", NULL, NULL);
-    glade_xml_signal_autoconnect(xml);
-    GtkWidget *ventana = glade_xml_get_widget(xml, "win_pipeline");
-    pipeline_t * p = pipeline_cargar(argv[1], g_get_current_dir(), funcion_error, xml);
-    g_object_set_data(G_OBJECT(ventana), "pipeline", p);
-    GtkWidget *hsc_timer = glade_xml_get_widget(xml, "hsc_temporizador");
-    gtk_range_set_value(GTK_RANGE(hsc_timer), (gdouble)timer);
-    if(p) {
-      g_timeout_add(timer, tick, ventana);
-      pipeline_iniciar(p);	
-      gtk_main();
-      pipeline_borrar(p);
-      valor = 0;
-    }
-    else {
-      valor = -1;
-    }
+  gtk_init(&argc, &argv);
+  glade_init();
+  GladeXML *xml = glade_xml_new("ventana_pipeline.glade", NULL, NULL);
+  glade_xml_signal_autoconnect(xml);
+  GtkWidget *ventana = glade_xml_get_widget(xml, "win_pipeline");
+  g_object_set_data(G_OBJECT(ventana), "timer", &dato_timer);
+  g_object_set_data(G_OBJECT(ventana), "pipeline", 0);
+  GtkWidget *hsc_timer = glade_xml_get_widget(xml, "hsc_temporizador");
+  gtk_range_set_value(GTK_RANGE(hsc_timer), (gdouble)dato_timer.m_timer);
+  if(argc >= 2) {
+    abrir_pipe(argv[1], xml);
   }
-
+  gtk_main();
+  pipeline_t *p = (pipeline_t *)g_object_get_data(G_OBJECT(ventana), "pipeline");
+  pipeline_borrar(p);
+  
 #if OPCIONES_LINEA
   g_option_context_free(contexto);
 #endif 
 
-  return valor;
+  return 0;
 }
 
 

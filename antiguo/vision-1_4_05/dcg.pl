@@ -28,7 +28,6 @@ haz_token(C, [T | TS]) :-
 	token(C, T, CS),
 	haz_token(CS, TS).
 
-
 lexico(E, L) :-
 	haz_token(E, L).
 
@@ -69,8 +68,8 @@ division -->
 	[/].
 
 parentesis_abierto -->
-	"(".
+	'('.
 
 parentesis_cerrado -->
-	")".
+	')'.
 
