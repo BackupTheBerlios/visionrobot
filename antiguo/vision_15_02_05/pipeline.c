@@ -58,6 +58,7 @@ static void pipeline_salida_error(const pipeline_t *pipeline, const char *nombre
 
 static int  pipeline_set_ruta(pipeline_t* p, const char * elemento, const char *ruta, const char *dir) {
   elemento_t *dato = g_hash_table_lookup(p->m_modulos, elemento);
+  int dev = 0;
   if (ruta) {
     if (dato->m_handler)      {
       g_module_close(dato->m_handler);
@@ -70,19 +71,23 @@ static int  pipeline_set_ruta(pipeline_t* p, const char * elemento, const char *
       funcion_modulo_t f;
       if(g_module_symbol(dato->m_handler, "get_modulo", (gpointer *)&f) != TRUE) {
 	pipeline_salida_error(p, "Bibliotecas", g_module_error());
+	dev = -1;
       }
       else {
 	dato->m_modulo = f ? f() : 0;
 	dato->m_modulo->m_tabla = g_hash_table_new(g_str_hash, g_str_equal);
 	pipeline_salida_error(p, "Bibliotecas", g_module_error());
       }
-    }
-    
+    }    
     else {
       pipeline_salida_error(p, "Bibliotecas", g_module_error());
+      dev = -1;
     }
   }
-  return 0;
+  else {
+    dev = -1;
+  }
+  return dev;
 }
 
 static void pipeline_borrar_conexion(gpointer a) {
@@ -121,11 +126,11 @@ static pipeline_t * pipeline_annadir(pipeline_t * p, const char *nombre, const c
   elemento_t * dato = (elemento_t *)malloc(sizeof(elemento_t));
   dato->m_inicio = !strcmp(inicio, "1") ? TRUE : FALSE;
   dato->m_modulo = 0;
-  dato->m_enlaces = g_hash_table_new_full(g_str_hash, g_str_equal, pipeline_borrar_cadena, pipeline_borrar_conexion);
   dato->m_handler = 0;  
   dato->m_argumentos = argumentos;
-  g_hash_table_insert(p->m_modulos, (gpointer)nombre, (gpointer)dato);//g_slist_append(p, dato);
+  g_hash_table_insert(p->m_modulos, (gpointer)nombre, (gpointer)dato);
   pipeline_set_ruta(p, nombre, ruta, dir);
+  dato->m_enlaces = g_hash_table_new_full(g_str_hash, g_str_equal, pipeline_borrar_cadena, pipeline_borrar_conexion);
   return p;
 }
 

@@ -18,8 +18,9 @@
   </modulo>
 
   <modulo ruta="filtro_gestos" nombre="filtro_gestos">
-    <argumento nombre="difuminado">2</argumento>
-    <argumento nombre="reduccion">10</argumento>
+<!--    <argumento nombre="difuminado">2</argumento>
+    <argumento nombre="reduccion">10</argumento> -->
+    <argumento nombre="guion">filtro.lua</argumento>
     <conexion puerto="salida_imagen_orden">
       <destino puerto="entrada_imagen">ventana_filtro_orden</destino>
     </conexion>	   
@@ -37,13 +38,13 @@
     <argumento nombre="nombre_foto">filtro_param.png</argumento>
     <argumento nombre="extension">png</argumento>
   </modulo>
-
+  
   <modulo ruta="ventana_imagen" nombre="ventana_filtro_orden">
     <argumento nombre="nombre_foto">filtro_orden.png</argumento>
     <argumento nombre="extension">png</argumento>
   </modulo>
-
-<!-- <modulo ruta="imagenes" nombre="imagenes" inicio="1">
+  
+  <modulo ruta="imagenes" nombre="imagenes" inicio="1">
     <argumento nombre="archivo">foto.xpm</argumento>
     <argumento nombre="rojo">32</argumento>
     <argumento nombre="verde">45</argumento>
@@ -58,14 +59,14 @@
       <destino puerto="entrada_imagen">ventana_imagenes</destino>
     </conexion>
   </modulo>
--->
-
+  
+  
   <modulo ruta="ventana_imagen" nombre="ventana_imagenes">
     <argumento nombre="nombre_foto">imagenes.png</argumento>
     <argumento nombre="extension">png</argumento>
   </modulo>
-
-   <modulo ruta="camara" nombre="camara" inicio="1">
+  
+  <!-- <modulo ruta="camara" nombre="camara" inicio="1">
     <argumento nombre="ancho">320</argumento>
     <argumento nombre="alto">240</argumento>
     <argumento nombre="camara">0</argumento>
@@ -75,13 +76,13 @@
     <conexion puerto="salida_ventana">
       <destino puerto="entrada_imagen">ventana_imagenes</destino>
     </conexion>
-  </modulo>
+  </modulo> -->
   
   <modulo ruta="red_neuronal" nombre="red">
     <argumento nombre="archivo_ordenes">orden_net</argumento> 
     <argumento nombre="archivo_parametros">param_net</argumento> 
     <conexion puerto="salida_texto">
-        <destino puerto="entrada_texto">salida</destino>
+      <destino puerto="entrada_texto">salida</destino>
     </conexion> 
   </modulo> 
   

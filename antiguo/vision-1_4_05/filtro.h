@@ -3,6 +3,7 @@
 
 #include "filtro_gestos_sdk.h"
 #include "red_neuronal_sdk.h"
+#include <lua.h>
 
 typedef struct {
   unsigned char m_r, m_v, m_a;
@@ -20,11 +21,13 @@ typedef struct {
   color_t * m_orden_param;
   rango_t m_orden;
   rango_t m_parametro;
+  char *m_ruta;
+  lua_State *m_lua;
 } filtro_t;
 
-filtro_t * filtro_gestos_crear();
+filtro_t * filtro_gestos_crear(const char *ruta);
 void filtro_gestos_borrar(filtro_t ** filtro);
-red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro, int difuminado, int reduccion);
+red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro);//, int difuminado, int reduccion);
 void filtro_gestos_set_color(filtro_t * filtro, unsigned char rs, unsigned char ri, unsigned char vs,
 			      unsigned char vi, unsigned char as, unsigned char ai, unsigned char rs2, unsigned char ri2,
 			     unsigned char vs2, unsigned char vi2, unsigned char as2, unsigned char ai2);

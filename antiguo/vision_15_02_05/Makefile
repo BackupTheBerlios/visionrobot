@@ -16,7 +16,7 @@ libsalida.so: salida.c
 	gcc $(OPTS) -shared -o libsalida.so salida.c `pkg-config glib-2.0 --cflags --libs` `pkg-config libglade-2.0 --cflags --libs`
 
 libfiltro_gestos.so: filtro_gestos.c filtro.c
-	gcc $(OPTS) -shared -o libfiltro_gestos.so filtro.c filtro_gestos.c `pkg-config glib-2.0 --cflags --libs`
+	gcc $(OPTS) -shared -o libfiltro_gestos.so filtro.c filtro_gestos.c -llua -llualib `pkg-config glib-2.0 --cflags --libs` 
 
 libred_neuronal.so: red.c red_neuronal.c
 	gcc $(OPTS) -shared -o libred_neuronal.so red.c red_neuronal.c `pkg-config glib-2.0 --cflags --libs`

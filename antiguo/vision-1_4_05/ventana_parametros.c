@@ -32,11 +32,11 @@ static gdouble ventana_parametros_get_valor(GtkWidget *w, const char *nombre) {
   return gtk_range_get_value(GTK_RANGE(scroll_ordenes));
 }
 
-guint16 ventana_parametros_char_to_int(color_t color) {
+static guint16 ventana_parametros_char_to_int(color_t color) {
   return (guint16)floor(((float)color) * ((float)MAX_GUINT) / ((float)MAX_CHAR));
 }
 
-color_t ventana_parametros_int_to_char(guint16 color) {
+static color_t ventana_parametros_int_to_char(guint16 color) {
   return (color_t)floor(((float)color) * ((float)MAX_CHAR) / ((float)MAX_GUINT));
 }
 
@@ -48,7 +48,7 @@ static guint16 ventana_parametros_incremento(double numero, double valor, double
   return (guint16)floor(total);
 }
 
-color_t ventana_parametros_suma(guint16 color, gdouble porcentaje) {
+static color_t ventana_parametros_suma(guint16 color, gdouble porcentaje) {
   return ventana_parametros_int_to_char(ventana_parametros_incremento((double)MAX_GUINT, (double)color, porcentaje));
 }
 static void ventana_parametros_calcular_orden(filtro_gestos_in_parametros_t * parametros, GdkColor* color, gdouble porcentaje) {
