@@ -38,19 +38,9 @@ GtkWidget *window1;
 
 int main(int argc, char *argv[])
 {
-
-
-#ifdef ENABLE_NLS
-    bindtextdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
-    bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
-    textdomain(GETTEXT_PACKAGE);
-#endif
-
     gtk_set_locale();
     gtk_init(&argc, &argv);
-    // g_printf("%s/%s/pixmaps", PACKAGE_DATA_DIR, PACKAGE);
-    //add_pixmap_directory (PACKAGE_DATA_DIR "/" PACKAGE "/pixmaps");
-    add_pixmap_directory("../pixmaps");
+    add_pixmap_directory("./");
 
     window1 = create_window1();
 
