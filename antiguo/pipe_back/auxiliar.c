@@ -315,9 +315,26 @@ int senyal()
 
 int haz_un_ciclo(pipeline_t * pipeline)
 {
+    char *buffer = "Saludo";
+    g_print("PIPELINE\n");
+    pipeline->m_elemento[0].m_funcion_set_datos(buffer);
+
     int i;
+    int j;
     for (i = 0; i < pipeline->m_numero; ++i) {
 	if (pipeline->m_elemento[i].m_iniciado) {
+	    g_print("Elemento %s\n", pipeline->m_elemento[i].m_nombre);
+	    void *datos = pipeline->m_elemento[i].m_funcion_get_datos();
+	    for (j = 0; j < pipeline->m_elemento[i].m_numero_conexiones;
+		 ++j) {
+		pipeline->m_elemento[j].m_destino[j]->
+		    m_funcion_set_datos(datos);
+	    }
+	}
+    }
+    for (i = 0; i < pipeline->m_numero; ++i) {
+	if (pipeline->m_elemento[i].m_iniciado) {
+	    g_print("Elemento %s\n", pipeline->m_elemento[i].m_nombre);
 	    if (pipeline->m_elemento[i].m_funcion_ciclo) {
 		pipeline->m_elemento[i].m_funcion_ciclo();
 	    }

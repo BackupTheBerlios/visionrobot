@@ -3,6 +3,7 @@
     \author zosco
     \version 0.1
     \todo \li No funciona cargar de archivo al principio
+          \li Algo anda mal es ver si se ha modificado. Cuando se crea uno vacío y se guarda y se sale, pregunta
  */
 /*
  *  This program is free software; you can redistribute it and/or modify
@@ -179,8 +180,6 @@ void on_crear1_activate(GtkMenuItem * menuitem, gpointer user_data)
 }
 
 
-
-
 void on_conectar1_activate(GtkMenuItem * menuitem, gpointer user_data)
 {
     gint destino = elegir_modulo(window1, pipeline);
@@ -190,13 +189,15 @@ void on_conectar1_activate(GtkMenuItem * menuitem, gpointer user_data)
 	for (i = 0; i < pipeline->m_numero; ++i) {
 	    if (gtk_toggle_button_get_active
 		(GTK_TOGGLE_BUTTON(pipeline->m_elemento[i].m_widget))) {
-		//iniciar(&pipeline->m_elemento[i]);
-
-		conectar(pipeline, i, destino);
+		if (conectar(pipeline, i, destino) == -1) {
+		    info(window1,
+			 "No se pudo realizar la conexi\303\263n.");
+		}
 	    }
 	}
 	//    establecer(pipeline, window1);
     }
+
 }
 
 
@@ -252,18 +253,6 @@ void
 on___ndice_de_la_ayuda1_activate(GtkMenuItem * menuitem,
 				 gpointer user_data)
 {
-    int i;
-    char *buffer = "Saludo";
-    for (i = 0; i < pipeline->m_numero; ++i) {
-	if (pipeline->m_elemento[i].m_iniciado) {
-	    if (pipeline->m_elemento[i].m_funcion_ciclo) {
-		pipeline->m_elemento[i].m_funcion_set_datos(buffer);
-		printf("Salida >>> %s\n",
-		       (char *) pipeline->m_elemento[i].
-		       m_funcion_get_datos());
-	    }
-	}
-    }
 }
 
 void on_button6_activate(GtkButton * button, gpointer user_data)
