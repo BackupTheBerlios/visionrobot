@@ -1,5 +1,5 @@
 /*! \file dialogo_preferencias_filtro.h
-    \brief Define el cuadro de diÃ¡logo de opciones
+    \brief Define el cuadro de diálogo de opciones
     \author Carlos
     \version 0.1
 */
@@ -8,7 +8,7 @@
 
 #include <gtk/gtk.h>
 
-/*! \brief Estructura de datos del diÃ¡lgo */
+/*! \brief Estructura de datos del diálgo */
 typedef struct {
   GtkWidget *dlg_preferencias_filtro;
   GtkWidget *dialog_vbox1;
@@ -34,13 +34,13 @@ typedef struct {
   GtkWidget *okbutton1;
 } dialogo_preferencias_filtro_t;
 
-/*! \brief Cierra un diÃ¡logo de este tipo
-    \param dialogo El diÃ¡logo que hay que cerrar
+/*! \brief Cierra un diálogo de este tipo
+    \param dialogo El diálogo que hay que cerrar
 */
 void dialogo_preferencias_filtro_cerrar(dialogo_preferencias_filtro_t * dialogo);
 
-/*! \brief Crea un diÃ¡logo de preferencias
-    \return Un puntero al nuevo diÃ¡logo
+/*! \brief Crea un diálogo de preferencias
+    \return Un puntero al nuevo diálogo
 */
 dialogo_preferencias_filtro_t * dialogo_preferencias_filtro_crear();
 
