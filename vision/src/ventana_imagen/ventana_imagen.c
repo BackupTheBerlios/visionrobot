@@ -42,15 +42,11 @@ static GdkPixbuf *ventana_get_pixbuf(modulo_t * modulo) {
 					FALSE, 8,datos->m_imagen->m_ancho, datos->m_imagen->m_alto);
     guchar * p = gdk_pixbuf_get_pixels (pixbuf);
     guchar * b = datos->m_imagen->m_imagen;
-    
-    
-    int ancho_for = datos->m_imagen->m_ancho * datos->m_imagen->m_bytes;
-    int i, j;
-    for(j = 0; j < datos->m_imagen->m_alto; ++j) {
-      char * aux = &p[(j + 1) * ancho_for]; 
-      for(i = 0; i < ancho_for; ++i) {
-	*--aux = *b++;      
-      }
+    guchar *fin = &datos->m_imagen->m_imagen[datos->m_imagen->m_ancho *
+					     datos->m_imagen->m_alto *
+					     datos->m_imagen->m_bytes];
+    while(b != fin) {
+      *p++ = *b++;
     }
     return pixbuf;
   }

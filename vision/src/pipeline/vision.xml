@@ -33,7 +33,7 @@
 
   <!-- Filtro de gestos de las ordenes -->
   <modulo ruta="filtro_gestos" nombre="filtro_gestos_orden">
-    <argumento nombre="guion">filtro.lua</argumento>
+    <argumento nombre="guion">share/vision/filtro.lua</argumento>
     <argumento nombre="filtrar">filtrar</argumento>
     <conexion puerto="salida_imagen">
       <destino puerto="entrada_imagen">ventana_filtro_orden</destino>
@@ -43,7 +43,7 @@
 
   <!-- Filtro de gestos de los parametros -->
   <modulo ruta="filtro_gestos" nombre="filtro_gestos_param">
-    <argumento nombre="guion">filtro.lua</argumento>
+    <argumento nombre="guion">share/vision/filtro.lua</argumento>
     <argumento nombre="filtrar">filtrar</argumento>
     <conexion puerto="salida_imagen">
       <destino puerto="entrada_imagen">ventana_filtro_param</destino>
@@ -91,7 +91,7 @@
   
   <!-- Generador de imagenes -->
   <modulo ruta="imagenes" nombre="imagenes" inicio="1">
-    <argumento nombre="video">1.mpg</argumento>
+    <argumento nombre="video">share/vision/robot.mpg</argumento>
     <argumento nombre="camara">1</argumento>
     <argumento nombre="archivo">avanzar.xpm</argumento>
     <argumento nombre="rojo">32</argumento>
@@ -116,7 +116,7 @@
   
   <!-- Red neuronal de las ordenes -->
   <modulo ruta="red_neuronal" nombre="red_orden">
-    <argumento nombre="archivo">orden_net</argumento>
+    <argumento nombre="archivo">share/vision/orden_net</argumento>
     <argumento nombre="salida1">parar</argumento>
     <argumento nombre="salida2">girar</argumento>
     <argumento nombre="salida3">girar_negativo</argumento>
@@ -129,7 +129,7 @@
   
   <!-- Red neuronal de los parametros -->
   <modulo ruta="red_neuronal" nombre="red_param">
-    <argumento nombre="archivo">param_net</argumento>
+    <argumento nombre="archivo">share/vision/param_net</argumento>
     <argumento nombre="salida1">nula</argumento>
     <argumento nombre="salida2">baja</argumento>
     <argumento nombre="salida3">media</argumento>
@@ -147,7 +147,7 @@
 
   <!-- Modulo del robot -->
   <modulo ruta="robot" nombre="robot">
-    <argumento nombre="guion">robot.lua</argumento>
+    <argumento nombre="guion">share/vision/robot.lua</argumento>
     <argumento nombre="funcion">ciclo</argumento>
     <argumento nombre="dispositivo">/dev/ttyS0</argumento>
     <argumento nombre="timer">1</argumento>

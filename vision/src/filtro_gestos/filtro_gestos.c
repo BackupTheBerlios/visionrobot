@@ -610,7 +610,7 @@ static int filtro_gestos_copiar (lua_State *L) {
   int tam = ancho * bytes * alto;
   color_t *aux_a = a->m_imagen;
   color_t *aux_b = b->m_imagen;
-  color_t *fin = &b->m_imagen[tam - 1];
+  color_t *fin = &b->m_imagen[tam];
   while(aux_b != fin) {
     *aux_b++ = *aux_a++;
   }

@@ -45,7 +45,6 @@
 #include <sane/sane.h>
 #include <unistd.h>
 #include <xine.h>
-#include <xine/xineutils.h>
 
 
 //! Tipo enumerado que define qué tipo de función va a realizar el módulo en una instancia determinada
@@ -63,7 +62,7 @@ typedef struct {
   xine_video_port_t   *vo_port;
   xine_audio_port_t   *ao_port;
   xine_event_queue_t  *event_queue;
-  int running;
+  uint8_t *yuv;
 } video_t;
 
 /*! \brief La estructura de datos que tiene cada módulo. */
@@ -101,6 +100,12 @@ static char* imagenes_generar_imagen(modulo_t *modulo) {
   SANE_Parameters parametros;
   int tam;
   int width, height, ratio_code, format;
+
+  uint8_t *im;   
+  uint8_t *fin = &imagen->m_imagen[imagen->m_ancho * imagen->m_alto * imagen->m_bytes];
+  uint8_t *yu;
+  uint8_t y, u, v;
+  
   switch(dato->m_tipo) {
   case CAMARA:    
     if(sane_start(dato->m_handle) != SANE_STATUS_GOOD) {
@@ -123,11 +128,10 @@ static char* imagenes_generar_imagen(modulo_t *modulo) {
 	  tam = imagen->m_ancho * imagen->m_bytes;
 	  while(i < imagen->m_alto && sane_read(dato->m_handle, dato->m_buffer_camara
 						, parametros.bytes_per_line, &len) != SANE_STATUS_EOF) {
-	    for(j = tam; j >= 0; j -= imagen->m_bytes) {
-	      int k;
-	      for(k = 0; k < imagen->m_bytes; ++k) {
-		imagen->m_imagen[j + k + tam * i] = dato->m_buffer_camara[tam - j + k];
-	      }
+	    for(j = 0; j < tam; j += imagen->m_bytes) {
+	      imagen->m_imagen[j + tam * i] = dato->m_buffer_camara[j + 2];
+	      imagen->m_imagen[j + 1 + tam * i] = dato->m_buffer_camara[j + 1];
+	      imagen->m_imagen[j + 2 + tam * i] = dato->m_buffer_camara[j];
 	    }
 	    i++;
 	  }
@@ -146,21 +150,37 @@ static char* imagenes_generar_imagen(modulo_t *modulo) {
     break;
   case VIDEO:
     xine_get_current_frame (dato->m_video.stream,			    
-				 &width, &height,
-				 &ratio_code, &format,
-				 imagen->m_imagen);
-    sprintf(dato->m_buffer_error, "Alto = %i, ancho = %i, ratio = %i, format = %i.", 
-	    width, height, ratio_code, format);
-    devolver = dato->m_buffer_error;
-    break;
-  case COLOR:
-    for(i = 0; i < imagen->m_alto; i++) {
-      for(j = 0; j < ancho_for; j += 3) {
-	imagen->m_imagen[i * imagen->m_ancho * imagen->m_bytes + j] = dato->m_azul;
-	imagen->m_imagen[i * imagen->m_ancho * imagen->m_bytes + j + 1] = dato->m_verde;
-	imagen->m_imagen[i * imagen->m_ancho * imagen->m_bytes + j + 2] = dato->m_rojo;
+			    &width, &height,
+			    &ratio_code, &format,
+			    dato->m_video.yuv);
+    switch(format) {
+    case XINE_IMGFMT_YV12:
+      yu = dato->m_video.yuv;
+      im = imagen->m_imagen;
+      while(im != fin) {
+	y = ((*yu) | 0xF0);
+	u = ((*yu) | 0x0C) >> 2;
+	v = ((*yu) | 0x03);
+	/*	*im = y + 1.403 * v;
+	*(im + 1) = y - 0.344 * u - 0.714 * v;
+	*(im + 2) = y + 1.770 * u;*/
+	*im = y + 1.402 * (v - 128);
+	*(im + 1) = y - 0.34414 * (u - 128) - 0.71414 * (v - 128);
+	*(im + 2) = y + 1.772 * (u - 128);
+	im += 3; yu++;
       }
+
+      break;
+    case XINE_IMGFMT_YUY2:
+      break;
+    case XINE_IMGFMT_XVMC:
+      break;
+    case XINE_IMGFMT_XXMC:
+      break;
     }
+    devolver = 0;
+    break;
+  case COLOR:    
     break;
   }
   return devolver;
@@ -178,23 +198,6 @@ static char* imagenes_generar_imagen(modulo_t *modulo) {
 static char *imagenes_ciclo(modulo_t* modulo, const char *puerto, const void *value){
   return imagenes_generar_imagen(modulo);
 }
-
-//! Funcion de retrollamada para Xine.
-/*! 
-  
-\param user_data Información de usuario.
-\param event Evento que se le pasa.
-*/
-static void event_listener(void *user_data, const xine_event_t *event) {
-  dato_imagenes_t *dato = (dato_imagenes_t *)user_data;
-  switch(event->type) { 
-  case XINE_EVENT_UI_PLAYBACK_FINISHED:
-    dato->m_video.running = 0;
-    break;
-  }
-}
-
-
 //! Función que llama el pipeline y sirve para iniciar el interfaz de imágnenes.
 /*!  Crea la memoria necesaria y ajusta los parámetros pertinenetes del módulo, según esté especificado en el XML.
   
@@ -205,6 +208,7 @@ static void event_listener(void *user_data, const xine_event_t *event) {
 */
 static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
 {
+
   char *devolver = "iniciado";
   dato_imagenes_t *dato = (dato_imagenes_t*)modulo->m_dato;
   filtro_gestos_in_imagen_t* imagen = &dato->m_filtro;
@@ -225,7 +229,7 @@ static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
   SANE_Int info;
   if(camara) cam = atoi(camara);
   if(video) {
-    dato->m_tipo = VIDEO;
+    dato->m_tipo = VIDEO;    
     char *vo_driver    = "auto";
     char *ao_driver    = "auto";
     char configfile[2048];
@@ -233,14 +237,13 @@ static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
     sprintf(configfile, "%s%s", xine_get_homedir(), "/.xine/config");
     xine_config_load(dato->m_video.xine, configfile);
     xine_init(dato->m_video.xine);
-
-    dato->m_video.running = 0;
+    /* WARNING: Aquí hay un 2 por el esquema YUV 4:2:2 si no me equivoco: (4+2+2) * 2 = 16 bits, "2" bytes */
+    dato->m_video.yuv = (uint8_t*)malloc(sizeof(uint8_t) * imagen->m_alto * imagen->m_ancho * 2);
     dato->m_video.vo_port = xine_open_video_driver(dato->m_video.xine, 
 						   vo_driver, XINE_VISUAL_TYPE_NONE, 0);
     dato->m_video.ao_port     = xine_open_audio_driver(dato->m_video.xine , ao_driver, NULL);
     dato->m_video.stream      = xine_stream_new(dato->m_video.xine, dato->m_video.ao_port, dato->m_video.vo_port);
     dato->m_video.event_queue = xine_event_new_queue(dato->m_video.stream);
-    xine_event_create_listener_thread(dato->m_video.event_queue, event_listener, dato);
     xine_open(dato->m_video.stream, video);
     xine_play(dato->m_video.stream, 0, 0);
   }
@@ -295,13 +298,12 @@ static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
 	int j, i;
 	sprintf(dato->m_buffer_error, "Cargado %s", archivo_imagen);
 	p = gdk_pixbuf_get_pixels (dato->m_imagen_archivo);
+	guchar *fin = &p[imagen->m_ancho *
+			 imagen->m_alto *
+			 imagen->m_bytes];
 	b = imagen->m_imagen;
-	int ancho_for = imagen->m_ancho * imagen->m_bytes;
-	for(j = 0; j < imagen->m_alto; j++) {
-	  aux = &p[(j + 1) * ancho_for];
-	  for(i = 0; i < ancho_for; i += 1) {
-	    *b++ = *--aux;
-	  }
+	while(p != fin) {
+	  *b++ = *p++;
 	}
       }
       else {
@@ -319,6 +321,16 @@ static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
 	dato->m_verde = (unsigned char)atoi(verde);
 	dato->m_azul = (unsigned char)atoi(azul);
 	dato->m_tipo = COLOR;
+	guchar *fin = &imagen->m_imagen[imagen->m_ancho *
+			 imagen->m_alto *
+			 imagen->m_bytes];
+	guchar *aux = imagen->m_imagen;
+	while(aux != fin) {
+	  *aux = dato->m_azul;
+	  *(aux + 1) = dato->m_verde;
+	  *(aux + 2) = dato->m_rojo;
+	  aux += 3;
+	}
       }
       else {
 	dato->m_tipo = ALEATORIO;
@@ -354,6 +366,7 @@ static char *imagenes_cerrar(modulo_t* modulo)
       xine_close_audio_driver(dato->m_video.xine, dato->m_video.ao_port);  
     xine_close_video_driver(dato->m_video.xine, dato->m_video.vo_port);  
     xine_exit(dato->m_video.xine);
+    free(dato->m_video.yuv);
   }
   free(dato->m_buffer_camara);
   filtro_gestos_in_imagen_t* imagen = &dato->m_filtro;

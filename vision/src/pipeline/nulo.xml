@@ -9,15 +9,19 @@
 
   <!-- Generador de imagenes -->
   <modulo ruta="imagenes" nombre="imagenes" inicio="1">
-<!--    <argumento nombre="video">1.mpg</argumento> -->
-    <argumento nombre="archivo">avanzar.xpm</argumento>
+    <argumento nombre="video">share/vision/robot.mpg</argumento> 
+<!--    <argumento nombre="archivo">share/vision/avanzar.xpm</argumento> -->
+<!-- <argumento nombre="camara">1</argumento> -->
     <argumento nombre="ancho">320</argumento>
     <argumento nombre="alto">240</argumento>
     <argumento nombre="bytes">3</argumento>
+<!-- <argumento nombre="rojo">128</argumento>
+<argumento nombre="verde">255</argumento>
+<argumento nombre="azul">128</argumento>  -->
     <conexion puerto="salida_imagen">
       <destino puerto="entrada_imagen">ventana</destino>
     </conexion>
-  </modulo> -->
+  </modulo>
 
   <!-- Ventana para el filtro de los parametros -->
   <modulo ruta="ventana_imagen" nombre="ventana">
