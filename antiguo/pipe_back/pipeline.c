@@ -40,6 +40,7 @@ elemento_t *nuevo(pipeline_t * pipeline, const char *nombre, gint x,
     pipeline->m_elemento[pipeline->m_numero].m_widget =
 	gtk_toggle_button_new_with_label(nombre);
     gtk_widget_show(pipeline->m_elemento[pipeline->m_numero].m_widget);
+    pipeline->m_error = -1;
     pipeline->m_elemento[pipeline->m_numero].m_x = x;
     pipeline->m_elemento[pipeline->m_numero].m_id = pipeline->m_numero;
     pipeline->m_elemento[pipeline->m_numero].m_numero_conexiones = 0;
@@ -110,6 +111,7 @@ int guardar(pipeline_t * pipeline, const char *ruta)
     xmlNodePtr r;
     xmlNodePtr x;
     xmlNodePtr y;
+    xmlNodePtr error_pipe;
     xmlNodePtr * c;
     xmlNodePtr id;
     xmlDocPtr doc;    
@@ -118,11 +120,16 @@ int guardar(pipeline_t * pipeline, const char *ruta)
     doc = xmlNewDoc(BAD_CAST "1.0");
     pipe = xmlNewNode(NULL, BAD_CAST "pipeline");
 
-
+sprintf(buffer, "%i", pipeline->m_error);
+error_pipe = xmlNewNode(NULL, BAD_CAST "error_pipe");
+xmlAddChild(pipe, error_pipe);
+	xmlNodeSetContent(error_pipe,
+			  BAD_CAST buffer);
+			  
     int i, j;
     for (i = 0; i < pipeline->m_numero; ++i) {
 	modulo = xmlNewNode(NULL, BAD_CAST "modulo");
-	nombre = xmlNewNode(NULL, BAD_CAST "nombre");
+	nombre = xmlNewNode(NULL, BAD_CAST "nombre");	
 	r = xmlNewNode(NULL, BAD_CAST "ruta");
 	x = xmlNewNode(NULL, BAD_CAST "x");
 	y = xmlNewNode(NULL, BAD_CAST "y");
@@ -247,6 +254,20 @@ pipeline_t *cargar(const char *ruta)
     i = 0;
     pipeline_t *pipe = crear_pipeline();
     cur = cur->xmlChildrenNode;
+    
+    char *key;
+    if ((!xmlStrcmp(cur->name, (const xmlChar *) "error_pipe"))) {
+	    key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+	    if (!key) {
+		key = strdup("");
+	    }
+	    pipe->m_error = atoi(key);
+	    free(key);
+	}
+    
+    cur = cur->next;
+    
+    
     while (cur != NULL) {
 	if ((!xmlStrcmp(cur->name, (const xmlChar *) "modulo"))) {
 	    num_conexiones[i] = parseModulo(doc, cur, pipe, lista_objetivo, i);
@@ -267,7 +288,6 @@ pipeline_t *cargar(const char *ruta)
       free(lista_objetivo[i]);
     }
     free(lista_objetivo);
-
     return pipe;
 }
 
@@ -311,6 +331,14 @@ void cambiar_biblioteca(elemento_t * elemento) //pipeline_t * pipeline, gint id)
 	  elemento->m_funcion_iniciar =
 	    (funcion_1) GetProcAddress(elemento->m_handler,
 				       TEXT(F_INICIAR_));
+				       
+   elemento->m_funcion_error =
+	  (funcion_4) GetProcAddress(elemento->m_handler,
+				     TEXT(F_ERROR));
+	if(!elemento->m_funcion_error)
+	  elemento->m_funcion_error =
+	    (funcion_4) GetProcAddress(elemento->m_handler,
+				       TEXT(F_ERROR_));               				       
 	
 	elemento->m_funcion_propiedades =
 	  (funcion_1) GetProcAddress(elemento->m_handler,
@@ -372,6 +400,9 @@ void cambiar_biblioteca(elemento_t * elemento) //pipeline_t * pipeline, gint id)
 	elemento->m_funcion_set_datos =
 	    (funcion_3) dlsym(elemento->m_handler,
 			      F_SET_DATOS);
+   elemento->m_funcion_error =
+	  (funcion_4) dlsym(elemento->m_handler,
+				     TEXT(F_ERROR));
     }    
 #endif
     else {
@@ -381,6 +412,15 @@ void cambiar_biblioteca(elemento_t * elemento) //pipeline_t * pipeline, gint id)
       elemento->m_funcion_cerrar = 0;
       elemento->m_funcion_get_datos = 0;
       elemento->m_funcion_set_datos = 0;
+      elemento->m_funcion_error = 0;
     }
 }
 
+int pipeline_error(pipeline_t * pipeline, const char * error) {
+    if(error && pipeline->m_error != -1) {
+       if(pipeline->m_elemento[pipeline->m_error].m_funcion_set_datos) {
+         pipeline->m_elemento[pipeline->m_error].m_funcion_set_datos((char *)error);
+       }
+    }
+    
+}

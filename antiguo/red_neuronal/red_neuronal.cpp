@@ -80,4 +80,6 @@ int cerrar(){
       return 0;
 }
 
-
+char * error() {
+  return 0;
+}

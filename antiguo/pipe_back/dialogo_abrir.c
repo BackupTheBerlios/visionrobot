@@ -48,16 +48,6 @@ dialogo_abrir_t *dialogo_abrir_crear()
 				 GTK_RESPONSE_OK);
     GTK_WIDGET_SET_FLAGS(dialogo_abrir->button3, GTK_CAN_DEFAULT);
 
-    /* Store pointers to all widgets, for use by lookup_widget(). */
-    /*GLADE_HOOKUP_OBJECT_NO_REF(filechooserdialog1, filechooserdialog1,
-			       "filechooserdialog1");
-    GLADE_HOOKUP_OBJECT_NO_REF(filechooserdialog1, dialog_vbox1,
-			       "dialog_vbox1");
-    GLADE_HOOKUP_OBJECT_NO_REF(filechooserdialog1, dialog_action_area1,
-			       "dialog_action_area1");
-    GLADE_HOOKUP_OBJECT(filechooserdialog1, button2, "button2");
-    GLADE_HOOKUP_OBJECT(filechooserdialog1, button3, "button3");*/
-
     gtk_widget_grab_default(dialogo_abrir->button3);
     return dialogo_abrir;
 }

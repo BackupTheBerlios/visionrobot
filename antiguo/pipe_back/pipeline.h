@@ -35,6 +35,7 @@
 #define F_PROPIEDADES "propiedades"
 #define F_SET_DATOS "set_datos"
 #define F_GET_DATOS "get_datos"
+#define F_ERROR "error"
 
 #define F_CICLO_ "_ciclo"
 #define F_INICIAR_ "_iniciar"
@@ -42,6 +43,7 @@
 #define F_PROPIEDADES_ "_propiedades"
 #define F_SET_DATOS_ "_set_datos"
 #define F_GET_DATOS_ "_get_datos"
+#define F_ERROR_ "_error"
 
 
 #ifdef __cplusplus
@@ -58,6 +60,7 @@ extern "C" {
     typedef int (*funcion_1) ();
     typedef void *(*funcion_2) ();
     typedef int (*funcion_3) (void *);
+    typedef char *(*funcion_4) ();
 
 /*! \brief La estructura de datos de cada elemento del pipe */
     struct elemento_s {
@@ -75,9 +78,10 @@ extern "C" {
 	funcion_1 m_funcion_ciclo;
 	funcion_1 m_funcion_iniciar;
 	funcion_1 m_funcion_propiedades;
-	funcion_1 m_funcion_cerrar;
+	funcion_1 m_funcion_cerrar;	
 	funcion_2 m_funcion_get_datos;
 	funcion_3 m_funcion_set_datos;
+	funcion_4 m_funcion_error;	
 	char m_iniciado;
 	gchar m_ruta[MAX_RUTA];
 	gchar m_nombre[MAX_NOMBRE];
@@ -92,6 +96,7 @@ extern "C" {
     struct pipeline_s {
 	gboolean m_corriendo;
 	int m_numero;
+	int m_error;
 	elemento_t m_elemento[MAX_ELEMENTOS];
     };
 
@@ -151,6 +156,8 @@ extern "C" {
 
   int cerrar_biblioteca(elemento_t * elemento);
   int cerrar_todas_bibliotecas(pipeline_t * pipeline);
+  
+  int pipeline_error(pipeline_t * pipeline, const char * error);
 
 #ifdef __cplusplus
 }

@@ -103,18 +103,15 @@ extern "C" {
     void establecer(pipeline_t * pipeline, ventana_principal_t * ventana_principal);
 
 /*! \brief Guarda un pipeline - Se usa para hacer iguales el guardar y el guardar como     
-    \param pipeline El pipe que se guarda  
+    \param ventana_principal La ventana
     \param file La ruta que se va a salvar
-    \param window La ventana de la aplicación
-    \param status_bar Un GtkStatusbar para que se refleje todo
-    \param archivo El nombre por defecto del archivo actual
-    \param id Un id, igual que en mostrar
-    \param modificado La variable que establecemos para que la aplicación sepa si hay cambios
 */
-    void guardar_como_aux(pipeline_t * pipeline, char *file,
+   /* void guardar_como_aux(pipeline_t * pipeline, char *file,
 			  GtkWidget * window, GtkWidget * status_bar,
 			  char *archivo, guint * id,
 			  gboolean * modificado, ventana_principal_t * ventana_principal);
+			  */
+	  void guardar_como_aux(ventana_principal_t * ventana_principal, const char *archivo);
 
     /*! \brief Desactiva la ejecución de un elemento
        \param elemento El elemento que paramos
@@ -122,10 +119,11 @@ extern "C" {
      */
     int parar(elemento_t * elemento);
     /*!\brief Activa la ejecución de un elemento
+       \param pipeline El pipe, claro
        \param elemento El elemento que activamos
        \return 0 si todo va bien, -1 en caso de error
      */
-    int iniciar(elemento_t * elemento);
+    int iniciar(pipeline_t * pipeline, elemento_t * elemento);
     /*!\brief Activa el temporizador de ciclos del pipeline. Esta función crea una alarma que realiza ciclos seguidos hasta que se para la alarma.
        \param retardo El retardo en microsegundos
        \return 0 si todo va bien, -1 en caso de error
@@ -156,6 +154,12 @@ extern "C" {
     \return El índice del elemento escogido
   */
     int elegir_modulo(GtkWidget * window1, pipeline_t * pipeline);
+    
+    /*! \brief Envía un error al pipeline
+        \param pipeline El pipeline al que se envía
+        \param error La cadena que se va a enviar
+    */        
+    void enviar_error(pipeline_t * pipeline, const char * error);
 
 #ifdef __cplusplus
 }

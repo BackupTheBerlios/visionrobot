@@ -31,16 +31,15 @@ typedef struct {
     GtkWidget *pipeline1;
     GtkWidget *pipeline1_menu;
     GtkWidget *crear1;
-
     GtkWidget *propiedades_biblioteca;
     GtkWidget *ciclo_biblioteca;
     GtkWidget *ciclos_biblioteca;
     GtkWidget *parar_biblioteca;
     GtkWidget *iniciar_biblioteca;
     GtkWidget *iniciar_todas_biblioteca;
+    GtkWidget *establecer_error;
     GtkWidget *cerrar_todas_biblioteca;
     GtkWidget *cerrar_biblioteca;
-
     GtkWidget *image108;
     GtkWidget *propiedades1;
     GtkWidget *image109;
@@ -62,16 +61,12 @@ typedef struct {
     GtkWidget *fixed1;
     GtkWidget *statusbar1;
     GtkAccelGroup *accel_group;
-
-  //  extern GtkWidget *window1;
-  pipeline_t *pipeline;
-  guint id;
-  char archivo[TAM_ARCHIVO];
-  gboolean modificado;
-  //GtkWidget *status_bar;
-  
-  GdkGC *gc;
-  GdkDrawable *ww;  
+    pipeline_t *pipeline;
+    guint id;
+    char archivo[TAM_ARCHIVO];
+    gboolean modificado;
+    GdkGC *gc;
+    GdkDrawable *ww;  
 } ventana_principal_t;
 
 ventana_principal_t * ventana_principal_crear();

@@ -24,16 +24,18 @@ int ciclo () {
 
 int set_datos(const void * datos) {
   const gchar * valor = (const gchar *)datos;
-  GtkTextIter * iter;
-  GtkTextBuffer * buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(texto));
-  gtk_text_buffer_get_iter_at_offset
+  if(valor) {
+    GtkTextIter * iter;
+    GtkTextBuffer * buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(texto));
+     gtk_text_buffer_get_iter_at_offset
                                             (buffer,
                                              iter,
                                              -1);
-  gtk_text_buffer_insert(buffer,
+    gtk_text_buffer_insert(buffer,
 				   iter,
 				   valor,
 				   -1);
+ }
 }
 
 void * get_datos() {
@@ -86,4 +88,8 @@ BOOL APIENTRY DllMain (HINSTANCE hInst     /* Library instance handle. */ ,
 
     /* Returns TRUE on success, FALSE on failure */
     return TRUE;
+}
+
+char * error() {
+  return 0;
 }

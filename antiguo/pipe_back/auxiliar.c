@@ -29,6 +29,8 @@
 #include <signal.h>
 #include <stdlib.h>
 
+#define ERROR_PIPELINE(y, x) if((x)->m_funcion_error) enviar_error((y), (x)->m_funcion_error());
+
 
 ventana_principal_t * ventana;
 #ifdef WIN32
@@ -54,6 +56,10 @@ gboolean confirmacion(GtkWidget * w, const gchar * texto)
     gint result = gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy(dialog);
     return result == GTK_RESPONSE_YES;
+}
+
+void enviar_error(pipeline_t * pipeline, const char * error) {
+     pipeline_error(pipeline, error);
 }
 
 gboolean salir(GtkWidget * w, gboolean modificado)
@@ -226,6 +232,9 @@ void establecer(pipeline_t * pipeline, ventana_principal_t * ventana_principal)
 	}
     }
     gboolean b = pipeline->m_numero > 0;
+    
+    gtk_widget_set_sensitive(ventana_principal->establecer_error, b);
+			     
     gtk_widget_set_sensitive(ventana_principal->iniciar_todas_biblioteca, b
 			     && !todas_iniciadas);
     gtk_widget_set_sensitive(ventana_principal->cerrar_todas_biblioteca, b
@@ -253,15 +262,12 @@ void establecer(pipeline_t * pipeline, ventana_principal_t * ventana_principal)
     gtk_widget_set_sensitive(ventana_principal->borrar1, si > 0);
 }
 
-void guardar_como_aux(pipeline_t * pipeline, char *file,
-		      GtkWidget * window1, GtkWidget * status_bar,
-		      char *archivo, guint * id, gboolean * modificado, ventana_principal_t * ventana_principal)
-{
+void guardar_como_aux(ventana_principal_t * ventana_principal, const char *file){
     if (file != 0) {
-	guardar(pipeline, file);
-	strcpy(archivo, file);
-	*modificado = FALSE;
-	mostrar(GTK_STATUSBAR(status_bar), archivo, id);
+	guardar(ventana_principal->pipeline, file);
+	strcpy(ventana_principal->archivo, file);
+	ventana_principal->modificado = FALSE;
+	mostrar(GTK_STATUSBAR(ventana_principal->statusbar1), ventana_principal->archivo, &ventana_principal->id);
 	gtk_widget_set_sensitive(ventana_principal->guardar2,
 				 FALSE);
     }
@@ -280,7 +286,7 @@ int parar(elemento_t * elemento)
     return -1;
 }
 
-int iniciar(elemento_t * elemento)
+int iniciar(pipeline_t * pipeline, elemento_t * elemento)
 {
     char buffer[MAX_NOMBRE];
     elemento->m_iniciado = 1;
@@ -288,6 +294,7 @@ int iniciar(elemento_t * elemento)
     gtk_button_set_label(GTK_BUTTON(elemento->m_widget), buffer);
     if (elemento->m_funcion_iniciar) {
 	elemento->m_funcion_iniciar();
+	ERROR_PIPELINE(pipeline, elemento);
 	return 0;
     }
     return -1;
@@ -363,11 +370,14 @@ int haz_un_ciclo(pipeline_t * pipeline)
 	  //g_print("Elemento %s\n", pipeline->m_elemento[i].m_nombre);
 	  if(pipeline->m_elemento[i].m_funcion_get_datos) {
 	    void *datos = pipeline->m_elemento[i].m_funcion_get_datos();
+//	    if(x->m_funcion_error) enviar_error(y, x->m_funcion_error());
+	    ERROR_PIPELINE(pipeline, &pipeline->m_elemento[j]);
 	    for (j = 0; j < pipeline->m_elemento[i].m_numero_conexiones;
 		 ++j) {
 	      if(pipeline->m_elemento[j].m_destino[j]->m_funcion_set_datos) {
 		pipeline->m_elemento[j].m_destino[j]->
 		  m_funcion_set_datos(datos);
+    ERROR_PIPELINE(pipeline, pipeline->m_elemento[j].m_destino[j]);
 	      }
 	    }
 	  }
@@ -378,6 +388,7 @@ int haz_un_ciclo(pipeline_t * pipeline)
 	  //g_print("Elemento %s\n", pipeline->m_elemento[i].m_nombre);
 	    if (pipeline->m_elemento[i].m_funcion_ciclo) {
 		pipeline->m_elemento[i].m_funcion_ciclo();
+		ERROR_PIPELINE(pipeline, &pipeline->m_elemento[i]);
 	    }
 	}
     }

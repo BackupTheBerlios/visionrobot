@@ -6,6 +6,7 @@
 #include "funciones.h"
 #include <string.h>
 
+void on_establecer_error(GtkMenuItem * menuitem, gpointer user_data);
 gint expose_event(GtkWidget *widget, GdkEvent *event, gpointer data);
 
 void on_borrar1_activate(GtkMenuItem * menuitem, gpointer user_data);
@@ -276,6 +277,19 @@ ventana_principal_t * ventana_principal_crear()
     gtk_container_add(GTK_CONTAINER(ventana_principal->pipeline1_menu), ventana_principal->parar_biblioteca);
     gtk_widget_set_sensitive(ventana_principal->parar_biblioteca, FALSE);
 
+
+    ventana_principal->establecer_error =
+	gtk_image_menu_item_new_with_mnemonic("_Establecer m\303\263dulo de error...");
+    gtk_widget_set_name(ventana_principal->ciclos_biblioteca, "establecer_error");
+    gtk_widget_show(ventana_principal->establecer_error);
+    gtk_container_add(GTK_CONTAINER(ventana_principal->pipeline1_menu), ventana_principal->establecer_error);
+    gtk_widget_set_sensitive(ventana_principal->establecer_error, FALSE);
+
+
+
+
+
+
     ventana_principal->iniciar_biblioteca =
 	gtk_image_menu_item_new_with_mnemonic("Inicia_r m\303\263dulo...");
     gtk_widget_set_name(ventana_principal->iniciar_biblioteca, "iniciar_biblioteca");
@@ -440,6 +454,8 @@ ventana_principal_t * ventana_principal_crear()
 		     G_CALLBACK(on_propiedades1_activate), ventana_principal);
     g_signal_connect((gpointer) ventana_principal->conectar1, "activate",
 		     G_CALLBACK(on_conectar1_activate), ventana_principal);
+    g_signal_connect((gpointer) ventana_principal->establecer_error, "activate",
+		     G_CALLBACK(on_establecer_error), ventana_principal);
     g_signal_connect((gpointer) ventana_principal->borrar1, "activate",
 		     G_CALLBACK(on_borrar1_activate), ventana_principal);
     g_signal_connect((gpointer) ventana_principal->ayuda1, "activate",
@@ -531,12 +547,15 @@ ventana_principal_t * ventana_principal = (ventana_principal_t *)user_data;
     }
 
 }
-
+#include <windows.h>
 void abre(char *file, ventana_principal_t * ventana_principal)
 {
     if (file != 0) {
 	vaciar_pipeline(ventana_principal->pipeline);
 	ventana_principal->pipeline = cargar(file);
+	char buf[23];
+	sprintf(buf,"ventana_principal->pipeline->m_error = %i",ventana_principal->pipeline->m_error); 
+	MessageBox(0, buf, "info", 0);
 	strcpy(ventana_principal->archivo, file);
 	ventana_principal->modificado = FALSE;
 	mostrar(GTK_STATUSBAR(ventana_principal->statusbar1), ventana_principal->archivo, &ventana_principal->id);
@@ -554,7 +573,12 @@ void abre(char *file, ventana_principal_t * ventana_principal)
     }
 
 }
+void on_establecer_error(GtkMenuItem * menuitem, gpointer user_data){     
+     ventana_principal_t * ventana_principal = (ventana_principal_t *)user_data;
+    gint destino = elegir_modulo(ventana_principal->window1, ventana_principal->pipeline);
 
+    ventana_principal->pipeline->m_error = destino;
+}
 
 void on_abrir2_activate(GtkMenuItem * menuitem, gpointer user_data)
 {  
@@ -573,8 +597,7 @@ void on_guardar_como2_activate(GtkMenuItem * menuitem, gpointer user_data)
   cerrar_todas_bibliotecas(ventana_principal->pipeline);
   gchar *file = guardar_ventana(ventana_principal->window1);
   if(file) {
-    guardar_como_aux(ventana_principal->pipeline,
-		     file, ventana_principal->window1, ventana_principal->statusbar1, ventana_principal->archivo, &ventana_principal->id, &ventana_principal->modificado, ventana_principal);
+		guardar_como_aux(ventana_principal, file);     
     g_free(file);
   }
 }
@@ -589,9 +612,7 @@ ventana_principal_t * ventana_principal = (ventana_principal_t *)user_data;
     } else {
 	buffer = guardar_ventana(ventana_principal->window1);
     }
-    guardar_como_aux(ventana_principal->pipeline,
-		     buffer,
-		     ventana_principal->window1, ventana_principal->statusbar1, ventana_principal->archivo, &ventana_principal->id, &ventana_principal->modificado, ventana_principal);
+    guardar_como_aux(ventana_principal, buffer);
 
     if (buffer != ventana_principal->archivo) {
 	g_free(buffer);
@@ -782,7 +803,7 @@ ventana_principal_t * ventana_principal = (ventana_principal_t *)user_data;
     for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
 	if (gtk_toggle_button_get_active
 	    (GTK_TOGGLE_BUTTON(ventana_principal->pipeline->m_elemento[i].m_widget))) {
-	    iniciar(&ventana_principal->pipeline->m_elemento[i]);
+	    iniciar(ventana_principal->pipeline, &ventana_principal->pipeline->m_elemento[i]);
 
 	}
     }
@@ -795,7 +816,7 @@ void on_iniciar_todas_biblioteca_activate(GtkButton * button,
 ventana_principal_t * ventana_principal = (ventana_principal_t *)user_data;
     int i;
     for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
-	iniciar(&ventana_principal->pipeline->m_elemento[i]);
+	iniciar(ventana_principal->pipeline, &ventana_principal->pipeline->m_elemento[i]);
     }
     establecer(ventana_principal->pipeline, ventana_principal);
 }

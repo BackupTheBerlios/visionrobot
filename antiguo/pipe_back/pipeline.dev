@@ -1,7 +1,7 @@
 [Project]
 FileName=pipeline.dev
 Name=pipeline
-UnitCount=18
+UnitCount=17
 Type=0
 Ver=1
 ObjFiles=
@@ -10,9 +10,9 @@ Libs=
 PrivateResource=pipeline_private.rc
 ResourceIncludes=
 MakeIncludes=
-Compiler=-fnative-struct -mms-bitfields_@@_
+Compiler=-mms-bitfields_@@_
 CppCompiler=
-Linker=../../Dev-Cpp/lib/libgtk-win32-2.0.dll.a_@@_../../Dev-Cpp/lib/libgobject-2.0.dll.a_@@_../../Dev-Cpp/lib/libglib-2.0.dll.a_@@_../../Dev-Cpp/lib/libgdk_pixbuf-2.0.dll.a_@@_../../Dev-Cpp/lib/libxml2.lib_@@_../../Dev-Cpp/lib/libgdk-win32-2.0.dll.a_@@_
+Linker=../../Dev-Cpp/lib/libxml2.lib_@@_../../Dev-Cpp/lib/libgtk-win32-2.0.dll.a_@@_../../Dev-Cpp/lib/libglib-2.0.dll.a_@@_../../Dev-Cpp/lib/libgobject-2.0.dll.a_@@_../../Dev-Cpp/lib/libgdk_pixbuf-2.0.dll.a_@@_../../Dev-Cpp/lib/libgdk-win32-2.0.dll.a_@@_
 IsCpp=0
 Icon=pipeline.ico
 ExeOutput=
@@ -109,27 +109,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit9]
-FileName=dll_pipeline.h
-CompileCpp=0
-Folder=pipeline
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
 [Unit10]
-FileName=funciones.c
-CompileCpp=0
-Folder=pipeline
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit11]
 FileName=funciones.h
 CompileCpp=0
 Folder=pipeline
@@ -139,7 +119,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit12]
+[Unit11]
 FileName=main.c
 CompileCpp=0
 Folder=pipeline
@@ -149,7 +129,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit13]
+[Unit12]
 FileName=pipeline.c
 CompileCpp=0
 Folder=pipeline
@@ -159,7 +139,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit14]
+[Unit13]
 FileName=pipeline.h
 CompileCpp=0
 Folder=pipeline
@@ -169,7 +149,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit15]
+[Unit14]
 FileName=propiedades_modulo.c
 CompileCpp=0
 Folder=pipeline
@@ -179,7 +159,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit16]
+[Unit15]
 FileName=propiedades_modulo.h
 CompileCpp=0
 Folder=pipeline
@@ -189,8 +169,18 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit17]
+[Unit16]
 FileName=ventana_principal.c
+CompileCpp=0
+Folder=pipeline
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit17]
+FileName=ventana_principal.h
 CompileCpp=0
 Folder=pipeline
 Compile=1
@@ -226,4 +216,14 @@ OriginalFilename=pipeline.exe
 ProductName=Pipeline (Visión por Computador)
 ProductVersion=0.3.0
 AutoIncBuildNr=0
+
+[Unit9]
+FileName=funciones.c
+CompileCpp=0
+Folder=pipeline
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
 
