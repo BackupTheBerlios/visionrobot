@@ -158,10 +158,11 @@ extern "C" {
     int pipeline_cerrar_todas_bibliotecas(pipeline_t * pipeline);
   /*! \brief Envía un error al módulo de salida de errores del pipe
       \param pipeline El pipeline en el que trabajamos
+      \param elemento El elemento que envía el error
       \param error Una cadena de error, se supone que el módulo sabrá tratarla
       \return -1 en caso de error, 0 si todo va bien
   */
-    int pipeline_error(const pipeline_t * pipeline, const char *error);
+    int pipeline_error(const pipeline_t * pipeline, const elemento_t * elemento, const char *error);
   /*! \brief Un ciclo del pipe
       \param pipeline El pipe
       \return -1 en caso de error, 0 si todo va bien

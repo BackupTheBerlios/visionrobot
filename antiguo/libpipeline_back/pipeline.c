@@ -37,7 +37,7 @@
 #define pipeline_get_function(x, y) dlsym((x),(y))
 #endif
 
-#define pipeline_enviar_error(y, x) if((x)->m_funcion_error) pipeline_error((y), (x)->m_funcion_error())
+#define pipeline_enviar_error(y, x) if((x)->m_funcion_error) pipeline_error((y), (x), (x)->m_funcion_error())
 
 pipeline_t *pipeline_crear()
 {
@@ -377,12 +377,14 @@ pipeline_poner_a_cero(elemento);
     }
 }
 
-int pipeline_error(const pipeline_t * pipeline, const char *error)
+int pipeline_error(const pipeline_t * pipeline, const elemento_t * elemento, const char *error)
 {
     if (error && pipeline->m_error != -1) {
 	if (pipeline->m_elemento[pipeline->m_error].m_funcion_set_datos) {
+    char buffer[128];
+    sprintf(buffer, "%s: %s", elemento->m_nombre, (const char *) error);
 	    pipeline->m_elemento[pipeline->m_error].
-		m_funcion_set_datos((const char *) error);
+		m_funcion_set_datos(buffer);
 	}
     }
     return 0;
