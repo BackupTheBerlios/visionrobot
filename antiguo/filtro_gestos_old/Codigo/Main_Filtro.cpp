@@ -1,7 +1,8 @@
 //---------------------------------------------------------------------------
 
 #include <windows.h>
-#include "Codigo_Filtro.h"
+#include "Form_Filtro.h"
+#include "dll_pipeline.h"
 
 //---------------------------------------------------------------------------
 //   Important note about DLL memory management when your DLL uses the
@@ -24,51 +25,45 @@
 //   explicitly add MEMMGR.LIB as this will be done implicitly for you
 //---------------------------------------------------------------------------
 
-#pragma argsused
-TPicture* buffer;
-TPicture* buffer2;//Provisional
+TForm2* f;
+entrada* buffer_in;
+salida*  buffer_out;
 
-__declspec (dllexport) int ciclo ()
+int ciclo ()
 {
-    if(buffer==NULL || buffer2==NULL)return -1;
-    else {
-      buffer= Filtro(buffer,buffer2);
-      return 0;
-    }
+        buffer_out= Filtro(buffer_in->m_imagen, buffer_in->m_alto ,buffer_in->m_ancho);
+        return 0;
 }
 
-__declspec (dllexport) int set_datos(const void * datos) {
-        if(datos==NULL)
-          return -1;
-        else {
-          buffer=(TPicture*)datos;
-          return 0;
-        }
-}
-
-__declspec (dllexport) void * get_datos() {
-	return buffer;
-}
-
-__declspec (dllexport) int iniciar(const void * datos) {
-	MessageBox (0, "Iniciando.\n", "Filtro Imagen", MB_ICONINFORMATION);
-        buffer2=(TPicture*)datos;
+int set_datos(const void * datos) {
+        buffer_in= (entrada*)datos;
+        buffer_out= NULL;
 	return 0;
-
 }
 
-__declspec (dllexport) int propiedades() {
-	MessageBox (0, "Propiedades.\n", "Filtro Imagen", MB_ICONINFORMATION);
+void * get_datos() {
+        return buffer_out;
+}
+
+int iniciar() {
+        f = new TForm2(0);
 	return 0;
-
 }
 
-__declspec (dllexport) int cerrar(){
-	if(buffer!=NULL) delete buffer;
+int propiedades() {
+        f->Show();
+        f->Repaint();
 	return 0;
-
 }
 
+int cerrar(){
+        //delete c;
+        delete f;
+	return 0;
+}
+
+
+#pragma argsused
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fwdreason, LPVOID lpvReserved)
 {
         return 1;
