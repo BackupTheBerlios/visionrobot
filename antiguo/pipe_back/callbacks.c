@@ -183,7 +183,20 @@ void on_crear1_activate(GtkMenuItem * menuitem, gpointer user_data)
 
 void on_conectar1_activate(GtkMenuItem * menuitem, gpointer user_data)
 {
+    gint destino = elegir_modulo(window1, pipeline);
 
+    if (destino != -1) {
+	int i;
+	for (i = 0; i < pipeline->m_numero; ++i) {
+	    if (gtk_toggle_button_get_active
+		(GTK_TOGGLE_BUTTON(pipeline->m_elemento[i].m_widget))) {
+		//iniciar(&pipeline->m_elemento[i]);
+
+		conectar(pipeline, i, destino);
+	    }
+	}
+	//    establecer(pipeline, window1);
+    }
 }
 
 

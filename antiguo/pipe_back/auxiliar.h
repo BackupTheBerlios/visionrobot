@@ -148,6 +148,8 @@ extern "C" {
 
     int haz_un_ciclo(pipeline_t * pipeline);
 
+    int elegir_modulo(GtkWidget * window1, pipeline_t * pipeline);
+
 #ifdef __cplusplus
 }
 #endif

@@ -73,6 +73,7 @@ extern "C" {
 	gchar m_ruta[MAX_RUTA];
 	gchar m_nombre[MAX_NOMBRE];
 	struct elemento_s *m_destino[MAX_CONEXIONES];
+	gint m_numero_conexiones;
     };
 
 /*! \brief Declaración del tipo de los elementos para su uso */
@@ -119,17 +120,25 @@ extern "C" {
     \return Devuelve 0
 */
     int guardar(pipeline_t * pipeline, const char *archivo);
-/*! \brief Carga un pipeline
-    \param ruta La ruta del archivo XML    
-    \return El nuevo pipeline
-*/
+    /*! \brief Carga un pipeline
+       \param ruta La ruta del archivo XML    
+       \return El nuevo pipeline
+     */
     pipeline_t *cargar(const char *ruta);
 
-    /*!\brief Carga los símbolos de la nueva biblioteca
+    /*! \brief Carga los símbolos de la nueva biblioteca
        \param pipeline El pipe sobre el que cargamos la biblioteca
        \param id El id del elemento sobre el que hacemos los cambios
      */
     void cambiar_biblioteca(pipeline_t * pipeline, gint id);
+
+    /*! \brief Conecta dos módulos
+       \param pipeline El pipeline que contiene los módulos
+       \param origen El índice del elemento origen
+       \param destino El índice del elemento destino
+       \return 0 si todo va bien, -1 en casa
+     */
+    int conectar(pipeline_t * pipeline, gint origen, gint destino);
 
 #ifdef __cplusplus
 }

@@ -41,6 +41,7 @@ elemento_t *nuevo(pipeline_t * pipeline, const char *nombre, gint x,
 	gtk_toggle_button_new_with_label(nombre);
     gtk_widget_show(pipeline->m_elemento[pipeline->m_numero].m_widget);
     pipeline->m_elemento[pipeline->m_numero].m_x = x;
+    pipeline->m_elemento[pipeline->m_numero].m_numero_conexiones = 0;
     pipeline->m_elemento[pipeline->m_numero].m_y = y;
     pipeline->m_elemento[pipeline->m_numero].m_iniciado = 0;
     strcpy(pipeline->m_elemento[pipeline->m_numero].m_ruta, ruta);
@@ -261,4 +262,19 @@ void cambiar_biblioteca(pipeline_t * pipeline, gint id)
 			      F_SET_DATOS);
     }
 #endif
+}
+
+int conectar(pipeline_t * pipeline, gint origen, gint destino)
+{
+    if (pipeline && origen < pipeline->m_numero
+	&& destino < pipeline->m_numero && origen >= 0 && destino >= 0) {
+	pipeline->m_elemento[origen].m_destino[pipeline->
+					       m_elemento[origen].
+					       m_numero_conexiones] =
+	    &pipeline->m_elemento[destino];
+	pipeline->m_elemento[origen].m_numero_conexiones++;
+	return 0;
+    } else {
+	return -1;
+    }
 }

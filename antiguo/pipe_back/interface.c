@@ -894,3 +894,81 @@ GtkWidget *create_propiedades_modulo(void)
     gtk_widget_grab_default(okbutton2);
     return propiedades_modulo;
 }
+
+
+GtkWidget *create_dialog2(void)
+{
+    GtkWidget *dialog1;
+    GdkPixbuf *dialog1_icon_pixbuf;
+    GtkWidget *dialog_vbox1;
+    GtkWidget *vbox1;
+    GtkWidget *label1;
+    GtkWidget *comboboxentry1;
+    GtkWidget *dialog_action_area1;
+    GtkWidget *cancelbutton1;
+    GtkWidget *okbutton1;
+
+    dialog1 = gtk_dialog_new();
+    gtk_widget_set_name(dialog1, "dialog1");
+    gtk_window_set_title(GTK_WINDOW(dialog1),
+			 "Selecci\303\263n de m\303\263dulo");
+    dialog1_icon_pixbuf = create_pixbuf("pipeline.xpm");
+    if (dialog1_icon_pixbuf) {
+	gtk_window_set_icon(GTK_WINDOW(dialog1), dialog1_icon_pixbuf);
+	gdk_pixbuf_unref(dialog1_icon_pixbuf);
+    }
+
+    dialog_vbox1 = GTK_DIALOG(dialog1)->vbox;
+    gtk_widget_set_name(dialog_vbox1, "dialog_vbox1");
+    gtk_widget_show(dialog_vbox1);
+
+    vbox1 = gtk_vbox_new(FALSE, 0);
+    gtk_widget_set_name(vbox1, "vbox1");
+    gtk_widget_show(vbox1);
+    gtk_box_pack_start(GTK_BOX(dialog_vbox1), vbox1, TRUE, TRUE, 0);
+
+    label1 = gtk_label_new_with_mnemonic("_Elija un m\303\263dulo:");
+    gtk_widget_set_name(label1, "label1");
+    gtk_widget_show(label1);
+    gtk_box_pack_start(GTK_BOX(vbox1), label1, FALSE, FALSE, 0);
+
+    comboboxentry1 = gtk_combo_box_new_text();
+    gtk_widget_set_name(comboboxentry1, "comboboxentry1");
+    gtk_widget_show(comboboxentry1);
+    gtk_box_pack_start(GTK_BOX(vbox1), comboboxentry1, TRUE, TRUE, 0);
+
+    dialog_action_area1 = GTK_DIALOG(dialog1)->action_area;
+    gtk_widget_set_name(dialog_action_area1, "dialog_action_area1");
+    gtk_widget_show(dialog_action_area1);
+    gtk_button_box_set_layout(GTK_BUTTON_BOX(dialog_action_area1),
+			      GTK_BUTTONBOX_END);
+
+    cancelbutton1 = gtk_button_new_from_stock("gtk-cancel");
+    gtk_widget_set_name(cancelbutton1, "cancelbutton1");
+    gtk_widget_show(cancelbutton1);
+    gtk_dialog_add_action_widget(GTK_DIALOG(dialog1), cancelbutton1,
+				 GTK_RESPONSE_CANCEL);
+    GTK_WIDGET_SET_FLAGS(cancelbutton1, GTK_CAN_DEFAULT);
+
+    okbutton1 = gtk_button_new_from_stock("gtk-ok");
+    gtk_widget_set_name(okbutton1, "okbutton1");
+    gtk_widget_show(okbutton1);
+    gtk_dialog_add_action_widget(GTK_DIALOG(dialog1), okbutton1,
+				 GTK_RESPONSE_OK);
+    GTK_WIDGET_SET_FLAGS(okbutton1, GTK_CAN_DEFAULT);
+
+    gtk_label_set_mnemonic_widget(GTK_LABEL(label1), comboboxentry1);
+
+    /* Store pointers to all widgets, for use by lookup_widget(). */
+    GLADE_HOOKUP_OBJECT_NO_REF(dialog1, dialog1, "dialog1");
+    GLADE_HOOKUP_OBJECT_NO_REF(dialog1, dialog_vbox1, "dialog_vbox1");
+    GLADE_HOOKUP_OBJECT(dialog1, vbox1, "vbox1");
+    GLADE_HOOKUP_OBJECT(dialog1, label1, "label1");
+    GLADE_HOOKUP_OBJECT(dialog1, comboboxentry1, "comboboxentry1");
+    GLADE_HOOKUP_OBJECT_NO_REF(dialog1, dialog_action_area1,
+			       "dialog_action_area1");
+    GLADE_HOOKUP_OBJECT(dialog1, cancelbutton1, "cancelbutton1");
+    GLADE_HOOKUP_OBJECT(dialog1, okbutton1, "okbutton1");
+
+    return dialog1;
+}

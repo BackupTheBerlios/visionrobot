@@ -325,3 +325,24 @@ int haz_un_ciclo(pipeline_t * pipeline)
     }
     return 0;
 }
+
+int elegir_modulo(GtkWidget * window1, pipeline_t * pipeline)
+{
+
+    GtkWidget *dialog = create_dialog2();
+    GtkWidget *combo = lookup_widget(dialog, "comboboxentry1");
+
+    int i;
+    for (i = 0; i < pipeline->m_numero; ++i) {
+	gtk_combo_box_append_text(GTK_COMBO_BOX(combo),
+				  pipeline->m_elemento[i].m_nombre);
+    }
+
+    int respuesta =
+	gtk_dialog_run(GTK_DIALOG(dialog)) != GTK_RESPONSE_CANCEL ?
+	respuesta = gtk_combo_box_get_active(GTK_COMBO_BOX(combo)) : -1;
+
+    gtk_widget_destroy(dialog);
+
+    return respuesta;
+}
