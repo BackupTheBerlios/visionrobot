@@ -14,12 +14,15 @@ dialogo_abrir_t *dialogo_abrir_crear()
 	gtk_file_chooser_dialog_new("Abrir...", NULL,
 				    GTK_FILE_CHOOSER_ACTION_OPEN, NULL);
     gtk_widget_set_name(dialogo_abrir->filechooserdialog1, "filechooserdialog1");
+    
+    #ifndef WIN32  
     dialogo_abrir->filechooserdialog1_icon_pixbuf = create_pixbuf("pipeline.xpm");
     if (dialogo_abrir->filechooserdialog1_icon_pixbuf) {
 	gtk_window_set_icon(GTK_WINDOW(dialogo_abrir->filechooserdialog1),
 			    dialogo_abrir->filechooserdialog1_icon_pixbuf);
 	gdk_pixbuf_unref(dialogo_abrir->filechooserdialog1_icon_pixbuf);
     }
+    #endif
 
     dialogo_abrir->dialog_vbox1 = GTK_DIALOG(dialogo_abrir->filechooserdialog1)->vbox;
     gtk_widget_set_name(dialogo_abrir->dialog_vbox1, "dialog_vbox1");

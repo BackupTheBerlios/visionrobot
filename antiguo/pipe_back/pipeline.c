@@ -41,6 +41,7 @@ elemento_t *nuevo(pipeline_t * pipeline, const char *nombre, gint x,
 	gtk_toggle_button_new_with_label(nombre);
     gtk_widget_show(pipeline->m_elemento[pipeline->m_numero].m_widget);
     pipeline->m_elemento[pipeline->m_numero].m_x = x;
+    pipeline->m_elemento[pipeline->m_numero].m_id = pipeline->m_numero;
     pipeline->m_elemento[pipeline->m_numero].m_numero_conexiones = 0;
     pipeline->m_elemento[pipeline->m_numero].m_y = y;
     pipeline->m_elemento[pipeline->m_numero].m_iniciado = 0;
@@ -54,7 +55,8 @@ elemento_t *nuevo(pipeline_t * pipeline, const char *nombre, gint x,
 
 int cerrar_biblioteca(elemento_t * elemento) {
   if(elemento->m_funcion_cerrar) {
-    elemento->m_funcion_cerrar();
+    // estoy hay que ponerlo, sólo si se exige que se controle en la dlls
+    //elemento->m_funcion_cerrar();
   }
 #ifdef WIN32
   FreeLibrary(elemento->m_handler);
@@ -108,27 +110,34 @@ int guardar(pipeline_t * pipeline, const char *ruta)
     xmlNodePtr r;
     xmlNodePtr x;
     xmlNodePtr y;
-    xmlDocPtr doc;
+    xmlNodePtr * c;
+    xmlNodePtr id;
+    xmlDocPtr doc;    
     char buffer[64];
 
     doc = xmlNewDoc(BAD_CAST "1.0");
     pipe = xmlNewNode(NULL, BAD_CAST "pipeline");
 
 
-    int i;
+    int i, j;
     for (i = 0; i < pipeline->m_numero; ++i) {
 	modulo = xmlNewNode(NULL, BAD_CAST "modulo");
 	nombre = xmlNewNode(NULL, BAD_CAST "nombre");
 	r = xmlNewNode(NULL, BAD_CAST "ruta");
 	x = xmlNewNode(NULL, BAD_CAST "x");
 	y = xmlNewNode(NULL, BAD_CAST "y");
+	id = xmlNewNode(NULL, BAD_CAST "id");
 
 	xmlAddChild(pipe, modulo);
+	xmlAddChild(modulo, id);
 	xmlAddChild(modulo, nombre);
 	xmlAddChild(modulo, r);
 	xmlAddChild(modulo, x);
 	xmlAddChild(modulo, y);
-
+		
+	sprintf(buffer, "%i", pipeline->m_elemento[i].m_id);
+	xmlNodeSetContent(id,
+			  BAD_CAST buffer);
 	xmlNodeSetContent(nombre,
 			  BAD_CAST pipeline->m_elemento[i].m_nombre);
 	xmlNodeSetContent(r, BAD_CAST pipeline->m_elemento[i].m_ruta);
@@ -136,21 +145,31 @@ int guardar(pipeline_t * pipeline, const char *ruta)
 	xmlNodeSetContent(x, BAD_CAST buffer);
 	sprintf(buffer, "%i", pipeline->m_elemento[i].m_y);
 	xmlNodeSetContent(y, BAD_CAST buffer);
+	
+	c = (xmlNodePtr*)malloc(sizeof(xmlNodePtr) * pipeline->m_elemento[i].m_numero_conexiones);
+	for(j = 0; j < pipeline->m_elemento[i].m_numero_conexiones; ++j) {
+	  c[j] = xmlNewNode(NULL, BAD_CAST "conexion");
+	  xmlAddChild(modulo, c[j]);
+	  sprintf(buffer, "%i", pipeline->m_elemento[i].m_destino[j]->m_id);
+	  xmlNodeSetContent(c[j], BAD_CAST buffer);
+	}
+	free(c);
     }
     xmlDocSetRootElement(doc, pipe);
     FILE *f = fopen(ruta, "w");
     xmlDocDump(f, doc);
-    fclose(f);
-
+    fclose(f);    
     return 0;
 }
 
-void parseModulo(xmlDocPtr doc, xmlNodePtr cur, pipeline_t * pipeline)
+int parseModulo(xmlDocPtr doc, xmlNodePtr cur, pipeline_t * pipeline, guint **lista_objetivo, guint i)
 {
     xmlChar *nombre = 0;
     xmlChar *ruta = 0;
+    //guint c[MAX_CONEXIONES];
     xmlChar *key;
     int x, y;
+    int j = 0;
     cur = cur->xmlChildrenNode;
     while (cur != NULL) {
 	if ((!xmlStrcmp(cur->name, (const xmlChar *) "nombre"))) {
@@ -185,18 +204,33 @@ void parseModulo(xmlDocPtr doc, xmlNodePtr cur, pipeline_t * pipeline)
 		ruta = strdup("");
 	    }
 	}
+	if ((!xmlStrcmp(cur->name, (const xmlChar *) "conexion"))) {
+	  key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+	    if (!key) {
+		key = strdup("");
+	    }
+	    lista_objetivo[i][j] = atoi(key); j++;
+	    free(key);
+	}
 	cur = cur->next;
     }
     nuevo(pipeline, nombre, x, y, ruta);
     free(nombre);
     free(ruta);
-    return;
+    return j;
 }
 
 pipeline_t *cargar(const char *ruta)
 {
     xmlDocPtr doc;
     xmlNodePtr cur;
+    int num_conexiones[MAX_CONEXIONES];
+    guint **lista_objetivo;
+    lista_objetivo = (guint **)malloc(sizeof(guint) * MAX_CONEXIONES);
+    guint i;
+    for(i = 0; i < MAX_CONEXIONES; ++i) {
+      lista_objetivo[i] = (guint *)malloc(sizeof(guint) * MAX_CONEXIONES);
+    }
     doc = xmlParseFile(ruta);
     if (doc == NULL) {
 	return 0;
@@ -210,15 +244,30 @@ pipeline_t *cargar(const char *ruta)
 	xmlFreeDoc(doc);
 	return 0;
     }
+    i = 0;
     pipeline_t *pipe = crear_pipeline();
     cur = cur->xmlChildrenNode;
     while (cur != NULL) {
 	if ((!xmlStrcmp(cur->name, (const xmlChar *) "modulo"))) {
-	    parseModulo(doc, cur, pipe);
+	    num_conexiones[i] = parseModulo(doc, cur, pipe, lista_objetivo, i);
+	    i++;
 	}
 	cur = cur->next;
     }
     xmlFreeDoc(doc);
+    
+    int k;
+    for(k = 0; k < pipe->m_numero; ++k) {
+      for(i = 0; i < num_conexiones[k]; ++i) {
+	conectar(pipe, k, lista_objetivo[k][i]);
+      }
+    }
+
+    for(i = 0; i < MAX_CONEXIONES; ++i) {
+      free(lista_objetivo[i]);
+    }
+    free(lista_objetivo);
+
     return pipe;
 }
 

@@ -14,11 +14,14 @@ dialogo_conectar_t *dialogo_conectar_crear()
     gtk_widget_set_name(dialogo_conectar->dialog1, "dialog1");
     gtk_window_set_title(GTK_WINDOW(dialogo_conectar->dialog1),
 			 "Selecci\303\263n de m\303\263dulo");
+			 
+			 #ifndef WIN32  
     dialogo_conectar->dialog1_icon_pixbuf = create_pixbuf("pipeline.xpm");
     if (dialogo_conectar->dialog1_icon_pixbuf) {
 	gtk_window_set_icon(GTK_WINDOW(dialogo_conectar->dialog1), dialogo_conectar->dialog1_icon_pixbuf);
 	gdk_pixbuf_unref(dialogo_conectar->dialog1_icon_pixbuf);
     }
+    #endif
 
     dialogo_conectar->dialog_vbox1 = GTK_DIALOG(dialogo_conectar->dialog1)->vbox;
     gtk_widget_set_name(dialogo_conectar->dialog_vbox1, "dialog_vbox1");

@@ -29,12 +29,15 @@ propiedades_modulo_t * propiedades_modulo_crear()
     gtk_container_set_border_width(GTK_CONTAINER(propiedades_modulo_o->propiedades_modulo), 2);
     gtk_window_set_title(GTK_WINDOW(propiedades_modulo_o->propiedades_modulo),
 			 "Propiedades del m\303\263dulo");
+
+#ifndef WIN32  			 
     propiedades_modulo_o->propiedades_modulo_icon_pixbuf = create_pixbuf("pipeline.xpm");
     if (propiedades_modulo_o->propiedades_modulo_icon_pixbuf) {
 	gtk_window_set_icon(GTK_WINDOW(propiedades_modulo_o->propiedades_modulo),
 			    propiedades_modulo_o->propiedades_modulo_icon_pixbuf);
 	gdk_pixbuf_unref(propiedades_modulo_o->propiedades_modulo_icon_pixbuf);
     }
+ #endif
 
     propiedades_modulo_o->dialog_vbox4 = GTK_DIALOG(propiedades_modulo_o->propiedades_modulo)->vbox;
     gtk_widget_set_name(propiedades_modulo_o->dialog_vbox4, "dialog_vbox4");

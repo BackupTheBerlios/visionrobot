@@ -61,6 +61,7 @@ extern "C" {
 
 /*! \brief La estructura de datos de cada elemento del pipe */
     struct elemento_s {
+      guint m_id;
 	GtkWidget *m_widget;
 	gint m_x;
 	gint m_y;

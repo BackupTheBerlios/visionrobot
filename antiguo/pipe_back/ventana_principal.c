@@ -97,11 +97,14 @@ ventana_principal_t * ventana_principal_crear()
     gtk_window_set_title(GTK_WINDOW(ventana_principal->window1),
 			 "Visi\303\263n por computador - Pipeline");
     gtk_window_set_default_size(GTK_WINDOW(ventana_principal->window1), 500, 400);
+    
+#ifndef WIN32    
     ventana_principal->window1_icon_pixbuf = create_pixbuf("pipeline.xpm");
     if (ventana_principal->window1_icon_pixbuf) {
 	gtk_window_set_icon(GTK_WINDOW(ventana_principal->window1), ventana_principal->window1_icon_pixbuf);
 	gdk_pixbuf_unref(ventana_principal->window1_icon_pixbuf);
     }
+#endif
 
     ventana_principal->vbox1 = gtk_vbox_new(FALSE, 0);
     gtk_widget_set_name(ventana_principal->vbox1, "vbox1");
@@ -472,61 +475,6 @@ ventana_principal_t * ventana_principal_crear()
 		     ventana_principal);
 
     ventana_principal->modificado = FALSE;
-    /* Store pointers to all widgets, for use by lookup_widget(). */
-    /*GLADE_HOOKUP_OBJECT_NO_REF(window1, window1, "window1");
-    GLADE_HOOKUP_OBJECT(window1, vbox1, "vbox1");
-    GLADE_HOOKUP_OBJECT(window1, menubar1, "menubar1");
-    GLADE_HOOKUP_OBJECT(window1, archivo1, "archivo1");
-    GLADE_HOOKUP_OBJECT(window1, archivo1_menu, "archivo1_menu");
-    GLADE_HOOKUP_OBJECT(window1, nuevo2, "nuevo2");
-    GLADE_HOOKUP_OBJECT(window1, image103, "image103");
-    GLADE_HOOKUP_OBJECT(window1, abrir2, "abrir2");
-    GLADE_HOOKUP_OBJECT(window1, image104, "image104");
-    GLADE_HOOKUP_OBJECT(window1, separador1, "separador1");
-    GLADE_HOOKUP_OBJECT(window1, guardar_como2, "guardar_como2");
-    GLADE_HOOKUP_OBJECT(window1, image105, "image105");
-
-    GLADE_HOOKUP_OBJECT(window1, ciclos_biblioteca, "ciclos_biblioteca");
-    GLADE_HOOKUP_OBJECT(window1, ciclo_biblioteca, "ciclo_biblioteca");
-    GLADE_HOOKUP_OBJECT(window1, parar_biblioteca, "parar_biblioteca");
-    GLADE_HOOKUP_OBJECT(window1, iniciar_biblioteca, "iniciar_biblioteca");
-    GLADE_HOOKUP_OBJECT(window1, iniciar_todas_biblioteca,
-			"iniciar_todas_biblioteca");
-    GLADE_HOOKUP_OBJECT(window1, cerrar_todas_biblioteca,
-			"cerrar_todas_biblioteca");
-    GLADE_HOOKUP_OBJECT(window1, cerrar_biblioteca, "cerrar_biblioteca");
-
-    GLADE_HOOKUP_OBJECT(window1, guardar2, "guardar2");
-    GLADE_HOOKUP_OBJECT(window1, image106, "image106");
-    GLADE_HOOKUP_OBJECT(window1, separador2, "separador2");
-    GLADE_HOOKUP_OBJECT(window1, salir2, "salir2");
-    GLADE_HOOKUP_OBJECT(window1, image107, "image107");
-    GLADE_HOOKUP_OBJECT(window1, pipeline1, "pipeline1");
-    GLADE_HOOKUP_OBJECT(window1, pipeline1_menu, "pipeline1_menu");
-    GLADE_HOOKUP_OBJECT(window1, crear1, "crear1");
-    GLADE_HOOKUP_OBJECT(window1, image108, "image108");
-    GLADE_HOOKUP_OBJECT(window1, propiedades1, "propiedades1");
-    GLADE_HOOKUP_OBJECT(window1, propiedades_biblioteca,
-			"propiedades_biblioteca");
-    GLADE_HOOKUP_OBJECT(window1, image109, "image109");
-    GLADE_HOOKUP_OBJECT(window1, conectar1, "conectar1");
-    GLADE_HOOKUP_OBJECT(window1, image110, "image110");
-    GLADE_HOOKUP_OBJECT(window1, separador3, "separador3");
-    GLADE_HOOKUP_OBJECT(window1, borrar1, "borrar1");
-    GLADE_HOOKUP_OBJECT(window1, image111, "image111");
-    GLADE_HOOKUP_OBJECT(window1, ayuda1, "ayuda1");
-    GLADE_HOOKUP_OBJECT(window1, ayuda1_menu, "ayuda1_menu");
-    GLADE_HOOKUP_OBJECT(window1, __ndice_de_la_ayuda1,
-			"__ndice_de_la_ayuda1");
-    GLADE_HOOKUP_OBJECT(window1, image112, "image112");
-    GLADE_HOOKUP_OBJECT(window1, separador4, "separador4");
-    GLADE_HOOKUP_OBJECT(window1, separador5, "separador5");
-    GLADE_HOOKUP_OBJECT(window1, acerca_de1, "acerca_de1");
-    GLADE_HOOKUP_OBJECT(window1, image113, "image113");
-    GLADE_HOOKUP_OBJECT(window1, scrolledwindow1, "scrolledwindow1");
-    GLADE_HOOKUP_OBJECT(window1, viewport1, "viewport1");
-    GLADE_HOOKUP_OBJECT(window1, fixed1, "fixed1");
-    GLADE_HOOKUP_OBJECT(window1, statusbar1, "statusbar1");*/
 
     gtk_window_add_accel_group(GTK_WINDOW(ventana_principal->window1), ventana_principal->accel_group);
 
@@ -574,10 +522,10 @@ ventana_principal_t * ventana_principal = (ventana_principal_t *)user_data;
 	ventana_principal->archivo[0] = '\0';
 	mostrar(GTK_STATUSBAR(ventana_principal->statusbar1), 0, &ventana_principal->id);
 	ventana_principal->modificado = FALSE;
-	gtk_widget_set_sensitive(/*lookup_widget(ventana_principal->window1, "nuevo2")*/ventana_principal->nuevo2, FALSE);
-	gtk_widget_set_sensitive(/*lookup_widget(ventana_principal->window1, "guardar2")*/ventana_principal->guardar2,
+	gtk_widget_set_sensitive(ventana_principal->nuevo2, FALSE);
+	gtk_widget_set_sensitive(ventana_principal->guardar2,
 				 FALSE);
-	gtk_widget_set_sensitive(/*lookup_widget(ventana_principal->window1, "guardar_como2")*/ventana_principal->guardar_como2,
+	gtk_widget_set_sensitive(ventana_principal->guardar_como2,
 				 FALSE);
 	establecer(ventana_principal->pipeline, ventana_principal);
     }
@@ -674,12 +622,12 @@ ventana_principal_t * ventana_principal = (ventana_principal_t *)user_data;
 void on_crear1_activate(GtkMenuItem * menuitem, gpointer user_data)
 {
 ventana_principal_t * ventana_principal = (ventana_principal_t *)user_data;
- GtkWidget *fixed = ventana_principal->fixed1;//lookup_widget(window1, "fixed1");
+ GtkWidget *fixed = ventana_principal->fixed1;
     propiedades(-1, GTK_FIXED(fixed), ventana_principal->pipeline, &ventana_principal->modificado);
     if (ventana_principal->modificado) {
-      gtk_widget_set_sensitive(/*lookup_widget(window1, "nuevo2")*/ventana_principal->nuevo2, TRUE);
-	gtk_widget_set_sensitive(/*lookup_widget(window1, "guardar2")*/ventana_principal->guardar2, TRUE);
-	gtk_widget_set_sensitive(/*lookup_widget(window1, "guardar_como2")*/ventana_principal->guardar_como2,
+      gtk_widget_set_sensitive(ventana_principal->nuevo2, TRUE);
+	gtk_widget_set_sensitive(ventana_principal->guardar2, TRUE);
+	gtk_widget_set_sensitive(ventana_principal->guardar_como2,
 				 TRUE);
 	g_signal_connect((gpointer) ventana_principal->pipeline->
 			 m_elemento[ventana_principal->pipeline->m_numero - 1].m_widget,
@@ -758,40 +706,44 @@ ventana_principal_t * ventana_principal = (ventana_principal_t *)data;
 
 void on_window1_show(GtkWidget * widget, gpointer user_data)
 {
-ventana_principal_t * ventana_principal = (ventana_principal_t *)user_data;
-//ventana_principal->status_bar = ventana_principal->statusbar1;//lookup_widget(window1, "statusbar1");
-    ventana_principal->id = gtk_statusbar_push(GTK_STATUSBAR(ventana_principal->statusbar1), 0,
-			    "Visi\303\263n por computador");
-    ventana_principal->pipeline = crear_pipeline();
-    senyal(ventana_principal);
-    /*if (user_data != 0) {
+  ventana_principal_t * ventana_principal = (ventana_principal_t *)user_data;
+  
+  ventana_principal->id = gtk_statusbar_push(GTK_STATUSBAR(ventana_principal->statusbar1), 0,
+					     "Visi\303\263n por computador");
+  ventana_principal->pipeline = crear_pipeline();
+  senyal(ventana_principal);
+  
+  /** warning */
+  ventana_principal->archivo[0] = '\0';
+  
+  /*if (user_data != 0) {
 	abre((char *) user_data);
 	}*/
-
-    GtkWidget *fixed = ventana_principal->fixed1;//lookup_widget(window1, "fixed1");
-    ventana_principal->ww = fixed->window;
-    ventana_principal->gc = gdk_gc_new(ventana_principal->ww);
-    gtk_signal_connect (GTK_OBJECT(fixed), "expose_event",
-			GTK_SIGNAL_FUNC(expose_event), ventana_principal);
+  
+  GtkWidget *fixed = ventana_principal->fixed1;
+  ventana_principal->ww = fixed->window;
+  ventana_principal->gc = gdk_gc_new(ventana_principal->ww);
+  gtk_signal_connect (GTK_OBJECT(fixed), "expose_event",
+		      GTK_SIGNAL_FUNC(expose_event), ventana_principal);
 }
 
 void on_propiedades1_activate(GtkMenuItem * menuitem, gpointer user_data)
 {
-ventana_principal_t * ventana_principal = (ventana_principal_t *)user_data;
-    int i;
-    GtkWidget *fixed = ventana_principal->fixed1;//lookup_widget(window1, "fixed1");
-    for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
-	if (gtk_toggle_button_get_active
-	    (GTK_TOGGLE_BUTTON(ventana_principal->pipeline->m_elemento[i].m_widget))) {
-	    propiedades(i, GTK_FIXED(fixed), ventana_principal->pipeline, &ventana_principal->modificado);
-	}
+  ventana_principal_t * ventana_principal = (ventana_principal_t *)user_data;
+  int i;
+  GtkWidget *fixed = ventana_principal->fixed1;
+  for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
+    if (gtk_toggle_button_get_active
+	(GTK_TOGGLE_BUTTON(ventana_principal->pipeline->m_elemento[i].m_widget))) {
+      propiedades(i, GTK_FIXED(fixed), ventana_principal->pipeline, &ventana_principal->modificado);
     }
-    if (ventana_principal->modificado) {
-      gtk_widget_set_sensitive(/*lookup_widget(window1, "nuevo2")*/ventana_principal->nuevo2, TRUE);
-	gtk_widget_set_sensitive(/*lookup_widget(window1, "guardar2")*/ventana_principal->guardar2, TRUE);
-	gtk_widget_set_sensitive(/*lookup_widget(window1, "guardar_como2")*/ventana_principal->guardar_como2,
-				 TRUE);
-    }
+  }
+  if (ventana_principal->modificado) {
+    gtk_widget_set_sensitive(ventana_principal->nuevo2, TRUE);
+    gtk_widget_set_sensitive(ventana_principal->guardar2, TRUE);
+    gtk_widget_set_sensitive(ventana_principal->guardar_como2,
+			     TRUE);
+  }
 }
 
 void

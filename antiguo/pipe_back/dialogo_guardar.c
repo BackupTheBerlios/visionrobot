@@ -16,12 +16,15 @@ dialogo_guardar_t *dialogo_guardar_crear()
 	gtk_file_chooser_dialog_new("Guardar como...", NULL,
 				    GTK_FILE_CHOOSER_ACTION_SAVE, NULL);
     gtk_widget_set_name(dialogo_guardar->filechooserdialog2, "filechooserdialog2");
+    
+    #ifndef WIN32  
     dialogo_guardar->filechooserdialog2_icon_pixbuf = create_pixbuf("pipeline.xpm");
     if (dialogo_guardar->filechooserdialog2_icon_pixbuf) {
 	gtk_window_set_icon(GTK_WINDOW(dialogo_guardar->filechooserdialog2),
 			    dialogo_guardar->filechooserdialog2_icon_pixbuf);
 	gdk_pixbuf_unref(dialogo_guardar->filechooserdialog2_icon_pixbuf);
     }
+    #endif
 
     dialogo_guardar->dialog_vbox2 = GTK_DIALOG(dialogo_guardar->filechooserdialog2)->vbox;
     gtk_widget_set_name(dialogo_guardar->dialog_vbox2, "dialog_vbox2");
