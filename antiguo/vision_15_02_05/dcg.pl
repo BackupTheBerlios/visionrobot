@@ -1,54 +1,12 @@
 camaron(E, S) :-
-	expresion(S, E, []).
+	lexico(E, L),
+	sintactico(S, L, []).
 
-camaron(E, S) :-
-	frase(S, E, []).
-
-% Lenguaje natural	
-frase(S) -->
-	gn(S),
-	gv.
-
-gn(S) -->
-	determinante,
-	nombre.
-
-gv(S) -->
-	verbo,
-	gn.
+sintactico(S) -->
+	expresion(S).
 
 % Transforma una cadena de caracteres en un lista
-
-lire1Token([CAR|LASCII] , [] , [CAR|LASCII]) :-
-
-    member(CAR , [32,13,9,10,58, 43, 45, 42, 47, 59 ]) . %CAR = separateur 
-
-lire1Token([CAR|LASCII] ,[CAR| TOKEN ], LRESTE) :-
-
-    not(member(CAR , [32,13,9,10,58, 43, 45, 42, 47, 59 ])) ,
-
-    lire1Token(LASCII ,TOKEN , LRESTE).
-
-lexer([] , []).
-
-lexer([CAR|LASCII] , ListeTOKEN) :-
-	member(CAR , [32,13,9,10]) , ! , 
-	lexer(LASCII , ListeTOKEN). 
-
-lexer([CAR|LASCII] , [TOKEN|ListeTOKEN]) :-
-	member(CAR , [ 43, 45, 42, 47, 59]) , ! , 
-	name(TOKEN , [CAR]),
-	lexer(LASCII , ListeTOKEN). 
-
-lexer([58,61|LASCII] , [':='|ListeTOKEN]) :- ! , 
-
-	lexer(LASCII , ListeTOKEN). 
-
-lexer([CAR|LASCII] , [TOKEN|ListeTOKEN]) :-
-	not(member(CAR , [32,13,9,10])) , ! ,
-	lire1Token([CAR|LASCII] , LCarTOKEN , LRESTE),
-	name(TOKEN , LCarTOKEN),
-	lexer(LRESTE , ListeTOKEN). 
+lexico(E, L).
 
 % Expresiones aritmeticas
 expresion(Z) --> 
@@ -91,13 +49,4 @@ parentesis_abierto -->
 
 parentesis_cerrado -->
 	")".
-	
 
-% Diccionario
-determinante -->
-	[el].
-nombre -->
-	[panda].
-
-verbo -->
-	[comer].

@@ -21,6 +21,12 @@
 #define PUERTO_PARAMETROS "entrada_parametros"
 #define PUERTO_SALIDA "salida_imagen"
 
+
+static const unsigned char NEGRO = 0;
+static const unsigned char BLANCO = 255;
+static const unsigned char SEMI_NEGRO = 30;
+static const int TOL = 1;
+
 typedef struct {
   char m_buffer_error[128];  
   char m_iniciado;

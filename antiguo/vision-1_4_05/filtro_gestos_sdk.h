@@ -1,11 +1,6 @@
 #ifndef _FILTRO_GESTOS_SDK_H_
 #define _FILTRO_GESTOS_SDK_H_
 
-const unsigned char NEGRO= 0;
-const unsigned char BLANCO= 255;
-const unsigned char SEMI_NEGRO= 30;
-const int TOL=1;
-
 typedef unsigned char color_t;
 
 typedef struct {
