@@ -19,12 +19,4 @@ typedef struct {
   color_t m_azul_inf;
 } filtro_gestos_in_parametros_t;
 
-
-//***********************************************************************************
-//Nuevas estructuras para el filtro de carteles
-
-
-//*****************************************************************************
-
-
 #endif
