@@ -7,9 +7,9 @@
 #include <string.h>
 
 static GladeXML* xml = 0;
-static guint timer = 1000;
+static guint timer = 3000;
 
-#define OPCIONES_LINEA
+//#define OPCIONES_LINEA
 
 #ifdef OPCIONES_LINEA
 static GOptionEntry entries[] = {

@@ -12,8 +12,9 @@ end
 
 -- Funcion de filtrado
 function filtrar()
-   local cont, ac_x, ac_y = captura:difuminar(salida, 3, 100, ir, sr, iv, sv, ia, sa)
-   return cont > 0
+   local cont, ac_x, ac_y = captura:difuminar(salida, 2, 10, ir, sr, iv, sv, ia, sa)   
+   salida:centrar(cont, ac_x, ac_y)
+   return cont > 0, 0, salida
 end
 
 -- Funcion de cambio de parametros
@@ -30,3 +31,6 @@ function parametros(_sr, _ir, _sv, _iv, _sa, _ia)
 end
 
 
+function cerrar()
+   imagen.delete(salida)
+end

@@ -1,3 +1,28 @@
+/*! \file ventana_parametros.c
+    \brief Una ventana en la que se pueden ajustar los parámetros de un filtro.
+
+          \section modulo Módulo
+	  Este módulo tiene como función el establecimiento de los parámetros del filtro, el color fundamental, y la tolerancia a errores de este. Está pensado para admitir un color. Funciona con GTK, por lo que el programa que lo instancie deberá iniciar previamente estas librerías.
+	  Funciona con el archivo "ventana_parametros.glade", que deberá estar en el mismo directorio.
+	  Para usar el módulo habrá que conectarlo a un módulo de filtros. Después elegir, pinchando en el botón de color, el color fundamental (puede ayudarse de la herramienta de cuentagotas para adquirir el color de la pantalla), y con la barra de desplazamiento establecer asimismo la tolerancia. El módulo envía al filtro una estructura con los valores elegidos.
+
+	  \section puertos Puertos
+	  El módulo no dispone de puertos de entrada, ya que es un módulo de inicio (debe especificarse en el XML con inicio="1"), y como salida tiene:
+	  <ul>
+	    <li><em>salida_filtro</em>: Un puntero a una estructura <code>filtro_gestos_in_parametros_t</code>, en cuyos campos se hallan los valores pertinentes.
+	  </ul>
+
+	  \section argumentos Argumentos
+	  Los argumentos que puede, en el archivo de especificación, admitir el módulo son:
+	  <ul>
+	    <li><em>rojo</em>: El color rojo que se establece por defecto.
+	    <li><em>verde</em>: El color verde que se establece por defecto.
+	    <li><em>azul</em>: El color azul que se establece por defecto.
+	    <li><em>tolerancia</em>: La tolerancia que se establece por defecto.
+	  </ul>
+    \author Carlos León
+    \version 1.0
+*/  
 #include "pipeline_sdk.h"
 #include "filtro_gestos_sdk.h"
 #include <glade/glade.h>

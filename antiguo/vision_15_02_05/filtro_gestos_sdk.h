@@ -1,5 +1,7 @@
 #ifndef _FILTRO_GESTOS_SDK_H_
 #define _FILTRO_GESTOS_SDK_H_
+#include <IL/il.h>
+#include <IL/ilu.h>
 
 typedef unsigned char color_t;
 
@@ -8,6 +10,7 @@ typedef struct {
   int m_alto;
   int m_ancho;
   int m_bytes;
+  ILuint m_id;
 } filtro_gestos_in_imagen_t;
 
 typedef struct {

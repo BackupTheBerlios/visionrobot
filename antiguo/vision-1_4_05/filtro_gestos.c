@@ -16,12 +16,13 @@ typedef struct {
   char m_buffer_error[128];  
   char *m_error;
   char m_iniciado;
-  filtro_gestos_in_imagen_t m_buffer;
-  filtro_gestos_in_imagen_t m_salida;
-  //  filtro_gestos_in_parametros_t m_buffer_parametros;
+  /*filtro_gestos_in_imagen_t m_buffer;
+    filtro_gestos_in_imagen_t m_salida;*/
+  ILuint m_id_captura;
   const char *m_iniciar;
   const char *m_filtrar;
   const char *m_parametros;
+  const char *m_cerrar;
   lua_State *m_lua;
 } dato_filtro_t;
 
@@ -91,33 +92,34 @@ static char *filtro_ciclo(modulo_t *modulo, const char *puerto, const void *valu
       if(1 != dato->m_iniciado) {
 	dato->m_iniciado = 1;
 	filtro_gestos_in_imagen_t* imagen = (filtro_gestos_in_imagen_t *) value;
-	dato->m_buffer.m_alto = dato->m_salida.m_alto = imagen->m_alto;
-	dato->m_buffer.m_ancho = dato->m_salida.m_ancho = imagen->m_ancho;
-	dato->m_buffer.m_imagen = imagen->m_imagen;
-	dato->m_buffer.m_bytes = dato->m_salida.m_bytes = imagen->m_bytes;
-	dato->m_salida.m_imagen = (color_t *)malloc(sizeof(color_t) *
-						    dato->m_salida.m_ancho *
-						    dato->m_salida.m_alto *
-						    dato->m_salida.m_bytes) ;
+	/*	dato->m_buffer.m_alto = dato->m_salida.m_alto = imagen->m_alto;
+		dato->m_buffer.m_ancho = dato->m_salida.m_ancho = imagen->m_ancho;
+		dato->m_buffer.m_imagen = imagen->m_imagen;
+		dato->m_buffer.m_bytes = dato->m_salida.m_bytes = imagen->m_bytes;*/
+	/*dato->m_salida.m_*/color_t *imagen_salida = (color_t *)malloc(sizeof(color_t) *
+						    imagen->m_ancho *
+						    imagen->m_alto *
+						    imagen->m_bytes) ;
 	// Esto de piiipiii son los parametros al estilo printf:
 	// p = pointer, i = int
 	filtro_llamar_funcion(dato->m_lua, dato->m_iniciar, "piiipiii>s", 
-			      dato->m_buffer.m_imagen, dato->m_buffer.m_ancho, dato->m_buffer.m_alto, dato->m_buffer.m_bytes,
-			      dato->m_salida.m_imagen, dato->m_salida.m_ancho, dato->m_salida.m_alto, dato->m_salida.m_bytes,
+			      imagen->m_imagen, imagen->m_ancho, imagen->m_alto, imagen->m_bytes,
+			      imagen_salida, imagen->m_ancho, imagen->m_alto, imagen->m_bytes,
 			      &aux);
       }
-      else if(dato->m_buffer.m_imagen) {
+      else if(/*dato->m_buffer.m_imagen*/value) {
 	// El filtro espera que la funcion de filtro le devuelva
 	// 0 si todo es negro
 	// 1 si no todo es negro
 	int color;
-	filtro_llamar_funcion(dato->m_lua, dato->m_filtrar, ">bs", &color, &aux);
+	color_t *imagen;
+	filtro_llamar_funcion(dato->m_lua, dato->m_filtrar, ">bsp", &color, &aux, &imagen);
 	GHashTable *tabla = modulo->m_tabla;
 	if(!color) {
 	  g_hash_table_insert(tabla, PUERTO_SALIDA, 0);
 	}
 	else {
-	  g_hash_table_insert(tabla, PUERTO_SALIDA, &dato->m_salida);
+	  g_hash_table_insert(tabla, PUERTO_SALIDA, imagen/*&dato->m_salida*/);
 	}
 	dato->m_error = dato->m_buffer_error;
       }
@@ -132,13 +134,6 @@ static char *filtro_ciclo(modulo_t *modulo, const char *puerto, const void *valu
     else if(!strcmp(puerto, PUERTO_PARAMETROS)) {
       filtro_gestos_in_parametros_t* parametros = (filtro_gestos_in_parametros_t*)value;
       if(parametros) {
-	/*	dato->m_buffer_parametros.m_rojo_sup = parametros->m_rojo_sup;
-	dato->m_buffer_parametros.m_rojo_inf = parametros->m_rojo_inf;
-	dato->m_buffer_parametros.m_verde_sup = parametros->m_verde_sup;
-	dato->m_buffer_parametros.m_verde_inf = parametros->m_verde_inf;
-	dato->m_buffer_parametros.m_azul_sup = parametros->m_azul_sup;
-	dato->m_buffer_parametros.m_azul_inf = parametros->m_azul_inf;*/
-
 	filtro_llamar_funcion(dato->m_lua, dato->m_parametros, "iiiiii>s",
 			      parametros->m_rojo_sup,
 			      parametros->m_rojo_inf,
@@ -162,15 +157,22 @@ static char *filtro_ciclo(modulo_t *modulo, const char *puerto, const void *valu
   }
 }
 
+static int filtro_gestos_delete(lua_State *L) {  
+  filtro_gestos_in_imagen_t *a = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
+  free(a->m_imagen);
+  ilDeleteImages(1, &a->m_id);
+  return 0;
+}
 static int filtro_gestos_newarray(lua_State *l) {  
-  int alto = lua_tonumber(l, 2);
-  int ancho = lua_tonumber(l, 3);
+  int ancho = lua_tonumber(l, 2);
+  int alto = lua_tonumber(l, 3);
   int bytes = lua_tonumber(l, 4);
   color_t* imagen = (color_t*)lua_topointer(l, 1);
   int tam = sizeof(filtro_gestos_in_imagen_t);
   filtro_gestos_in_imagen_t *origen = (filtro_gestos_in_imagen_t*)lua_newuserdata(l, tam);
   luaL_getmetatable(l, "vision.imagen");
   lua_setmetatable(l, -2);
+  ilGenImages(1, &origen->m_id);  
   origen->m_alto = alto;
   origen->m_ancho = ancho;
   origen->m_bytes = bytes;
@@ -218,83 +220,199 @@ static int filtro_gestos_copia (lua_State *L) {
   return 1;
 }
 
+static int filtro_gestos_centrar (lua_State *L) {
+  filtro_gestos_in_imagen_t *a = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
+  int cont = luaL_checkint(L, 2);
+  int ac_x = luaL_checkint(L, 3);
+  int ac_y = luaL_checkint(L, 4);
+  int ancho = a->m_ancho;
+  int alto = a->m_alto;
+  int bytes = a->m_bytes;
+  color_t *dibujo = a->m_imagen;
+  int tam = bytes * ancho;
+  int sum, sum2, sum3, sum4;
+  if (cont != 0) { 
+    int difY = ((int) floor(alto / 2 - floor(ac_y / cont)));
+    int difX = ((int) floor(ancho / 2 - ((int) floor(ac_x / (bytes * cont)))));
+    if (difY < 0) {
+      int y, x;
+      for (y = 0; y - difY < alto; y++) {
+	sum = y * tam;
+	sum2 = (y - difY) * tam;
+	for (x = 0; x < tam; x++) {
+	  dibujo[sum + x] = dibujo[sum2 + x];
+	}
+      }
+      while (y < alto) {
+	sum = y * tam;
+	for (x = 0; x < tam; x++) {
+	  dibujo[sum + x] = 0;
+	}
+	y++;
+      }
+    }
+    if (difY > 0) {
+      int y, x;
+      for (y = alto - 1; y - difY >= 0; y--) {
+	sum = y * tam;
+	sum2 = (y - difY) * tam;
+	for (x = 0; x < tam; x++) {
+	  dibujo[sum + x] = dibujo[sum2 + x];
+	}
+      }
+      while (y >= 0) {
+	sum = y * tam;
+	for (x = 0; x < tam; x++) {
+	  dibujo[sum + x] = 0;
+	}
+	y--;
+      }
+    }
+    if (difX < 0) {
+      int y;
+      for (y = 0; y < alto; y++) {
+	int x;	
+	sum3 = y * tam;
+	x = 0;
+	sum2 = x - (difX * bytes);
+	for (x = 0; sum2 + bytes - 1 < tam; x+=bytes) {
+	  sum = sum3 + x;
+	  sum2 = x - (difX * bytes);
+	  sum4 = sum3 + sum2;
+	  dibujo[sum] = dibujo[sum4];
+	  dibujo[sum + 1] = dibujo[sum4 + 1];
+	  dibujo[sum + 2] = dibujo[sum4 + 2];
+	}
+	while (x + 2 < tam) {
+	  sum = sum3 + x;
+	  dibujo[sum] = 0;
+	  dibujo[sum + 1] = 0;
+	  dibujo[sum + 2] = 0;
+	  x += bytes - 1;
+	}
+      }
+    }
+    /* He cambiado esto porque si no viola el segmento.
+       Antes:
+       if(difX > 0) {
+       Carlos
+    */
+    if (difX > 1) {
+      int y;
+      for (y = 0; y < alto - 1; y++) {
+	int x;
+	sum3 = y * tam;
+	x = tam - 2;
+	sum2 = x - (difX * bytes);
+	for (x = tam - 2; sum2 + bytes - 1 >= 0;
+	     x-=bytes) {
+	  sum2 = x - (difX * bytes);
+	  sum = sum2 + sum3;
+	  sum4 = sum3 + x;	  
+	  dibujo[sum4] = dibujo[sum];
+	  dibujo[sum4 - 1] = dibujo[sum - 1];
+	  dibujo[sum4 - 2] = dibujo[sum - 2];
+	}
+	sum4 = y * tam;
+	while (x >= 0) {
+	  sum = sum4 + x;
+	  dibujo[sum] = 0;
+	  dibujo[sum - 1] = 0;
+	  dibujo[sum - 2] = 0;
+	  x -= bytes - 1;
+	}
+      }
+    }
+  }
+  return 0;
+}
+
+static int filtro_gestos_rotar(lua_State * L) {
+  filtro_gestos_in_imagen_t *a = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
+  ilBindImage(a->m_id);
+  ilLoadL(IL_RAW, a->m_imagen, a->m_ancho * a->m_alto * a->m_bytes);  
+  iluRotate(45.0f);
+  return 0;
+}
 
 static int filtro_gestos_difuminar (lua_State *L) {
   filtro_gestos_in_imagen_t *a = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
   filtro_gestos_in_imagen_t *b = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 2);
-  int factor = luaL_checkint(L, 3);
+  int parametro_difuminado = luaL_checkint(L, 3);
   int reduccion = luaL_checkint(L, 4);
-  int ir = luaL_checkint(L, 5);
-  int sr = luaL_checkint(L, 6);
-  int iv = luaL_checkint(L, 7);
-  int sv = luaL_checkint(L, 8);
-  int ia = luaL_checkint(L, 9);
-  int sa = luaL_checkint(L, 10);
+  color_t m_rojoInf = (color_t)luaL_checkint(L, 5);
+  color_t m_rojoSup = (color_t)luaL_checkint(L, 6);
+  color_t m_verdeInf = (color_t)luaL_checkint(L, 7);
+  color_t m_verdeSup = (color_t)luaL_checkint(L, 8);
+  color_t m_azulInf = (color_t)luaL_checkint(L, 9);
+  color_t m_azulSup = (color_t)luaL_checkint(L, 10);
   int ancho = a->m_ancho;
   int alto = a->m_alto;
   int bytes = a->m_bytes;  
   color_t *buffer = a->m_imagen;
-  color_t *orden = b->m_imagen;
-  int p, i, j, tam = ancho * bytes, y, x;
-  int rojo, verde, azul, acX = 0, acY = 0, cont = 0;
-  int param_bytes = factor * bytes;
-  for(y = 0; y < alto; ++y) {
-    for(x = 0; x < tam; x += bytes) {
-      rojo = 0;
-      verde = 0;
-      azul = 0;    
-      if (y - factor >= 0 && y + factor < alto) {	
-	if (x - param_bytes >= 0 && x + param_bytes < tam) {  
-	  for (i = y - factor; i <= y + factor; i++) {	
-	    for (j = x - param_bytes; j <= x + param_bytes; j += bytes) {
-	      p = (i * tam) + j;
-	      rojo += buffer[p];
-	      verde += buffer[p + 1];
-	      azul += buffer[p + 2];
+
+  color_t *tipo_orden = b->m_imagen;
+
+  int cont, cont2, acX, acX2, acY, acY2, pos;
+  int tam = ancho * bytes;
+  cont = cont2 = acX = acX2 = acY = acY2 = 0;
+  int y, x, j, i;
+  for (y = 0; y < alto; y++) {
+    for (x = 0; x < tam; x+=bytes) {
+      int rojo = 0;
+      int verde = 0;
+      int azul = 0;
+
+      int param_bytes = parametro_difuminado * bytes;
+      int param_bytes2 = (parametro_difuminado * bytes) + (bytes - 1);
+      if (y - parametro_difuminado >= 0 && y + parametro_difuminado <= alto) {
+	if (x - param_bytes >= 0 && x + param_bytes2 <= tam) {
+	  for (i = y - parametro_difuminado; i <= y + parametro_difuminado; i++) {	  
+	    for (j = x - param_bytes; j <= x + param_bytes2; j+=bytes) {
+	      pos = i * tam + j;
+	      rojo += buffer[pos];
+	      verde += buffer[pos + 1];
+	      azul += buffer[pos + 2];
 	    }
 	  }
 	}
       }
-      
-      int numero = (2 * factor) + 1;
+		
+      int numero = (2 * parametro_difuminado) + 1;
       numero *= numero;
       rojo = ((int)floor(rojo / numero));
       verde = ((int) floor(verde / numero));
       azul = ((int) floor(azul / numero));
 
-      rojo = buffer[y * tam + x];
-      verde = buffer[y * tam + x + 1];
-      azul = buffer[y * tam + x + 2];
-	    
-      while (rojo % reduccion && rojo > 1)
-	rojo--;
-      while (verde % reduccion && verde > 1)
-	verde--;
-      while (azul % reduccion && azul > 1)
-      azul--;
+      rojo -= rojo % reduccion;
+      verde -= verde % reduccion;
+      azul -= azul % reduccion;
+      
+      pos = y * tam + x;
 
-      /*rojo = buffer[y * tam + x];
-      verde = buffer[y * tam + x + 1];
-      azul = buffer[y * tam + x + 2];*/
-      cont = 1;
-      int pos = y * ancho * bytes + x;
-      int valor = 0;
+      /* Atención: los colores rojo y azul están cambiados,
+	 nosotro usamos el orden RGB */
       color_t azul_comparar = (color_t)rojo;
       color_t rojo_comparar = (color_t)azul;
       color_t verde_comparar = (color_t)verde;
-      if ((rojo_comparar >= ir && rojo_comparar <= sr)
-	  && (verde_comparar >= iv && verde_comparar <= sv)
-	  && (azul_comparar >= ia && azul_comparar <= sa)) {
+      color_t valor = 0;
+      if ((rojo_comparar >= m_rojoInf && rojo_comparar <= m_rojoSup)
+	   && (verde_comparar >= m_verdeInf
+	       && verde_comparar <= m_verdeSup)
+	   && (azul_comparar >= m_azulInf
+	       && azul_comparar <= m_azulSup)) {
 	valor = 255;
 	cont++;
 	acX += x;
 	acY += y;
       }
-      orden[pos] = rojo;
-      orden[pos + 1] = verde;
-      orden[pos + 2] = azul;
+      tipo_orden[pos] = valor;
+      tipo_orden[pos + 1] = valor;
+      tipo_orden[pos + 2] = valor;
     }
   }
+
+  
   lua_pushnumber(L, cont);
   lua_pushnumber(L, acX);
   lua_pushnumber(L, acY);
@@ -307,6 +425,7 @@ static lua_State *filtro_abrir_lua(modulo_t *modulo, const char *ruta) {
 
   static const struct luaL_reg arraylib_f [] = {
     {"new", filtro_gestos_newarray},
+    {"delete", filtro_gestos_delete},
     {NULL, NULL}
   };
 
@@ -316,6 +435,8 @@ static lua_State *filtro_abrir_lua(modulo_t *modulo, const char *ruta) {
     {"size", filtro_gestos_getsize},
     {"copia", filtro_gestos_copia},
     {"difuminar", filtro_gestos_difuminar},
+    {"centrar", filtro_gestos_centrar},
+    {"rotar", filtro_gestos_rotar},
     {NULL, NULL}
   };
 
@@ -351,18 +472,24 @@ static char *filtro_iniciar(modulo_t *modulo, GHashTable *argumentos)
   dato->m_lua = filtro_abrir_lua(modulo, archivo);
   dato->m_iniciar = g_hash_table_lookup(argumentos, "iniciar");
   dato->m_filtrar = g_hash_table_lookup(argumentos, "filtrar");
+  dato->m_cerrar = g_hash_table_lookup(argumentos, "cerrar");
   dato->m_parametros = g_hash_table_lookup(argumentos, "parametros");
-  GHashTable *tabla = modulo->m_tabla;
-  dato->m_salida.m_imagen = 0;
-  dato->m_buffer.m_imagen = 0;
-  g_hash_table_insert(tabla, PUERTO_SALIDA, &dato->m_salida);
-  
+  //  GHashTable *tabla = modulo->m_tabla;
+  /*  dato->m_salida.m_imagen = 0;
+      dato->m_buffer.m_imagen = 0;*/
+  //g_hash_table_insert(tabla, PUERTO_SALIDA, &dato->m_salida);
+  ilInit();
+  iluInit();
   return dato->m_buffer_error;;
 }
 static char *filtro_cerrar(modulo_t *modulo)
 {
   dato_filtro_t * dato = (dato_filtro_t *)modulo->m_dato;
-  free(dato->m_salida.m_imagen);
+  /*ilDeleteImages(dato->m_buffer->m_id);
+    ilDeleteImages(dato->m_salida->m_id);*/
+  //  color_t *imagen = 
+  filtro_llamar_funcion(dato->m_lua, dato->m_cerrar, "");
+  //free(imagen);
   lua_close(dato->m_lua);
   free(dato);
   free(modulo);

@@ -7,6 +7,7 @@
 	      <li>Imágenes aleatorias, creando puntos diseminados de diferentes colores por la imagen
 	      <li>Una imagen plana de un color fijo
 	      <li>Cargar un archivo de imagen
+	      <li>A través de un interfaz de video, generar las imagenes
 	   </ul>
 
 	   \section puertos Puertos
@@ -45,7 +46,6 @@
 /*! \brief La estructura de datos que tiene cada módulo */
 typedef struct {
   filtro_gestos_in_imagen_t m_filtro;
-  //ventana_imagen_in_t m_imagen;
   unsigned char m_rojo;
   unsigned char m_verde;
   unsigned char m_azul;
@@ -232,11 +232,6 @@ static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
 		  imagen->m_ancho *
 		  imagen->m_bytes);
   
-  /*  dato->m_imagen.m_imagen = imagen->m_imagen;
-  dato->m_imagen.m_alto = imagen->m_alto;
-  dato->m_imagen.m_ancho = imagen->m_ancho;
-  dato->m_imagen.m_bytes = imagen->m_bytes;*/
-  //  g_hash_table_insert(modulo->m_tabla, PUERTO_VENTANA, &dato->m_imagen);
   g_hash_table_insert(modulo->m_tabla, PUERTO_IMAGEN, imagen);
 
   return devolver;

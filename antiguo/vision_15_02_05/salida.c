@@ -1,7 +1,21 @@
 /*! \file salida.c
     \brief Muestra una salida en forma de texto
+
+          \section modulo Módulo
+	  El módulo de salida se encarga de crear una ventana (con GTK, el ejecutable que llame a esta librería debe inciar con <code>gtk_main()</code>) que muestra líneas de texto. La ventana, como es usual, sólo se cierra cuando se cierra el módulo.
+	  El módulo necesita, además, que esté en el mismo directorio el archivo de Glade "ventana_salida.glade", pues es éste el que define la ventana.
+	  \section puertos Puertos
+	  El módulo no dispone de puertos de salida, y como entrada tiene:
+	  <ul>
+	    <li><em>entrada_texto</em>: Recibe un char * que presenta por la ventana. No hace falta añadir el salto de línea, el módulo lo genera solo.
+	  </ul>
+	  \section argumentos Argumentos
+	  Es posible generar una salida estándar en la ventana al inciar, añadiendo a la descripción en XML un parámetro:
+	  <ul>
+	    <li><em>texto</em>: Imprime el argumento en la ventana al inciarla.
+	  </ul>
     \author Carlos León
-    \version 0.1
+    \version 1.0
 */  
     
 #include "pipeline_sdk.h"
@@ -11,6 +25,7 @@
 #include <glib.h>
 #include <string.h>
 
+/*! \brief El puerto de entrada, recibe un <code>char *</code> */
 #define PUERTO "entrada_texto"
 
 static void salida_imprimir(const char *value, GladeXML *xml) {

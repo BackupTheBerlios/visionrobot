@@ -30,10 +30,11 @@
     <argumento nombre="guion">filtro.lua</argumento>
     <argumento nombre="iniciar">iniciar</argumento>
     <argumento nombre="filtrar">filtrar</argumento>
+    <argumento nombre="cerrar">cerrar</argumento>
     <argumento nombre="parametros">parametros</argumento>
     <conexion puerto="salida_imagen">
       <destino puerto="entrada_imagen">ventana_filtro_orden</destino>
-      <destino puerto="entrada_imagen">red_orden</destino>
+   <!--   <destino puerto="entrada_imagen">red_orden</destino> -->
     </conexion>	   
   </modulo>
 
@@ -43,6 +44,7 @@
     <argumento nombre="iniciar">iniciar</argumento>
     <argumento nombre="filtrar">filtrar</argumento>
     <argumento nombre="parametros">parametros</argumento>
+    <argumento nombre="cerrar">cerrar</argumento>
     <conexion puerto="salida_imagen">
       <destino puerto="entrada_imagen">ventana_filtro_param</destino>
       <destino puerto="entrada_imagen">red_param</destino>
@@ -91,7 +93,7 @@
   </modulo>
   
   <!-- Red neuronal de las ordenes -->
-  <modulo ruta="red_neuronal" nombre="red_orden">
+<!--  <modulo ruta="red_neuronal" nombre="red_orden">
     <argumento nombre="archivo">orden_net</argumento> 
     <argumento nombre="salida1">parar</argumento>
     <argumento nombre="salida2">girar</argumento>
@@ -100,7 +102,7 @@
     <conexion puerto="salida_texto">
       <destino puerto="entrada_texto">salida</destino>
     </conexion> 
-  </modulo> 
+  </modulo>  -->
 
   <!-- Red neuronal de los parametros -->
 <!--  <modulo ruta="red_neuronal" nombre="red_param">
@@ -115,8 +117,8 @@
   </modulo> -->
   
   <!-- Modulo de salida -->
-  <modulo ruta="salida" nombre="salida">
+ <!--  <modulo ruta="salida" nombre="salida">
     <argumento nombre="texto">Vision por computador</argumento>
-  </modulo>
+  </modulo> -->
 
 </pipeline>
