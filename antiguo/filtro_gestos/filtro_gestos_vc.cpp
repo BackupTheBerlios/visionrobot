@@ -3,9 +3,11 @@
 
 #include "dll_pipeline.h"
 #include "Codigo_Filtro.h"
+#include "preferencias.h"
 
 entrada* buffer_in;
 salida*  buffer_out;
+respuesta_t opciones;
 
 BOOL APIENTRY DllMain( HANDLE hModule, 
                        DWORD  ul_reason_for_call, 
@@ -40,7 +42,11 @@ int iniciar() {
 	return 0;
 }
 int propiedades(){
-	return 0;
+  // Carlos -->
+  if(abrir_preferencias(&opciones)) {
+    // Añadir el código que hay que realizar con esas opciones
+  }
+  // <--
 }
 int cerrar(){
 	return 0;
