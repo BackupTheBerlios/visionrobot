@@ -48,6 +48,17 @@ pipeline_t *pipeline_crear()
     return p;
 }
 
+int pipeline_poner_a_cero(elemento_t * elemento) {
+  elemento->m_handler = 0;
+  	elemento->m_funcion_ciclo = 0;
+	elemento->m_funcion_iniciar = 0;
+	elemento->m_funcion_propiedades = 0;
+	elemento->m_funcion_cerrar = 0;
+	elemento->m_funcion_get_datos = 0;
+	elemento->m_funcion_set_datos = 0;
+	elemento->m_funcion_error = 0;
+}
+
 elemento_t *pipeline_nuevo(pipeline_t * pipeline, const char *nombre,
 			      const char * ruta)
 {
@@ -66,21 +77,13 @@ elemento_t *pipeline_nuevo(pipeline_t * pipeline, const char *nombre,
   	pipeline->m_elemento[pipeline->m_numero].m_funcion_get_datos = 0;
     pipeline->m_elemento[pipeline->m_numero].m_funcion_set_datos = 0;
 	  pipeline->m_elemento[pipeline->m_numero].m_funcion_error = 0;*/
+    pipeline_poner_a_cero(&pipeline->m_elemento[pipeline->m_numero]);
     pipeline_cambiar_biblioteca(&pipeline->m_elemento[pipeline->m_numero]);
     pipeline->m_numero++;
     return &pipeline->m_elemento[pipeline->m_numero - 1];
 }
 
-int pipeline_poner_a_cero(elemento_t * elemento) {
-  elemento->m_handler = 0;
-  	elemento->m_funcion_ciclo = 0;
-	elemento->m_funcion_iniciar = 0;
-	elemento->m_funcion_propiedades = 0;
-	elemento->m_funcion_cerrar = 0;
-	elemento->m_funcion_get_datos = 0;
-	elemento->m_funcion_set_datos = 0;
-	elemento->m_funcion_error = 0;
-}
+
 
 int pipeline_cerrar_biblioteca(elemento_t * elemento)
 {

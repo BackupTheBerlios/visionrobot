@@ -167,19 +167,19 @@ extern "C" {
       \return -1 en caso de error, 0 si todo va bien
   */
     int pipeline_ciclo(const pipeline_t * pipeline);
-  /*! \brief Inicia un módulo del pipe
+  /*! \brief Inicia un módulo del pipe. Después de llamar a la función de inicio, se llamará a <code>error()</code>
       \param pipeline El pipe en el que trabajamos
       \param elemento El elemento que iniciamos
       \return -1 en caso de error, 0 si todo va bien
   */
     int pipeline_iniciar(const pipeline_t * pipeline, elemento_t * elemento);
-  /*! \brief Detiene un módulo del pipe
+  /*! \brief Detiene un módulo del pipe. Después de llamar a la función de parada, se llamará a <code>error()</code>
       \param pipeline El pipe en el que trabajamos
       \param elemento El elemento que paramos
       \return -1 en caso de error, 0 si todo va bien
   */    
   int pipeline_parar(const pipeline_t * pipeline, elemento_t * elemento);
-  /*! \brief Abre la ventana de propiedades
+  /*! \brief Abre la ventana de propiedades. Después de llamar a la función de propiedades, el pipeline captará el mensaje de información y/o error.
       \param pipeline El pipe en el que trabajamos
       \param elemento El elemento cuya ventana queremos abrir
       \return 0 si todo va bien, -1 si algo falla

@@ -1,4 +1,4 @@
-/*! \file red_neuronal_vc.h
+/*! \file red_neuronal.cpp
     \brief CPP de la DLL de la red neuronal
     \author Diego
     \version 0.2
@@ -42,13 +42,15 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 //cambiar el data_in tiene q incluir ancho y alto
 
 int ciclo (){
-       if(entrenada) buffer_out= principal->Reconocer(buffer,ancho,alto,tipofoto);
-       else buffer_out= "No_Gesto";
-       return 0;
+  if(entrenada && buffer_in)
+    buffer_out= principal->Reconocer(buffer,ancho,alto,tipofoto);
+  else
+    buffer_out= "No_Gesto\n";
+  return 0;
 }
 int set_datos(const void * datos){
        buffer_in= (data_in*)datos;
-       buffer_out= NULL;
+       //buffer_out= NULL;
        return 0;
 }
 void * get_datos(){

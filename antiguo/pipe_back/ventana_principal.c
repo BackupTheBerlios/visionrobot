@@ -1,6 +1,6 @@
 /*! \file ventana_principal.h
-    \brief Ventana principal de la aplicaciÃ³n
-    \author Carlos LeÃ³n
+    \brief Ventana principal de la aplicación
+    \author Carlos León
     \version 0.1
  */
 
@@ -401,30 +401,30 @@ void on_nuevo2_activate(GtkMenuItem * menuitem, gpointer user_data)
 }
 
 void ventana_principal_establecer_boton(ventana_principal_t *ventana_principal
-                    , gint id) {
-    GtkToggleButton *widget = get_widget(ventana_principal, 
-                id);
-                
-    //Pongo tres búferes porque el duende no me deja con uno solo
-    char buffer[64];
-    char buffer2[64];
-    char buffer3[64];
-    sprintf(buffer, "%s", ventana_principal->pipeline->
-                      m_elemento[id].m_nombre);
-    if(ventana_principal->pipeline->m_error == id) {
-          sprintf(buffer2, "! %s", buffer);
-   }
-   else {
-      strcpy(buffer2, buffer);
-    }
-    if(ventana_principal->pipeline->
-                      m_elemento[id].m_iniciado) {
-        sprintf(buffer3, "* %s", buffer2);
-    }
-    else{
-      strcpy(buffer3, buffer2);
-    }
-    
+					, gint id) {
+  GtkToggleButton *widget = get_widget(ventana_principal, 
+				       id);
+  
+  //Pongo tres búferes porque el duende no me deja con uno solo
+  char buffer[64];
+  char buffer2[64];
+  char buffer3[64];
+  sprintf(buffer, "%s", ventana_principal->pipeline->
+	  m_elemento[id].m_nombre);
+  if(ventana_principal->pipeline->m_error == id) {
+    sprintf(buffer2, "! %s", buffer);
+  }
+  else {
+    strcpy(buffer2, buffer);
+  }
+  if(ventana_principal->pipeline->
+     m_elemento[id].m_iniciado) {
+    sprintf(buffer3, "* %s", buffer2);
+  }
+  else{
+    strcpy(buffer3, buffer2);
+  }
+  
   gtk_button_set_label(GTK_BUTTON(widget), buffer3);
 }
 
@@ -623,7 +623,7 @@ void on_propiedades_biblioteca_activate(GtkButton * button,
 	    if (gtk_toggle_button_get_active
 		(get_widget(ventana_principal, i))) {
 		pipeline_abrir_propiedades(ventana_principal->pipeline,
-		              ventana_principal->pipeline->m_elemento[i]);
+		              &ventana_principal->pipeline->m_elemento[i]);
 	    }
 	}
     }

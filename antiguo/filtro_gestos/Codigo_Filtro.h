@@ -29,6 +29,8 @@ typedef struct t_data_in{
 
 class Filtro{
         private:
+                int m_Bytes;
+                data_out * m_Salida;
                 int m_rojoSup_orden,m_rojoInf_orden,m_verdeSup_orden,m_verdeInf_orden,m_azulSup_orden,m_azulInf_orden;
                 int m_rojoSup_param,m_rojoInf_param,m_verdeSup_param,m_verdeInf_param,m_azulSup_param,m_azulInf_param;
                 BYTE* Centrar(BYTE* dibujo, int difY, int difX, int h, int w);

@@ -41,8 +41,10 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 #endif
 
 int ciclo (){
-	//buffer_out= filtro->Filtrar(buffer_in->m_imagen, buffer_in->m_alto ,buffer_in->m_ancho);
-	return 0;
+  if(buffer_in->m_imagen != 0) {
+	buffer_out= filtro->Filtrar(buffer_in->m_imagen, buffer_in->m_alto ,buffer_in->m_ancho);
+  }
+  return 0;
 }
 int set_datos(const void * datos){
 	buffer_in= (data_in*)datos;
