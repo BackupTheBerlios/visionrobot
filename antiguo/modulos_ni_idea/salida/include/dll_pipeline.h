@@ -1,7 +1,7 @@
 /*! \file dll_pipeline.h
     \brief Archivo de cabecera para las DLL's del pipeline
     \author Carlos León
-    \versión 0.1
+    \version 0.1
 */
 
 #ifndef _DLL_PIPELINE_H_INCLUIDO_

@@ -1,7 +1,7 @@
 /*! \file salida.c
     \brief Muestra una salida en forma de texto
     \author Carlos León
-    \versión 0.1
+    \version 0.1
 */
 
 #ifdef WIN32
