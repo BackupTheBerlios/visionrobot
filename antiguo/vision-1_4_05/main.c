@@ -20,7 +20,7 @@ void funcion_error(const char *nombre, const char *textos) {
   if(xml && nombre && textos) {
     GString *valor = g_string_new("");
     g_string_sprintf(valor, "%s: %s\n", strdup(nombre), strdup(textos));
-/*     printf("%s: %s\n", nombre, textos); */
+    printf("%s: %s\n", nombre, textos);
     GtkWidget* texto =  glade_xml_get_widget(xml, "txt_error");
     GtkTextIter iter;
     GtkTextBuffer * buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(texto));

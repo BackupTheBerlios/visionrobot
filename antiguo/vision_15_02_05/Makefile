@@ -22,7 +22,7 @@ libred_neuronal.so: red.c red_neuronal.c
 	gcc $(OPTS) -shared -o libred_neuronal.so red.c red_neuronal.c `pkg-config glib-2.0 --cflags --libs`
 
 libimagenes.so: imagenes.c
-	gcc $(OPTS) -shared -o libimagenes.so imagenes.c  `pkg-config glib-2.0 --cflags --libs` `pkg-config --cflags gtk+-2.0` `pkg-config --libs gtk+-2.0`
+	gcc $(OPTS) -shared -o libimagenes.so imagenes.c  `pkg-config glib-2.0 --cflags --libs` `pkg-config --cflags gtk+-2.0` `pkg-config --libs gtk+-2.0` -lsane
 
 pipeline: main.c libpipeline.a
 	gcc $(OPTS) main.c -o pipeline -L ./ -lpipeline `xml2-config --libs` `pkg-config --cflags gtk+-2.0` `pkg-config --libs gtk+-2.0` `pkg-config libglade-2.0 --cflags --libs` `pkg-config --libs gmodule-2.0`

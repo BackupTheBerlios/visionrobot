@@ -35,16 +35,19 @@
 
 
   <modulo ruta="ventana_imagen" nombre="ventana_filtro_param">
+    <argumento nombre="titulo">Parametros</argumento>
     <argumento nombre="nombre_foto">filtro_param.png</argumento>
     <argumento nombre="extension">png</argumento>
   </modulo>
   
   <modulo ruta="ventana_imagen" nombre="ventana_filtro_orden">
+    <argumento nombre="titulo">Ordenes</argumento>
     <argumento nombre="nombre_foto">filtro_orden.png</argumento>
     <argumento nombre="extension">png</argumento>
   </modulo>
   
   <modulo ruta="imagenes" nombre="imagenes" inicio="1">
+    <argumento nombre="camara">1</argumento>
     <argumento nombre="archivo">foto.xpm</argumento>
     <argumento nombre="rojo">32</argumento>
     <argumento nombre="verde">45</argumento>
@@ -60,23 +63,11 @@
     </conexion>
   </modulo>
   
-  
   <modulo ruta="ventana_imagen" nombre="ventana_imagenes">
+    <argumento nombre="titulo">Imagenes</argumento>
     <argumento nombre="nombre_foto">imagenes.png</argumento>
     <argumento nombre="extension">png</argumento>
   </modulo>
-  
-  <!-- <modulo ruta="camara" nombre="camara" inicio="1">
-    <argumento nombre="ancho">320</argumento>
-    <argumento nombre="alto">240</argumento>
-    <argumento nombre="camara">0</argumento>
-    <conexion puerto="salida_filtro">
-      <destino puerto="entrada_imagen">filtro_gestos</destino>
-    </conexion>
-    <conexion puerto="salida_ventana">
-      <destino puerto="entrada_imagen">ventana_imagenes</destino>
-    </conexion>
-  </modulo> -->
   
   <modulo ruta="red_neuronal" nombre="red">
     <argumento nombre="archivo_ordenes">orden_net</argumento> 

@@ -103,11 +103,14 @@ static char *ventana_ciclo(modulo_t *modulo, const char *puerto, const void *val
   return 0;
 }
 
-static void ventana_crear_ventana(modulo_t *modulo) {
+static void ventana_crear_ventana(modulo_t *modulo, const char *titulo) {
   static GladeXML* xml = 0;
   xml = glade_xml_new("ventana_imagen.glade", NULL, NULL);
   glade_xml_signal_autoconnect(xml);  
   ((datos_ventana_t*)modulo->m_dato)->ventana = glade_xml_get_widget(xml, "win_imagen");
+  if(titulo) {
+    gtk_window_set_title(GTK_WINDOW(((datos_ventana_t*)modulo->m_dato)->ventana), titulo);
+  }
   gtk_window_set_default_size (GTK_WINDOW(((datos_ventana_t*)modulo->m_dato)->ventana), 100, 100);
   g_signal_connect ((gpointer) ((datos_ventana_t*)modulo->m_dato)->ventana, "key_press_event",
                     G_CALLBACK (ventana_foto),
@@ -117,9 +120,10 @@ static void ventana_crear_ventana(modulo_t *modulo) {
 static char *ventana_iniciar(modulo_t *modulo, GHashTable *argumentos)
 {
   if(g_hash_table_size(argumentos) < 1) {return "faltan argumentos";}
+  char *titulo = (char *)g_hash_table_lookup(argumentos, "titulo");
   ((datos_ventana_t*)modulo->m_dato)->nombre_foto = strdup(g_hash_table_lookup(argumentos, "nombre_foto"));
   ((datos_ventana_t*)modulo->m_dato)->extension = strdup(g_hash_table_lookup(argumentos, "extension"));
-  ventana_crear_ventana(modulo);
+  ventana_crear_ventana(modulo, titulo);
   return "iniciado";
 }
 static char *ventana_cerrar(modulo_t *modulo)
