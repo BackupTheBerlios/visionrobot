@@ -31,7 +31,7 @@ void filtro_gestos_borrar(filtro_t ** filtro)
   }
 }
 
-red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro)
+red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro, int parametro_difuminado, int reduccion)
 {
 
     if (!filtro || !filtro->m_buffer) {
@@ -72,11 +72,13 @@ red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro)
 	    int rojo = 0;
 	    int verde = 0;
 	    int azul = 0;
-
-	    /*if (y - 2 >= 0 && y + 2 <= h) {
-	      for (i = y - 2; i <= y + 2; i++) {
-		if (x - 8 >= 0 && x + 10 <= w * bytes) {
-		  for (j = x - 8; j <= x + 10; j++) {
+	    
+	    int param_bytes = parametro_difuminado * bytes;
+	    int param_bytes2 = (parametro_difuminado * bytes) + (bytes - 1);
+	    if (y - parametro_difuminado >= 0 && y + parametro_difuminado <= h) {
+	      for (i = y - parametro_difuminado; i <= y + parametro_difuminado; i++) {
+		if (x - param_bytes >= 0 && x + param_bytes2 <= w * bytes) {
+		  for (j = x - param_bytes; j <= x + param_bytes2; j++) {
 		    rojo += buffer[(i * w * bytes) + j];
 		    verde += buffer[(i * w * bytes) + j + 1];
 		    azul += buffer[(i * w * bytes) + j + 2];
@@ -85,26 +87,28 @@ red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro)
 		}
 	      }
 	      }
-
-	    rojo = ((int)floor(rojo / 25));
-	    verde = ((int) floor(verde / 25));
-	    azul = ((int) floor(azul / 25));*/
+		
+		int numero = (2 * parametro_difuminado) + 1;
+		numero *= numero;
+	    rojo = ((int)floor(rojo / numero));
+	    verde = ((int) floor(verde / numero));
+	    azul = ((int) floor(azul / numero));
 
 	    
 
 	    /* Código de prueba, para depurar, no tiene validez
 	       no borrar porque es útil tenerlo
 	       Carlos */
-	    rojo = buffer[y * w * bytes + x];
+	    /*rojo = buffer[y * w * bytes + x];
 	    verde = buffer[y * w * bytes + x + 1];
-	    azul = buffer[y * w * bytes + x + 2];
+	    azul = buffer[y * w * bytes + x + 2];*/
 	    /* Hasta aquí */
 
-	    while (rojo % 10 && rojo > 1)
+	    while (rojo % reduccion && rojo > 1)
 	      rojo--;
-	    while (verde % 10 && verde > 1)
+	    while (verde % reduccion && verde > 1)
 	      verde--;
-	    while (azul % 10 && azul > 1)
+	    while (azul % reduccion && azul > 1)
 	    azul--;
 	     
 	    posY = y * w * bytes;

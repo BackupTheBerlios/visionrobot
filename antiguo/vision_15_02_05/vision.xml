@@ -18,6 +18,8 @@
   </modulo>
 
   <modulo ruta="filtro_gestos" nombre="filtro_gestos">
+    <argumento nombre="difuminado">2</argumento>
+	<argumento nombre="reduccion">10</argumento>
     <conexion puerto="salida_imagen_orden">
       <destino puerto="entrada_imagen">ventana_filtro_orden</destino>
     </conexion>
