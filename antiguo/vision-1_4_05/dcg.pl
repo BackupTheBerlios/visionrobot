@@ -19,11 +19,11 @@ gv -->
 
 % Expresiones aritmeticas
 expresion(Z) --> 
-	term(X), [+], expresion(Y), {Z is X + Y}.
+	termino(X), [s], expresion(Y), {Z is X + Y}.
 expresion(Z) -->
-	term(X), [-], expresion(Y), {Z is X - Y}.
+	termino(X), [-], expresion(Y), {Z is X - Y}.
 expresion(Z) -->
-	term(X).
+	termino(X).
 
 termino(Z) -->
 	factor(X), [*], termino(Y), {Z is X * Y}.
