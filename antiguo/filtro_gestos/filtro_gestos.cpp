@@ -41,7 +41,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 #endif
 
 int ciclo (){
-  if(buffer_in->m_imagen != 0) {
+  if(buffer_in && buffer_in->m_imagen != 0) {
 	buffer_out= filtro->Filtrar(buffer_in->m_imagen, buffer_in->m_alto ,buffer_in->m_ancho);
   }
   return 0;
@@ -63,11 +63,35 @@ int iniciar() {
       filtro= new Filtro();
 	return 0;
 }
+
+int color_tolerancia_superior(int color, float tolerancia) {
+  return color + ((int)(tolerancia * color));
+}
+
+int color_tolerancia_inferior(int color, float tolerancia) {
+  return color - ((int)(tolerancia * color));
+}
+
+
 int propiedades(){
     PON_ERROR("Abriendo propiedades...\n");
   // Carlos -->
   if(abrir_preferencias(&opciones)) {
-     filtro->SetColor(240,160,120,70,120,70,100,50,100,50,100,50);
+    opciones.orden.color.red;
+     //filtro->SetColor(240,160,120,70,120,70,100,50,100,50,100,50);
+     filtro->SetColor(
+        color_tolerancia_superior(opciones.orden.color.red, opciones.orden.tolerancia),
+        color_tolerancia_inferior(opciones.orden.color.red, opciones.orden.tolerancia),
+        color_tolerancia_superior(opciones.orden.color.green, opciones.orden.tolerancia),
+        color_tolerancia_inferior(opciones.orden.color.green, opciones.orden.tolerancia),
+        color_tolerancia_superior(opciones.orden.color.blue, opciones.orden.tolerancia),
+        color_tolerancia_inferior(opciones.orden.color.blue, opciones.orden.tolerancia),
+        color_tolerancia_superior(opciones.argumento.color.red, opciones.argumento.tolerancia),
+        color_tolerancia_inferior(opciones.argumento.color.red, opciones.argumento.tolerancia),
+        color_tolerancia_superior(opciones.argumento.color.green, opciones.argumento.tolerancia),
+        color_tolerancia_inferior(opciones.argumento.color.green, opciones.argumento.tolerancia),
+        color_tolerancia_superior(opciones.argumento.color.blue, opciones.argumento.tolerancia),
+        color_tolerancia_inferior(opciones.argumento.color.blue, opciones.argumento.tolerancia));
     // Temporalmente
   }
   // <--
