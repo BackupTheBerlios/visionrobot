@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?fileVersion 2.1.0?>
+
+<ManagedProjectBuildInfo>
+<project id="camara.cdt.managedbuild.target.gnu.cygwin.so.1801030013" name="Shared Library (Gnu on Windows)" projectType="cdt.managedbuild.target.gnu.cygwin.so">
+<configuration id="cdt.managedbuild.config.gnu.cygwin.so.debug.424896689" name="Debug" parent="cdt.managedbuild.config.gnu.cygwin.so.debug" artifactName="camara" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" artifactExtension="dll" cleanCommand="rm -rf">
+<toolChain superClass="cdt.managedbuild.toolchain.gnu.cygwin.so.debug" id="cdt.managedbuild.toolchain.gnu.cygwin.so.debug.99905981" name="%ToolChainName.Dbg">
+<tool superClass="cdt.managedbuild.tool.gnu.c.compiler.cygwin.so.debug" id="cdt.managedbuild.tool.gnu.c.compiler.cygwin.so.debug.1702029717" name="GCC C Compiler"/>
+<tool superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.so.debug" id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.so.debug.920107217" name="GCC C++ Compiler">
+<option superClass="gnu.cpp.compiler.option.include.paths" id="gnu.cpp.compiler.option.include.paths.823581387" valueType="includePath">
+<listOptionValue value="&quot;C:\eclipse\workspace\camara\include&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\include\atk-1.0&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\include\pango-1.0&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\include\glib-2.0&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\workspace\camara\include&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\lib\glib-2.0\include&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\lib\gtk-2.0\include&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\include\gtk-2.0&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\include&quot;" builtIn="false"/>
+</option>
+</tool>
+<tool superClass="cdt.managedbuild.tool.gnu.c.linker.cygwin.so.debug" id="cdt.managedbuild.tool.gnu.c.linker.cygwin.so.debug.920710968" name="GCC C Linker"/>
+<tool superClass="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.so.debug" id="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.so.debug.1469531355" name="GCC C++ Linker">
+<option superClass="gnu.cpp.link.option.libs" id="gnu.cpp.link.option.libs.1072376663" valueType="libs">
+<listOptionValue value="strmiids" builtIn="false"/>
+<listOptionValue value="uuid" builtIn="false"/>
+<listOptionValue value="oleaut32" builtIn="false"/>
+<listOptionValue value="ole32" builtIn="false"/>
+<listOptionValue value="gdk-win32-2.0.dll" builtIn="false"/>
+<listOptionValue value="gobject-2.0.dll" builtIn="false"/>
+<listOptionValue value="glib-2.0.dll" builtIn="false"/>
+<listOptionValue value="gtk-win32-2.0.dll" builtIn="false"/>
+<listOptionValue value="quartz" builtIn="false"/>
+</option>
+<option superClass="gnu.cpp.link.option.paths" id="gnu.cpp.link.option.paths.198588850" valueType="stringList">
+<listOptionValue value="&quot;C:\Archivos de programa\Microsoft DirectX 9.0 SDK (Summer 2004)\Lib&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\lib&quot;" builtIn="false"/>
+</option>
+</tool>
+<tool superClass="cdt.managedbuild.tool.gnu.assembler.cygwin.so.debug" id="cdt.managedbuild.tool.gnu.assembler.cygwin.so.debug.942098123" name="GCC Assembler"/>
+</toolChain>
+</configuration>
+<configuration id="cdt.managedbuild.config.gnu.cygwin.so.release.284080581" name="Release" parent="cdt.managedbuild.config.gnu.cygwin.so.release" artifactName="camara" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" artifactExtension="dll" cleanCommand="rm -rf">
+<toolChain superClass="cdt.managedbuild.toolchain.gnu.cygwin.so.release" id="cdt.managedbuild.toolchain.gnu.cygwin.so.release.20409594" name="%ToolChainName.Rel">
+<tool superClass="cdt.managedbuild.tool.gnu.c.compiler.cygwin.so.release" id="cdt.managedbuild.tool.gnu.c.compiler.cygwin.so.release.771732133" name="GCC C Compiler"/>
+<tool superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.so.release" id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.so.release.738299294" name="GCC C++ Compiler"/>
+<tool superClass="cdt.managedbuild.tool.gnu.c.linker.cygwin.so.release" id="cdt.managedbuild.tool.gnu.c.linker.cygwin.so.release.1942437976" name="GCC C Linker"/>
+<tool superClass="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.so.release" id="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.so.release.462892702" name="GCC C++ Linker"/>
+<tool superClass="cdt.managedbuild.tool.gnu.assembler.cygwin.so.release" id="cdt.managedbuild.tool.gnu.assembler.cygwin.so.release.786802497" name="GCC Assembler"/>
+</toolChain>
+</configuration>
+</project>
+</ManagedProjectBuildInfo>
