@@ -1,0 +1,2 @@
+<?xml version="1.0"?>
+<pipeline><error_pipe>3</error_pipe><modulo><id>0</id><nombre>camara</nombre><ruta>c:\cvs\modulos\camara\Debug\camara.dll</ruta><conexion>1</conexion></modulo><modulo><id>1</id><nombre>filtro</nombre><ruta>C:\cvs\modulos\filtro_gestos\filtro_gestos.dll</ruta><conexion>2</conexion></modulo><modulo><id>2</id><nombre>red</nombre><ruta>c:\cvs\modulos\red_neuronal\red_neuronal.dll</ruta><conexion>3</conexion></modulo><modulo><id>3</id><nombre>salir</nombre><ruta>c:\cvs\modulos\salida\salida.dll</ruta></modulo></pipeline>
