@@ -51,13 +51,14 @@ typedef struct {
   // lo dejo así
   // Carlos
   const char *m_salida[4];
+  const char *m_no_gesto;
 } red_neuronal_t;
 
 
-red_neuronal_t * red_neuronal_crear(int en, int oc, int sa, const char *salida[]);
+red_neuronal_t * red_neuronal_crear(int en, int oc, int sa, const char *salida[], const char *no_gesto);
 void red_neuronal_borrar(red_neuronal_t **);
 void red_neuronal_computar_capas(red_neuronal_t * red);
-red_neuronal_t * red_neuronal_abrir(const char *file, const char *salida[]);
+red_neuronal_t * red_neuronal_abrir(const char *file, const char *salida[], const char *no_gesto);
 const char *red_neuronal_reconocer(red_neuronal_t * red, char *dibujo,
 			      int ancho, int alto, int bytes/*,tipo_foto_t tipo*/);
 

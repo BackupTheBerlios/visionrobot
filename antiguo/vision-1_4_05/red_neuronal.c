@@ -28,7 +28,7 @@
 
 //---------------------------------------------------------------------------
 
-red_neuronal_t * red_neuronal_crear(int en, int oc, int sa, const char *salida[]) 
+red_neuronal_t * red_neuronal_crear(int en, int oc, int sa, const char *salida[], const char *no_gesto) 
 {
     red_neuronal_t * red = (red_neuronal_t *) malloc(sizeof(red_neuronal_t));
     red->numEntrada = en;
@@ -43,6 +43,7 @@ red_neuronal_t * red_neuronal_crear(int en, int oc, int sa, const char *salida[]
     red->m_salida[1] = salida[1];
     red->m_salida[2] = salida[2];
     red->m_salida[3] = salida[3];
+    red->m_no_gesto = no_gesto;
     return red;
 }
 
@@ -94,7 +95,7 @@ void red_neuronal_computar_capas(red_neuronal_t * red)
 
 //---------------------------------------------------------------------------
 //Lee de un archivo una red ya entrenada
-red_neuronal_t * red_neuronal_abrir(const char *file, const char *salida[])
+red_neuronal_t * red_neuronal_abrir(const char *file, const char *salida[], const char *no_gesto)
 {
     FILE * archivo;
     int ne, no, ns;
@@ -104,7 +105,7 @@ red_neuronal_t * red_neuronal_abrir(const char *file, const char *salida[])
 	return 0;
     }
     fscanf(archivo, "%d %d %d", &ne, &no, &ns);
-    red_neuronal_t * redA = red_neuronal_crear(ne, no, ns, salida);
+    red_neuronal_t * redA = red_neuronal_crear(ne, no, ns, salida, no_gesto);
     double *pesosEntrada2 = (double *) malloc(sizeof(double) * ((ne + 1) * (no + 1)));
     double *pesosOculta2 = (double *) malloc(sizeof(double) * ((no + 1) * (ns + 1)));
     int i;
@@ -200,7 +201,7 @@ const char *red_neuronal_reconocer(red_neuronal_t * red, char *dibujo,
     else
     return "maxima";
     }*/
-  return "no_gesto";
+  return red->m_no_gesto;//"no_gesto";
 }
 
 //---------------------------------------------------------------------------

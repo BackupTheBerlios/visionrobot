@@ -35,6 +35,7 @@ typedef struct {
   GHashTable *m_argumentos;
   GHashTable *m_enlaces;
   const char *m_nombre;
+  gboolean m_activado;
 } elemento_t;
 
 typedef struct {

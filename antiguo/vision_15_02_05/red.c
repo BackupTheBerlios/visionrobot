@@ -45,7 +45,8 @@ static char *red_iniciar(modulo_t *modulo, GHashTable *argumentos)
     salida[1] = g_hash_table_lookup(argumentos, "salida2");
     salida[2] = g_hash_table_lookup(argumentos, "salida3");
     salida[3] = g_hash_table_lookup(argumentos, "salida4");
-    dato->m_red = red_neuronal_abrir(archivo, salida);
+    const char *no_gesto = g_hash_table_lookup(argumentos, "no_gesto");
+    dato->m_red = red_neuronal_abrir(archivo, salida, no_gesto);
     g_hash_table_insert(modulo->m_tabla, PUERTO_TEXTO, 0);
     red_neuronal_t *red = dato->m_red;
     if (!red) {

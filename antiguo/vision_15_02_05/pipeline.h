@@ -82,7 +82,7 @@ extern "C"  {
       \param p El pipeline cuyos módulos inciamos
   */
   int  pipeline_iniciar(const pipeline_t * p);
-  
+
 #ifdef __cplusplus
 } 
 #endif
