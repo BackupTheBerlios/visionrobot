@@ -1,0 +1,25 @@
+﻿<?xml version="1.0"?>
+<pipeline>
+	<modulo 
+		ruta="filtro_gestos.dll">
+		<argumento tipo="orden_superior_rojo">10</argumento>
+		<argumento tipo="orden_inferior_rojo">20</argumento>
+		<argumento tipo="orden_superior_verde">30</argumento>
+		<argumento tipo="orden_inferior_verde">40</argumento>
+		<argumento tipo="orden_superior_azul">50</argumento>
+		<argumento tipo="orden_inferior_azul">60</argumento>
+		<argumento tipo="param_superior_rojo">70</argumento>
+		<argumento tipo="param_inferior_rojo">80</argumento>
+		<argumento tipo="param_superior_verde">90</argumento>
+		<argumento tipo="param_inferior_verde">100</argumento>
+		<argumento tipo="param_superior_azul">110</argumento>
+		<argumento tipo="param_inferior_azul">120</argumento>
+		<modulo 
+			ruta="red_neuronal.dll">
+			<argumento tipo="archivo">prueba.red</argumento>
+			<modulo ruta="salida.dll">
+				<argumento tipo="texto">Visión por computador</argumento>
+			</modulo>
+		</modulo>
+	</modulo>
+</pipeline>
