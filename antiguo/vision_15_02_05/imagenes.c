@@ -12,8 +12,7 @@
 	   \section puertos Puertos
 	   El módulo no tiene puertos de entrada y disponde de dos puertos de salida:
 	   <ul>
-	      <li><em>salida_filtro</em>: Una estructura de tipo <code>filtro_gestos_in_imagen_t</code>, para llevarla directamente al filtro.
-	      <li><em>salida_ventana</em>: Una estructura <code>filtro_gestos_in_parametros_t</code>, para llevarla a una ventana de imágenes y mostrarla directamente.
+	      <li><em>salida_imagen</em>: Una estructura de tipo <code>filtro_gestos_in_imagen_t</code>, para un módulo que la acepte.
 	   </ul>
 	   Estas estructuras las crea el módulo de imágenes directamente, y también se encarga de destruirlas.
 
@@ -46,7 +45,7 @@
 /*! \brief La estructura de datos que tiene cada módulo */
 typedef struct {
   filtro_gestos_in_imagen_t m_filtro;
-  ventana_imagen_in_t m_imagen;
+  //ventana_imagen_in_t m_imagen;
   unsigned char m_rojo;
   unsigned char m_verde;
   unsigned char m_azul;
@@ -58,10 +57,8 @@ typedef struct {
   SANE_Handle m_handle;
 } dato_imagenes_t;
 
-/*! \brief El nombre del puerto de salida para el filtro de gestos */
-#define PUERTO_FILTRO "salida_filtro"
-/*! \brief El nombre del puerto de salida para la ventana de imágenes */
-#define PUERTO_VENTANA "salida_ventana"
+/*! \brief El nombre del puerto de salida de una imagen */
+#define PUERTO_IMAGEN "salida_imagen"
 
 
 static char* imagenes_generar_imagen(modulo_t *modulo) {
@@ -235,12 +232,12 @@ static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
 		  imagen->m_ancho *
 		  imagen->m_bytes);
   
-  dato->m_imagen.m_imagen = imagen->m_imagen;
+  /*  dato->m_imagen.m_imagen = imagen->m_imagen;
   dato->m_imagen.m_alto = imagen->m_alto;
   dato->m_imagen.m_ancho = imagen->m_ancho;
-  dato->m_imagen.m_bytes = imagen->m_bytes;
-  g_hash_table_insert(modulo->m_tabla, PUERTO_VENTANA, &dato->m_imagen);
-  g_hash_table_insert(modulo->m_tabla, PUERTO_FILTRO, imagen);
+  dato->m_imagen.m_bytes = imagen->m_bytes;*/
+  //  g_hash_table_insert(modulo->m_tabla, PUERTO_VENTANA, &dato->m_imagen);
+  g_hash_table_insert(modulo->m_tabla, PUERTO_IMAGEN, imagen);
 
   return devolver;
 }

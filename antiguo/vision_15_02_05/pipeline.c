@@ -36,7 +36,7 @@ typedef struct {
 } elemento_t;
 
 typedef struct {
-  char *m_destino;
+  char *m_salida;
   char *m_puerto;
 } conexion_t;
 
@@ -92,7 +92,7 @@ static int  pipeline_set_ruta(pipeline_t* p, const char * elemento, const char *
 
 static void pipeline_borrar_conexion(gpointer a) {
   conexion_t *c = (conexion_t*)a;
-  free(c->m_destino);
+  free(c->m_salida);
   free(c->m_puerto);
   free(c);
 }
@@ -138,9 +138,9 @@ static void pipeline_conectar(const pipeline_t * p, const char *origen, const ch
 			      const char *destino, const char *puerto) {
   elemento_t *or = g_hash_table_lookup(p->m_modulos, origen);
   conexion_t *conexion = (conexion_t*)malloc(sizeof(conexion_t));
-  conexion->m_destino = strdup(destino);
+  conexion->m_salida = strdup(salida);
   conexion->m_puerto = strdup(puerto);
-  g_hash_table_insert(or->m_enlaces, (gpointer)strdup(salida), (gpointer)conexion);
+  g_hash_table_insert(or->m_enlaces, (gpointer)strdup(destino), (gpointer)conexion);
 }
 
 int  pipeline_borrar(pipeline_t * p) 
@@ -228,11 +228,11 @@ pipeline_t * pipeline_cargar(const char *ruta, const char *dir, funcion_error_t 
 static void pipeline_ciclo_recursivo(pipeline_t *p, elemento_t *e, const char *puerto_entrada, const void *dato_entrada);
 
 static void pipeline_enviar(gpointer key, gpointer value, gpointer user_data) {
-  char *salida = (char*)key;
   conexion_t *conexion = (conexion_t*)value;
+  char *puerto_salida = conexion->m_salida;
   pipeline_dato_t *d = (pipeline_dato_t*)user_data;
-  void *dato = g_hash_table_lookup(d->m_elemento->m_modulo->m_tabla, salida);
-  elemento_t *destino = g_hash_table_lookup(d->m_pipeline->m_modulos, conexion->m_destino);
+  elemento_t *destino = g_hash_table_lookup(d->m_pipeline->m_modulos, (char *)key);
+  void *dato = g_hash_table_lookup(d->m_elemento->m_modulo->m_tabla, puerto_salida);
   pipeline_ciclo_recursivo(d->m_pipeline, destino, conexion->m_puerto, dato);
 }
 static void pipeline_ciclo_recursivo(pipeline_t *p, elemento_t *e, const char *puerto_entrada, const void *dato_entrada)
