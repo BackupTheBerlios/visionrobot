@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <pipeline>
-<modulo ruta="/home/carlos/vision/camara.so">
+<modulo ruta="camara.dll">
 <argumento tipo="ancho">320</argumento>
 <argumento tipo="alto">240</argumento>
-<argumento tipo="camara">1</argumento>
+<argumento tipo="camara">0</argumento>
 	<modulo 
-		ruta="/home/carlos/vision/filtro_gestos.so">
+		ruta="filtro_gestos.dll">
 		<argumento tipo="orden_superior_rojo">5</argumento>
 		<argumento tipo="orden_inferior_rojo">5</argumento>
 		<argumento tipo="orden_superior_verde">230</argumento>
@@ -19,9 +19,9 @@
 		<argumento tipo="param_superior_azul">210</argumento>
 		<argumento tipo="param_inferior_azul">5</argumento>
 		<modulo 
-			ruta="/home/carlos/vision/red_neuronal.so">
-			<argumento tipo="archivo">/home/carlos/orden.net</argumento>
-			<modulo ruta="/home/carlos/vision/salida.so">
+			ruta="red_neuronal.dll">
+			<argumento tipo="archivo">vision.red</argumento>
+			<modulo ruta="salida.dll">
 				<argumento tipo="texto">Vision por computador</argumento>
 			</modulo>
 		</modulo>

@@ -1,5 +1,5 @@
 #include "Captura.h"
-
+#include <stdio.h>
 #define SAFE_RELEASE(x) { if (x) x->Release(); x = NULL; }
 
 Captura::Captura()
@@ -475,7 +475,7 @@ int  Captura::Enumerar(HWND hList)
 
 				id++;
 				WideCharToMultiByte(CP_ACP,0,var.bstrVal, -1, str, 2048, NULL, NULL);
-
+				printf("-------%s--------", str);
 
 				(long)SendMessage(hList, CB_ADDSTRING, 0,(LPARAM)str);
 

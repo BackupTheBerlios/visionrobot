@@ -11,8 +11,7 @@ int main(int argc, char **argv)
     else {
 	elemento_t * e = pipeline_cargar(argv[1]);
 	pipeline_iniciar_todo(e);	
-	//int i = 0;
-	while (1 /*i++ < 10 */ ) {
+	while (1) {
 	  pipeline_ciclo(e, 0);
 	}
 	pipeline_cerrar_todo(e);

@@ -1,26 +1,27 @@
 OPTS=-g
+LIBS=# -ldl
 
-all: camara.so salida.so filtro_gestos.so red_neuronal.so pipeline
+all: camara.dll salida.dll filtro_gestos.dll red_neuronal.dll camara.dll pipeline.exe
 
-salida.so: salida.c
-	gcc $(OPTS) -shared -o salida.so salida.c
+salida.dll: salida.c
+	gcc $(OPTS) -shared -o salida.dll salida.c
 
-filtro_gestos.so: filtro_gestos.c filtro.c
-	gcc $(OPTS) -shared -o filtro_gestos.so filtro.c filtro_gestos.c
+filtro_gestos.dll: filtro_gestos.c filtro.c
+	gcc $(OPTS) -shared -o filtro_gestos.dll filtro.c filtro_gestos.c
 
-red_neuronal.so: red.c red_neuronal.c
-	gcc $(OPTS) -shared -o red_neuronal.so red.c red_neuronal.c
+red_neuronal.dll: red.c red_neuronal.c
+	gcc $(OPTS) -shared -o red_neuronal.dll red.c red_neuronal.c
 
-camara.so: camara.cpp #Captura.cpp Captura.cpp
-	g++ $(OPTS) -shared -o camara.so camara.cpp #  -lstrmiids -luuid -loleaut32 -lole32 -lquartz
+camara.dll: camara.cpp Captura.cpp
+	g++ $(OPTS) -shared -o camara.dll camara.cpp Captura.cpp -lstrmiids -luuid -loleaut32 -lole32 -lquartz
 
-pipeline: main.c libpipeline.a
-	gcc $(OPTS) main.c -o pipeline -L ./ -lpipeline -lxml2 -ldl
+pipeline.exe: main.c libpipeline.a
+	gcc $(OPTS) main.c -o pipeline -L ./ -lpipeline -lxml2 
 
 libpipeline.a: pipeline.c
 	gcc $(OPTS) -c pipeline.c -o libpipeline.a `xml2-config --cflags`
 
 clean:
-	rm -rf pipeline
-	rm -rf *.so
+	rm -rf pipeline.exe
+	rm -rf *.dll
 	rm -rf *.o

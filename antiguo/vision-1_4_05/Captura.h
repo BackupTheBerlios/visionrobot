@@ -5,7 +5,7 @@
 */  
 #ifndef _CAPTURA_H_
 #define _CAPTURA_H_
-    
+    
 //#include <atlbase.h>
 #include <dshow.h>
 #include <d3d9.h>
@@ -13,10 +13,10 @@
     
 /*! \brief Define los distintos estados de ejecución */ 
 enum estado_t { PARADO, PAUSADO, EJECUTANDO, INICIO };
-
+
 /*! \brief Clase que gestiona los recursos de la cámara */ 
-    class Captura  {
-  public:
+    class Captura  {
+  public:
 	/*! \brief Constructor por defecto, inicia todos los parámetros */ 
 	Captura();
     
@@ -56,10 +56,10 @@ enum estado_t { PARADO, PAUSADO, EJECUTANDO, INICIO };
 	   \return El número de bytes leídos
 	 */ 
 	DWORD CogerFrame();
-    
+    
 	/*! \brief Destructor, elimina los recursos */ 
 	virtual ~ Captura();
-    
+    
 	/*! \brief Devuelve el ancho de la imagen
 	   \return El ancho de la imagen
 	 */ 
@@ -73,25 +73,25 @@ enum estado_t { PARADO, PAUSADO, EJECUTANDO, INICIO };
     inline int GetAlto() {
 	return m_nAlto;
     }
-  protected:IGraphBuilder * m_pGB;
-    IMediaControl * m_pMC;
-    IMediaEventEx * m_pME;
-    IVMRWindowlessControl9 * m_pWC;
-    IPin * m_pCamOutPin;
-    IBaseFilter * m_pDF;
-    estado_t m_psEstado;
-    int m_nAncho;
-    int m_nAlto;
-    BYTE * m_pFrame;
-    long m_nTamFrame;
-    bool EnlazarFiltro(int id, IBaseFilter ** pFiltro);
-    HRESULT IniciarWindowlessVMR(HWND hwnd);
-    HRESULT IniciarVentanaVideo(HWND hwnd, int ancho, int alto);
-    void PararCaptura();
-    void Cerrar();
-    void BorrarTipoMedio(AM_MEDIA_TYPE * pmt);
-    bool ConvertirImagen24(BYTE * p32img, BYTE * p24img, DWORD dwtam32);
-};
+  protected:IGraphBuilder * m_pGB;
+    IMediaControl * m_pMC;
+    IMediaEventEx * m_pME;
+    IVMRWindowlessControl9 * m_pWC;
+    IPin * m_pCamOutPin;
+    IBaseFilter * m_pDF;
+    estado_t m_psEstado;
+    int m_nAncho;
+    int m_nAlto;
+    BYTE * m_pFrame;
+    long m_nTamFrame;
+    bool EnlazarFiltro(int id, IBaseFilter ** pFiltro);
+    HRESULT IniciarWindowlessVMR(HWND hwnd);
+    HRESULT IniciarVentanaVideo(HWND hwnd, int ancho, int alto);
+    void PararCaptura();
+    void Cerrar();
+    void BorrarTipoMedio(AM_MEDIA_TYPE * pmt);
+    bool ConvertirImagen24(BYTE * p32img, BYTE * p24img, DWORD dwtam32);
+};
 
-
-#endif	/*  */
+
+#endif	/*  */
