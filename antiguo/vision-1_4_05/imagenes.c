@@ -100,6 +100,7 @@ static char* imagenes_generar_imagen(modulo_t *modulo) {
   SANE_Int len;
   SANE_Parameters parametros;
   int tam;
+  int width, height, ratio_code, format;
   switch(dato->m_tipo) {
   case CAMARA:    
     if(sane_start(dato->m_handle) != SANE_STATUS_GOOD) {
@@ -144,7 +145,13 @@ static char* imagenes_generar_imagen(modulo_t *modulo) {
     }
     break;
   case VIDEO:
-    xine_gui_send_vo_data(dato->m_video.stream, XINE_GUI_SEND_EXPOSE_EVENT, imagen->m_imagen);
+    xine_get_current_frame (dato->m_video.stream,			    
+				 &width, &height,
+				 &ratio_code, &format,
+				 imagen->m_imagen);
+    sprintf(dato->m_buffer_error, "Alto = %i, ancho = %i, ratio = %i, format = %i.", 
+	    width, height, ratio_code, format);
+    devolver = dato->m_buffer_error;
     break;
   case COLOR:
     for(i = 0; i < imagen->m_alto; i++) {
@@ -218,34 +225,24 @@ static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
   SANE_Int info;
   if(camara) cam = atoi(camara);
   if(video) {
+    dato->m_tipo = VIDEO;
     char *vo_driver    = "auto";
     char *ao_driver    = "auto";
     char configfile[2048];
-    x11_visual_t vis;
     dato->m_video.xine = xine_new();
     sprintf(configfile, "%s%s", xine_get_homedir(), "/.xine/config");
     xine_config_load(dato->m_video.xine, configfile);
     xine_init(dato->m_video.xine);
 
-    vis.display           = display;
-    vis.screen            = screen;
-    vis.d                 = window;
-    vis.dest_size_cb      = dest_size_cb;
-    vis.frame_output_cb   = frame_output_cb;
-    vis.user_data         = NULL;
-    pixel_aspect          = res_v / res_h;
-
     dato->m_video.running = 0;
     dato->m_video.vo_port = xine_open_video_driver(dato->m_video.xine, 
-						   vo_driver, XINE_VISUAL_TYPE_X11, (void *) &vis);
+						   vo_driver, XINE_VISUAL_TYPE_NONE, 0);
     dato->m_video.ao_port     = xine_open_audio_driver(dato->m_video.xine , ao_driver, NULL);
     dato->m_video.stream      = xine_stream_new(dato->m_video.xine, dato->m_video.ao_port, dato->m_video.vo_port);
     dato->m_video.event_queue = xine_event_new_queue(dato->m_video.stream);
     xine_event_create_listener_thread(dato->m_video.event_queue, event_listener, dato);
-    
-    /*xine_gui_send_vo_data(dato->m_video.stream, XINE_GUI_SEND_DRAWABLE_CHANGED, (void *) window);
-      xine_gui_send_vo_data(dato->m_video.stream, XINE_GUI_SEND_VIDEOWIN_VISIBLE, (void *) 1);*/
-
+    xine_open(dato->m_video.stream, video);
+    xine_play(dato->m_video.stream, 0, 0);
   }
   else if(cam) {
     dato->m_tipo = CAMARA;
