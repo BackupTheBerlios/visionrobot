@@ -38,6 +38,10 @@ __published:	// IDE-managed Components
         TButton *Button2;
         TButton *Button5;
         TButton *Button6;
+    TLabel *Label6;
+    TEdit *Edit2;
+    TLabel *Label8;
+    TEdit *Edit3;
         void __fastcall Button4Click(TObject *Sender);
         void __fastcall Timer1Timer(TObject *Sender);
         void __fastcall TrackBar1Change(TObject *Sender);

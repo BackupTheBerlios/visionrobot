@@ -18,6 +18,8 @@ __fastcall TForm1::TForm1(TComponent* Owner)
         ruta = "c:\\";
         turno = 0;
         Edit1->Text = ruta;
+        Edit2->Text = "";
+        Edit3->Text = "";
 }
 
 //---------------------------------------------------------------------------
@@ -57,7 +59,7 @@ void TForm1::Pinta() {
 void __fastcall TForm1::Button7Click(TObject *Sender)
 {
         Pinta();
-        Label7->Caption = ruta + "snap" + turno + ".bmp";
+        Label7->Caption = ruta + Edit3->Text + "_" + Edit2->Text + "_" + turno + ".bmp";
         Image1->Picture->SaveToFile(Label7->Caption);
         turno++;
 }
@@ -118,5 +120,7 @@ SaveDialog1->Filter =  "Bitmap (*.bmp)|*.bmp|Todos los archivos (*.*)|*.*";
         }        
 }
 //---------------------------------------------------------------------------
+
+
 
 

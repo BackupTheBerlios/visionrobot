@@ -1,10 +1,10 @@
 object Form1: TForm1
-  Left = 135
-  Top = 129
+  Left = 104
+  Top = 85
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Cámara'
-  ClientHeight = 483
+  ClientHeight = 545
   ClientWidth = 802
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -124,7 +124,7 @@ object Form1: TForm1
     Left = 8
     Top = 400
     Width = 649
-    Height = 73
+    Height = 137
     Caption = 'Fotos'
     TabOrder = 5
     object Label4: TLabel
@@ -135,17 +135,31 @@ object Form1: TForm1
       Caption = 'Directorio:'
     end
     object Label7: TLabel
-      Left = 107
-      Top = 48
+      Left = 102
+      Top = 112
       Width = 3
       Height = 13
     end
     object Label5: TLabel
       Left = 8
-      Top = 48
+      Top = 112
       Width = 26
       Height = 13
       Caption = 'Ruta:'
+    end
+    object Label6: TLabel
+      Left = 8
+      Top = 80
+      Width = 54
+      Height = 13
+      Caption = 'Argumento:'
+    end
+    object Label8: TLabel
+      Left = 8
+      Top = 48
+      Width = 24
+      Height = 13
+      Caption = 'Tipo:'
     end
     object Edit1: TEdit
       Left = 104
@@ -160,11 +174,27 @@ object Form1: TForm1
       Left = 520
       Top = 16
       Width = 121
-      Height = 49
+      Height = 113
       Caption = '&Clic'
       Default = True
       TabOrder = 1
       OnClick = Button7Click
+    end
+    object Edit2: TEdit
+      Left = 104
+      Top = 80
+      Width = 409
+      Height = 21
+      TabOrder = 2
+      Text = 'Edit2'
+    end
+    object Edit3: TEdit
+      Left = 104
+      Top = 48
+      Width = 409
+      Height = 21
+      TabOrder = 3
+      Text = 'Edit3'
     end
   end
   object Button1: TButton
