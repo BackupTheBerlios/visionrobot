@@ -238,11 +238,21 @@ void ventana_principal_establecer(ventana_principal_t * ventana_principal)
     gtk_widget_set_sensitive(ventana_principal->borrar1, si > 0);
 }
 
-void ventana_principal_pinchado(GtkWidget * menuitem, gpointer user_data)
+void ventana_principal_pinchado(GtkWidget * boton, gpointer user_data)
 {
     ventana_principal_t *ventana_principal =
 	(ventana_principal_t *) user_data;
-    ventana_principal_establecer(ventana_principal);
+	    guint numero =
+	g_list_length(gtk_container_get_children
+		      (GTK_CONTAINER(ventana_principal->fixed1)));
+  int i;
+	for(i = 0; i < numero; ++i) {
+    GtkToggleButton *widget = get_widget(ventana_principal, i);
+    if(boton != GTK_WIDGET(widget)) {
+      gtk_toggle_button_set_active(widget, FALSE);
+  }
+  }
+	ventana_principal_establecer(ventana_principal);
 }
 
 void ventana_principal_crear_boton(ventana_principal_t * ventana,
@@ -251,7 +261,7 @@ void ventana_principal_crear_boton(ventana_principal_t * ventana,
     GtkWidget *boton = gtk_toggle_button_new_with_label(strdup(nombre));
     gtk_widget_show(GTK_WIDGET(boton));
     gtk_fixed_put(GTK_FIXED(ventana->fixed1), GTK_WIDGET(boton), x, y);
-    g_signal_connect((gpointer) boton, "toggled",
+    g_signal_connect((gpointer) boton, "released",
 		     G_CALLBACK(ventana_principal_pinchado), ventana);
 }
 
@@ -371,8 +381,11 @@ void on_nuevo2_activate(GtkMenuItem * menuitem, gpointer user_data)
 	 "\302\277 Realmente desea eliminar todos los m\303\263dulos del pipeline ?"))
     {
 	int i;
-	for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
-	    ventana_principal_borrar_boton(ventana_principal, i);
+	guint numero =
+	g_list_length(gtk_container_get_children
+		      (GTK_CONTAINER(ventana_principal->fixed1)));
+	for (i = 0; i < numero; ++i) {
+	    ventana_principal_borrar_boton(ventana_principal, 0);
 	}
 	pipeline_vaciar(ventana_principal->pipeline);
 	ventana_principal->pipeline = pipeline_crear();
@@ -387,13 +400,49 @@ void on_nuevo2_activate(GtkMenuItem * menuitem, gpointer user_data)
 
 }
 
+void ventana_principal_establecer_boton(ventana_principal_t *ventana_principal
+                    , gint id) {
+    GtkToggleButton *widget = get_widget(ventana_principal, 
+                id);
+                
+    //Pongo tres búferes porque el duende no me deja con uno solo
+    char buffer[64];
+    char buffer2[64];
+    char buffer3[64];
+    sprintf(buffer, "%s", ventana_principal->pipeline->
+                      m_elemento[id].m_nombre);
+    if(ventana_principal->pipeline->m_error == id) {
+          sprintf(buffer2, "! %s", buffer);
+   }
+   else {
+      strcpy(buffer2, buffer);
+    }
+    if(ventana_principal->pipeline->
+                      m_elemento[id].m_iniciado) {
+        sprintf(buffer3, "* %s", buffer2);
+    }
+    else{
+      strcpy(buffer3, buffer2);
+    }
+    
+  gtk_button_set_label(GTK_BUTTON(widget), buffer3);
+}
+
 void on_establecer_error(GtkMenuItem * menuitem, gpointer user_data)
 {
     ventana_principal_t *ventana_principal =
 	(ventana_principal_t *) user_data;
     gint destino = ventana_principal_elegir_modulo(ventana_principal);
+    
+  int anterior =  ventana_principal->pipeline->m_error; 
 
-    ventana_principal->pipeline->m_error = destino;
+    ventana_principal->pipeline->m_error = destino;    
+    
+   ventana_principal_establecer_boton(ventana_principal, destino);
+   
+   if(anterior != -1) {
+      ventana_principal_establecer_boton(ventana_principal, anterior);
+    }
 }
 
 void on_abrir2_activate(GtkMenuItem * menuitem, gpointer user_data)
@@ -591,6 +640,22 @@ void on_ciclos_biblioteca_activate(GtkButton * button, gpointer user_data)
 				  ventana_principal->m_retardo);
 }
 
+void ventana_principal_inciar_biblioteca(ventana_principal_t * ventana,
+                    gint id) {
+
+  pipeline_iniciar(ventana->pipeline,
+			     &ventana->pipeline->m_elemento[id]);
+   ventana_principal_establecer_boton(ventana, id);
+}
+
+void ventana_principal_parar_biblioteca(ventana_principal_t * ventana,
+                    gint id) {
+
+  pipeline_parar(ventana->pipeline,
+			     &ventana->pipeline->m_elemento[id]);
+  ventana_principal_establecer_boton(ventana, id);			     
+}
+
 void on_iniciar_biblioteca_activate(GtkButton * button, gpointer user_data)
 {
     ventana_principal_t *ventana_principal =
@@ -598,8 +663,7 @@ void on_iniciar_biblioteca_activate(GtkButton * button, gpointer user_data)
     int i;
     for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
 	if (gtk_toggle_button_get_active(get_widget(ventana_principal, i))) {
-	    pipeline_iniciar(ventana_principal->pipeline,
-			     &ventana_principal->pipeline->m_elemento[i]);
+	    ventana_principal_inciar_biblioteca(ventana_principal, i);
 
 	}
     }
@@ -612,13 +676,14 @@ void on_iniciar_todas_biblioteca_activate(GtkButton * button,
     ventana_principal_t *ventana_principal =
 	(ventana_principal_t *) user_data;
     int i;
-    pipeline_iniciar(ventana_principal->pipeline,
+    ventana_principal_inciar_biblioteca(ventana_principal, 
+          ventana_principal->pipeline->m_error);
+/*    pipeline_iniciar(ventana_principal->pipeline,
 		     &ventana_principal->pipeline->
-		     m_elemento[ventana_principal->pipeline->m_error]);
+		     m_elemento[ventana_principal->pipeline->m_error]);*/
     for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
 	if (i != ventana_principal->pipeline->m_error) {
-	    pipeline_iniciar(ventana_principal->pipeline,
-			     &ventana_principal->pipeline->m_elemento[i]);
+	    ventana_principal_inciar_biblioteca(ventana_principal, i);
 	}
     }
     ventana_principal_establecer(ventana_principal);
@@ -639,8 +704,9 @@ void on_cerrar_biblioteca_activate(GtkButton * button, gpointer user_data)
     int i;
     for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
 	if (gtk_toggle_button_get_active(get_widget(ventana_principal, i))) {
-	    pipeline_parar(ventana_principal->pipeline,
-			   &ventana_principal->pipeline->m_elemento[i]);
+    ventana_principal_parar_biblioteca(ventana_principal, i);
+/*	    pipeline_parar(ventana_principal->pipeline,
+			   &ventana_principal->pipeline->m_elemento[i]);*/
 	}
     }
     ventana_principal_establecer(ventana_principal);
@@ -653,8 +719,9 @@ void on_cerrar_todas_biblioteca_activate(GtkButton * button,
 	(ventana_principal_t *) user_data;
     int i;
     for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
-	pipeline_parar(ventana_principal->pipeline,
-		       &ventana_principal->pipeline->m_elemento[i]);
+          ventana_principal_parar_biblioteca(ventana_principal, i);
+	/*pipeline_parar(ventana_principal->pipeline,
+		       &ventana_principal->pipeline->m_elemento[i]);*/
     }
     ventana_principal_establecer(ventana_principal);
 }
@@ -690,6 +757,12 @@ void ventana_principal_abrir(char *file,
 	gtk_widget_set_sensitive(ventana_principal->nuevo2, TRUE);
 	gtk_widget_set_sensitive(ventana_principal->guardar_como2, TRUE);
 	ventana_principal_establecer(ventana_principal);
+	ventana_principal_expose_event(0, 0,
+						   ventana_principal);
+    }
+    int i;
+    for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
+      ventana_principal_establecer_boton(ventana_principal, i);
     }
 
 }
@@ -929,6 +1002,11 @@ ventana_principal_t *ventana_principal_crear()
     gtk_container_add(GTK_CONTAINER(ventana_principal->pipeline1_menu),
 		      ventana_principal->ciclos_biblioteca);
     gtk_widget_set_sensitive(ventana_principal->ciclos_biblioteca, FALSE);
+    
+    
+    gtk_widget_add_accelerator(ventana_principal->ciclos_biblioteca, "activate",
+			       ventana_principal->accel_group, GDK_s,
+			       GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
     ventana_principal->ciclo_biblioteca =
 	gtk_image_menu_item_new_with_mnemonic("_Un ciclo");
@@ -938,6 +1016,9 @@ ventana_principal_t *ventana_principal_crear()
     gtk_container_add(GTK_CONTAINER(ventana_principal->pipeline1_menu),
 		      ventana_principal->ciclo_biblioteca);
     gtk_widget_set_sensitive(ventana_principal->ciclo_biblioteca, FALSE);
+    gtk_widget_add_accelerator(ventana_principal->ciclo_biblioteca, "activate",
+			       ventana_principal->accel_group, GDK_c,
+			       GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
     ventana_principal->parar_biblioteca =
 	gtk_image_menu_item_new_with_mnemonic("_Parar pipeline");
@@ -947,7 +1028,9 @@ ventana_principal_t *ventana_principal_crear()
     gtk_container_add(GTK_CONTAINER(ventana_principal->pipeline1_menu),
 		      ventana_principal->parar_biblioteca);
     gtk_widget_set_sensitive(ventana_principal->parar_biblioteca, FALSE);
-
+gtk_widget_add_accelerator(ventana_principal->parar_biblioteca, "activate",
+			       ventana_principal->accel_group, GDK_t,
+			       GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
     ventana_principal->establecer_error =
 	gtk_image_menu_item_new_with_mnemonic
@@ -958,7 +1041,9 @@ ventana_principal_t *ventana_principal_crear()
     gtk_container_add(GTK_CONTAINER(ventana_principal->pipeline1_menu),
 		      ventana_principal->establecer_error);
     gtk_widget_set_sensitive(ventana_principal->establecer_error, FALSE);
-
+gtk_widget_add_accelerator(ventana_principal->establecer_error, "activate",
+			       ventana_principal->accel_group, GDK_e,
+			       GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
 
 
@@ -983,6 +1068,9 @@ ventana_principal_t *ventana_principal_crear()
     gtk_widget_show(ventana_principal->iniciar_todas_biblioteca);
     gtk_container_add(GTK_CONTAINER(ventana_principal->pipeline1_menu),
 		      ventana_principal->iniciar_todas_biblioteca);
+		      gtk_widget_add_accelerator(ventana_principal->iniciar_todas_biblioteca, "activate",
+			       ventana_principal->accel_group, GDK_d,
+			       GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     gtk_widget_set_sensitive(ventana_principal->iniciar_todas_biblioteca,
 			     FALSE);
 
@@ -995,6 +1083,9 @@ ventana_principal_t *ventana_principal_crear()
 		      ventana_principal->cerrar_todas_biblioteca);
     gtk_widget_set_sensitive(ventana_principal->cerrar_todas_biblioteca,
 			     FALSE);
+			     gtk_widget_add_accelerator(ventana_principal->cerrar_todas_biblioteca, "activate",
+			       ventana_principal->accel_group, GDK_r,
+			       GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
     ventana_principal->cerrar_biblioteca =
 	gtk_image_menu_item_new_with_mnemonic("_Cerrar m\303\263dulo...");
@@ -1004,7 +1095,9 @@ ventana_principal_t *ventana_principal_crear()
     gtk_container_add(GTK_CONTAINER(ventana_principal->pipeline1_menu),
 		      ventana_principal->cerrar_biblioteca);
     gtk_widget_set_sensitive(ventana_principal->cerrar_biblioteca, FALSE);
-
+gtk_widget_add_accelerator(ventana_principal->cerrar_biblioteca, "activate",
+			       ventana_principal->accel_group, GDK_l,
+			       GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
 
 
