@@ -1,64 +1,71 @@
 #include "red_neuronal.h"
 #include "red_neuronal_sdk.h"
-
+#include "salida_sdk.h"
 #include "pipeline_sdk.h"
 #include <stdio.h>
 #include <string.h>
 
-static modulo_t modulo_pipeline;
-static red_neuronal_t *red = 0;
-char *ciclo(const void *in, void **out)
+static char buffer_error[128];
+
+static char *ciclo(modulo_t *modulo, const pipeline_dato_t *in, pipeline_dato_t *out)
 {
-    red_neuronal_in_t * red_in = (red_neuronal_in_t *) in;
-    sprintf(modulo_pipeline.m_error, "Entrada = %p, [%p, %ix%ix%i]",
-	     red_in, red_in->m_orden, red_in->m_ancho, red_in->m_alto, red_in->m_bytes);
-    if (red) {
-	*out =
-	    red_neuronal_reconocer(red, red_in->m_orden, red_in->m_ancho,
-				   red_in->m_alto, red_in->m_bytes, ORDEN);
-	sprintf(modulo_pipeline.m_error, "%s, ORDEN = [%4f, %4f, %4f, %4f]", modulo_pipeline.m_error, red->capaSalida[1], 
+    red_neuronal_in_t * red_in = (red_neuronal_in_t *) in->m_dato;
+    if(red_in) {
+      sprintf(buffer_error, "Entrada = %p, [%p, %ix%ix%i]",
+	      red_in, red_in->m_orden, red_in->m_ancho, red_in->m_alto, red_in->m_bytes);
+      red_neuronal_t *red = (red_neuronal_t *)modulo->m_dato;
+      if (red) {
+	out->m_tipo = PIPELINE_RED_NEURONAL;
+	out->m_dato = (salida_in_t)
+	  red_neuronal_reconocer(red, red_in->m_orden, red_in->m_ancho,
+				 red_in->m_alto, red_in->m_bytes, ORDEN);
+	sprintf(buffer_error, "%s, ORDEN = [%4f, %4f, %4f, %4f]", buffer_error, red->capaSalida[1], 
 		red->capaSalida[2],red->capaSalida[3], red->capaSalida[4]);
 	free(red_in->m_orden);
 	free(red_in->m_tipo_orden);	
+      }      
+      else {
+	out->m_dato = 0;
+      }
     }
-    
     else {
-	*out = 0;
+      return "imagen vacía";
     }
-    return modulo_pipeline.m_error;
+    return buffer_error;
 }
-char *iniciar(int argc, const char **argv)
+static char *iniciar(modulo_t *modulo, int argc, const char **argv)
 {
     if (argc < 2) {
 	return "falta el nombre de archivo para cargar";
     }
     if (!strcmp(argv[0], "archivo")) {
-	red = red_neuronal_abrir(argv[1]);
+	modulo->m_dato = red_neuronal_abrir(argv[1]);
     }
-    if (!red)
-	return "no se ha cargado el archivo";
-    
-    else
-	sprintf(modulo_pipeline.m_error, "Se ha cargado %s", argv[1]);
-    return modulo_pipeline.m_error;
+    red_neuronal_t *red = (red_neuronal_t *)modulo->m_dato;
+    if (!red) {
+      return "no se ha cargado el archivo";
+    }    
+    else {
+	sprintf(buffer_error, "Se ha cargado %s", argv[1]);
+	return buffer_error;
+    }    
 }
-char *cerrar()
+static char *cerrar(modulo_t *modulo)
 {
-    red_neuronal_borrar(&red);
-    return "cerrado";
+  red_neuronal_t *red = (red_neuronal_t *)modulo->m_dato;
+  red_neuronal_borrar(&red);
+  free(modulo);
+  return "cerrado";
 }
 
 modulo_t * get_modulo()
 {
-    return &modulo_pipeline;
+  modulo_t *modulo = (modulo_t*)malloc(sizeof(modulo_t));
+  modulo->m_nombre = "Red";
+  modulo->m_iniciar = iniciar;
+  modulo->m_cerrar = cerrar;
+  modulo->m_ciclo = ciclo;
+  modulo->m_dato = 0;
+  return modulo;
 }
-void __attribute__ ((constructor)) init(void)
-{
-    modulo_pipeline.m_nombre = "Red";
-    modulo_pipeline.m_iniciar = iniciar;
-    modulo_pipeline.m_cerrar = cerrar;
-    modulo_pipeline.m_ciclo = ciclo;
-} 
-void __attribute__ ((destructor)) fini(void)
-{
-} 
+
