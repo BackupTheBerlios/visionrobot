@@ -1,6 +1,6 @@
 /*!
   \file   filtro_gestos.c
-  \author Carlos León
+  \author Diego Sánchez, Carlos León
   \version 1.0
   
   \brief  Módulo de filtrado genérico de imagenes.
@@ -30,6 +30,377 @@ typedef struct {
   filtro_gestos_in_imagen_t m_salida;
   filtro_gestos_in_parametros_t m_parametros_filtro;
 } dato_filtro_t;
+
+#define min(x, y) (x) < (y) ? (x) : (y)
+#define max(x, y) (x) > (y) ? (x) : (y)
+
+/*
+typedef struct {
+        color_t ru;
+        color_t rd;
+        color_t gu;
+        color_t gd;
+        color_t bu;
+        color_t bd;
+} special_colour_t;
+*/
+
+typedef filtro_gestos_in_parametros_t special_colour_t;
+
+typedef struct {
+        int x;
+        int y;
+} coord_t;
+
+typedef struct {
+        coord_t ii;
+        coord_t si;
+        coord_t id;
+        coord_t sd;
+        int grados;
+}bounds_t;
+
+/*
+typedef struct{
+    color_t* dibujo;
+    int ancho;
+    int alto;
+}dato_t;
+*/
+typedef filtro_gestos_in_imagen_t dato_t;
+
+
+//********************************************************************************************
+//Nuevas funciones para el filtrado de carteles. (Diego)
+//********************************************************************************************
+
+//Para fijar el color especial de los carteles
+/*void SetSpecialColour(special_colour_t* sc, unsigned char ru, unsigned char rd,
+        unsigned char gu, unsigned char gd, unsigned char bu, unsigned char bd)
+{
+  sc->m_rojo_sup = ru;
+  sc->m_rojo_inf = rd;
+  sc->m_verde_sup = gu;
+  sc->m_verde_inf = gd;
+  sc->m_azul_sup = bu;
+  sc->m_azul_inf = bd;
+}
+*/
+int inRange(unsigned char valor, unsigned char sup, unsigned char inf)
+{
+  return (valor<=sup && valor>=inf);
+}
+
+int isColour(dato_t* in, int h, int w, special_colour_t* sc)
+{
+  int pos= (h*in->m_ancho*in->m_bytes)+(w*in->m_bytes);
+  return (inRange(in->m_imagen[pos], sc->m_azul_sup, sc->m_azul_inf)&&
+          inRange(in->m_imagen[pos+1], sc->m_verde_sup, sc->m_verde_inf) &&
+          inRange(in->m_imagen[pos+2], sc->m_rojo_sup, sc->m_rojo_inf));
+}
+
+
+//De momento no exactamente el centrar q ya existe
+//void Centrar(dato_t* in, special_colour_t* sc)
+static int filtro_gestos_centrar2(lua_State *L)
+{
+  dato_t *in = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
+  special_colour_t *sc = (special_colour_t *)lua_touserdata(L, 2);
+  int i,j,cont,/*centroX,centroY,*/difY,difX;
+  float acX,acY;
+  acX=acY=cont=0;
+  for (i=0;i<in->m_alto;i++)
+     for (j=0;j<in->m_ancho;j++)
+       if(isColour(in,i,j,sc)){acX+=j; acY+=i; cont++;}
+
+  acX/=cont; acY/=cont;
+  difY= floor(in->m_alto/2 - acY);
+  difX= floor(in->m_ancho/2 - acX);
+
+  if(difY<0){
+    for (i=0;i-difY<in->m_alto;i++)
+      for(j=0;j<in->m_ancho*in->m_bytes;j++)
+        in->m_imagen[(i*in->m_ancho*in->m_bytes)+j]=in->m_imagen[((i-difY)*in->m_ancho*in->m_bytes)+j];
+    while(i<in->m_alto){
+      for (j=0;j<in->m_ancho*in->m_bytes;j++)in->m_imagen[(i*in->m_ancho*in->m_bytes)+j]=BLANCO;
+      i++;
+    }
+  }
+
+  if(difY>0){
+    for(i=in->m_alto-1;i-difY>=0;i--)
+      for (j=0;j<in->m_ancho*in->m_bytes;j++)in->m_imagen[(i*in->m_ancho*in->m_bytes)+j]=in->m_imagen[((i-difY)*in->m_ancho*in->m_bytes)+j];
+    while(i>=0){
+      for(j=0;j<in->m_ancho*in->m_bytes;j++)in->m_imagen[(i*in->m_ancho*in->m_bytes)+j]=BLANCO;
+      i--;
+    }
+  }
+
+  if(difX<0){
+    for (i=0;i<in->m_alto;i++){
+      for (j=0;j-(difX*in->m_bytes)+in->m_bytes<in->m_ancho*in->m_bytes;j+=in->m_bytes){
+        in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j)]= in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-(difX*in->m_bytes))];
+        in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j+1)]= in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-(difX*in->m_bytes)+1)];
+        in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j+2)]= in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-(difX*in->m_bytes)+2)];
+      }
+      while(j+in->m_bytes<in->m_ancho*in->m_bytes){
+        in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j)]=BLANCO; in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j+1)]=BLANCO; in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j+2)]=BLANCO; j+=in->m_bytes;
+      }
+    }
+  }
+
+  if(difX>0){
+    for (i = 0; i< in->m_alto-1; i++){
+      for (j=(in->m_ancho*in->m_bytes)-1;j-(difX*in->m_bytes)+2>=0;j-=in->m_bytes){
+        in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j)]= in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-(difX*in->m_bytes))];
+        in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-1)]= in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-(difX*in->m_bytes)-1)];
+        in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-2)]= in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-(difX*in->m_bytes)-2)];
+      }
+      while(j>=in->m_bytes){
+        in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j)]=BLANCO; in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-1)]=BLANCO; in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-2)]=BLANCO; j-=in->m_bytes;
+      }
+    }
+  }
+  return 0;
+}
+
+coord_t Corner1(dato_t* in, special_colour_t* sc)
+{
+ coord_t salida;
+ int i,j;
+ for(i=0; i<in->m_alto; i++)
+   for(j=0; j<in->m_ancho; j++)
+     if(isColour(in,i,j,sc)){salida.x=j; salida.y=i; return salida;}
+ return salida;
+}
+
+coord_t Corner2(dato_t* in, special_colour_t* sc)
+{
+ coord_t salida;
+ int i,j;
+ for(i=in->m_alto-1; i>=0; i--)
+   for(j=0; j<in->m_ancho; j++)
+     if(isColour(in,i,j,sc)){salida.x=j; salida.y=i; return salida;}
+ return salida;
+}
+
+coord_t Corner3(dato_t* in, special_colour_t* sc)
+{
+ coord_t salida;
+ int i,j;
+ for(j=0; j<in->m_ancho; j++)
+   for(i=0; i<in->m_alto-1; i++)
+     if(isColour(in,i,j,sc)){salida.x=j; salida.y=i; return salida;}
+ return salida;
+}
+
+coord_t Corner4(dato_t* in, special_colour_t* sc)
+{
+ coord_t salida;
+ int i,j;
+ for(j=in->m_ancho; j>=0; j--)
+   for(i=0; i<in->m_alto-1; i++)
+     if(isColour(in,i,j,sc)){salida.x=j; salida.y=i; return salida;}
+ return salida;
+}
+
+void Identify(dato_t* in, bounds_t* bounds, coord_t c)
+{
+ if(c.x<in->m_ancho/2 && c.y>in->m_alto/2)bounds->ii=c;
+ else if(c.x>in->m_ancho/2 && c.y>in->m_alto/2)bounds->id=c;
+ else if(c.x<in->m_ancho/2 && c.y<in->m_alto/2)bounds->si=c;
+ else if(c.x>in->m_ancho/2 && c.y<in->m_alto/2)bounds->sd=c;
+}
+
+void Identify2(bounds_t* bounds, coord_t c1, coord_t c2, coord_t c3, coord_t c4)
+{
+ int minY= min(min(c1.y,c2.y),min(c3.y,c4.y));
+ int minX= min(min(c1.x,c2.x),min(c3.x,c4.x));
+ int maxY= max(max(c1.y,c2.y),max(c3.y,c4.y));
+ int maxX= max(max(c1.x,c2.x),max(c3.x,c4.x));
+ bounds->si.y= minY; bounds->si.x= minX;
+ bounds->sd.y= minY; bounds->sd.x= maxX;
+ bounds->ii.y= maxY; bounds->ii.x= minX;
+ bounds->id.y= maxY; bounds->id.x= maxX;
+}
+
+//bounds_t* BuscarLimites(dato_t* in, int op, special_colour_t* sc)
+static int filtro_gestos_buscar_limites(lua_State *L)
+{
+  dato_t *in = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
+  int op = luaL_checkint(L, 2);
+  special_colour_t *sc = (special_colour_t *)lua_touserdata(L, 3);
+ bounds_t* out = (bounds_t*)malloc(sizeof(bounds_t));
+ coord_t c1= Corner1(in,sc);
+ coord_t c2= Corner2(in,sc);
+ coord_t c3= Corner3(in,sc);
+ coord_t c4= Corner4(in,sc);
+ if(op){
+   Identify(in,out,c1);
+   Identify(in,out,c2);
+   Identify(in,out,c3);
+   Identify(in,out,c4);
+ }
+ else Identify2(out,c1,c2,c3,c4);
+ int b= out->ii.y-out->id.y;
+ int a= (out->id.x-out->ii.x);
+ double divis= (double)b/a;
+ double angulo= atan(divis);
+ out->grados= (angulo*180)/M_PI;
+ lua_pushlightuserdata(L, out);
+ return 1;
+}
+
+//dato_t* Rotate(dato_t* in, bounds_t* bounds)
+static int filtro_gestos_rotar(lua_State *L)
+{
+  dato_t *in = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
+  bounds_t *bounds =  (bounds_t *)lua_touserdata(L, 2);
+    dato_t* salida= (dato_t*)malloc(sizeof(dato_t));
+    int k,ii,jj,lin,pos,pos2,i,j;
+    double fi,alfa,a,b,subAncho1,subAncho2;
+    fi= (((double)bounds->grados)*M_PI)/180;
+    alfa= M_PI/2 - fi;
+    subAncho1= abs(in->m_alto*cos(alfa));
+    subAncho2= abs(in->m_ancho*cos(fi));
+    salida->m_ancho= subAncho1 + subAncho2;
+    if(bounds->grados<0){subAncho1=0; subAncho2=salida->m_ancho;}
+    salida->m_alto= abs(in->m_alto*sin(alfa)) + abs(in->m_ancho*sin(fi));
+    salida->m_imagen= (color_t *)malloc(sizeof(color_t) * salida->m_alto * 
+					salida->m_ancho * salida->m_bytes);
+    for(i=0; i<salida->m_alto; i++){
+      k=0;
+      lin= i*salida->m_ancho*in->m_bytes;
+      if(bounds->grados<0)
+        {a= (i-abs(in->m_ancho*sin(fi)))*sin(fi);b= (i-abs(in->m_ancho*sin(fi)))*cos(fi);}
+      else
+        {a=i*sin(fi); b=i*cos(fi);}
+      for(j=-subAncho1; j<subAncho2; j++){
+         ii= j*cos(fi)+a;
+         jj= -j*sin(fi)+b;
+         pos= lin+(k*in->m_bytes);
+         if(ii<0 || ii>=in->m_ancho || jj<0 || jj>=in->m_alto){
+            salida->m_imagen[pos]=NEGRO;
+            salida->m_imagen[pos+1]=NEGRO;
+            salida->m_imagen[pos+2]=NEGRO;
+         }
+         else{
+            pos2= (jj*in->m_ancho*in->m_bytes)+(ii*in->m_bytes);
+            salida->m_imagen[pos]= in->m_imagen[pos2];
+            salida->m_imagen[pos+1]= in->m_imagen[pos2+1];
+            salida->m_imagen[pos+2]= in->m_imagen[pos2+2];
+         }
+         k++;
+      }
+    }
+    //    delete in;
+    free(in);
+    free(bounds);//delete bounds;
+    lua_pushlightuserdata(L,salida);
+    return 1;
+    //    return salida;
+}
+
+void CleanLine(dato_t* in, int i, int left, int right, int op)
+{
+  int j,pos1,pos2;//,r,l;
+ pos1=(i*in->m_ancho*in->m_bytes);
+ for(j=0; j<in->m_ancho; j++)
+ {
+  pos2= pos1+(j*in->m_bytes);
+  if((op)||(!op && j<left)||(!op && j>=right)){
+    in->m_imagen[pos2]=BLANCO; in->m_imagen[pos2+1]=BLANCO; in->m_imagen[pos2+2]=BLANCO;
+  }
+  else{
+    if(in->m_imagen[pos2]<SEMI_NEGRO && in->m_imagen[pos2+1]<SEMI_NEGRO && in->m_imagen[pos2+2]<SEMI_NEGRO){
+      in->m_imagen[pos2]=NEGRO; in->m_imagen[pos2+1]=NEGRO; in->m_imagen[pos2+2]=NEGRO;
+    }
+    else{
+      in->m_imagen[pos2]=BLANCO; in->m_imagen[pos2+1]=BLANCO; in->m_imagen[pos2+2]=BLANCO;
+    }
+  }
+ }
+}
+
+
+//void Clean(dato_t* in, bounds_t* bounds)
+static int filtro_gestos_clean(lua_State *L)
+{
+dato_t *in = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
+bounds_t *bounds = (bounds_t *)lua_touserdata(L, 2);
+ int i;
+ for(i=0; i<in->m_alto; i++){
+   if(i<min(bounds->si.y,bounds->sd.y) || i>max(bounds->ii.y,bounds->id.y))
+        CleanLine(in,i,0,in->m_ancho,1);
+        CleanLine(in,i,bounds->ii.x,bounds->id.x,0);
+ }
+ // delete bounds;
+ free(bounds);
+ return 0;
+}
+
+unsigned char Mask(dato_t* in, int i, int j){
+  int k, l;
+        int cont=0;
+        if(i>TOL && i<in->m_alto-TOL && j>TOL && j<in->m_ancho-TOL){
+          for(k=i-TOL; k<i+TOL; k++)
+            for(l=j-TOL; l<j+TOL; l++)
+              if(in->m_imagen[(k*in->m_ancho*in->m_bytes)+(l*in->m_bytes)]<SEMI_NEGRO &&
+                 in->m_imagen[(k*in->m_ancho*in->m_bytes)+(l*in->m_bytes)+1]<SEMI_NEGRO &&
+                 in->m_imagen[(k*in->m_ancho*in->m_bytes)+(l*in->m_bytes)+2]<SEMI_NEGRO)cont++;
+        }
+        if((((2*TOL+1)*(2*TOL+1))/5)<cont)return NEGRO;
+        else return BLANCO;
+}
+
+//void MakeUp(dato_t* in){
+static int filtro_gestos_make_up(lua_State *L) {
+  //        unsigned char* salida= new unsigned char[in->m_ancho*in->m_alto*3];
+  dato_t *in = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
+  color_t *salida = (color_t *)malloc(sizeof(color_t) *in->m_ancho*in->m_alto*in->m_bytes);
+  int i,j;
+  for(i=0;i<in->m_alto;i++) {
+    for(j=0;j<in->m_ancho;j++){
+      salida[(i*in->m_ancho*in->m_bytes)+(j*in->m_bytes)]=
+	salida[(i*in->m_ancho*in->m_bytes)+(j*in->m_bytes)+1]=
+	salida[(i*in->m_ancho*in->m_bytes)+(j*in->m_bytes)+2]=Mask(in,i,j);
+    }
+  }
+  free(in->m_imagen);
+  //delete in->m_imagen;
+  
+  in->m_imagen=salida;
+  return 0;
+}
+
+/*Esta es la funcion que hace todo el filtro y llama a todas las func anteriores, si algo tiene
+que ir en scripts seria esto.
+
+1º se centra el cartel
+2º se calcula su rotacion
+3º se rota
+4º se mira q zona ocupa y nos quedamos solo con las letras
+5º se rellenan posibles zonas blancas dentro de la letra
+
+Restricciones:
+	No sabe leer carteles en perspectiva. Asi que el cartel ha de estar paralelo a la camara.
+	La distancia idonea esta entre los 30 y los 50 centimetros.
+	La luz es mejor que sea difusa.
+*/
+/*dato_t* OCR_Filter(dato_t* in, special_colour_t* sc)
+{
+    Centrar(in,sc);
+    bounds_t* bounds= BuscarLimites(in,1,sc);
+    in=Rotate(in,bounds);
+    bounds= BuscarLimites(in,0,sc);
+    Clean(in,bounds);
+    MakeUp(in);
+    return in;
+}
+*/
+//*********************************************************************************************
+
+
 
 
 
@@ -319,12 +690,6 @@ static int filtro_gestos_centrar (lua_State *L) {
   return 0;
 }
 
-static int filtro_gestos_rotar(lua_State * L) {
-  filtro_gestos_in_imagen_t *a = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
-  double f =  (double)luaL_checknumber(L, 2);
-
-  return 0;
-}
 static int filtro_gestos_get_colores(lua_State *L) {
   filtro_gestos_in_parametros_t *a = (filtro_gestos_in_parametros_t *)lua_touserdata(L, 1);
   lua_pushnumber(L, a->m_rojo_inf);
@@ -433,6 +798,10 @@ static lua_State *filtro_abrir_lua(modulo_t *modulo, const char *ruta) {
     {"difuminar", filtro_gestos_difuminar},
     {"centrar", filtro_gestos_centrar},
     {"rotar", filtro_gestos_rotar},
+    {"centrar2", filtro_gestos_centrar2},
+    {"buscar_limites", filtro_gestos_buscar_limites},
+    {"clean", filtro_gestos_clean},
+    {"make_up", filtro_gestos_make_up},
     {NULL, NULL}
   };
 
@@ -493,305 +862,6 @@ modulo_t * get_modulo()
   return modulo;
 
 }
-
-
-
-//********************************************************************************************
-//Nuevas funciones para el filtrado de carteles. (Diego)
-//********************************************************************************************
-
-//Para fijar el color especial de los carteles
-void SetSpecialColour(special_colour_t* sc, unsigned char ru, unsigned char rd,
-        unsigned char gu, unsigned char gd, unsigned char bu, unsigned char bd)
-{
- sc->ru=ru; sc->rd=rd;
- sc->bu=bu; sc->bd=bd;
- sc->gu=gu; sc->gd=gd;
-}
-
-int inRange(unsigned char valor, unsigned char sup, unsigned char inf)
-{
-  return (valor<=sup && valor>=inf);
-}
-
-int isColour(dato_t* in, int h, int w, special_colour_t* sc)
-{
-  int pos= (h*in->ancho*3)+(w*3);
-  return (inRange(in->dibujo[pos],sc->bu,sc->bd)&&
-          inRange(in->dibujo[pos+1],sc->gu,sc->gd) &&
-          inRange(in->dibujo[pos+2],sc->ru,sc->rd));
-}
-
-
-//De momento no exactamente el centrar q ya existe
-void Centrar(dato_t* in, special_colour_t* sc)
-{
-  int i,j,cont,centroX,centroY,difY,difX;
-  float acX,acY;
-  acX=acY=cont=0;
-  for (i=0;i<in->alto;i++)
-     for (j=0;j<in->ancho;j++)
-       if(isColour(in,i,j,sc)){acX+=j; acY+=i; cont++;}
-
-  acX/=cont; acY/=cont;
-  difY= floor(in->alto/2 - acY);
-  difX= floor(in->ancho/2 - acX);
-
-  if(difY<0){
-    for (i=0;i-difY<in->alto;i++)
-      for(j=0;j<in->ancho*3;j++)
-        in->dibujo[(i*in->ancho*3)+j]=in->dibujo[((i-difY)*in->ancho*3)+j];
-    while(i<in->alto){
-      for (j=0;j<in->ancho*3;j++)in->dibujo[(i*in->ancho*3)+j]=BLANCO;
-      i++;
-    }
-  }
-
-  if(difY>0){
-    for(i=in->alto-1;i-difY>=0;i--)
-      for (j=0;j<in->ancho*3;j++)in->dibujo[(i*in->ancho*3)+j]=in->dibujo[((i-difY)*in->ancho*3)+j];
-    while(i>=0){
-      for(j=0;j<in->ancho*3;j++)in->dibujo[(i*in->ancho*3)+j]=BLANCO;
-      i--;
-    }
-  }
-
-  if(difX<0){
-    for (i=0;i<in->alto;i++){
-      for (j=0;j-(difX*3)+3<in->ancho*3;j+=3){
-        in->dibujo[(i*in->ancho*3)+(j)]= in->dibujo[(i*in->ancho*3)+(j-(difX*3))];
-        in->dibujo[(i*in->ancho*3)+(j+1)]= in->dibujo[(i*in->ancho*3)+(j-(difX*3)+1)];
-        in->dibujo[(i*in->ancho*3)+(j+2)]= in->dibujo[(i*in->ancho*3)+(j-(difX*3)+2)];
-      }
-      while(j+3<in->ancho*3){
-        in->dibujo[(i*in->ancho*3)+(j)]=BLANCO; in->dibujo[(i*in->ancho*3)+(j+1)]=BLANCO; in->dibujo[(i*in->ancho*3)+(j+2)]=BLANCO; j+=3;
-      }
-    }
-  }
-
-  if(difX>0){
-    for (i = 0; i< in->alto-1; i++){
-      for (j=(in->ancho*3)-1;j-(difX*3)+2>=0;j-=3){
-        in->dibujo[(i*in->ancho*3)+(j)]= in->dibujo[(i*in->ancho*3)+(j-(difX*3))];
-        in->dibujo[(i*in->ancho*3)+(j-1)]= in->dibujo[(i*in->ancho*3)+(j-(difX*3)-1)];
-        in->dibujo[(i*in->ancho*3)+(j-2)]= in->dibujo[(i*in->ancho*3)+(j-(difX*3)-2)];
-      }
-      while(j>=3){
-        in->dibujo[(i*in->ancho*3)+(j)]=BLANCO; in->dibujo[(i*in->ancho*3)+(j-1)]=BLANCO; in->dibujo[(i*in->ancho*3)+(j-2)]=BLANCO; j-=3;
-      }
-    }
-  }
-}
-
-coord_t Corner1(dato_t* in, special_colour_t* sc)
-{
- coord_t salida;
- int i,j;
- for(i=0; i<in->alto; i++)
-   for(j=0; j<in->ancho; j++)
-     if(isColour(in,i,j,sc)){salida.x=j; salida.y=i; return salida;}
- return salida;
-}
-
-coord_t Corner2(dato_t* in, special_colour_t* sc)
-{
- coord_t salida;
- int i,j;
- for(i=in->alto-1; i>=0; i--)
-   for(j=0; j<in->ancho; j++)
-     if(isColour(in,i,j,sc)){salida.x=j; salida.y=i; return salida;}
- return salida;
-}
-
-coord_t Corner3(dato_t* in, special_colour_t* sc)
-{
- coord_t salida;
- int i,j;
- for(j=0; j<in->ancho; j++)
-   for(i=0; i<in->alto-1; i++)
-     if(isColour(in,i,j,sc)){salida.x=j; salida.y=i; return salida;}
- return salida;
-}
-
-coord_t Corner4(dato_t* in, special_colour_t* sc)
-{
- coord_t salida;
- int i,j;
- for(j=in->ancho; j>=0; j--)
-   for(i=0; i<in->alto-1; i++)
-     if(isColour(in,i,j,sc)){salida.x=j; salida.y=i; return salida;}
- return salida;
-}
-
-void Identify(dato_t* in, bounds_t* bounds, coord_t c)
-{
- if(c.x<in->ancho/2 && c.y>in->alto/2)bounds->ii=c;
- else if(c.x>in->ancho/2 && c.y>in->alto/2)bounds->id=c;
- else if(c.x<in->ancho/2 && c.y<in->alto/2)bounds->si=c;
- else if(c.x>in->ancho/2 && c.y<in->alto/2)bounds->sd=c;
-}
-
-void Identify(bounds_t* bounds, coord_t c1, coord_t c2, coord_t c3, coord_t c4)
-{
- int minY= min(min(c1.y,c2.y),min(c3.y,c4.y));
- int minX= min(min(c1.x,c2.x),min(c3.x,c4.x));
- int maxY= max(max(c1.y,c2.y),max(c3.y,c4.y));
- int maxX= max(max(c1.x,c2.x),max(c3.x,c4.x));
- bounds->si.y= minY; bounds->si.x= minX;
- bounds->sd.y= minY; bounds->sd.x= maxX;
- bounds->ii.y= maxY; bounds->ii.x= minX;
- bounds->id.y= maxY; bounds->id.x= maxX;
-}
-
-bounds_t* BuscarLimites(dato_t* in, int op, special_colour_t* sc)
-{
- bounds_t* out = (bounds_t*)malloc(sizeof(bounds_t));
- coord_t c1= Corner1(in,sc);
- coord_t c2= Corner2(in,sc);
- coord_t c3= Corner3(in,sc);
- coord_t c4= Corner4(in,sc);
- if(op){
-   Identify(in,out,c1);
-   Identify(in,out,c2);
-   Identify(in,out,c3);
-   Identify(in,out,c4);
- }
- else Identify(out,c1,c2,c3,c4);
- int b= out->ii.y-out->id.y;
- int a= (out->id.x-out->ii.x);
- double divis= (double)b/a;
- double angulo= atan(divis);
- out->grados= (angulo*180)/M_PI;
- return out;
-}
-
-dato_t* Rotate(dato_t* in, bounds_t* bounds)
-{
-    dato_t* salida= (dato_t*)malloc(sizeof(dato_t));
-    int k,ii,jj,lin,pos,pos2,i,j;
-    double fi,alfa,a,b,subAncho1,subAncho2;
-    fi= (((double)bounds->grados)*M_PI)/180;
-    alfa= M_PI/2 - fi;
-    subAncho1= abs(in->alto*cos(alfa));
-    subAncho2= abs(in->ancho*cos(fi));
-    salida->ancho= subAncho1 + subAncho2;
-    if(bounds->grados<0){subAncho1=0; subAncho2=salida->ancho;}
-    salida->alto= abs(in->alto*sin(alfa)) + abs(in->ancho*sin(fi));
-    salida->dibujo= new unsigned char[salida->alto*salida->ancho*3];
-    for(i=0; i<salida->alto; i++){
-      k=0;
-      lin= i*salida->ancho*3;
-      if(bounds->grados<0)
-        {a= (i-abs(in->ancho*sin(fi)))*sin(fi);b= (i-abs(in->ancho*sin(fi)))*cos(fi);}
-      else
-        {a=i*sin(fi); b=i*cos(fi);}
-      for(j=-subAncho1; j<subAncho2; j++){
-         ii= j*cos(fi)+a;
-         jj= -j*sin(fi)+b;
-         pos= lin+(k*3);
-         if(ii<0 || ii>=in->ancho || jj<0 || jj>=in->alto){
-            salida->dibujo[pos]=NEGRO;
-            salida->dibujo[pos+1]=NEGRO;
-            salida->dibujo[pos+2]=NEGRO;
-         }
-         else{
-            pos2= (jj*in->ancho*3)+(ii*3);
-            salida->dibujo[pos]= in->dibujo[pos2];
-            salida->dibujo[pos+1]= in->dibujo[pos2+1];
-            salida->dibujo[pos+2]= in->dibujo[pos2+2];
-         }
-         k++;
-      }
-    }
-    delete in;
-    delete bounds;
-    return salida;
-}
-
-void CleanLine(dato_t* in, int i, int left, int right, int op)
-{
- int j,pos1,pos2,r,l;
- pos1=(i*in->ancho*3);
- for(j=0; j<in->ancho; j++)
- {
-  pos2= pos1+(j*3);
-  if((op)||(!op && j<left)||(!op && j>=right)){
-    in->dibujo[pos2]=BLANCO; in->dibujo[pos2+1]=BLANCO; in->dibujo[pos2+2]=BLANCO;
-  }
-  else{
-    if(in->dibujo[pos2]<SEMI_NEGRO && in->dibujo[pos2+1]<SEMI_NEGRO && in->dibujo[pos2+2]<SEMI_NEGRO){
-      in->dibujo[pos2]=NEGRO; in->dibujo[pos2+1]=NEGRO; in->dibujo[pos2+2]=NEGRO;
-    }
-    else{
-      in->dibujo[pos2]=BLANCO; in->dibujo[pos2+1]=BLANCO; in->dibujo[pos2+2]=BLANCO;
-    }
-  }
- }
-}
-
-void Clean(dato_t* in, bounds_t* bounds)
-{
- int i;
- for(i=0; i<in->alto; i++){
-   if(i<min(bounds->si.y,bounds->sd.y) || i>max(bounds->ii.y,bounds->id.y))
-        CleanLine(in,i,0,in->ancho,1);
-        CleanLine(in,i,bounds->ii.x,bounds->id.x,0);
- }
- delete bounds;
-}
-
-unsigned char Mask(dato_t* in, int i, int j){
-        int cont=0;
-        if(i>TOL && i<in->alto-TOL && j>TOL && j<in->ancho-TOL){
-          for(int k=i-TOL; k<i+TOL; k++)
-            for(int l=j-TOL; l<j+TOL; l++)
-              if(in->dibujo[(k*in->ancho*3)+(l*3)]<SEMI_NEGRO &&
-                 in->dibujo[(k*in->ancho*3)+(l*3)+1]<SEMI_NEGRO &&
-                 in->dibujo[(k*in->ancho*3)+(l*3)+2]<SEMI_NEGRO)cont++;
-        }
-        if((((2*TOL+1)*(2*TOL+1))/5)<cont)return NEGRO;
-        else return BLANCO;
-}
-
-void MakeUp(dato_t* in){
-        unsigned char* salida= new unsigned char[in->ancho*in->alto*3];
-        int i,j;
-        for(i=0;i<in->alto;i++)
-          for(j=0;j<in->ancho;j++){
-            salida[(i*in->ancho*3)+(j*3)]=
-            salida[(i*in->ancho*3)+(j*3)+1]=
-            salida[(i*in->ancho*3)+(j*3)+2]=Mask(in,i,j);
-          }
-        delete in->dibujo;
-        in->dibujo=salida;
-}
-
-/*Esta es la funcion que hace todo el filtro y llama a todas las func anteriores, si algo tiene
-que ir en scripts seria esto.
-
-1º se centra el cartel
-2º se calcula su rotacion
-3º se rota
-4º se mira q zona ocupa y nos quedamos solo con las letras
-5º se rellenan posibles zonas blancas dentro de la letra
-
-Restricciones:
-	No sabe leer carteles en perspectiva. Asi que el cartel ha de estar paralelo a la camara.
-	La distancia idonea esta entre los 30 y los 50 centimetros.
-	La luz es mejor que sea difusa.
-*/
-dato_t* OCR_Filter(dato_t* in, special_colour_t* sc)
-{
-    Centrar(in,sc);
-    bounds_t* bounds= BuscarLimites(in,1,sc);
-    in=Rotate(in,bounds);
-    bounds= BuscarLimites(in,0,sc);
-    Clean(in,bounds);
-    MakeUp(in);
-    return in;
-}
-
-//*********************************************************************************************
 
 
 
