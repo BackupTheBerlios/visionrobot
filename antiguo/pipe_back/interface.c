@@ -24,7 +24,7 @@
 #define GLADE_HOOKUP_OBJECT_NO_REF(component,widget,name) \
   g_object_set_data (G_OBJECT (component), name, widget)
 
-GtkWidget *create_window1(void)
+GtkWidget *create_window1(char *ruta)
 {
     GtkWidget *window1;
     GdkPixbuf *window1_icon_pixbuf;
@@ -407,7 +407,7 @@ GtkWidget *create_window1(void)
     g_signal_connect((gpointer) window1, "destroy",
 		     G_CALLBACK(on_window1_destroy), NULL);
     g_signal_connect((gpointer) window1, "show",
-		     G_CALLBACK(on_window1_show), NULL);
+		     G_CALLBACK(on_window1_show), ruta);
     g_signal_connect((gpointer) nuevo2, "activate",
 		     G_CALLBACK(on_nuevo2_activate), NULL);
     g_signal_connect((gpointer) abrir2, "activate",

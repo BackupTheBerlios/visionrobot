@@ -115,11 +115,38 @@ extern "C" {
 			  char *archivo, guint * id,
 			  gboolean * modificado);
 
-  int parar(elemento_t * elemento);
-  int iniciar(elemento_t * elemento);
-  int crear_timer();
-  int parar_timer();
-  int senyal();
+    /*! \brief Desactiva la ejecución de un elemento
+       \param elemento El elemento que paramos
+       \return 0 si todo va bien, -1 en caso de error
+     */
+    int parar(elemento_t * elemento);
+    /*!\brief Activa la ejecución de un elemento
+       \param elemento El elemento que activamos
+       \return 0 si todo va bien, -1 en caso de error
+     */
+    int iniciar(elemento_t * elemento);
+    /*!\brief Activa el temporizador de ciclos del pipeline. Esta función crea una alarma que realiza ciclos seguidos hasta que se para la alarma.
+       \param retardo El retardo en microsegundos
+       \return 0 si todo va bien, -1 en caso de error
+     */
+
+    int crear_timer(long int retardo);
+    /*!\brief Desactiva el temporizador de ciclos
+       \return 0 si todo va bien, -1 en caso de error
+     */
+
+    int parar_timer();
+    /*!\brief Inicia el sistema de señales
+       \return 0 si todo va bien, -1 en caso de error
+     */
+
+    int senyal();
+    /*!\brief Efectúa un único ciclo del pipeline
+       \param pipeline El pipe sobre el que se ejecuta el ciclo
+       \return 0 si todo va bien, -1 en caso de error
+     */
+
+    int haz_un_ciclo(pipeline_t * pipeline);
 
 #ifdef __cplusplus
 }

@@ -125,6 +125,10 @@ extern "C" {
 */
     pipeline_t *cargar(const char *ruta);
 
+    /*!\brief Carga los símbolos de la nueva biblioteca
+       \param pipeline El pipe sobre el que cargamos la biblioteca
+       \param id El id del elemento sobre el que hacemos los cambios
+     */
     void cambiar_biblioteca(pipeline_t * pipeline, gint id);
 
 #ifdef __cplusplus

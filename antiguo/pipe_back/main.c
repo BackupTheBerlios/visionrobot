@@ -7,7 +7,9 @@
 /*! \mainpage Visión por Computador - Pipeline
  *  \section intro Introducción
  *  Este módulo del proyecto es una interfaz gráfica para la depuración y
- *  uso de pipelines de plugins.
+ *  uso de pipelines de plugins. Cada elemento está enlazado con una biblioteca
+ *  de vínculos dinámicos, que tiene unas funciones predefinidas que el programa
+ *  se encarga de gestionar.
  *
  *  \section licencia Licencia
  *  This program is free software; you can redistribute it and/or modify
@@ -29,6 +31,9 @@
 
 #include "interface.h"
 #include "support.h"
+#include "pipeline.h"
+#include "callbacks.h"
+#include "auxiliar.h"
 
 GtkWidget *window1;
 
@@ -38,7 +43,7 @@ int main(int argc, char *argv[])
     gtk_init(&argc, &argv);
     add_pixmap_directory("./");
 
-    window1 = create_window1();
+    window1 = create_window1(argc > 1 ? argv[1] : 0);
 
     gtk_widget_show(window1);
 

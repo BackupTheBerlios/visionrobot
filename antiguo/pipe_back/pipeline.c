@@ -214,47 +214,51 @@ void cambiar_biblioteca(pipeline_t * pipeline, gint id)
     }
     pipeline->m_elemento[id].m_handler =
 	LoadLibrary(pipeline->m_elemento[id].m_ruta);
-    pipeline->m_elemento[id].m_funcion_ciclo =
-	(funcion_1) GetProcAddress(pipeline->m_elemento[id].m_handler,
-				   TEXT(F_CICLO));
-    pipeline->m_elemento[id].m_funcion_iniciar =
-	(funcion_1) GetProcAddress(pipeline->m_elemento[id].m_handler,
-				   TEXT(F_INICIAR));
+    if (pipeline->m_elemento[id].m_handler) {
+	pipeline->m_elemento[id].m_funcion_ciclo =
+	    (funcion_1) GetProcAddress(pipeline->m_elemento[id].m_handler,
+				       TEXT(F_CICLO));
+	pipeline->m_elemento[id].m_funcion_iniciar =
+	    (funcion_1) GetProcAddress(pipeline->m_elemento[id].m_handler,
+				       TEXT(F_INICIAR));
 
-    pipeline->m_elemento[id].m_funcion_propiedades =
-	(funcion_1) GetProcAddress(pipeline->m_elemento[id].m_handler,
-				   TEXT(F_PROPIEDADES));
-    pipeline->m_elemento[id].m_funcion_cerrar =
-	(funcion_1) GetProcAddress(pipeline->m_elemento[id].m_handler,
-				   TEXT(F_CERRAR));
-    pipeline->m_elemento[id].m_funcion_get_datos =
-	(funcion_2) GetProcAddress(pipeline->m_elemento[id].m_handler,
-				   TEXT(F_GET_DATOS));
-    pipeline->m_elemento[id].m_funcion_set_datos =
-	(funcion_3) GetProcAddress(pipeline->m_elemento[id].m_handler,
-				   TEXT(F_SET_DATOS));
-
+	pipeline->m_elemento[id].m_funcion_propiedades =
+	    (funcion_1) GetProcAddress(pipeline->m_elemento[id].m_handler,
+				       TEXT(F_PROPIEDADES));
+	pipeline->m_elemento[id].m_funcion_cerrar =
+	    (funcion_1) GetProcAddress(pipeline->m_elemento[id].m_handler,
+				       TEXT(F_CERRAR));
+	pipeline->m_elemento[id].m_funcion_get_datos =
+	    (funcion_2) GetProcAddress(pipeline->m_elemento[id].m_handler,
+				       TEXT(F_GET_DATOS));
+	pipeline->m_elemento[id].m_funcion_set_datos =
+	    (funcion_3) GetProcAddress(pipeline->m_elemento[id].m_handler,
+				       TEXT(F_SET_DATOS));
+    }
 #else
     if (pipeline->m_elemento[id].m_handler) {
 	dlclose(pipeline->m_elemento[id].m_handler);
     }
     pipeline->m_elemento[id].m_handler =
 	dlopen(pipeline->m_elemento[id].m_ruta, RTLD_LAZY);
-    pipeline->m_elemento[id].m_funcion_ciclo =
-	(funcion_1) dlsym(pipeline->m_elemento[id].m_handler, F_CICLO);
-    pipeline->m_elemento[id].m_funcion_iniciar =
-	(funcion_1) dlsym(pipeline->m_elemento[id].m_handler, F_INICIAR);
-    pipeline->m_elemento[id].m_funcion_propiedades =
-	(funcion_1) dlsym(pipeline->m_elemento[id].
-			  m_handler, F_PROPIEDADES);
-    pipeline->m_elemento[id].m_funcion_cerrar =
-	(funcion_1) dlsym(pipeline->m_elemento[id].m_handler, F_CERRAR);
-    pipeline->m_elemento[id].m_funcion_get_datos =
-	(funcion_2) dlsym(pipeline->m_elemento[id].m_handler, F_GET_DATOS);
-    pipeline->m_elemento[id].m_funcion_set_datos =
-	(funcion_3) dlsym(pipeline->m_elemento[id].m_handler, F_SET_DATOS);
-
-
-
+    if (pipeline->m_elemento[id].m_handler) {
+	pipeline->m_elemento[id].m_funcion_ciclo =
+	    (funcion_1) dlsym(pipeline->m_elemento[id].m_handler, F_CICLO);
+	pipeline->m_elemento[id].m_funcion_iniciar =
+	    (funcion_1) dlsym(pipeline->m_elemento[id].m_handler,
+			      F_INICIAR);
+	pipeline->m_elemento[id].m_funcion_propiedades =
+	    (funcion_1) dlsym(pipeline->m_elemento[id].m_handler,
+			      F_PROPIEDADES);
+	pipeline->m_elemento[id].m_funcion_cerrar =
+	    (funcion_1) dlsym(pipeline->m_elemento[id].m_handler,
+			      F_CERRAR);
+	pipeline->m_elemento[id].m_funcion_get_datos =
+	    (funcion_2) dlsym(pipeline->m_elemento[id].m_handler,
+			      F_GET_DATOS);
+	pipeline->m_elemento[id].m_funcion_set_datos =
+	    (funcion_3) dlsym(pipeline->m_elemento[id].m_handler,
+			      F_SET_DATOS);
+    }
 #endif
 }

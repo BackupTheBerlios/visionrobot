@@ -2,6 +2,7 @@
     \brief Funciones de eventos de Gtk
     \author zosco
     \version 0.1
+    \todo \li No funciona cargar de archivo al principio
  */
 /*
  *  This program is free software; you can redistribute it and/or modify
@@ -29,6 +30,7 @@
 #include "pipeline.h"
 
 #define TAM_ARCHIVO 64
+#define RETARDO 500
 
 extern GtkWidget *window1;
 pipeline_t *pipeline;
@@ -84,10 +86,8 @@ void on_nuevo2_activate(GtkMenuItem * menuitem, gpointer user_data)
 
 }
 
-
-void on_abrir2_activate(GtkMenuItem * menuitem, gpointer user_data)
+void abre(char *file)
 {
-    char *file = abrir_ventana(window1);
     if (file != 0) {
 	vaciar_pipeline(pipeline);
 	pipeline = cargar(file);
@@ -107,6 +107,13 @@ void on_abrir2_activate(GtkMenuItem * menuitem, gpointer user_data)
 	}
 	establecer(pipeline, window1);
     }
+
+}
+
+
+void on_abrir2_activate(GtkMenuItem * menuitem, gpointer user_data)
+{
+    abre(abrir_ventana(window1));
 }
 
 
@@ -121,20 +128,19 @@ void on_guardar_como2_activate(GtkMenuItem * menuitem, gpointer user_data)
 
 void on_guardar2_activate(GtkMenuItem * menuitem, gpointer user_data)
 {
-  gchar *buffer;
-  if(archivo[0] != '\0') {
-    buffer = archivo;
-  }
-  else {
-    buffer = guardar_ventana(window1);
-  }
-  guardar_como_aux(pipeline,
-		   buffer,
-		   window1, status_bar, archivo, &id, &modificado);
+    gchar *buffer;
+    if (archivo[0] != '\0') {
+	buffer = archivo;
+    } else {
+	buffer = guardar_ventana(window1);
+    }
+    guardar_como_aux(pipeline,
+		     buffer,
+		     window1, status_bar, archivo, &id, &modificado);
 
-  if(archivo[0] == '\0') {
-    free(buffer);
-  }
+    if (archivo[0] == '\0') {
+	free(buffer);
+    }
 }
 
 
@@ -168,6 +174,7 @@ void on_crear1_activate(GtkMenuItem * menuitem, gpointer user_data)
 	g_signal_connect((gpointer) pipeline->
 			 m_elemento[pipeline->m_numero - 1].m_widget,
 			 "toggled", G_CALLBACK(pinchado), NULL);
+	establecer(pipeline, window1);
     }
 }
 
@@ -205,6 +212,9 @@ void on_window1_show(GtkWidget * widget, gpointer user_data)
 			    "Visi\303\263n por computador");
     pipeline = crear_pipeline();
     senyal();
+    if (user_data != 0) {
+	abre((char *) user_data);
+    }
 }
 
 void on_propiedades1_activate(GtkMenuItem * menuitem, gpointer user_data)
@@ -229,16 +239,18 @@ void
 on___ndice_de_la_ayuda1_activate(GtkMenuItem * menuitem,
 				 gpointer user_data)
 {
-  int i;
-  char * buffer = "Saludo";
-  for (i = 0; i < pipeline->m_numero; ++i) {
-    if(pipeline->m_elemento[i].m_iniciado) {
-      if (pipeline->m_elemento[i].m_funcion_ciclo) {
-	pipeline->m_elemento[i].m_funcion_set_datos(buffer);
-	printf("Salida >>> %s\n", (char *)pipeline->m_elemento[i].m_funcion_get_datos());
-      }
+    int i;
+    char *buffer = "Saludo";
+    for (i = 0; i < pipeline->m_numero; ++i) {
+	if (pipeline->m_elemento[i].m_iniciado) {
+	    if (pipeline->m_elemento[i].m_funcion_ciclo) {
+		pipeline->m_elemento[i].m_funcion_set_datos(buffer);
+		printf("Salida >>> %s\n",
+		       (char *) pipeline->m_elemento[i].
+		       m_funcion_get_datos());
+	    }
+	}
     }
-  }  
 }
 
 void on_button6_activate(GtkButton * button, gpointer user_data)
@@ -252,9 +264,9 @@ void on_button6_activate(GtkButton * button, gpointer user_data)
 void on_propiedades_biblioteca_activate(GtkButton * button,
 					gpointer user_data)
 {
-     int i;
+    int i;
     for (i = 0; i < pipeline->m_numero; ++i) {
-      if(pipeline->m_elemento[i].m_iniciado) {
+	if (pipeline->m_elemento[i].m_iniciado) {
 	    if (pipeline->m_elemento[i].m_funcion_propiedades) {
 		pipeline->m_elemento[i].m_funcion_propiedades();
 	    }
@@ -264,17 +276,18 @@ void on_propiedades_biblioteca_activate(GtkButton * button,
 }
 void on_ciclos_biblioteca_activate(GtkButton * button, gpointer user_data)
 {
-  crear_timer();
+    crear_timer(RETARDO);
 }
+
 void on_iniciar_biblioteca_activate(GtkButton * button, gpointer user_data)
 {
 
-    int i;    
+    int i;
     for (i = 0; i < pipeline->m_numero; ++i) {
 	if (gtk_toggle_button_get_active
 	    (GTK_TOGGLE_BUTTON(pipeline->m_elemento[i].m_widget))) {
-	  iniciar(&pipeline->m_elemento[i]);
-	    
+	    iniciar(&pipeline->m_elemento[i]);
+
 	}
     }
     establecer(pipeline, window1);
@@ -285,7 +298,7 @@ void on_iniciar_todas_biblioteca_activate(GtkButton * button,
 {
     int i;
     for (i = 0; i < pipeline->m_numero; ++i) {
-      iniciar(&pipeline->m_elemento[i]);
+	iniciar(&pipeline->m_elemento[i]);
     }
     establecer(pipeline, window1);
 }
@@ -293,15 +306,16 @@ void on_iniciar_todas_biblioteca_activate(GtkButton * button,
 
 void on_parar_biblioteca_activate(GtkButton * button, gpointer user_data)
 {
-  parar_timer();
+    parar_timer();
 }
+
 void on_cerrar_biblioteca_activate(GtkButton * button, gpointer user_data)
 {
     int i;
     for (i = 0; i < pipeline->m_numero; ++i) {
 	if (gtk_toggle_button_get_active
 	    (GTK_TOGGLE_BUTTON(pipeline->m_elemento[i].m_widget))) {
-	  parar(&pipeline->m_elemento[i]);
+	    parar(&pipeline->m_elemento[i]);
 	}
     }
     establecer(pipeline, window1);
@@ -312,20 +326,12 @@ void on_cerrar_todas_biblioteca_activate(GtkButton * button,
 {
     int i;
     for (i = 0; i < pipeline->m_numero; ++i) {
-      parar(&pipeline->m_elemento[i]);
+	parar(&pipeline->m_elemento[i]);
     }
     establecer(pipeline, window1);
 }
 
 void on_ciclo_biblioteca_activate(GtkButton * button, gpointer user_data)
 {
-    int i;
-    for (i = 0; i < pipeline->m_numero; ++i) {
-      if(pipeline->m_elemento[i].m_iniciado) {
-	    if (pipeline->m_elemento[i].m_funcion_ciclo) {
-		pipeline->m_elemento[i].m_funcion_ciclo();
-	    }
-	}
-    }
-
+    haz_un_ciclo(pipeline);
 }

@@ -27,6 +27,8 @@
 #include <signal.h>
 #include <stdlib.h>
 
+extern pipeline_t *pipeline;
+
 gboolean confirmacion(GtkWidget * w, const gchar * texto)
 {
     GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(w),
@@ -249,61 +251,77 @@ void guardar_como_aux(pipeline_t * pipeline, char *file,
     }
 }
 
-int parar(elemento_t * elemento) {
-  char buffer[MAX_NOMBRE];
-  elemento->m_iniciado = 0;
-  sprintf(buffer, "%s", elemento->m_nombre);
-  gtk_button_set_label(GTK_BUTTON
-		       (elemento->m_widget),
-		       buffer);
-  if(elemento->m_funcion_cerrar) {
-    elemento->m_funcion_cerrar();
+int parar(elemento_t * elemento)
+{
+    char buffer[MAX_NOMBRE];
+    elemento->m_iniciado = 0;
+    sprintf(buffer, "%s", elemento->m_nombre);
+    gtk_button_set_label(GTK_BUTTON(elemento->m_widget), buffer);
+    if (elemento->m_funcion_cerrar) {
+	elemento->m_funcion_cerrar();
+	return 0;
+    }
+    return -1;
+}
+
+int iniciar(elemento_t * elemento)
+{
+    char buffer[MAX_NOMBRE];
+    elemento->m_iniciado = 1;
+    sprintf(buffer, "* %s", elemento->m_nombre);
+    gtk_button_set_label(GTK_BUTTON(elemento->m_widget), buffer);
+    if (elemento->m_funcion_iniciar) {
+	elemento->m_funcion_iniciar();
+	return 0;
+    }
+    return -1;
+}
+
+int crear_timer(long int retardo)
+{
+    struct itimerval t;
+    t.it_interval.tv_usec = retardo;
+    t.it_interval.tv_sec = 0;
+    t.it_value.tv_usec = 1;
+    t.it_value.tv_sec = 0;
+    setitimer(ITIMER_REAL, &t, 0);
     return 0;
-  }
-  return -1;
 }
 
-int iniciar(elemento_t * elemento) {
-  char buffer[MAX_NOMBRE];
-  elemento->m_iniciado = 1;
-  sprintf(buffer, "* %s", elemento->m_nombre);
-  gtk_button_set_label(GTK_BUTTON
-		       (elemento->m_widget),
-		       buffer);
-  if(elemento->m_funcion_iniciar) {
-    elemento->m_funcion_iniciar();
+int parar_timer()
+{
+    struct itimerval t;
+    t.it_interval.tv_usec = 0;
+    t.it_interval.tv_sec = 0;
+    t.it_value.tv_usec = 0;
+    t.it_value.tv_sec = 0;
+    setitimer(ITIMER_REAL, &t, 0);
     return 0;
-  }
-  return -1;
 }
 
-int crear_timer() {
-  struct itimerval t;
-  t.it_interval.tv_usec = 1;
-  t.it_interval.tv_sec = 99999;
-  t.it_value.tv_usec = 99999;
-  t.it_value.tv_sec = 1;
-  setitimer(ITIMER_REAL, &t, 0);
-  return 0;
+void catch_alarm(int sig)
+{
+    //  g_print("jajajaj, funciona!!!!");
+    haz_un_ciclo(pipeline);
+    signal(sig, catch_alarm);
 }
 
-int parar_timer() {
-  struct itimerval t;
-  t.it_interval.tv_usec = 0;
-  t.it_interval.tv_sec = 0;
-  t.it_value.tv_usec = 0;
-  t.it_value.tv_sec = 0;
-  setitimer(ITIMER_REAL, &t, 0);
-  return 0;
+int senyal()
+{
+    signal(SIGALRM, catch_alarm);
+    return 0;
 }
 
-void
-catch_alarm (int sig) {
-  g_print("jajajaj, funciona!!!!");
-  signal (sig, catch_alarm);
-}
 
-int senyal() {
-  signal (SIGALRM, catch_alarm);
-  return 0;
+int haz_un_ciclo(pipeline_t * pipeline)
+{
+    int i;
+    for (i = 0; i < pipeline->m_numero; ++i) {
+	if (pipeline->m_elemento[i].m_iniciado) {
+	    if (pipeline->m_elemento[i].m_funcion_ciclo) {
+		pipeline->m_elemento[i].m_funcion_ciclo();
+	    }
+	}
+    }
+    return 0;
 }
