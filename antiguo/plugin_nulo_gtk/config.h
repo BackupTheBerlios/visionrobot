@@ -12,7 +12,7 @@
 #define PACKAGE_PIXMAPS_DIR "/usr/local/share/pixmaps"
 #define PACKAGE_HELP_DIR "/usr/local/share/help"
 #define PACKAGE_MENU_DIR "/usr/local/share"
-#define PACKAGE_SOURCE_DIR "/home/carlos/Projects/plugin_nulo_gtk"
+#define PACKAGE_SOURCE_DIR "/home/cuentas/50119517/modulos/plugin_nulo_gtk"
 #define GETTEXT_PACKAGE "plugin_nulo_gtk"
 
 /* Define to one of `_getb67', `GETB67', `getb67' for Cray-2 and Cray-YMP

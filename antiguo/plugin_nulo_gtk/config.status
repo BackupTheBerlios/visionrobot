@@ -493,13 +493,13 @@ s,@INSTALL_DATA@,${INSTALL} -m 644,;t t
 s,@CYGPATH_W@,echo,;t t
 s,@PACKAGE@,plugin_nulo_gtk,;t t
 s,@VERSION@,0.1,;t t
-s,@ACLOCAL@,${SHELL} /home/carlos/Projects/plugin_nulo_gtk/missing --run aclocal-1.8,;t t
-s,@AUTOCONF@,${SHELL} /home/carlos/Projects/plugin_nulo_gtk/missing --run autoconf,;t t
-s,@AUTOMAKE@,${SHELL} /home/carlos/Projects/plugin_nulo_gtk/missing --run automake-1.8,;t t
-s,@AUTOHEADER@,${SHELL} /home/carlos/Projects/plugin_nulo_gtk/missing --run autoheader,;t t
-s,@MAKEINFO@,${SHELL} /home/carlos/Projects/plugin_nulo_gtk/missing --run makeinfo,;t t
-s,@AMTAR@,${SHELL} /home/carlos/Projects/plugin_nulo_gtk/missing --run tar,;t t
-s,@install_sh@,/home/carlos/Projects/plugin_nulo_gtk/install-sh,;t t
+s,@ACLOCAL@,${SHELL} /home/cuentas/50119517/modulos/plugin_nulo_gtk/missing --run aclocal-1.8,;t t
+s,@AUTOCONF@,${SHELL} /home/cuentas/50119517/modulos/plugin_nulo_gtk/missing --run autoconf,;t t
+s,@AUTOMAKE@,${SHELL} /home/cuentas/50119517/modulos/plugin_nulo_gtk/missing --run automake-1.8,;t t
+s,@AUTOHEADER@,${SHELL} /home/cuentas/50119517/modulos/plugin_nulo_gtk/missing --run autoheader,;t t
+s,@MAKEINFO@,${SHELL} /home/cuentas/50119517/modulos/plugin_nulo_gtk/missing --run makeinfo,;t t
+s,@AMTAR@,${SHELL} /home/cuentas/50119517/modulos/plugin_nulo_gtk/missing --run tar,;t t
+s,@install_sh@,/home/cuentas/50119517/modulos/plugin_nulo_gtk/install-sh,;t t
 s,@STRIP@,strip,;t t
 s,@ac_ct_STRIP@,strip,;t t
 s,@INSTALL_STRIP_PROGRAM@,${SHELL} $(install_sh) -c -s,;t t
@@ -971,7 +971,7 @@ ${ac_dA}PACKAGE_DOC_DIR${ac_dB}PACKAGE_DOC_DIR${ac_dC}"/usr/local/doc/plugin_nul
 ${ac_dA}PACKAGE_PIXMAPS_DIR${ac_dB}PACKAGE_PIXMAPS_DIR${ac_dC}"/usr/local/share/pixmaps"${ac_dD}
 ${ac_dA}PACKAGE_HELP_DIR${ac_dB}PACKAGE_HELP_DIR${ac_dC}"/usr/local/share/help"${ac_dD}
 ${ac_dA}PACKAGE_MENU_DIR${ac_dB}PACKAGE_MENU_DIR${ac_dC}"/usr/local/share"${ac_dD}
-${ac_dA}PACKAGE_SOURCE_DIR${ac_dB}PACKAGE_SOURCE_DIR${ac_dC}"/home/carlos/Projects/plugin_nulo_gtk"${ac_dD}
+${ac_dA}PACKAGE_SOURCE_DIR${ac_dB}PACKAGE_SOURCE_DIR${ac_dC}"/home/cuentas/50119517/modulos/plugin_nulo_gtk"${ac_dD}
 CEOF
   sed -f $tmp/defines.sed $tmp/in >$tmp/out
   rm -f $tmp/in
@@ -1062,7 +1062,7 @@ ${ac_uA}PACKAGE_DOC_DIR${ac_uB}PACKAGE_DOC_DIR${ac_uC}"/usr/local/doc/plugin_nul
 ${ac_uA}PACKAGE_PIXMAPS_DIR${ac_uB}PACKAGE_PIXMAPS_DIR${ac_uC}"/usr/local/share/pixmaps"${ac_uD}
 ${ac_uA}PACKAGE_HELP_DIR${ac_uB}PACKAGE_HELP_DIR${ac_uC}"/usr/local/share/help"${ac_uD}
 ${ac_uA}PACKAGE_MENU_DIR${ac_uB}PACKAGE_MENU_DIR${ac_uC}"/usr/local/share"${ac_uD}
-${ac_uA}PACKAGE_SOURCE_DIR${ac_uB}PACKAGE_SOURCE_DIR${ac_uC}"/home/carlos/Projects/plugin_nulo_gtk"${ac_uD}
+${ac_uA}PACKAGE_SOURCE_DIR${ac_uB}PACKAGE_SOURCE_DIR${ac_uC}"/home/cuentas/50119517/modulos/plugin_nulo_gtk"${ac_uD}
 s,^[	 ]*#[	 ]*undef[	 ][	 ]*[a-zA-Z_][a-zA-Z_0-9]*,/* & */,
 CEOF
   sed -f $tmp/undefs.sed $tmp/in >$tmp/out
