@@ -7,7 +7,7 @@ OUTPUT = pipeline
 TAGS = ctags
 DOXYGEN = doxygen
 INDENT = indent
-OBJS = main.o pipeline.o dialogo_conectar.o dialogo_guardar.o propiedades_modulo.o dialogo_abrir.o ventana_principal.o funciones.o auxiliar.o
+OBJS = main.o pipeline.o dialogo_conectar.o dialogo_guardar.o propiedades_modulo.o dialogo_abrir.o ventana_principal.o
 
 
 all:	$(OBJS) tags
@@ -51,8 +51,3 @@ dialogo_abrir.o: dialogo_abrir.c
 ventana_principal.o: ventana_principal.c
 	$(GCC) -c -o ventana_principal.o ventana_principal.c $(OPTS) $(CFLAGS)
 
-funciones.o: funciones.c
-	$(GCC) -c -o funciones.o funciones.c $(OPTS) $(CFLAGS)
-
-auxiliar.o: auxiliar.c
-	$(GCC) -c -o auxiliar.o auxiliar.c $(OPTS) $(CFLAGS)

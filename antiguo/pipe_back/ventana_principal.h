@@ -8,9 +8,9 @@
 #define TAM_ARCHIVO 64
 
 typedef struct {
-  GtkWidget * m_widget;
-  gint m_x;
-  gint m_y;
+    GtkWidget *m_widget;
+    gint m_x;
+    gint m_y;
 } botones_t;
 
 typedef struct {
@@ -70,15 +70,18 @@ typedef struct {
     char archivo[TAM_ARCHIVO];
     gboolean modificado;
     GdkGC *gc;
-    GdkDrawable *ww;  
+    GdkDrawable *ww;
     guint m_timer;
     gboolean m_seguir_timer;
     guint m_retardo;
     botones_t *botones;
 } ventana_principal_t;
 
-ventana_principal_t * ventana_principal_crear();
+ventana_principal_t *ventana_principal_crear();
 
 void ventana_principal_borrar(ventana_principal_t * ventana_principal);
+
+void ventana_principal_abrir(char *file,
+			     ventana_principal_t * ventana_principal);
 
 #endif

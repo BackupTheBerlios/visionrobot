@@ -29,6 +29,6 @@ typedef struct {
 
 void propiedades_modulo_cerrar(propiedades_modulo_t * propiedades_modulo);
 
-propiedades_modulo_t * propiedades_modulo_crear();
+propiedades_modulo_t *propiedades_modulo_crear();
 
 #endif

@@ -64,10 +64,10 @@ extern "C" {
 
 /*! \brief La estructura de datos de cada elemento del pipe */
     struct elemento_s {
-      /*guint*/int m_id;
+	/*guint */ int m_id;
 	//GtkWidget *m_widget;
 	/*gint m_x;
-	gint m_y;*/
+	   gint m_y; */
 #ifdef WIN32
 	 HMODULE
 #else
@@ -78,15 +78,15 @@ extern "C" {
 	funcion_1 m_funcion_ciclo;
 	funcion_1 m_funcion_iniciar;
 	funcion_1 m_funcion_propiedades;
-	funcion_1 m_funcion_cerrar;	
+	funcion_1 m_funcion_cerrar;
 	funcion_2 m_funcion_get_datos;
 	funcion_3 m_funcion_set_datos;
-	funcion_4 m_funcion_error;	
+	funcion_4 m_funcion_error;
 	char m_iniciado;
-	/*gchar*/char m_ruta[MAX_RUTA];
-	/*gchar*/char m_nombre[MAX_NOMBRE];
-	struct elemento_s **m_destino/*[MAX_CONEXIONES]*/;
-	/*gint*/int m_numero_conexiones;
+	/*gchar */ char m_ruta[MAX_RUTA];
+	/*gchar */ char m_nombre[MAX_NOMBRE];
+	struct elemento_s **m_destino /*[MAX_CONEXIONES] */ ;
+	/*gint */ int m_numero_conexiones;
     };
 
 /*! \brief Declaración del tipo de los elementos para su uso */
@@ -94,10 +94,10 @@ extern "C" {
 
 /*! \brief La estructura de datos del pipeline */
     struct pipeline_s {
-	/*gboolean*/char m_corriendo;
+	/*gboolean */ char m_corriendo;
 	int m_numero;
 	int m_error;
-	elemento_t *m_elemento/*[MAX_ELEMENTOS]*/;
+	elemento_t *m_elemento /*[MAX_ELEMENTOS] */ ;
     };
 
 /*! \brief Declaración del tipo del pipeline para su uso */
@@ -115,8 +115,8 @@ extern "C" {
     \param ruta La ruta a la biblioteca dinámica
     \return El nuevo elemento
 */
-    elemento_t *pipeline_nuevo(pipeline_t * pipeline, const char *nombre/*, gint x,
-		      gint y*/, /*gchar*/const char * ruta);
+    elemento_t *pipeline_nuevo(pipeline_t * pipeline, const char *nombre	/*, gint x,
+			          gint y */ , /*gchar */ const char *ruta);
 /*! \brief Borra un pipe
     \param pipeline El pipe que se borra
     \return Devuelve 0
@@ -127,7 +127,7 @@ extern "C" {
     \param id El id del módulo
     \return Devuelve 0
 */
-    int pipeline_borrar(pipeline_t * pipeline, int/*gint*/ id);
+    int pipeline_borrar(pipeline_t * pipeline, int /*gint */ id);
 /*! \brief Guarda un pipeline en XML
     \param pipeline El pipe
     \param archivo La ruta en la que se guarda
@@ -144,7 +144,7 @@ extern "C" {
        \param pipeline El pipe sobre el que cargamos la biblioteca
        \param id El id del elemento sobre el que hacemos los cambios
      */
-  void pipeline_cambiar_biblioteca(elemento_t * elemento);//pipeline_t * pipeline, gint id);
+    void pipeline_cambiar_biblioteca(elemento_t * elemento);	//pipeline_t * pipeline, gint id);
 
     /*! \brief Conecta dos módulos
        \param pipeline El pipeline que contiene los módulos
@@ -152,15 +152,16 @@ extern "C" {
        \param destino El índice del elemento destino
        \return 0 si todo va bien, -1 en casa
      */
-    int pipeline_conectar(pipeline_t * pipeline, /*gint*/int origen, /*gint*/int destino);
+    int pipeline_conectar(pipeline_t * pipeline, /*gint */ int origen,
+			  /*gint */ int destino);
 
-  int pipeline_cerrar_biblioteca(elemento_t * elemento);
-  int pipeline_cerrar_todas_bibliotecas(pipeline_t * pipeline);
-  
-  int pipeline_error(pipeline_t * pipeline, const char * error);
-  int pipeline_ciclo(pipeline_t * pipeline);
-  int pipeline_iniciar(pipeline_t * pipeline, elemento_t * elemento);
-  int pipeline_parar(pipeline_t * pipeline, elemento_t * elemento);
+    int pipeline_cerrar_biblioteca(elemento_t * elemento);
+    int pipeline_cerrar_todas_bibliotecas(pipeline_t * pipeline);
+
+    int pipeline_error(pipeline_t * pipeline, const char *error);
+    int pipeline_ciclo(pipeline_t * pipeline);
+    int pipeline_iniciar(pipeline_t * pipeline, elemento_t * elemento);
+    int pipeline_parar(pipeline_t * pipeline, elemento_t * elemento);
 
 #ifdef __cplusplus
 }

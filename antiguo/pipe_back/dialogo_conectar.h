@@ -15,7 +15,7 @@ typedef struct {
     GtkWidget *okbutton1;
 } dialogo_conectar_t;
 
-void dialogo_conectar_cerrar(dialogo_conectar_t * dialogo_conectar) ;
+void dialogo_conectar_cerrar(dialogo_conectar_t * dialogo_conectar);
 dialogo_conectar_t *dialogo_conectar_crear();
 
 #endif

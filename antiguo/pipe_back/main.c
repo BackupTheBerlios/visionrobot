@@ -36,14 +36,14 @@ int main(int argc, char *argv[])
     gtk_set_locale();
     gtk_init(&argc, &argv);
 
-    ventana_principal_t * ventana_principal = ventana_principal_crear();
+    ventana_principal_t *ventana_principal = ventana_principal_crear();
 
     gtk_widget_show(ventana_principal->window1);
-    
-    if(argc > 1) {
-            abrir(argv[1], ventana_principal);
+
+    if (argc > 1) {
+	ventana_principal_abrir(argv[1], ventana_principal);
     }
-    
+
     ventana_principal->m_retardo = 500;
 
     gtk_main();
