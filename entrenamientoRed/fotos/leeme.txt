@@ -1,0 +1,2 @@
+Meter en la carpeta gestos las fotos del ftp y cambiar si se quiere el contenido
+de los archivos tipo LIST.
