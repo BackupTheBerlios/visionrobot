@@ -1,3 +1,13 @@
+/*!
+  \file   gestion.c
+  \author Carlos León
+  \date   Sat Mar 12 19:54:40 2005
+  
+  \brief  Módulo que se encarga de filtrar la salida de la red, y generar, a partir de ella, una salida coherente y útil.
+  
+  
+*/
+
 #include "pipeline_sdk.h"
 #include <stdlib.h>
 #include <glib.h>
@@ -8,86 +18,140 @@
 #define PUERTO_SALIDA  "salida_texto"
 
 typedef struct {
-    char m_salida[128];
-    GArray* m_historial;
-    int m_tolerancia;
+  char m_buffer_error[128];
+  char *m_anterior;
+  GHashTable* m_historial;
+  int m_tolerancia;
+  int m_maximo_valor;
+  char *m_neutro;
 } gestion_dato_t;
 
+typedef struct {
+  int m_valor;
+} estado_t;
 
-static char *gestion_ciclo(modulo_t *modulo, const char *puerto, const void *entrada)
-{
-  return 0;
-  if(entrada) {
-    //printf("gestion: puerto = %s\n", puerto);
-    if(!strcmp(PUERTO_ENTRADA, puerto)) {
+typedef struct {
+  estado_t *m_estado;
+  char *m_maximo;
+  int m_valor;
+  int m_maximo_valor;
+  char *m_error;
+} argumento_t;
 
-      const char *cadena = (const char *)entrada;
-      gestion_dato_t *dato = (gestion_dato_t *)modulo->m_dato;
-      //printf("gestion: cadena = %s\n", cadena);
-      // Te he cambiado esto, el strcmp. Cuando es igual, esto devuelve cero,
-      // tú lo tenías al revés
-      if(!strcmp(entrada, "no_gesto")){
-        //Si la imagen tratada por la red, es reconocida como no_gesto, no se la pasa nada al modulo de salida
-        //para que esta no escriba nada, y el ultimo gesto sea el q aun tenga validez.
-        g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, 0);
-      }
-      else{
-        g_array_append_val(dato->m_historial, cadena);
-        g_array_remove_index(dato->m_historial, 0);
-        //Se recorre el historial, el elemento que mas se repita se escribe en m_salida
-        int i;
-        int cont=1; char* actual= g_array_index(dato->m_historial, char*, 0);
-        for(i=1; i<dato->m_tolerancia; i++){
-           if(strcmp(actual,g_array_index(dato->m_historial, char*, i)) != 0){
-             cont--;
-             if(!cont){
-               actual=g_array_index(dato->m_historial, char*, i);
-               cont=1;
-             }
-           }
-           else{
-             cont++;
-           }
-        }
-	// Aquí había dato->m_salida = actual, supongo que querías esto
-        strcpy(dato->m_salida, actual);
+static void gestion_restar(gpointer key, gpointer value, gpointer user_data) {
+  estado_t* estado = (estado_t*)value;
+  if(estado->m_valor > 0) {
+    estado->m_valor--;
+  }  
+}
 
-        g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, &dato->m_salida);
-      }
+static void gestion_sumar(gpointer key, gpointer value, gpointer user_data) {
+  estado_t* estado = (estado_t*)value;
+  argumento_t *argumento = (argumento_t *)user_data;
+  if(argumento->m_estado == estado) {
+    if(estado->m_valor < argumento->m_maximo_valor) {
+      estado->m_valor++;
+    }    
+  }
+  else if(estado->m_valor > 0) {
+    estado->m_valor--;
+  }  
+  if(argumento->m_maximo) {
+    if(estado->m_valor > argumento->m_valor) {
+      argumento->m_valor = estado->m_valor;
+      argumento->m_maximo = key;
     }
   }
   else {
-     /*Si la red neuronal no esta enviando datos, el tampoco envia datos al modulo de salida. Para que este
-     no escriba nada*/
-     g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, 0);
+    argumento->m_maximo = key;
+    argumento->m_valor = estado->m_valor;
   }
-  return 0;
+  sprintf(argumento->m_error, "%s[%s=%i] ", argumento->m_error, (char *)key, estado->m_valor);
 }
+
+static char *gestion_ciclo(modulo_t *modulo, const char *puerto, const void *entrada)
+{
+  char *devolver = 0;
+  const char *cadena = (const char *)entrada;
+  gestion_dato_t *dato = (gestion_dato_t *)modulo->m_dato;
+  if(cadena && !strcmp(PUERTO_ENTRADA, puerto)) {
+    if(strcmp(cadena, dato->m_neutro) == 0) {
+      // hay que poner tolerancia a "nogestos"
+      g_hash_table_foreach(dato->m_historial, gestion_restar, 0);
+    }
+    else {
+      int maximo_valor = dato->m_maximo_valor;
+      estado_t * estado = g_hash_table_lookup(dato->m_historial, entrada);
+      // Si esa orden ya existe, actualizamos su estado, si no, la metemos en la tabla;
+      // así es más genérico, y vale para cualquier orden  
+      if(!estado){      
+	estado = (estado_t *)malloc(sizeof(estado_t));
+	estado->m_valor = 1;
+	g_hash_table_insert(dato->m_historial, strdup(cadena), estado);
+      }
+      dato->m_buffer_error [0] = '\0';
+      argumento_t argumento = {estado, 0, 0, maximo_valor, dato->m_buffer_error};
+      g_hash_table_foreach(dato->m_historial, gestion_sumar, &argumento);
+      
+      estado_t *buscar = (estado_t *)g_hash_table_lookup(dato->m_historial, argumento.m_maximo);
+      char *resultado = 0;    
+      if(buscar->m_valor > dato->m_tolerancia &&
+	 argumento.m_maximo != dato->m_anterior) {      
+	dato->m_anterior = argumento.m_maximo;            
+	resultado = dato->m_anterior;
+      }
+      
+      devolver = dato->m_buffer_error;
+      g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, resultado);
+    }
+  }
+  else {
+     /* Si la red neuronal no esta enviando datos, el tampoco envia datos al modulo de salida. Para que este
+     no escriba nada */
+    g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, 0);
+  }
+  return devolver;
+}
+
+static void gestion_borrar_cadena(gpointer a) {  
+  char *c = (char *)a;
+  if(c) {
+    g_free(c);
+  }
+}
+
+
+static void gestion_borrar_estado(gpointer a) {  
+  estado_t *c = (estado_t *)a;
+  if(c) {
+    g_free(c);
+  }
+}
+
 
 static char *gestion_iniciar(modulo_t *modulo, GHashTable *argumentos) {
   gestion_dato_t *dato = (gestion_dato_t *)modulo->m_dato;
   g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, 0);  
-
-  // Comento esto porque la estructura no tiene ningún m_anterior, tú
-  // sabrás si tienes que añadir m_argumento o quitar esta línea
-  //char *argumento = g_hash_table_lookup(argumentos,"anterior");
-  //strcpy(dato->m_anterior, argumento);
-
+  dato->m_anterior = 0;
+  dato->m_neutro = strdup(g_hash_table_lookup(argumentos,"neutro"));
   dato->m_tolerancia = atoi(g_hash_table_lookup(argumentos,"tolerancia"));
-  dato->m_historial = g_array_new (FALSE, FALSE, sizeof (char) * 128);
-  int i;
-  for(i=0; i<dato->m_tolerancia; i++){
-    g_array_append_val (dato->m_historial, "no_gesto");
-  }
-
-  return "iniciado";
+  dato->m_maximo_valor = atoi(g_hash_table_lookup(argumentos,"maximo"));
+  dato->m_historial = g_hash_table_new_full(g_str_hash,
+					    g_str_equal,
+					    gestion_borrar_cadena,
+					    gestion_borrar_estado);
+  sprintf(dato->m_buffer_error, "iniciado con neutro = \"%s\", tolerancia  = %i, maximo = %i", 
+	  dato->m_neutro,
+	  dato->m_tolerancia,
+	  dato->m_maximo_valor);
+  return dato->m_buffer_error;
 }
 
 static char *gestion_cerrar(modulo_t *modulo)
 {
   gestion_dato_t *dato = (gestion_dato_t *)modulo->m_dato;
-  // Aquí te he añadido el "dato->", que te faltaba
-  g_array_free(dato->m_historial, TRUE);
+  g_hash_table_destroy(dato->m_historial);
+  free(dato->m_neutro);
   free(dato);
   free(modulo);
   return "cerrado";

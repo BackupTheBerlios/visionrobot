@@ -43,33 +43,39 @@
 #include <sane/sane.h>
 #include <unistd.h>
 
-/*! \brief La estructura de datos que tiene cada módulo */
+//! Tipo enumerado que define qué tipo de función va a realizar el módulo en una instancia determinada
+typedef enum {CAMARA, IMAGEN, ALEATORIO, COLOR} tipo_imagen_t;
+
+/*! \brief La estructura de datos que tiene cada módulo. */
 typedef struct {
-  filtro_gestos_in_imagen_t m_filtro;
-  unsigned char m_rojo;
-  unsigned char m_verde;
-  unsigned char m_azul;
-  int m_ancho_anterior;
-  color_t *m_buffer_camara;
-  GdkPixbuf *m_imagen_archivo;
-  char m_buffer_error[128];
-  enum {CAMARA, IMAGEN, ALEATORIO, COLOR} m_tipo;
-  SANE_Handle m_handle;
+  filtro_gestos_in_imagen_t m_filtro; /*!< La imagen que enviaremos al módulo del filtro. Es lo que está en el puerto de salida. */
+  unsigned char m_rojo;		/*!< La componenete roja del color primario que puede generar el módulo. */
+  unsigned char m_verde;	/*!< La componenete verde del color primario que puede generar el módulo. */
+  unsigned char m_azul;		/*!< La componenete azul del color primario que puede generar el módulo. */
+  color_t *m_buffer_camara;	/*!< Un buffer en el que guardamos una línea de la imagen de la cámara. Lo usamos porque la imagen sale invertida. Se guarda la línea y luego se vuelca a la imagen que pasamos por el puerto de salida. */  
+  int m_ancho_anterior;		/*!< El ancho del frame anterior, para la cámara. Si es diferente del actual, se cambia la imagen. De este modo controlamos el tamaño que tomamos. */
+  GdkPixbuf *m_imagen_archivo;	/*!< Un GdkPixbuf que almacena la imagen que hemos abierto (si es que hemos abierto alguna). */
+  char m_buffer_error[128];	/*!< El buffer donde guardamos los mensajes de error, para devolverlos. */
+  tipo_imagen_t m_tipo; /*!< El tipo de función que hemos elegido. */
+  SANE_Handle m_handle;		/*!< El <em>handle</em> de la interfaz con SANE. */
 } dato_imagenes_t;
 
 /*! \brief El nombre del puerto de salida de una imagen */
 #define PUERTO_IMAGEN "salida_imagen"
 
 
+/*! \brief Genera una imagen según los parámetros del módulo (tipo y demás), y la guarda en el buffer del módulo.
+  
+\param modulo Un puntero a un módulo, para obtener los datos.
+
+\return Una cadena de error (que puede ser cero).
+*/
 static char* imagenes_generar_imagen(modulo_t *modulo) {
   int i, j;
   char *devolver = 0;
   dato_imagenes_t *dato = (dato_imagenes_t*)modulo->m_dato;
   filtro_gestos_in_imagen_t* imagen = (filtro_gestos_in_imagen_t*)&dato->m_filtro;
   int ancho_for = imagen->m_ancho * imagen->m_bytes;
-  guchar * p;
-  guchar *aux;
-  guchar * b;
   SANE_Int len;
   SANE_Parameters parametros;
   int tam;
@@ -102,21 +108,12 @@ static char* imagenes_generar_imagen(modulo_t *modulo) {
 	      }
 	    }
 	    i++;
-	  }	  
+	  }
 	}
       }
     }
     break;
-  case IMAGEN:
-    p = gdk_pixbuf_get_pixels (dato->m_imagen_archivo);
-    b = imagen->m_imagen;
-    for(j = 0; j < imagen->m_alto; j++) {
-      aux = &p[(j + 1) * ancho_for];
-      for(i = 0; i < ancho_for; i += 1) {
-	*b++ = *--aux;
-      }
-    }    
-    break;
+  case IMAGEN:break;
   case ALEATORIO:
     for(i = 0; i < imagen->m_alto; i++) {
       for(j = 0; j < ancho_for; j += 1) {
@@ -138,24 +135,49 @@ static char* imagenes_generar_imagen(modulo_t *modulo) {
   return devolver;
 }
 
+//! Realiza un ciclo de imágenes. El pipeline se encarga de llamar a esta función.
+/*! 
+  
+\param modulo El módulo en el que se realiza en ciclo.
+\param puerto El puerto por el que le llega la información (0 si no recibe nada).
+\param value El valor que le llega a través del puerto (0 si no recibe nada).
+
+\return Una cadena que representa un mensaje de respuesta, depuración, información o error. También puede ser 0.
+*/
 static char *imagenes_ciclo(modulo_t* modulo, const char *puerto, const void *value){
   return imagenes_generar_imagen(modulo);
 }
 
+//! Función que llama el pipeline y sirve para iniciar el interfaz de imágnenes.
+/*!  Crea la memoria necesaria y ajusta los parámetros pertinenetes del módulo, según esté especificado en el XML.
+  
+\param modulo El módulo que se inicia.
+\param argumentos Una <code>GHashTable</code> de GLib, que contiene los argumentos en forma de "nombre de argumento" -> valor.
+
+\return Una cadena que representa un mensaje de respuesta, depuración, información o error. También puede ser 0.
+*/
 static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
 {
   char *devolver = "iniciado";
   dato_imagenes_t *dato = (dato_imagenes_t*)modulo->m_dato;
   filtro_gestos_in_imagen_t* imagen = &dato->m_filtro;
   dato->m_buffer_camara = 0;
+  dato->m_ancho_anterior = -1;
   dato->m_imagen_archivo = 0;
   char *camara = (char*)g_hash_table_lookup(argumentos,"camara");
+  imagen->m_alto = atoi(g_hash_table_lookup(argumentos,"alto"));
+  imagen->m_ancho = atoi(g_hash_table_lookup(argumentos,"ancho"));
+  imagen->m_bytes = atoi(g_hash_table_lookup(argumentos,"bytes"));
+  imagen->m_imagen =
+    (char*)malloc(sizeof(char) *
+		  imagen->m_alto *
+		  imagen->m_ancho *
+		  imagen->m_bytes);
   int cam = 0;
   SANE_Int info;
   if(camara) cam = atoi(camara);
   if(cam) {
     dato->m_tipo = CAMARA;
-    dato->m_ancho_anterior = -1;
     if(sane_init(0, 0) != SANE_STATUS_GOOD) {
       devolver = "No se puede iniciar SANE";
     }
@@ -199,7 +221,20 @@ static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
       dato->m_tipo = IMAGEN;
       dato->m_imagen_archivo = gdk_pixbuf_new_from_file(archivo_imagen, 0);    
       if(dato->m_imagen_archivo) {
+	guchar * p;
+	guchar *aux;
+	guchar * b;
+	int j, i;
 	sprintf(dato->m_buffer_error, "Cargado %s", archivo_imagen);
+	p = gdk_pixbuf_get_pixels (dato->m_imagen_archivo);
+	b = imagen->m_imagen;
+	int ancho_for = imagen->m_ancho * imagen->m_bytes;
+	for(j = 0; j < imagen->m_alto; j++) {
+	  aux = &p[(j + 1) * ancho_for];
+	  for(i = 0; i < ancho_for; i += 1) {
+	    *b++ = *--aux;
+	  }
+	}
       }
       else {
 	sprintf(dato->m_buffer_error, "No se pudo cargar %s", archivo_imagen);
@@ -223,20 +258,19 @@ static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
     }
   }
     
-  imagen->m_alto = atoi(g_hash_table_lookup(argumentos,"alto"));
-  imagen->m_ancho = atoi(g_hash_table_lookup(argumentos,"ancho"));
-  imagen->m_bytes = atoi(g_hash_table_lookup(argumentos,"bytes"));
-  imagen->m_imagen =
-    (char*)malloc(sizeof(char) *
-		  imagen->m_alto *
-		  imagen->m_ancho *
-		  imagen->m_bytes);
   
   g_hash_table_insert(modulo->m_tabla, PUERTO_IMAGEN, imagen);
 
   return devolver;
 }
 
+//! Cierra un módulo de imágenes
+/*! Libera toda la memoria creada por el módulo, y el mismo módulo.
+  
+\param modulo El módulo que cerramos
+
+\return Una cadena que representa un mensaje de respuesta, depuración, información o error. También puede ser 0.
+*/
 static char *imagenes_cerrar(modulo_t* modulo)
 {
   dato_imagenes_t *dato = (dato_imagenes_t*)modulo->m_dato;
@@ -244,9 +278,7 @@ static char *imagenes_cerrar(modulo_t* modulo)
     sane_close(dato->m_handle);
     sane_exit();
   }
-  if(dato->m_buffer_camara) {
-    free(dato->m_buffer_camara);
-  }
+  free(dato->m_buffer_camara);
   filtro_gestos_in_imagen_t* imagen = &dato->m_filtro;
   free(imagen->m_imagen);
   if(dato->m_imagen_archivo) {

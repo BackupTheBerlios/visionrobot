@@ -92,7 +92,9 @@ static void pipeline_borrar_conexion(gpointer a) {
 }
 static void pipeline_borrar_cadena(gpointer a) {
   char *c = (char *)a;
-  g_free(c);
+  if(c) {
+    g_free(c);
+  }
 }
 
 static void pipeline_cerrar_elemento(elemento_t *dato)

@@ -23,7 +23,7 @@
 
 typedef struct {
   char m_buffer_error[128];  
-  char *m_error;
+  //char *m_error;
   char m_iniciado;
   const char *m_filtrar;
   lua_State *m_lua;
@@ -109,7 +109,7 @@ static char *filtro_ciclo(modulo_t *modulo, const char *puerto, const void *valu
 {
   dato_filtro_t * dato = (dato_filtro_t *)modulo->m_dato;
   char *aux = 0;
-  dato->m_error = 0;
+  char *devolver = 0;//dato->m_error = 0;
   GHashTable *tabla = modulo->m_tabla;
   if (value && dato) {
     if(!strcmp(puerto, PUERTO_IMAGEN)) {
@@ -144,7 +144,7 @@ static char *filtro_ciclo(modulo_t *modulo, const char *puerto, const void *valu
 	}
 	if(aux) {
 	  strcpy(dato->m_buffer_error, aux);
-	  dato->m_error = dato->m_buffer_error;
+	  /*dato->m_error*/devolver = dato->m_buffer_error;
 	}
       }
     }
@@ -163,13 +163,13 @@ static char *filtro_ciclo(modulo_t *modulo, const char *puerto, const void *valu
 	      parametros->m_verde_sup,
 	      parametros->m_azul_inf,
 	      parametros->m_azul_sup);
-      dato->m_error = dato->m_buffer_error;
+      /*dato->m_error*/devolver = dato->m_buffer_error;
     }
   }
   else {
     g_hash_table_insert(tabla, PUERTO_SALIDA, 0);
   }
-  return dato->m_error;
+  return devolver;//dato->m_error;
 }
 
 static int filtro_gestos_setarray (lua_State *L) {
@@ -464,7 +464,7 @@ static char *filtro_iniciar(modulo_t *modulo, GHashTable *argumentos)
 {
   dato_filtro_t * dato = (dato_filtro_t *)modulo->m_dato;
   dato->m_iniciado = -1;
-  dato->m_error = 0;
+  //dato->m_error = 0;
   const char *archivo = g_hash_table_lookup(argumentos, "guion");
   sprintf(dato->m_buffer_error, "iniciado, cargado \"%s\"", archivo);
   dato->m_lua = filtro_abrir_lua(modulo, archivo);

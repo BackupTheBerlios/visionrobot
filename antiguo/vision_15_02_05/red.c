@@ -11,7 +11,6 @@
 typedef struct {
   char m_buffer_error[128];
   char m_salida[128];
-  const char *m_texto;
   red_neuronal_t *m_red;
 } red_dato_t;
 
@@ -22,7 +21,7 @@ static char *red_ciclo(modulo_t *modulo, const char *puerto, const void *value)
     red_neuronal_t *red = dato->m_red;
     red_neuronal_in_t * red_in = (red_neuronal_in_t *)value;
     if(red && red_in) {
-      sprintf(dato->m_salida, "%s: %s", dato->m_texto,
+      sprintf(dato->m_salida, "%s", 
 	      red_neuronal_reconocer(red, red_in->m_imagen,
 				     red_in->m_ancho, red_in->m_alto,
 				     red_in->m_bytes));
@@ -46,7 +45,6 @@ static char *red_iniciar(modulo_t *modulo, GHashTable *argumentos)
     salida[1] = g_hash_table_lookup(argumentos, "salida2");
     salida[2] = g_hash_table_lookup(argumentos, "salida3");
     salida[3] = g_hash_table_lookup(argumentos, "salida4");
-    dato->m_texto = strdup(g_hash_table_lookup(argumentos, "texto"));
     dato->m_red = red_neuronal_abrir(archivo, salida);
     g_hash_table_insert(modulo->m_tabla, PUERTO_TEXTO, 0);
     red_neuronal_t *red = dato->m_red;
@@ -63,7 +61,6 @@ static char *red_cerrar(modulo_t *modulo)
   red_dato_t * dato = (red_dato_t*)modulo->m_dato;
   red_neuronal_t *red = dato->m_red;
   red_neuronal_borrar(&red);
-  free((char*)dato->m_texto);
   free(dato);
   free(modulo);
   return "cerrado";
