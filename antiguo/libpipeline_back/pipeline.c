@@ -436,13 +436,16 @@ int pipeline_ciclo(const pipeline_t * pipeline)
 
 int pipeline_iniciar(const pipeline_t * pipeline, elemento_t * elemento)
 {
-    elemento->m_iniciado = 1;
+  if(!elemento->m_iniciado) {    
+    	elemento->m_iniciado = 1;
     if (elemento->m_funcion_iniciar) {
 	elemento->m_funcion_iniciar();
 	pipeline_enviar_error(pipeline, elemento);
+
 	return 0;
     }
-    return -1;
+  }
+  return -1;
 }
 
 int pipeline_parar(const pipeline_t * pipeline, elemento_t * elemento)
@@ -474,9 +477,20 @@ int pipeline_desconectar(pipeline_t * pipeline, int origen,int destino) {
     if(pipeline->m_elemento[origen].m_destino[i]->m_id == destino) {
       int j;
       for(j = i; j < pipeline->m_elemento[origen].m_numero_conexiones; ++j) {
-	pipeline->m_elemento[origen].m_destino[j] = pipeline->m_elemento[origen].m_destino[j + 1];
+	      pipeline->m_elemento[origen].m_destino[j] = pipeline->m_elemento[origen].m_destino[j + 1];
       }
       pipeline->m_elemento[origen].m_numero_conexiones--;
     }
   }
+}
+
+int pipeline_iniciar_todas(pipeline_t * pipeline) {
+    int i;
+    pipeline_iniciar(pipeline, &pipeline->m_elemento[pipeline->m_error]);
+    
+    for (i = 0; i < pipeline->m_numero; ++i) {
+      if (i != pipeline->m_error) {
+	pipeline_iniciar(pipeline, &pipeline->m_elemento[i]);
+      }    
+    }
 }

@@ -4,13 +4,18 @@
 #include <windows.h>
 #include "dll_pipeline.h"
 #include "Captura.h"
+#include <gtk/gtk.h>
+#include <gdk/gdkwin32.h>
 
 #include <stdio.h>
 
 #define PON_ERROR(x) sprintf(cadena_error, (x));hay_error = 1;
 
+GtkWidget * ventana;
 char cadena_error[64];
 char hay_error = 0;
+
+Captura * c;
 
 typedef struct t_data_in{
         BYTE* m_imagen;
@@ -37,10 +42,6 @@ BOOL APIENTRY DllMain( HANDLE hModule,
     return TRUE;
 }
 
-
-
-Captura * c;
-
 int ciclo () {
   c->CogerFrame();  
   int tam = c->GetFrame(&datos_salida.m_imagen);
@@ -50,6 +51,13 @@ int ciclo () {
   hay_error = 1;  
   return 0;
 }
+
+gboolean
+cerrar_ventana(GtkWidget * widget,
+			GdkEvent * event, gpointer user_data) {
+      gtk_widget_hide(ventana);
+			  return TRUE;
+}  
 
 int set_datos(const void * datos) {
    return 0;
@@ -63,23 +71,41 @@ void * get_datos() {
 	return &datos_salida;
 }
 
+
 int iniciar() {	
 	PON_ERROR("Iniciando camara...\n");
 	datos_salida.m_alto = 240;
 	datos_salida.m_ancho = 320;
+
+	ventana = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+   
+    gtk_window_set_title(GTK_WINDOW(ventana),
+		       "Camara");   
+    gtk_window_set_default_size (GTK_WINDOW(ventana), datos_salida.m_ancho, datos_salida.m_alto);		
+    g_signal_connect((gpointer) ventana, "delete_event",
+		     G_CALLBACK(cerrar_ventana), 0);
+
 	c = new Captura();
-    c->Iniciar(0, 0, datos_salida.m_ancho, datos_salida.m_alto);   
+	
+    gtk_widget_show(ventana);
+	
+	HWND hWnd = (struct HWND__ *) gdk_win32_drawable_get_handle(  ( 
+	ventana->window ) );
+
+    c->Iniciar(0, hWnd, datos_salida.m_ancho, datos_salida.m_alto);   
     return 0;
 } 
 
 int propiedades() {
-	PON_ERROR("Propiedades...\n");
+	PON_ERROR("Propiedades con ventana...\n");
+	gtk_widget_show(ventana);
     return 0;
 }
 
 int cerrar() {
 	if(c) delete c;
 	c = 0;
+	gtk_widget_destroy(ventana);
     return 0;
 }
 

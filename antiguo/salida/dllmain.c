@@ -57,6 +57,7 @@ int iniciar() {
   gtk_widget_show(texto);
   g_signal_connect((gpointer) ventana, "delete_event",
 		     G_CALLBACK(cerrar_ventana), 0);
+		     gtk_widget_show(ventana);
   return 0;
 }
 

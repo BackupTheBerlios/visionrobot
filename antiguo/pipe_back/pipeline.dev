@@ -21,13 +21,13 @@ OverrideOutput=0
 OverrideOutputName=pipeline.exe
 HostApplication=
 Folders=
-CommandLine=amigos.xml
+CommandLine=vision.xml
 UseCustomMakefile=0
 CustomMakefile=
 IncludeVersionInfo=1
 SupportXPThemes=0
 CompilerSet=0
-CompilerSettings=0000000000010000000000
+CompilerSettings=0000000000010001000000
 
 [Unit2]
 FileName=dialogo_abrir.h

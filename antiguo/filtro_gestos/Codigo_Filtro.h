@@ -21,6 +21,7 @@ typedef struct t_data_out{
         BYTE* orden;
         int ancho;
 	      int alto;
+	      int bytes;
 }data_out;
 
 typedef struct t_data_in{

@@ -194,6 +194,12 @@ extern "C" {
       \return 0 si todo va bien, -1 si algo falla
   */
   int pipeline_abrir_propiedades(const pipeline_t * pipeline, const elemento_t * elemento);
+  /*! \brief Inicia todas las bibliotecas, llamando a iniciar
+      \param pipeline El pipe en el que trabajamos
+      \return 0 si todo va bien, -1 si algo falla
+  */
+  int pipeline_iniciar_todas(pipeline_t * pipeline);
+    
 
 #ifdef __cplusplus
 }

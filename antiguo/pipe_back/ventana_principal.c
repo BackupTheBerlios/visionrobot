@@ -672,18 +672,11 @@ void on_iniciar_todas_biblioteca_activate(GtkButton * button,
 {
     ventana_principal_t *ventana_principal =
 	(ventana_principal_t *) user_data;
-    int i;
-    ventana_principal_inciar_biblioteca(ventana_principal, 
-          ventana_principal->pipeline->m_error);
-/*    pipeline_iniciar(ventana_principal->pipeline,
-		     &ventana_principal->pipeline->
-		     m_elemento[ventana_principal->pipeline->m_error]);*/
-    for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
-	if (i != ventana_principal->pipeline->m_error) {
-	    ventana_principal_inciar_biblioteca(ventana_principal, i);
-	}
-    }
-    ventana_principal_establecer(ventana_principal);
+	pipeline_iniciar_todas(ventana_principal->pipeline);
+	int i;
+	for(i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
+    ventana_principal_establecer_boton(ventana_principal, i);
+  }
 }
 
 

@@ -1,8 +1,8 @@
 //---------------------------------------------------------------------------
 
-#pragma hdrstop
+//#pragma hdrstop
 #include "Codigo_Filtro.h"
-#pragma package(smart_init)
+//#pragma package(smart_init)
 
 
 //---------------------------------------------------------------------------
