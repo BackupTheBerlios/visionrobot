@@ -57,7 +57,7 @@ static char *filtro_iniciar(modulo_t *modulo, GHashTable *argumentos)
 {
   
   if (g_hash_table_size(argumentos) < 12) {
-    return "faltan parámetros";
+    return "faltan parametros";
   }
   ((dato_filtro_t *)modulo->m_dato)->m_filtro = filtro_gestos_crear();
   filtro_t *filtro = ((dato_filtro_t *)modulo->m_dato)->m_filtro;

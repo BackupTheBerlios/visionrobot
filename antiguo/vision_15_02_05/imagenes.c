@@ -22,6 +22,7 @@ static void imagenes_generar_imagen(modulo_t *modulo) {
   int i, j;
   dato_imagenes_t *dato = (dato_imagenes_t*)modulo->m_dato;
   filtro_gestos_in_t* imagen = (filtro_gestos_in_t*)dato->m_filtro;
+
   for(i = 0; i < imagen->m_dato.imagen.m_alto; i++) {
     for(j = 0; j < imagen->m_dato.imagen.m_ancho * imagen->m_dato.imagen.m_bytes; j += 1) {
       imagen->m_dato.imagen.m_imagen[i * imagen->m_dato.imagen.m_ancho * imagen->m_dato.imagen.m_bytes + j] =
@@ -38,10 +39,10 @@ static char *imagenes_ciclo(modulo_t* modulo, char tipo, GHashTable *lista)
 
 static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
 {
-  if(g_hash_table_size(argumentos) < 3) return "faltan parámetros";
+  if(g_hash_table_size(argumentos) < 3) return "faltan parametros";
 
   filtro_gestos_in_t* imagen = (filtro_gestos_in_t*)((dato_imagenes_t*)modulo->m_dato)->m_filtro;
-  imagen->m_tipo = PIPELINE_FILTRO_GESTOS_PARAMETROS;
+  imagen->m_tipo = PIPELINE_FILTRO_GESTOS_IMAGEN;
   imagen->m_dato.imagen.m_alto = atoi(g_hash_table_lookup(argumentos,"alto"));
   imagen->m_dato.imagen.m_ancho = atoi(g_hash_table_lookup(argumentos,"ancho"));
   imagen->m_dato.imagen.m_bytes = atoi(g_hash_table_lookup(argumentos,"bytes"));
@@ -78,7 +79,7 @@ modulo_t * get_modulo()
 {
   modulo_t *modulo = (modulo_t*)malloc(sizeof(modulo_t));
   modulo->m_tipo = PIPELINE_IMAGENES;
-  modulo->m_nombre = "Imágenes";
+  modulo->m_nombre = "Imagenes";
   modulo->m_iniciar = imagenes_iniciar;
   modulo->m_cerrar = imagenes_cerrar;
   modulo->m_ciclo = imagenes_ciclo;

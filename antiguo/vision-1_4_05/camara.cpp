@@ -1,63 +1,65 @@
 #include "pipeline_sdk.h"
 #include "Captura.h"
 #include "filtro_gestos_sdk.h"
+#include "ventana_imagen_sdk.h"
+#include "camara_sdk.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-static modulo_t modulo_pipeline;
 static Captura *c;
 static filtro_gestos_in_t imagen;
+static ventana_imagen_in_t ventana;
 static char buffer_error[128];
 
-int valor(const char *tipo, int argc, const char **argv) {
-  int i;
-  for(i = 0; i < argc; i+=2) {
-    if(!strcmp(tipo, argv[i])){
-      return atoi(argv[i + 1]);
-    }
-  }
-  return 0;
-}
 
-
-char* ciclo (const void *in, void **out){
+static char* camara_ciclo (modulo_t *modulo, char tipo, GHashTable *lista){
   c->CogerFrame();
-  int tam = c->GetFrame((BYTE**)&imagen.m_imagen);
-  imagen.m_bytes = (tam / imagen.m_alto) / imagen.m_ancho;
-  *out = &imagen;
-  sprintf(buffer_error, "[%p, %ix%ix%i]", ((filtro_gestos_in_t *)(*out))->m_imagen, ((filtro_gestos_in_t *)(*out))->m_ancho, ((filtro_gestos_in_t *)(*out))->m_alto, ((filtro_gestos_in_t *)(*out))->m_bytes);
+  int tam = c->GetFrame((BYTE**)&imagen.m_dato.imagen.m_imagen);
+  ventana.m_imagen = imagen.m_dato.imagen.m_imagen;
+  imagen.m_dato.imagen.m_bytes = (tam / imagen.m_dato.imagen.m_alto) / imagen.m_dato.imagen.m_ancho;
+  ventana.m_bytes = imagen.m_dato.imagen.m_bytes;
+  sprintf(buffer_error, "[%p, %ix%ix%i] - [%p, %ix%ix%i]", imagen.m_dato.imagen.m_imagen, imagen.m_dato.imagen.m_ancho,
+	  imagen.m_dato.imagen.m_alto, imagen.m_dato.imagen.m_bytes, ventana.m_imagen, ventana.m_ancho, ventana.m_alto, ventana.m_bytes);
   return buffer_error;
 }
 
-char* iniciar(int argc, const char **argv){
-  if(argc < 2) return "faltan argumentos de tamaño de imagen";
-  imagen.m_ancho = valor("ancho", argc, argv);
-  imagen.m_alto = valor("alto", argc, argv);
-  imagen.m_imagen = 0;
-  
+static char* camara_iniciar(modulo_t *modulo, GHashTable *argumentos) {
+  if(g_hash_table_size(argumentos) < 3) return "faltan argumentos de tamanno de imagen";
+  imagen.m_dato.imagen.m_ancho = atoi((const char *)g_hash_table_lookup(argumentos,"ancho"));
+  imagen.m_dato.imagen.m_alto = atoi((const char *)g_hash_table_lookup(argumentos,"alto"));
+  imagen.m_dato.imagen.m_imagen = 0;
+  imagen.m_tipo = PIPELINE_FILTRO_GESTOS_IMAGEN;
+  ventana.m_imagen = imagen.m_dato.imagen.m_imagen;
+  ventana.m_alto = imagen.m_dato.imagen.m_alto;
+  ventana.m_ancho = imagen.m_dato.imagen.m_ancho;
+  ventana.m_bytes = imagen.m_dato.imagen.m_bytes;
+  g_hash_table_insert(modulo->m_tabla, GINT_TO_POINTER(PIPELINE_VENTANA_IMAGEN), &ventana);
+  g_hash_table_insert(modulo->m_tabla, GINT_TO_POINTER(PIPELINE_FILTRO_GESTOS), &imagen);
+  int cam = atoi((const char *)g_hash_table_lookup(argumentos, "camara"));
   c = new Captura(); 
-  c->Iniciar(valor("camara", argc, argv), 0, imagen.m_ancho, imagen.m_alto);  
-  sprintf(buffer_error, "Iniciado. Creado contexto de cámara de %ix%i", imagen.m_ancho, imagen.m_alto);
+  c->Iniciar(cam,
+	     0, imagen.m_dato.imagen.m_ancho,
+	     imagen.m_dato.imagen.m_alto);  
+  sprintf(buffer_error, "Iniciado. Creado contexto de camara de %ix%i, camara %i", imagen.m_dato.imagen.m_ancho, imagen.m_dato.imagen.m_alto, cam);
   return buffer_error;
 }
 
-char * cerrar() {
+static char *camara_cerrar(modulo_t *modulo) {
   if(c) delete c;
   c = 0; 
+  free(modulo);
   return "cerrado";
 }
 
 modulo_t *get_modulo() {
-    return &modulo_pipeline;
+  modulo_t *modulo = (modulo_t*)malloc(sizeof(modulo_t));
+  modulo->m_tipo = PIPELINE_CAMARA;
+  modulo->m_nombre = "Camara";
+  modulo->m_iniciar = camara_iniciar;
+  modulo->m_cerrar = camara_cerrar;
+  modulo->m_ciclo = camara_ciclo;
+  return modulo;
 }
 
-void __attribute__ ((constructor)) init(void) {
-    modulo_pipeline.m_nombre = "Cámara";
-    modulo_pipeline.m_iniciar = iniciar;
-    modulo_pipeline.m_cerrar = cerrar;
-    modulo_pipeline.m_ciclo = ciclo;
-}
-void __attribute__ ((destructor)) fini(void) {
-}
 

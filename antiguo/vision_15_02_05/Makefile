@@ -20,9 +20,6 @@ red_neuronal.so: red.c red_neuronal.c
 imagenes.so: imagenes.c
 	gcc $(OPTS) -shared -o imagenes.so imagenes.c `pkg-config glib-2.0 --cflags --libs`
 
-#camara.so: camara.cpp Captura.cpp
-#	g++ $(OPTS) -shared -o camara.so camara.cpp Captura.cpp -lstrmiids -luuid -loleaut32 -lole32 -lquartz
-
 pipeline: main.c libpipeline.a
 	gcc $(OPTS) main.c -o pipeline -L ./ -lpipeline `xml2-config --libs` `pkg-config --cflags gtk+-2.0` `pkg-config --libs gtk+-2.0` `pkg-config libglade-2.0 --cflags --libs`
 

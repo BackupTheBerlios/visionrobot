@@ -13,7 +13,7 @@ extern "C"  {
     char m_tipo;
     GHashTable *m_tabla;
     char *(*m_iniciar) (struct modulo_s* modulo, GHashTable *argumentos);
-    char *(*m_ciclo) (struct modulo_s* modulo, char tipo, GHashTable *lista);//const pipeline_dato_t *in/*, pipeline_dato_t *out*/);
+    char *(*m_ciclo) (struct modulo_s* modulo, char tipo, GHashTable *lista);
     char *(*m_cerrar) (struct modulo_s* modulo);
   } modulo_t;  
   

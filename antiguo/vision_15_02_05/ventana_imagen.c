@@ -19,6 +19,7 @@
 typedef struct {
   GtkWidget * ventana;
   char *nombre_foto;
+  char *extension;
   GdkGC* gc;
   ventana_imagen_in_t *m_imagen;
 } datos_ventana_t;
@@ -48,13 +49,9 @@ gboolean ventana_foto(GtkWidget *w, GdkEventKey *event, gpointer data) {
   modulo_t *modulo = (modulo_t *)data;
   datos_ventana_t *datos = (datos_ventana_t *)modulo->m_dato;
   if(event->keyval == GDK_F5) {
-    //TODO:cambiar esto por un GString
-    char *buf = (char*)malloc(sizeof(char) * (strlen(datos->nombre_foto) + 4));
-    sprintf(buf, "%s.png", datos->nombre_foto);
     gdk_pixbuf_save(ventana_get_pixbuf(modulo),
-		    buf,
-		    "png", 0, 0);
-    free(buf);
+		    datos->nombre_foto,
+		    datos->extension, 0, 0);
   }
   return FALSE;
 }
@@ -72,7 +69,7 @@ static void ventana_pintar(modulo_t * modulo) {
 				  GDK_RGB_DITHER_NONE, 0, 0);
     
     gdk_pixbuf_unref(pixbuf);
-  }
+    }
 }
 
 static void ventana_ciclo_aux(gpointer key, gpointer value, gpointer user_data) {
@@ -85,7 +82,7 @@ static void ventana_ciclo_aux(gpointer key, gpointer value, gpointer user_data) 
   }
 }
 
-static char *ventana_ciclo(modulo_t *modulo, char tipo, GHashTable *lista){//, const pipeline_dato_t *in, pipeline_dato_t *out) {
+static char *ventana_ciclo(modulo_t *modulo, char tipo, GHashTable *lista){
   g_hash_table_foreach(lista, ventana_ciclo_aux, modulo);
   return 0;
 }
@@ -105,6 +102,7 @@ static char *ventana_iniciar(modulo_t *modulo, GHashTable *argumentos)
 {
   if(g_hash_table_size(argumentos) < 1) {return "faltan argumentos";}
   ((datos_ventana_t*)modulo->m_dato)->nombre_foto = strdup(g_hash_table_lookup(argumentos, "nombre_foto"));
+  ((datos_ventana_t*)modulo->m_dato)->extension = strdup(g_hash_table_lookup(argumentos, "extension"));
   ventana_crear_ventana(modulo);
   return "iniciado";
 }
@@ -113,6 +111,7 @@ static char *ventana_cerrar(modulo_t *modulo)
   gdk_gc_unref(((datos_ventana_t*)modulo->m_dato)->gc);
   gtk_widget_destroy(((datos_ventana_t*)modulo->m_dato)->ventana);
   free(((datos_ventana_t*)modulo->m_dato)->nombre_foto);
+  free(((datos_ventana_t*)modulo->m_dato)->extension);
   free(modulo->m_dato);
   free(modulo);
   return "cerrado";
