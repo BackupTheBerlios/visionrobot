@@ -117,6 +117,9 @@ extern "C" {
 
   int parar(elemento_t * elemento);
   int iniciar(elemento_t * elemento);
+  int crear_timer();
+  int parar_timer();
+  int senyal();
 
 #ifdef __cplusplus
 }

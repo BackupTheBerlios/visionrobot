@@ -23,6 +23,8 @@
 #include "interface.h"
 #include "support.h"
 #include <string.h>
+#include <sys/time.h>
+#include <signal.h>
 #include <stdlib.h>
 
 gboolean confirmacion(GtkWidget * w, const gchar * texto)
@@ -273,4 +275,35 @@ int iniciar(elemento_t * elemento) {
     return 0;
   }
   return -1;
+}
+
+int crear_timer() {
+  struct itimerval t;
+  t.it_interval.tv_usec = 1;
+  t.it_interval.tv_sec = 99999;
+  t.it_value.tv_usec = 99999;
+  t.it_value.tv_sec = 1;
+  setitimer(ITIMER_REAL, &t, 0);
+  return 0;
+}
+
+int parar_timer() {
+  struct itimerval t;
+  t.it_interval.tv_usec = 0;
+  t.it_interval.tv_sec = 0;
+  t.it_value.tv_usec = 0;
+  t.it_value.tv_sec = 0;
+  setitimer(ITIMER_REAL, &t, 0);
+  return 0;
+}
+
+void
+catch_alarm (int sig) {
+  g_print("jajajaj, funciona!!!!");
+  signal (sig, catch_alarm);
+}
+
+int senyal() {
+  signal (SIGALRM, catch_alarm);
+  return 0;
 }

@@ -121,9 +121,20 @@ void on_guardar_como2_activate(GtkMenuItem * menuitem, gpointer user_data)
 
 void on_guardar2_activate(GtkMenuItem * menuitem, gpointer user_data)
 {
-    guardar_como_aux(pipeline,
-		     archivo,
-		     window1, status_bar, archivo, &id, &modificado);
+  gchar *buffer;
+  if(archivo[0] != '\0') {
+    buffer = archivo;
+  }
+  else {
+    buffer = guardar_ventana(window1);
+  }
+  guardar_como_aux(pipeline,
+		   buffer,
+		   window1, status_bar, archivo, &id, &modificado);
+
+  if(archivo[0] == '\0') {
+    free(buffer);
+  }
 }
 
 
@@ -193,7 +204,7 @@ void on_window1_show(GtkWidget * widget, gpointer user_data)
     id = gtk_statusbar_push(GTK_STATUSBAR(status_bar), 0,
 			    "Visi\303\263n por computador");
     pipeline = crear_pipeline();
-
+    senyal();
 }
 
 void on_propiedades1_activate(GtkMenuItem * menuitem, gpointer user_data)
@@ -253,6 +264,7 @@ void on_propiedades_biblioteca_activate(GtkButton * button,
 }
 void on_ciclos_biblioteca_activate(GtkButton * button, gpointer user_data)
 {
+  crear_timer();
 }
 void on_iniciar_biblioteca_activate(GtkButton * button, gpointer user_data)
 {
@@ -281,6 +293,7 @@ void on_iniciar_todas_biblioteca_activate(GtkButton * button,
 
 void on_parar_biblioteca_activate(GtkButton * button, gpointer user_data)
 {
+  parar_timer();
 }
 void on_cerrar_biblioteca_activate(GtkButton * button, gpointer user_data)
 {
