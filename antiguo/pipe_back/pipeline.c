@@ -25,6 +25,8 @@
 #include <stdio.h>
 #include <libxml/parser.h>
 
+#define MAX_CONEXIONES 32
+
 #ifdef WIN32
 #define pipeline_free_library(x) FreeLibrary((x))
 #define pipeline_load_library(x) LoadLibrary((x))
@@ -35,27 +37,30 @@
 #define pipeline_get_function(x, y) dlsym((x),(y));
 #endif
 
-#define ERROR_PIPELINE(y, x) if((x)->m_funcion_error) pipeline_error((y), (x)->m_funcion_error())
+#define pipeline_enviar_error(y, x) if((x)->m_funcion_error) pipeline_error((y), (x)->m_funcion_error())
 
 pipeline_t *pipeline_crear()
 {
     pipeline_t *p = (pipeline_t *) malloc(sizeof(pipeline_t));
     p->m_numero = 0;
+    p->m_elemento = 0;
     p->m_corriendo = 0;
     p->m_error = -1;
     return p;
 }
 
-elemento_t *pipeline_nuevo(pipeline_t * pipeline, const char *nombre, gint x,
-		  gint y, gchar * ruta)
+elemento_t *pipeline_nuevo(pipeline_t * pipeline, const char *nombre, /*gint x,
+		  gint y, */const char */*gchar **/ ruta)
 {
-    pipeline->m_elemento[pipeline->m_numero].m_widget =
+     pipeline->m_elemento = (elemento_t*)realloc(pipeline->m_elemento,
+                                    sizeof(elemento_t) * pipeline->m_numero + 1);
+/*    pipeline->m_elemento[pipeline->m_numero].m_widget =
 	gtk_toggle_button_new_with_label(nombre);
-    gtk_widget_show(pipeline->m_elemento[pipeline->m_numero].m_widget);    
-    pipeline->m_elemento[pipeline->m_numero].m_x = x;
+    gtk_widget_show(pipeline->m_elemento[pipeline->m_numero].m_widget);    */
+    //pipeline->m_elemento[pipeline->m_numero].m_x = x;
     pipeline->m_elemento[pipeline->m_numero].m_id = pipeline->m_numero;
     pipeline->m_elemento[pipeline->m_numero].m_numero_conexiones = 0;
-    pipeline->m_elemento[pipeline->m_numero].m_y = y;
+    //pipeline->m_elemento[pipeline->m_numero].m_y = y;
     pipeline->m_elemento[pipeline->m_numero].m_iniciado = 0;
     strcpy(pipeline->m_elemento[pipeline->m_numero].m_ruta, ruta);
     strcpy(pipeline->m_elemento[pipeline->m_numero].m_nombre, nombre);
@@ -70,12 +75,7 @@ int pipeline_cerrar_biblioteca(elemento_t * elemento) {
     // estoy hay que ponerlo, sólo si se exige que se controle en la dlls
     //elemento->m_funcion_cerrar();
   }
-/*#ifdef WIN32
-  FreeLibrary(elemento->m_handler);
-#else
-  dlclose(elemento->m_handler);
-#endif*/
-        pipeline_free_library(elemento->m_handler);
+  pipeline_free_library(elemento->m_handler);
   
   return 0;
 }
@@ -94,25 +94,28 @@ int pipeline_vaciar(pipeline_t * pipeline)
 {
     int id;
     for (id = 0; id < pipeline->m_numero; ++id) {
-	if (pipeline->m_elemento[id].m_handler != NULL) {
-	  pipeline_cerrar_biblioteca(&pipeline->m_elemento[id]);
-	}
-	gtk_widget_destroy(GTK_WIDGET(pipeline->m_elemento[id].m_widget));
+	     if (pipeline->m_elemento[id].m_handler != NULL) {
+	        pipeline_cerrar_biblioteca(&pipeline->m_elemento[id]);
+	     }
+	     //gtk_widget_destroy(GTK_WIDGET(pipeline->m_elemento[id].m_widget));
     }
+    free(pipeline->m_elemento);
     free(pipeline);
     return 0;
 }
 
-int pipeline_borrar(pipeline_t * pipeline, gint id)
+int pipeline_borrar(pipeline_t * pipeline, /*gint*/int id)
 {
     int i;
-    gtk_widget_destroy(GTK_WIDGET(pipeline->m_elemento[id].m_widget));
+//    gtk_widget_destroy(GTK_WIDGET(pipeline->m_elemento[id].m_widget));
     if (pipeline->m_elemento[id].m_handler) {
       pipeline_cerrar_biblioteca(&pipeline->m_elemento[id]);
     }
     for (i = id; i < pipeline->m_numero; ++i) {
 	pipeline->m_elemento[i] = pipeline->m_elemento[i + 1];
     }
+    pipeline->m_elemento = (elemento_t*)realloc(pipeline->m_elemento,
+                            sizeof(elemento_t) * pipeline->m_numero - 1);
     return --pipeline->m_numero;
 }
 int pipeline_guardar(pipeline_t * pipeline, const char *ruta)
@@ -121,8 +124,8 @@ int pipeline_guardar(pipeline_t * pipeline, const char *ruta)
     xmlNodePtr modulo;
     xmlNodePtr nombre;
     xmlNodePtr r;
-    xmlNodePtr x;
-    xmlNodePtr y;
+/*    xmlNodePtr x;
+    xmlNodePtr y;*/
     xmlNodePtr error_pipe;
     xmlNodePtr * c;
     xmlNodePtr id;
@@ -143,16 +146,16 @@ xmlAddChild(pipe, error_pipe);
 	modulo = xmlNewNode(NULL, BAD_CAST "modulo");
 	nombre = xmlNewNode(NULL, BAD_CAST "nombre");	
 	r = xmlNewNode(NULL, BAD_CAST "ruta");
-	x = xmlNewNode(NULL, BAD_CAST "x");
-	y = xmlNewNode(NULL, BAD_CAST "y");
+/*	x = xmlNewNode(NULL, BAD_CAST "x");
+	y = xmlNewNode(NULL, BAD_CAST "y");*/
 	id = xmlNewNode(NULL, BAD_CAST "id");
 
 	xmlAddChild(pipe, modulo);
 	xmlAddChild(modulo, id);
 	xmlAddChild(modulo, nombre);
 	xmlAddChild(modulo, r);
-	xmlAddChild(modulo, x);
-	xmlAddChild(modulo, y);
+/*	xmlAddChild(modulo, x);
+	xmlAddChild(modulo, y);*/
 		
 	sprintf(buffer, "%i", pipeline->m_elemento[i].m_id);
 	xmlNodeSetContent(id,
@@ -160,10 +163,10 @@ xmlAddChild(pipe, error_pipe);
 	xmlNodeSetContent(nombre,
 			  BAD_CAST pipeline->m_elemento[i].m_nombre);
 	xmlNodeSetContent(r, BAD_CAST pipeline->m_elemento[i].m_ruta);
-	sprintf(buffer, "%i", pipeline->m_elemento[i].m_x);
+/*	sprintf(buffer, "%i", pipeline->m_elemento[i].m_x);
 	xmlNodeSetContent(x, BAD_CAST buffer);
 	sprintf(buffer, "%i", pipeline->m_elemento[i].m_y);
-	xmlNodeSetContent(y, BAD_CAST buffer);
+	xmlNodeSetContent(y, BAD_CAST buffer);*/
 	
 	c = (xmlNodePtr*)malloc(sizeof(xmlNodePtr) * pipeline->m_elemento[i].m_numero_conexiones);
 	for(j = 0; j < pipeline->m_elemento[i].m_numero_conexiones; ++j) {
@@ -181,7 +184,7 @@ xmlAddChild(pipe, error_pipe);
     return 0;
 }
 
-int parseModulo(xmlDocPtr doc, xmlNodePtr cur, pipeline_t * pipeline, guint **lista_objetivo, guint i)
+int parseModulo(xmlDocPtr doc, xmlNodePtr cur, pipeline_t * pipeline, int **lista_objetivo, int i)
 {
     xmlChar *nombre = 0;
     xmlChar *ruta = 0;
@@ -226,14 +229,14 @@ int parseModulo(xmlDocPtr doc, xmlNodePtr cur, pipeline_t * pipeline, guint **li
 	if ((!xmlStrcmp(cur->name, (const xmlChar *) "conexion"))) {
 	  key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 	    if (!key) {
-		key = strdup("");
+		     key = strdup("");
 	    }
 	    lista_objetivo[i][j] = atoi(key); j++;
 	    free(key);
 	}
 	cur = cur->next;
     }
-    pipeline_nuevo(pipeline, nombre, x, y, ruta);
+    pipeline_nuevo(pipeline, nombre, /*x, y, */ruta);
     free(nombre);
     free(ruta);
     return j;
@@ -244,24 +247,24 @@ pipeline_t *pipeline_cargar(const char *ruta)
     xmlDocPtr doc;
     xmlNodePtr cur;
     int num_conexiones[MAX_CONEXIONES];
-    guint **lista_objetivo;
-    lista_objetivo = (guint **)malloc(sizeof(guint) * MAX_CONEXIONES);
-    guint i;
+    /*guint*/int **lista_objetivo;
+    lista_objetivo = (/*guint*/int **)malloc(sizeof(int/*guint*/) * MAX_CONEXIONES);
+    /*guint*/int i;
     for(i = 0; i < MAX_CONEXIONES; ++i) {
-      lista_objetivo[i] = (guint *)malloc(sizeof(guint) * MAX_CONEXIONES);
+      lista_objetivo[i] = (/*guint*/int *)malloc(sizeof(int/*guint*/) * MAX_CONEXIONES);
     }
     doc = xmlParseFile(ruta);
     if (doc == NULL) {
-	return 0;
+	      return 0;
     }
     cur = xmlDocGetRootElement(doc);
     if (cur == NULL) {
-	xmlFreeDoc(doc);
-	return 0;
+	      xmlFreeDoc(doc);
+	      return 0;
     }
     if (xmlStrcmp(cur->name, (const xmlChar *) "pipeline")) {
-	xmlFreeDoc(doc);
-	return 0;
+	      xmlFreeDoc(doc);
+	      return 0;
     }
     i = 0;
     pipeline_t *pipe = pipeline_crear();
@@ -271,28 +274,28 @@ pipeline_t *pipeline_cargar(const char *ruta)
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "error_pipe"))) {
 	    key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 	    if (!key) {
-		key = strdup("");
+		     key = strdup("");
 	    }
 	    pipe->m_error = atoi(key);
 	    free(key);
-	}
+	  }
     
     cur = cur->next;
     
     
     while (cur != NULL) {
-	if ((!xmlStrcmp(cur->name, (const xmlChar *) "modulo"))) {
-	    num_conexiones[i] = parseModulo(doc, cur, pipe, lista_objetivo, i);
-	    i++;
-	}
-	cur = cur->next;
+	     if ((!xmlStrcmp(cur->name, (const xmlChar *) "modulo"))) {         
+	       num_conexiones[i] = parseModulo(doc, cur, pipe, lista_objetivo, i);
+	       i++;
+	     }
+	     cur = cur->next;
     }
     xmlFreeDoc(doc);
     
     int k;
     for(k = 0; k < pipe->m_numero; ++k) {
       for(i = 0; i < num_conexiones[k]; ++i) {
-	pipeline_conectar(pipe, k, lista_objetivo[k][i]);
+	       pipeline_conectar(pipe, k, lista_objetivo[k][i]);
       }
     }
 
@@ -303,7 +306,7 @@ pipeline_t *pipeline_cargar(const char *ruta)
     return pipe;
 }
 
-int pipeline_conectar(pipeline_t * pipeline, gint origen, gint destino)
+int pipeline_conectar(pipeline_t * pipeline, /*gint*/int origen, int/*gint*/ destino)
 {
     if (pipeline && origen < pipeline->m_numero
 	&& destino < pipeline->m_numero && origen >= 0 && destino >= 0) {
@@ -319,7 +322,7 @@ int pipeline_conectar(pipeline_t * pipeline, gint origen, gint destino)
 }
 
 
-void pipeline_cambiar_biblioteca(elemento_t * elemento) //pipeline_t * pipeline, gint id)
+void pipeline_cambiar_biblioteca(elemento_t * elemento)
 {
 
  if(elemento->m_handler) {
@@ -378,11 +381,11 @@ int pipeline_ciclo(pipeline_t * pipeline)
   	   if (pipeline->m_elemento[i].m_iniciado) {
    	      if(pipeline->m_elemento[i].m_funcion_get_datos) {
 	           void *datos = pipeline->m_elemento[i].m_funcion_get_datos();
-	           ERROR_PIPELINE(pipeline, &pipeline->m_elemento[i]);
+	           pipeline_enviar_error(pipeline, &pipeline->m_elemento[i]);
 	           for (j = 0; j < pipeline->m_elemento[i].m_numero_conexiones; ++j) {
                 if(pipeline->m_elemento[i].m_destino[j]->m_funcion_set_datos) {
        		         pipeline->m_elemento[i].m_destino[j]->m_funcion_set_datos(datos);
-                   ERROR_PIPELINE(pipeline, pipeline->m_elemento[i].m_destino[j]);
+                   pipeline_enviar_error(pipeline, pipeline->m_elemento[i].m_destino[j]);
 	              }
 	           }
           }
@@ -392,7 +395,7 @@ int pipeline_ciclo(pipeline_t * pipeline)
 	     if (pipeline->m_elemento[i].m_iniciado) {	  
 	        if (pipeline->m_elemento[i].m_funcion_ciclo) {
 		          pipeline->m_elemento[i].m_funcion_ciclo();
-          		ERROR_PIPELINE(pipeline, &pipeline->m_elemento[i]);
+          		pipeline_enviar_error(pipeline, &pipeline->m_elemento[i]);
 	        }
 	     }
     }
@@ -403,25 +406,26 @@ int pipeline_iniciar(pipeline_t * pipeline, elemento_t * elemento)
 {
     char buffer[MAX_NOMBRE];
     elemento->m_iniciado = 1;
-    sprintf(buffer, "* %s", elemento->m_nombre);
-    gtk_button_set_label(GTK_BUTTON(elemento->m_widget), buffer);
+ /*   sprintf(buffer, "* %s", elemento->m_nombre);
+    gtk_button_set_label(GTK_BUTTON(elemento->m_widget), buffer);*/
     if (elemento->m_funcion_iniciar) {
     	elemento->m_funcion_iniciar();
-     	ERROR_PIPELINE(pipeline, elemento);
+     	pipeline_enviar_error(pipeline, elemento);
       return 0;
     }
     return -1;
 }
 
-int pipeline_parar(elemento_t * elemento)
+int pipeline_parar(pipeline_t * pipeline, elemento_t * elemento)
 {
     char buffer[MAX_NOMBRE];
     elemento->m_iniciado = 0;
-    sprintf(buffer, "%s", elemento->m_nombre);
-    gtk_button_set_label(GTK_BUTTON(elemento->m_widget), buffer);
+ /*   sprintf(buffer, "%s", elemento->m_nombre);
+    gtk_button_set_label(GTK_BUTTON(elemento->m_widget), buffer);*/
     if (elemento->m_funcion_cerrar) {
-	elemento->m_funcion_cerrar();
-	return 0;
+	     elemento->m_funcion_cerrar();
+	     pipeline_enviar_error(pipeline, elemento);
+	     return 0;
     }
     return -1;
 }

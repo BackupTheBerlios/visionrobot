@@ -43,6 +43,8 @@ int main(int argc, char *argv[])
     if(argc > 1) {
             abrir(argv[1], ventana_principal);
     }
+    
+    ventana_principal->m_retardo = 500;
 
     gtk_main();
 
