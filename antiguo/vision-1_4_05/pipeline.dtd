@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<!--
+DTD para los archivos descriptores de un pipeline
+-->
+
+<!ELEMENT pipeline (modulo+)>
+<!ELEMENT modulo (argumento*, modulo*)>
+<!ELEMENT argumento (#PCDATA)>
+<!ATTLIST modulo ruta CDATA #REQUIRED>
+<!ATTLIST argumento tipo CDATA #REQUIRED>

@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     imprimir_arbol(e, 0);
     pipeline_iniciar_todo(e);	
     int c;
-    while ((c = getchar())) {      
+    while (1 || (c = getchar())) { 
       if(c == 's' || c == 'S') {
 	break;
       }

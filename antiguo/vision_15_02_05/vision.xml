@@ -1,36 +1,37 @@
-<?xml version="1.0"?>
+<?xml version="1.0"?><!DOCTYPE pipeline SYSTEM "pipeline.dtd">
 <pipeline>
-<modulo ruta="/home/carlos/vision/imagenes.so">
-        <argumento tipo="ancho">320</argumento>
-        <argumento tipo="alto">240</argumento>
-        <argumento tipo="bytes">3</argumento>
-	<modulo ruta="/home/carlos/vision/filtro_gestos.so">
-		<argumento tipo="orden_superior_rojo">5</argumento>
-		<argumento tipo="orden_inferior_rojo">5</argumento>
-		<argumento tipo="orden_superior_verde">230</argumento>
-		<argumento tipo="orden_inferior_verde">5</argumento>
-		<argumento tipo="orden_superior_azul">128</argumento>
-		<argumento tipo="orden_inferior_azul">2</argumento>
-		<argumento tipo="param_superior_rojo">245</argumento>
-		<argumento tipo="param_inferior_rojo">20</argumento>
-		<argumento tipo="param_superior_verde">240</argumento>
-		<argumento tipo="param_inferior_verde">4</argumento>
-		<argumento tipo="param_superior_azul">210</argumento>
-		<argumento tipo="param_inferior_azul">5</argumento>
-		<modulo ruta="/home/carlos/vision/red_neuronal.so">
-		    <argumento tipo="archivo">/home/carlos/vision/orden.net</argumento>
-		    <modulo ruta="/home/carlos/vision/salida.so">
-			<argumento tipo="texto">Visión por computador</argumento>
-		    </modulo>
-                </modulo>
-                <modulo ruta="/home/carlos/vision/ventana_imagen.so">
-                    <argumento tipo="ancho">320</argumento>
-                    <argumento tipo="alto">240</argumento>
-                </modulo>
-       </modulo>
-       <modulo ruta="/home/carlos/vision/ventana_imagen.so">
-              <argumento tipo="ancho">320</argumento>
-              <argumento tipo="alto">240</argumento>
-       </modulo>
-</modulo>
+  <modulo ruta="/home/carlos/vision/imagenes.so">
+    <argumento tipo="ancho">320</argumento>
+    <argumento tipo="alto">240</argumento>
+    <argumento tipo="bytes">3</argumento>
+    <modulo ruta="/home/carlos/vision/filtro_gestos.so">
+      <argumento tipo="orden_superior_rojo">230</argumento>
+      <argumento tipo="orden_inferior_rojo">5</argumento>
+      <argumento tipo="orden_superior_verde">230</argumento>
+      <argumento tipo="orden_inferior_verde">5</argumento>
+      <argumento tipo="orden_superior_azul">230</argumento>
+      <argumento tipo="orden_inferior_azul">2</argumento>
+      <argumento tipo="param_superior_rojo">245</argumento>
+      <argumento tipo="param_inferior_rojo">20</argumento>
+      <argumento tipo="param_superior_verde">240</argumento>
+      <argumento tipo="param_inferior_verde">4</argumento>
+      <argumento tipo="param_superior_azul">210</argumento>
+      <argumento tipo="param_inferior_azul">5</argumento>
+      <modulo ruta="/home/carlos/vision/ventana_imagen.so">
+	<argumento tipo="ancho">320</argumento>
+	<argumento tipo="alto">240</argumento>
+      </modulo>
+<!--
+      <modulo ruta="/home/carlos/vision/red_neuronal.so">
+	<argumento tipo="archivo">/home/carlos/vision/orden.net</argumento>
+	<modulo ruta="/home/carlos/vision/salida.so">
+	  <argumento tipo="texto">Visión por computador</argumento>
+	</modulo>
+      </modulo> -->
+    </modulo>
+    <modulo ruta="/home/carlos/vision/ventana_imagen.so">
+      <argumento tipo="ancho">320</argumento>
+      <argumento tipo="alto">240</argumento>
+    </modulo>
+  </modulo>
 </pipeline>

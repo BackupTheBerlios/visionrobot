@@ -52,14 +52,17 @@ elemento_t * pipeline_nuevo(elemento_t * padre, const char *ruta)
 }
 int  pipeline_cerrar_biblioteca(elemento_t * elemento) 
 {
-    if (elemento->m_modulo && elemento->m_modulo->m_cerrar)
-	 {
-	pipeline_salida_error(elemento->m_modulo->m_nombre,
-			       elemento->m_modulo->m_cerrar(elemento->m_modulo));
-	}
-    pipeline_free_library(elemento->m_handler);
-    elemento->m_modulo = 0;
-    return 0;
+  if (elemento->m_modulo && elemento->m_modulo->m_cerrar)   {
+    char *nombre = strdup(elemento->m_modulo->m_nombre);
+    char *mensaje = strdup(elemento->m_modulo->m_cerrar(elemento->m_modulo));
+    pipeline_salida_error(nombre, mensaje);			  
+    free(nombre);
+    free(mensaje);
+  }
+  pipeline_free_library(elemento->m_handler);
+  elemento->m_modulo = 0;
+  elemento->m_handler = 0;
+  return 0;
 }
 int  pipeline_cerrar_todo(elemento_t * elemento) 
 {

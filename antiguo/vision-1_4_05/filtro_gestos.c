@@ -6,7 +6,7 @@
 
 static char buffer_error[128];
 
-static char *ciclo(modulo_t *modulo, const pipeline_dato_t *in, pipeline_dato_t *out)
+static char *filtro_ciclo(modulo_t *modulo, const pipeline_dato_t *in, pipeline_dato_t *out)
 {
   filtro_t *filtro = (filtro_t*)modulo->m_dato;
   if (filtro) {
@@ -25,7 +25,7 @@ static char *ciclo(modulo_t *modulo, const pipeline_dato_t *in, pipeline_dato_t 
   }
   return "fallo en el filtro";
 }
-static int valor(const char *tipo, int argc, const char **argv)
+static int filtro_valor(const char *tipo, int argc, const char **argv)
 {
   int i;
   for (i = 0; i < argc; i += 2) {
@@ -35,7 +35,7 @@ static int valor(const char *tipo, int argc, const char **argv)
   }
   return 0;
 }
-static char *iniciar(modulo_t *modulo, int argc, const char **argv)
+static char *filtro_iniciar(modulo_t *modulo, int argc, const char **argv)
 {
   if (argc < 12) {
     return "faltan parámetros";
@@ -43,21 +43,21 @@ static char *iniciar(modulo_t *modulo, int argc, const char **argv)
   modulo->m_dato = filtro_gestos_crear();
   filtro_t *filtro = (filtro_t*)modulo->m_dato;
   filtro_gestos_set_color(filtro,
-			      valor("orden_superior_rojo", argc, argv),
-			      valor("orden_inferior_rojo", argc, argv),
-			      valor("orden_superior_verde", argc, argv),
-			      valor("orden_inferior_verde", argc, argv),
-			      valor("orden_superior_azul", argc, argv),
-			      valor("orden_inferior_azul", argc, argv),
-			      valor("param_superior_rojo", argc, argv),
-			      valor("param_inferior_rojo", argc, argv),
-			      valor("param_superior_verde", argc, argv),
-			      valor("param_inferior_verde", argc, argv),
-			      valor("param_superior_azul", argc, argv),
-			      valor("param_inferior_azul", argc, argv));
+			      filtro_valor("orden_superior_rojo", argc, argv),
+			      filtro_valor("orden_inferior_rojo", argc, argv),
+			      filtro_valor("orden_superior_verde", argc, argv),
+			      filtro_valor("orden_inferior_verde", argc, argv),
+			      filtro_valor("orden_superior_azul", argc, argv),
+			      filtro_valor("orden_inferior_azul", argc, argv),
+			      filtro_valor("param_superior_rojo", argc, argv),
+			      filtro_valor("param_inferior_rojo", argc, argv),
+			      filtro_valor("param_superior_verde", argc, argv),
+			      filtro_valor("param_inferior_verde", argc, argv),
+			      filtro_valor("param_superior_azul", argc, argv),
+			      filtro_valor("param_inferior_azul", argc, argv));
     return "iniciado";
 }
-static char *cerrar(modulo_t *modulo)
+static char *filtro_cerrar(modulo_t *modulo)
 {
     filtro_gestos_borrar((filtro_t**)&modulo->m_dato);
     free(modulo);
@@ -68,9 +68,9 @@ modulo_t * get_modulo()
 {
   modulo_t *modulo = (modulo_t*)malloc(sizeof(modulo_t));
   modulo->m_nombre = "Filtro";
-  modulo->m_iniciar = iniciar;
-  modulo->m_cerrar = cerrar;
-  modulo->m_ciclo = ciclo;
+  modulo->m_iniciar = filtro_iniciar;
+  modulo->m_cerrar = filtro_cerrar;
+  modulo->m_ciclo = filtro_ciclo;
   modulo->m_dato = 0;
   return modulo;
 

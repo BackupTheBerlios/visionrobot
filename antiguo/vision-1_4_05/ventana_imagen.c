@@ -18,7 +18,7 @@ typedef struct {
   GdkGC* gc;
 } datos_ventana_t;
 
-static void pintar(modulo_t * modulo, char* imagen, int alto, int ancho, int bytes) {
+static void ventana_pintar(modulo_t * modulo, char* imagen, int alto, int ancho, int bytes) {
   GdkPixbuf * pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB,
 				      FALSE, 8,ancho, alto);
   guchar * p = gdk_pixbuf_get_pixels (pixbuf);
@@ -44,7 +44,7 @@ static void pintar(modulo_t * modulo, char* imagen, int alto, int ancho, int byt
   }
 }
 
-static char *ciclo(modulo_t *modulo, const pipeline_dato_t *in, pipeline_dato_t *out)
+static char *ventana_ciclo(modulo_t *modulo, const pipeline_dato_t *in, pipeline_dato_t *out)
 {
   char* imagen;
   int alto, ancho, bytes;
@@ -63,11 +63,11 @@ static char *ciclo(modulo_t *modulo, const pipeline_dato_t *in, pipeline_dato_t 
     break;
   }
 
-  pintar(modulo, imagen, alto, ancho, bytes);
+  ventana_pintar(modulo, imagen, alto, ancho, bytes);
   return 0;
 }
 
-static void crear_ventana(modulo_t *modulo, int alto, int ancho) {
+static void ventana_crear_ventana(modulo_t *modulo, int alto, int ancho) {
   ((datos_ventana_t*)modulo->m_dato)->ventana = gtk_window_new(GTK_WINDOW_TOPLEVEL);  
   gtk_window_set_title(GTK_WINDOW(((datos_ventana_t*)modulo->m_dato)->ventana), "Ventana de imágenes");   
   gtk_window_set_default_size (GTK_WINDOW(((datos_ventana_t*)modulo->m_dato)->ventana), ancho, alto);
@@ -77,7 +77,7 @@ static void crear_ventana(modulo_t *modulo, int alto, int ancho) {
   ((datos_ventana_t*)modulo->m_dato)->gc =gdk_gc_new (((datos_ventana_t*)modulo->m_dato)->ventana->window);
 }
 
-static int valor(const char *tipo, int argc, const char **argv)
+static int ventana_valor(const char *tipo, int argc, const char **argv)
 {
   int i;
   for (i = 0; i < argc; i += 2) {
@@ -88,13 +88,13 @@ static int valor(const char *tipo, int argc, const char **argv)
   return 0;
 }
 
-static char *iniciar(modulo_t *modulo, int argc, const char **argv)
+static char *ventana_iniciar(modulo_t *modulo, int argc, const char **argv)
 {
   gtk_init(&argc, (char***)&argv);
-  crear_ventana(modulo, valor("alto", argc, argv), valor("ancho", argc, argv));
+  ventana_crear_ventana(modulo, ventana_valor("alto", argc, argv), ventana_valor("ancho", argc, argv));
   return "iniciado";
 }
-static char *cerrar(modulo_t *modulo)
+static char *ventana_cerrar(modulo_t *modulo)
 {
   g_free(((datos_ventana_t*)modulo->m_dato)->gc);
   gtk_widget_destroy(((datos_ventana_t*)modulo->m_dato)->ventana);
@@ -107,9 +107,9 @@ modulo_t * get_modulo()
 {
   modulo_t *modulo = (modulo_t*)malloc(sizeof(modulo_t));
   modulo->m_nombre = "Ventana de imagen";
-  modulo->m_iniciar = iniciar;
-  modulo->m_cerrar = cerrar;
-  modulo->m_ciclo = ciclo;
+  modulo->m_iniciar = ventana_iniciar;
+  modulo->m_cerrar = ventana_cerrar;
+  modulo->m_ciclo = ventana_ciclo;
   modulo->m_dato = (datos_ventana_t*)malloc(sizeof(datos_ventana_t));  
   return modulo;
 }

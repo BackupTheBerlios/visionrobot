@@ -7,7 +7,7 @@
 
 static char buffer_error[128];
 
-static char *ciclo(modulo_t *modulo, const pipeline_dato_t *in, pipeline_dato_t *out)
+static char *red_ciclo(modulo_t *modulo, const pipeline_dato_t *in, pipeline_dato_t *out)
 {
     red_neuronal_in_t * red_in = (red_neuronal_in_t *) in->m_dato;
     if(red_in) {
@@ -33,7 +33,7 @@ static char *ciclo(modulo_t *modulo, const pipeline_dato_t *in, pipeline_dato_t 
     }
     return buffer_error;
 }
-static char *iniciar(modulo_t *modulo, int argc, const char **argv)
+static char *red_iniciar(modulo_t *modulo, int argc, const char **argv)
 {
     if (argc < 2) {
 	return "falta el nombre de archivo para cargar";
@@ -50,7 +50,7 @@ static char *iniciar(modulo_t *modulo, int argc, const char **argv)
 	return buffer_error;
     }    
 }
-static char *cerrar(modulo_t *modulo)
+static char *red_cerrar(modulo_t *modulo)
 {
   red_neuronal_t *red = (red_neuronal_t *)modulo->m_dato;
   red_neuronal_borrar(&red);
@@ -62,9 +62,9 @@ modulo_t * get_modulo()
 {
   modulo_t *modulo = (modulo_t*)malloc(sizeof(modulo_t));
   modulo->m_nombre = "Red";
-  modulo->m_iniciar = iniciar;
-  modulo->m_cerrar = cerrar;
-  modulo->m_ciclo = ciclo;
+  modulo->m_iniciar = red_iniciar;
+  modulo->m_cerrar = red_cerrar;
+  modulo->m_ciclo = red_ciclo;
   modulo->m_dato = 0;
   return modulo;
 }

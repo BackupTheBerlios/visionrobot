@@ -9,16 +9,16 @@ red_neuronal_t * red_neuronal_crear(int en, int oc, int sa)
     red->numEntrada = en;
     red->numOculta = oc;
     red->numSalida = sa;
-    red->capaEntrada = (double *) malloc(sizeof(double) * red->numEntrada + 1);	//new double[numEntrada+1];
-    red->capaOculta = (double *) malloc(sizeof(double) * red->numOculta + 1);	//new double[numOculta+1];
-    red->capaSalida = (double *) malloc(sizeof(double) * red->numSalida + 1);	//new double[numSalida+1];
-    red->ocultaD = (double *) malloc(sizeof(double) * red->numOculta + 1);	//new double[numOculta+1];
-    red->salidaD = (double *) malloc(sizeof(double) * red->numSalida + 1);	//new double[numSalida+1];
-    red->objetivo = (double *) malloc(sizeof(double) * red->numSalida + 1);	//new double[numSalida+1];
-    red->pesosEntrada = (double *) malloc(sizeof(double) * ((red->numEntrada + 1) * (red->numOculta + 1)));	//new double[(numEntrada+1)*(numOculta+1)];
-    red->pesosOculta = (double *) malloc(sizeof(double) * ((red->numOculta + 1) * (red->numSalida + 1)));	//new double[(numOculta+1)*(numSalida+1)];
-    red->pesosEntradaAnterior = (double *) malloc(sizeof(double) * ((red->numEntrada + 1) * (red->numOculta + 1)));	//new double[(numEntrada+1)*(numOculta+1)];
-    red->pesosOcultaAnterior = (double *) malloc(sizeof(double) * ((red->numOculta + 1) * (red->numSalida + 1)));	//new double[(numOculta+1)*(numSalida+1)];
+    red->capaEntrada = (double *) malloc(sizeof(double) * red->numEntrada + 1);
+    red->capaOculta = (double *) malloc(sizeof(double) * red->numOculta + 1);
+    red->capaSalida = (double *) malloc(sizeof(double) * red->numSalida + 1);
+    red->ocultaD = (double *) malloc(sizeof(double) * red->numOculta + 1);
+    red->salidaD = (double *) malloc(sizeof(double) * red->numSalida + 1);
+    red->objetivo = (double *) malloc(sizeof(double) * red->numSalida + 1);
+    red->pesosEntrada = (double *) malloc(sizeof(double) * ((red->numEntrada + 1) * (red->numOculta + 1)));
+    red->pesosOculta = (double *) malloc(sizeof(double) * ((red->numOculta + 1) * (red->numSalida + 1)));
+    red->pesosEntradaAnterior = (double *) malloc(sizeof(double) * ((red->numEntrada + 1) * (red->numOculta + 1)));
+    red->pesosOcultaAnterior = (double *) malloc(sizeof(double) * ((red->numOculta + 1) * (red->numSalida + 1)));
     int i, j;
     for (i = 0; i <= red->numEntrada; i++)
 	for (j = 0; j <= red->numOculta; j++) {
@@ -46,18 +46,14 @@ red_neuronal_t * red_neuronal_crear(int en, int oc, int sa)
 void red_neuronal_borrar(red_neuronal_t ** red) 
 {
     if (red && (*red)) {
-	free((*red)->capaEntrada);
 	free((*red)->capaOculta);
+	free((*red)->capaEntrada);
 	free((*red)->capaSalida);
 	free((*red)->ocultaD);
 	free((*red)->salidaD);
 	free((*red)->objetivo);
 	free((*red)->pesosEntrada);
 	free((*red)->pesosEntradaAnterior);
-	free((*red)->pesosEntrada);
-	free((*red)->pesosEntradaAnterior);
-	free((*red)->pesosOculta);
-	free((*red)->pesosOcultaAnterior);
 	free((*red)->pesosOculta);
 	free((*red)->pesosOcultaAnterior);
 	*red = 0;
@@ -108,8 +104,8 @@ void red_neuronal_computar_capas(red_neuronal_t * red)
     }
     fscanf(archivo, "%d %d %d", &ne, &no, &ns);
     red_neuronal_t * redA = red_neuronal_crear(ne, no, ns);
-    double *pesosEntrada2 = (double *) malloc(sizeof(double) * ((ne + 1) * (no + 1)));	//new double[(ne+1)*(no+1)];
-    double *pesosOculta2 = (double *) malloc(sizeof(double) * ((no + 1) * (ns + 1)));	//new double[(no+1)*(ns+1)];
+    double *pesosEntrada2 = (double *) malloc(sizeof(double) * ((ne + 1) * (no + 1)));
+    double *pesosOculta2 = (double *) malloc(sizeof(double) * ((no + 1) * (ns + 1)));
     int i;
     for (i = 0; i <= ne; i++) {
 	int j;
@@ -154,8 +150,6 @@ char *red_neuronal_reconocer(red_neuronal_t * red, char *dibujo,
     if (!red)
 	return "red no cargada";
     
-//  Imagen* imagen= new Imagen(dibujo,ancho,alto);
-	//Sleep(100);
 	if (!dibujo)
 	return "no hay dibujo";
     red_neuronal_cargar_input_imagen(red, dibujo, ancho, alto, bytes);
