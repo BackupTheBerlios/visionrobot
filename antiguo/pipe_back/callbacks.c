@@ -218,15 +218,16 @@ void
 on___ndice_de_la_ayuda1_activate(GtkMenuItem * menuitem,
 				 gpointer user_data)
 {
-    int i;
-    for (i = 0; i < pipeline->m_numero; ++i) {
-	if (gtk_toggle_button_get_active
-	    (GTK_TOGGLE_BUTTON(pipeline->m_elemento[i].m_widget))) {
-	    if (pipeline->m_elemento[i].m_funcion_ciclo) {
-		pipeline->m_elemento[i].m_funcion_ciclo();
-	    }
-	}
+  int i;
+  char * buffer = "Saludo";
+  for (i = 0; i < pipeline->m_numero; ++i) {
+    if(pipeline->m_elemento[i].m_iniciado) {
+      if (pipeline->m_elemento[i].m_funcion_ciclo) {
+	pipeline->m_elemento[i].m_funcion_set_datos(buffer);
+	printf("Salida >>> %s\n", (char *)pipeline->m_elemento[i].m_funcion_get_datos());
+      }
     }
+  }  
 }
 
 void on_button6_activate(GtkButton * button, gpointer user_data)
@@ -240,6 +241,15 @@ void on_button6_activate(GtkButton * button, gpointer user_data)
 void on_propiedades_biblioteca_activate(GtkButton * button,
 					gpointer user_data)
 {
+     int i;
+    for (i = 0; i < pipeline->m_numero; ++i) {
+      if(pipeline->m_elemento[i].m_iniciado) {
+	    if (pipeline->m_elemento[i].m_funcion_propiedades) {
+		pipeline->m_elemento[i].m_funcion_propiedades();
+	    }
+	}
+    }
+
 }
 void on_ciclos_biblioteca_activate(GtkButton * button, gpointer user_data)
 {
@@ -247,11 +257,12 @@ void on_ciclos_biblioteca_activate(GtkButton * button, gpointer user_data)
 void on_iniciar_biblioteca_activate(GtkButton * button, gpointer user_data)
 {
 
-    int i;
+    int i;    
     for (i = 0; i < pipeline->m_numero; ++i) {
 	if (gtk_toggle_button_get_active
 	    (GTK_TOGGLE_BUTTON(pipeline->m_elemento[i].m_widget))) {
-	    pipeline->m_elemento[i].m_iniciado = 1;
+	  iniciar(&pipeline->m_elemento[i]);
+	    
 	}
     }
     establecer(pipeline, window1);
@@ -262,10 +273,11 @@ void on_iniciar_todas_biblioteca_activate(GtkButton * button,
 {
     int i;
     for (i = 0; i < pipeline->m_numero; ++i) {
-	pipeline->m_elemento[i].m_iniciado = 1;
+      iniciar(&pipeline->m_elemento[i]);
     }
     establecer(pipeline, window1);
 }
+
 
 void on_parar_biblioteca_activate(GtkButton * button, gpointer user_data)
 {
@@ -276,7 +288,7 @@ void on_cerrar_biblioteca_activate(GtkButton * button, gpointer user_data)
     for (i = 0; i < pipeline->m_numero; ++i) {
 	if (gtk_toggle_button_get_active
 	    (GTK_TOGGLE_BUTTON(pipeline->m_elemento[i].m_widget))) {
-	    pipeline->m_elemento[i].m_iniciado = 0;
+	  parar(&pipeline->m_elemento[i]);
 	}
     }
     establecer(pipeline, window1);
@@ -287,11 +299,20 @@ void on_cerrar_todas_biblioteca_activate(GtkButton * button,
 {
     int i;
     for (i = 0; i < pipeline->m_numero; ++i) {
-	pipeline->m_elemento[i].m_iniciado = 0;
+      parar(&pipeline->m_elemento[i]);
     }
     establecer(pipeline, window1);
 }
 
 void on_ciclo_biblioteca_activate(GtkButton * button, gpointer user_data)
 {
+    int i;
+    for (i = 0; i < pipeline->m_numero; ++i) {
+      if(pipeline->m_elemento[i].m_iniciado) {
+	    if (pipeline->m_elemento[i].m_funcion_ciclo) {
+		pipeline->m_elemento[i].m_funcion_ciclo();
+	    }
+	}
+    }
+
 }

@@ -241,9 +241,6 @@ void cambiar_biblioteca(pipeline_t * pipeline, gint id)
     pipeline->m_elemento[id].m_handler =
 	dlopen(pipeline->m_elemento[id].m_ruta, RTLD_LAZY);
     pipeline->m_elemento[id].m_funcion_ciclo =
-	(funcion_1) dlsym(pipeline->m_elemento[id].m_handler, "ciclo");
-
-    pipeline->m_elemento[id].m_funcion_ciclo =
 	(funcion_1) dlsym(pipeline->m_elemento[id].m_handler, F_CICLO);
     pipeline->m_elemento[id].m_funcion_iniciar =
 	(funcion_1) dlsym(pipeline->m_elemento[id].m_handler, F_INICIAR);

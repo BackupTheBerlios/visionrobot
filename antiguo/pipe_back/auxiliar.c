@@ -246,3 +246,31 @@ void guardar_como_aux(pipeline_t * pipeline, char *file,
 				 FALSE);
     }
 }
+
+int parar(elemento_t * elemento) {
+  char buffer[MAX_NOMBRE];
+  elemento->m_iniciado = 0;
+  sprintf(buffer, "%s", elemento->m_nombre);
+  gtk_button_set_label(GTK_BUTTON
+		       (elemento->m_widget),
+		       buffer);
+  if(elemento->m_funcion_cerrar) {
+    elemento->m_funcion_cerrar();
+    return 0;
+  }
+  return -1;
+}
+
+int iniciar(elemento_t * elemento) {
+  char buffer[MAX_NOMBRE];
+  elemento->m_iniciado = 1;
+  sprintf(buffer, "* %s", elemento->m_nombre);
+  gtk_button_set_label(GTK_BUTTON
+		       (elemento->m_widget),
+		       buffer);
+  if(elemento->m_funcion_iniciar) {
+    elemento->m_funcion_iniciar();
+    return 0;
+  }
+  return -1;
+}

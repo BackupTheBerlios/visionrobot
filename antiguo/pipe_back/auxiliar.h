@@ -115,6 +115,9 @@ extern "C" {
 			  char *archivo, guint * id,
 			  gboolean * modificado);
 
+  int parar(elemento_t * elemento);
+  int iniciar(elemento_t * elemento);
+
 #ifdef __cplusplus
 }
 #endif

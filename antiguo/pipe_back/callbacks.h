@@ -112,3 +112,4 @@ void on_parar_biblioteca_activate(GtkButton * button, gpointer user_data);
 void on_cerrar_biblioteca_activate(GtkButton * button, gpointer user_data);
 void on_cerrar_todas_biblioteca_activate(GtkButton * button,
 					 gpointer user_data);
+
