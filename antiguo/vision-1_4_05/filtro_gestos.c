@@ -26,6 +26,7 @@ static const unsigned char NEGRO = 0;
 static const unsigned char BLANCO = 255;
 static const unsigned char SEMI_NEGRO = 30;
 static const int TOL = 1;
+static const int BORDER= 7;
 
 typedef struct {
   char m_buffer_error[128];  
@@ -75,6 +76,7 @@ typedef filtro_gestos_in_imagen_t dato_t;
   sc->m_azul_inf = bd;
 }
 */
+
 int inRange(unsigned char valor, unsigned char sup, unsigned char inf)
 {
   return (valor<=sup && valor>=inf);
@@ -88,69 +90,69 @@ int isColour(dato_t* in, int h, int w, special_colour_t* sc)
           inRange(in->m_imagen[pos+2], sc->m_rojo_sup, sc->m_rojo_inf));
 }
 
-
-//De momento no exactamente el centrar q ya existe
-//void Centrar(dato_t* in, special_colour_t* sc)
 static int filtro_gestos_centrar2(lua_State *L)
 {
   dato_t *in = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
   special_colour_t *sc = (special_colour_t *)lua_touserdata(L, 2);
-  int i,j,cont,/*centroX,centroY,*/difY,difX;
+  int i,j,cont,difY,difX;
   float acX,acY;
   acX=acY=cont=0;
   for (i=0;i<in->m_alto;i++)
      for (j=0;j<in->m_ancho;j++)
        if(isColour(in,i,j,sc)){acX+=j; acY+=i; cont++;}
 
-  acX/=cont; acY/=cont;
-  difY= floor(in->m_alto/2 - acY);
-  difX= floor(in->m_ancho/2 - acX);
+  if(cont>0){
+    acX/=cont; acY/=cont;
+    difY= floor(in->m_alto/2 - acY);
+    difX= floor(in->m_ancho/2 - acX);
 
-  if(difY<0){
-    for (i=0;i-difY<in->m_alto;i++)
-      for(j=0;j<in->m_ancho*in->m_bytes;j++)
-        in->m_imagen[(i*in->m_ancho*in->m_bytes)+j]=in->m_imagen[((i-difY)*in->m_ancho*in->m_bytes)+j];
-    while(i<in->m_alto){
-      for (j=0;j<in->m_ancho*in->m_bytes;j++)in->m_imagen[(i*in->m_ancho*in->m_bytes)+j]=BLANCO;
-      i++;
-    }
-  }
-
-  if(difY>0){
-    for(i=in->m_alto-1;i-difY>=0;i--)
-      for (j=0;j<in->m_ancho*in->m_bytes;j++)in->m_imagen[(i*in->m_ancho*in->m_bytes)+j]=in->m_imagen[((i-difY)*in->m_ancho*in->m_bytes)+j];
-    while(i>=0){
-      for(j=0;j<in->m_ancho*in->m_bytes;j++)in->m_imagen[(i*in->m_ancho*in->m_bytes)+j]=BLANCO;
-      i--;
-    }
-  }
-
-  if(difX<0){
-    for (i=0;i<in->m_alto;i++){
-      for (j=0;j-(difX*in->m_bytes)+in->m_bytes<in->m_ancho*in->m_bytes;j+=in->m_bytes){
-        in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j)]= in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-(difX*in->m_bytes))];
-        in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j+1)]= in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-(difX*in->m_bytes)+1)];
-        in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j+2)]= in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-(difX*in->m_bytes)+2)];
-      }
-      while(j+in->m_bytes<in->m_ancho*in->m_bytes){
-        in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j)]=BLANCO; in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j+1)]=BLANCO; in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j+2)]=BLANCO; j+=in->m_bytes;
+    if(difY<0){
+      for (i=0;i-difY<in->m_alto;i++)
+        for(j=0;j<in->m_ancho*in->m_bytes;j++)
+          in->m_imagen[(i*in->m_ancho*in->m_bytes)+j]=in->m_imagen[((i-difY)*in->m_ancho*in->m_bytes)+j];
+      while(i<in->m_alto){
+        for (j=0;j<in->m_ancho*in->m_bytes;j++)in->m_imagen[(i*in->m_ancho*in->m_bytes)+j]=BLANCO;
+        i++;
       }
     }
-  }
 
-  if(difX>0){
-    for (i = 0; i< in->m_alto-1; i++){
-      for (j=(in->m_ancho*in->m_bytes)-1;j-(difX*in->m_bytes)+2>=0;j-=in->m_bytes){
-        in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j)]= in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-(difX*in->m_bytes))];
-        in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-1)]= in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-(difX*in->m_bytes)-1)];
-        in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-2)]= in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-(difX*in->m_bytes)-2)];
-      }
-      while(j>=in->m_bytes){
-        in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j)]=BLANCO; in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-1)]=BLANCO; in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-2)]=BLANCO; j-=in->m_bytes;
+    if(difY>0){
+      for(i=in->m_alto-1;i-difY>=0;i--)
+        for (j=0;j<in->m_ancho*in->m_bytes;j++)in->m_imagen[(i*in->m_ancho*in->m_bytes)+j]=in->m_imagen[((i-difY)*in->m_ancho*in->m_bytes)+j];
+      while(i>=0){
+        for(j=0;j<in->m_ancho*in->m_bytes;j++)in->m_imagen[(i*in->m_ancho*in->m_bytes)+j]=BLANCO;
+        i--;
+     }
+    }
+
+    if(difX<0){
+      for (i=0;i<in->m_alto;i++){
+        for (j=0;j-(difX*in->m_bytes)+in->m_bytes<in->m_ancho*in->m_bytes;j+=in->m_bytes){
+          in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j)]= in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-(difX*in->m_bytes))];
+          in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j+1)]= in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-(difX*in->m_bytes)+1)];
+          in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j+2)]= in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-(difX*in->m_bytes)+2)];
+        }
+        while(j+in->m_bytes<in->m_ancho*in->m_bytes){
+          in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j)]=BLANCO; in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j+1)]=BLANCO; in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j+2)]=BLANCO; j+=in->m_bytes;
+       }
       }
     }
+
+    if(difX>0){
+      for (i = 0; i< in->m_alto-1; i++){
+        for (j=(in->m_ancho*in->m_bytes)-1;j-(difX*in->m_bytes)+2>=0;j-=in->m_bytes){
+          in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j)]= in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-(difX*in->m_bytes))];
+          in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-1)]= in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-(difX*in->m_bytes)-1)];
+          in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-2)]= in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-(difX*in->m_bytes)-2)];
+        }
+        while(j>=in->m_bytes){
+          in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j)]=BLANCO; in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-1)]=BLANCO; in->m_imagen[(i*in->m_ancho*in->m_bytes)+(j-2)]=BLANCO; j-=in->m_bytes;
+        }
+      }
+    }
+    return 1;
   }
-  return 0;
+  else return 0;            //Cambio**************
 }
 
 coord_t Corner1(dato_t* in, special_colour_t* sc)
@@ -213,12 +215,12 @@ void Identify2(bounds_t* bounds, coord_t c1, coord_t c2, coord_t c3, coord_t c4)
  bounds->id.y= maxY; bounds->id.x= maxX;
 }
 
-//bounds_t* BuscarLimites(dato_t* in, int op, special_colour_t* sc)
+//Cambio***************
 static int filtro_gestos_buscar_limites(lua_State *L)
 {
-  dato_t *in = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
-  int op = luaL_checkint(L, 2);
-  special_colour_t *sc = (special_colour_t *)lua_touserdata(L, 3);
+ dato_t *in = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
+ int op = luaL_checkint(L, 2);
+ special_colour_t *sc = (special_colour_t *)lua_touserdata(L, 3);
  bounds_t* out = (bounds_t*)malloc(sizeof(bounds_t));
  coord_t c1= Corner1(in,sc);
  coord_t c2= Corner2(in,sc);
@@ -231,20 +233,50 @@ static int filtro_gestos_buscar_limites(lua_State *L)
    Identify(in,out,c4);
  }
  else Identify2(out,c1,c2,c3,c4);
+ //Cambio********************************+
  int b= out->ii.y-out->id.y;
- int a= (out->id.x-out->ii.x);
- double divis= (double)b/a;
+ int a= out->id.x-out->ii.x;
+ int d= out->ii.y-out->si.y;
+ int c= out->ii.x-out->si.x;
+ double divis,divis2;
+ (a==0)?divis=0:divis=(double)b/a;
+ (c==0)?divis2=0:divis2=(double)d/c;
  double angulo= atan(divis);
+ double angulo2= atan(divis2);
  out->grados= (angulo*180)/M_PI;
+ int grados1= abs(out->grados);
+ int grados2= abs((angulo2*180)/M_PI);
  lua_pushlightuserdata(L, out);
- return 1;
+ if(grados1+grados2>80 && grados1+grados2<100 || !op)return 1;
+ else return 0;
 }
 
-//dato_t* Rotate(dato_t* in, bounds_t* bounds)
+//Cambio********************
+static int filtro_gestos_on_border(lua_State *L)
+{
+ dato_t *in = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
+ special_colour_t *sc = (special_colour_t *)lua_touserdata(L, 2);
+ bounds_t* out = (bounds_t*)malloc(sizeof(bounds_t));
+ coord_t c1= Corner1(in,sc);
+ coord_t c2= Corner2(in,sc);
+ coord_t c3= Corner3(in,sc);
+ coord_t c4= Corner4(in,sc);
+ Identify2(out,c1,c2,c3,c4);
+ if(out->ii.y>in->m_alto-BORDER || out->si.y<BORDER ||
+    out->ii.x<BORDER || out->id.x>in->m_ancho-BORDER){
+   free(out);
+   return 1;
+ }
+ else{
+   free(out);
+   return 0;
+ }
+}
+
 static int filtro_gestos_rotar(lua_State *L)
 {
-  dato_t *in = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
-  bounds_t *bounds =  (bounds_t *)lua_touserdata(L, 2);
+    dato_t *in = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
+    bounds_t *bounds =  (bounds_t *)lua_touserdata(L, 2);
     dato_t* salida= (dato_t*)malloc(sizeof(dato_t));
     int k,ii,jj,lin,pos,pos2,i,j;
     double fi,alfa,a,b,subAncho1,subAncho2;
@@ -255,7 +287,8 @@ static int filtro_gestos_rotar(lua_State *L)
     salida->m_ancho= subAncho1 + subAncho2;
     if(bounds->grados<0){subAncho1=0; subAncho2=salida->m_ancho;}
     salida->m_alto= abs(in->m_alto*sin(alfa)) + abs(in->m_ancho*sin(fi));
-    salida->m_imagen= (color_t *)malloc(sizeof(color_t) * salida->m_alto * 
+    salida->m_bytes=3;  //*******Cambio
+    salida->m_imagen= (color_t *)malloc(sizeof(color_t) * salida->m_alto *
 					salida->m_ancho * salida->m_bytes);
     for(i=0; i<salida->m_alto; i++){
       k=0;
@@ -282,17 +315,15 @@ static int filtro_gestos_rotar(lua_State *L)
          k++;
       }
     }
-    //    delete in;
     free(in);
-    free(bounds);//delete bounds;
+    free(bounds);
     lua_pushlightuserdata(L,salida);
     return 1;
-    //    return salida;
 }
 
 void CleanLine(dato_t* in, int i, int left, int right, int op)
 {
-  int j,pos1,pos2;//,r,l;
+ int j,pos1,pos2;
  pos1=(i*in->m_ancho*in->m_bytes);
  for(j=0; j<in->m_ancho; j++)
  {
@@ -301,7 +332,7 @@ void CleanLine(dato_t* in, int i, int left, int right, int op)
     in->m_imagen[pos2]=BLANCO; in->m_imagen[pos2+1]=BLANCO; in->m_imagen[pos2+2]=BLANCO;
   }
   else{
-    if(in->m_imagen[pos2]<SEMI_NEGRO && in->m_imagen[pos2+1]<SEMI_NEGRO && in->m_imagen[pos2+2]<SEMI_NEGRO){
+    if(in->m_imagen[pos2]<SEMI_NEGRO && in->m_imagen[pos2+1]<SEMI_NEGRO/2.3 && in->m_imagen[pos2+2]<SEMI_NEGRO/1.2){
       in->m_imagen[pos2]=NEGRO; in->m_imagen[pos2+1]=NEGRO; in->m_imagen[pos2+2]=NEGRO;
     }
     else{
@@ -311,40 +342,38 @@ void CleanLine(dato_t* in, int i, int left, int right, int op)
  }
 }
 
-
-//void Clean(dato_t* in, bounds_t* bounds)
 static int filtro_gestos_clean(lua_State *L)
 {
-dato_t *in = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
-bounds_t *bounds = (bounds_t *)lua_touserdata(L, 2);
+ dato_t *in = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
+ bounds_t *bounds = (bounds_t *)lua_touserdata(L, 2);
  int i;
  for(i=0; i<in->m_alto; i++){
-   if(i<min(bounds->si.y,bounds->sd.y) || i>max(bounds->ii.y,bounds->id.y))
-        CleanLine(in,i,0,in->m_ancho,1);
-        CleanLine(in,i,bounds->ii.x,bounds->id.x,0);
+   int mini= min(bounds->si.y,bounds->sd.y);  //Cambio************
+   int maxi=max(bounds->ii.y,bounds->id.y);   //Cambio************
+   if(i<mini+BORDER || i>maxi-BORDER)
+     CleanLine(in,i,0,in->m_ancho,1);
+   else
+     CleanLine(in,i,bounds->ii.x,bounds->id.x,0);
  }
- // delete bounds;
  free(bounds);
  return 0;
 }
 
 unsigned char Mask(dato_t* in, int i, int j){
-  int k, l;
-        int cont=0;
-        if(i>TOL && i<in->m_alto-TOL && j>TOL && j<in->m_ancho-TOL){
-          for(k=i-TOL; k<i+TOL; k++)
-            for(l=j-TOL; l<j+TOL; l++)
-              if(in->m_imagen[(k*in->m_ancho*in->m_bytes)+(l*in->m_bytes)]<SEMI_NEGRO &&
-                 in->m_imagen[(k*in->m_ancho*in->m_bytes)+(l*in->m_bytes)+1]<SEMI_NEGRO &&
-                 in->m_imagen[(k*in->m_ancho*in->m_bytes)+(l*in->m_bytes)+2]<SEMI_NEGRO)cont++;
+  int k,l;
+  int cont=0;
+  if(i>TOL && i<in->m_alto-TOL && j>TOL && j<in->m_ancho-TOL){
+    for(k=i-TOL; k<i+TOL; k++)
+      for(l=j-TOL; l<j+TOL; l++)
+        if(in->m_imagen[(k*in->m_ancho*in->m_bytes)+(l*in->m_bytes)]<SEMI_NEGRO &&
+          in->m_imagen[(k*in->m_ancho*in->m_bytes)+(l*in->m_bytes)+1]<SEMI_NEGRO &&
+          in->m_imagen[(k*in->m_ancho*in->m_bytes)+(l*in->m_bytes)+2]<SEMI_NEGRO)cont++;
         }
-        if((((2*TOL+1)*(2*TOL+1))/5)<cont)return NEGRO;
-        else return BLANCO;
+  if((((2*TOL+1)*(2*TOL+1))/5)<cont)return NEGRO;
+  else return BLANCO;
 }
 
-//void MakeUp(dato_t* in){
 static int filtro_gestos_make_up(lua_State *L) {
-  //        unsigned char* salida= new unsigned char[in->m_ancho*in->m_alto*3];
   dato_t *in = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
   color_t *salida = (color_t *)malloc(sizeof(color_t) *in->m_ancho*in->m_alto*in->m_bytes);
   int i,j;
@@ -356,8 +385,6 @@ static int filtro_gestos_make_up(lua_State *L) {
     }
   }
   free(in->m_imagen);
-  //delete in->m_imagen;
-  
   in->m_imagen=salida;
   return 0;
 }
@@ -365,28 +392,40 @@ static int filtro_gestos_make_up(lua_State *L) {
 /*Esta es la funcion que hace todo el filtro y llama a todas las func anteriores, si algo tiene
 que ir en scripts seria esto.
 
-1º se centra el cartel
-2º se calcula su rotacion
-3º se rota
-4º se mira q zona ocupa y nos quedamos solo con las letras
-5º se rellenan posibles zonas blancas dentro de la letra
+1º Se mira si el cartel esta enteramente en la imagen, si no hay cartel o solo una parte
+   de el, entonces no se hace nada y se devuelve NULL.
+2º Se Centra
+3º Se rota en el caso de que el cartel filtrado tenga forma rectangular, xa confirmar que lo
+   que estamos rotando es un cartel
+4º De la zona del cartel nos quedamos solo con las letras
+5º Se rellenan posibles zonas blancas dentro de las letras
 
 Restricciones:
 	No sabe leer carteles en perspectiva. Asi que el cartel ha de estar paralelo a la camara.
 	La distancia idonea esta entre los 30 y los 50 centimetros.
 	La luz es mejor que sea difusa.
-*/
-/*dato_t* OCR_Filter(dato_t* in, special_colour_t* sc)
+        Las constantes deberian ser tb modificables desde la ventana, ya q habra q cambiarlas
+        segun el ambiente.
+
+dato_t* OCR_Filter(dato_t* in, special_colour_t* sc)
 {
-    Centrar(in,sc);
-    bounds_t* bounds= BuscarLimites(in,1,sc);
-    in=Rotate(in,bounds);
-    bounds= BuscarLimites(in,0,sc);
-    Clean(in,bounds);
-    MakeUp(in);
-    return in;
+    //Cambio*************
+    if(!filtro_gestos_on_border(in,sc) && filtro_gestos_centrar2(in,sc)){
+      bounds_t* bounds= filtro_gestos_buscar_limites(in,1,sc);
+      if(bounds)
+        in=filtro_gestos_rotar(in,bounds);
+      bounds= filtro_gestos_buscar_limites(in,0,sc);
+      filtro_gestos_clean(in,bounds);
+      filtro_gestos_make_up(in);
+      free(sc);
+      return in;
+    }
+    free(sc);
+    free(in);
+    return NULL;
 }
 */
+
 //*********************************************************************************************
 
 
