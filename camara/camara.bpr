@@ -10,7 +10,7 @@
     <IDLGENFILES value=""/>
     <DEFFILE value=""/>
     <RESDEPEN value="$(RESFILES) frmCamara.dfm"/>
-    <LIBFILES value="..\CBuilder_DX92_libs\quartz.lib ..\CBuilder_DX92_libs\strmiids.lib"/>
+    <LIBFILES value="&quot;C:\Archivos de programa\Borland\CBuilder5\Lib\bcb\strmiids.lib&quot; &quot;C:\Archivos de programa\Borland\CBuilder5\Lib\bcb\quartz.lib&quot;"/>
     <LIBRARIES value=""/>
     <SPARELIBS value="Vcl50.lib"/>
     <PACKAGES value="Vcl50.bpi Vclx50.bpi bcbsmp50.bpi Vcldb50.bpi vclado50.bpi ibsmp50.bpi 
@@ -34,9 +34,9 @@
   </MACROS>
   <OPTIONS>
     <IDLCFLAGS value="-I&quot;C:\Archivos de programa\Borland\CBuilder5\Projects\.&quot; -I$(BCB)\include 
-      -I$(BCB)\include\vcl -src_suffix cpp -D_DEBUG -boa"/>
-    <CFLAG1 value="-Od -H=$(BCB)\lib\vcl50.csm -Hc -Vx -Ve -X- -r- -a8 -b- -k -y -v -vi- -c 
-      -tW -tWM"/>
+      -I$(BCB)\include\vcl -I&quot;..\dx4devc\Directx8 for DEV-C\Includes&quot; 
+      -src_suffix cpp -D_DEBUG -boa"/>
+    <CFLAG1 value="-Od -Vx -Ve -X- -r- -a8 -b- -k -y -v -vi- -c -tW -tWM"/>
     <PFLAGS value="-$YD -$W -$O- -v -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zd"/>
@@ -76,9 +76,10 @@ ProductVersion=1.0.0.0
 Comments=
 
 [HistoryLists\hlIncludePath]
-Count=2
-Item0=C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;C:\hlocal\dx4devc\Directx8 for DEV-C\Includes
-Item1=C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl
+Count=3
+Item0=C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;..\dx4devc\Directx8 for DEV-C\Includes
+Item1=C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;C:\hlocal\dx4devc\Directx8 for DEV-C\Includes
+Item2=C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl
 
 [HistoryLists\hlLibraryPath]
 Count=1
@@ -106,6 +107,11 @@ RemoteDebug=0
 ShowInfoMsgs=0
 LinkDebugVcl=0
 LinkCGLIB=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
 
 [Language]
 ActiveLang=
