@@ -85,6 +85,34 @@ extern "C"  {
   */
   int  pipeline_iniciar(const pipeline_t * p);
 
+  //! Devuelve una lista con los nombres de los módulos
+  /*! 
+    
+  \param p El pipeline del que sacamos los nombres.
+  
+  \return Un array terminado en 0 de char *, que contiene los nombres de los módulos. No se debe borrar.
+  */
+  char ** pipeline_nombres(pipeline_t *p);
+
+  //! Establece si un elemento del pipeline está activo o no.
+  /*! 
+    
+  \param p El pipeline que contiene el elemento.
+  \param e El elemento contenido por el pipeline.
+  \param activo "1" si ponemos a activo, y "0" si queremos que esté inactivo.
+  */
+  void pipeline_set_activo(const pipeline_t *p, const char *e, char activo);
+
+  //! Devuelve la información sobre la actividad de un elemento.
+  /*! 
+    
+  \param p El pipeline que contiene al elemento.
+  \param e El nombre del elemento que estamos examinando.
+  
+  \return "1" si está activo, y "0" si está inactivo.
+  */
+  char pipeline_get_activo(const pipeline_t *p, const char *e);
+
 #ifdef __cplusplus
 } 
 #endif

@@ -35,7 +35,7 @@ typedef struct {
   GHashTable *m_argumentos;
   GHashTable *m_enlaces;
   const char *m_nombre;
-  //  gboolean m_activado;
+  gboolean m_activado;
 } elemento_t;
 
 typedef struct {
@@ -44,6 +44,7 @@ typedef struct {
 } conexion_t;
 
 struct pipeline_s {
+  char **m_nombres;
   GHashTable *m_modulos;
   funcion_error_t m_funcion_error;
   gpointer m_dato_funcion_error;
@@ -99,6 +100,10 @@ static void pipeline_borrar_cadena(gpointer a) {
   }
 }
 
+char ** pipeline_nombres(pipeline_t *p) {
+  return p->m_nombres;
+}
+
 static void pipeline_cerrar_elemento(elemento_t *dato)
 {
   if (dato->m_modulo && dato->m_modulo->m_cerrar)   {
@@ -126,13 +131,25 @@ static void pipeline_borrar_elemento(gpointer a) {
   free(dato);
 }
 
+void pipeline_set_activo(const pipeline_t *p, const char *e, char activo) {
+  elemento_t *elemento = g_hash_table_lookup(p->m_modulos, e);
+  elemento->m_activado = activo;
+}
+char pipeline_get_activo(const pipeline_t *p, const char *e) {
+  elemento_t *elemento = g_hash_table_lookup(p->m_modulos, e);
+  return elemento->m_activado;
+}
+
 static pipeline_t * pipeline_annadir(pipeline_t * p, const char *nombre, const char *ruta,
 				     GHashTable *argumentos, const char *dir, const char * inicio) {
   elemento_t * dato = (elemento_t *)malloc(sizeof(elemento_t));
   dato->m_inicio = !strcmp(inicio, "1") ? TRUE : FALSE;
   dato->m_modulo = 0;
   dato->m_handler = 0;  
+  dato->m_activado = TRUE;
   dato->m_nombre = strdup(nombre);
+  p->m_nombres = (char **)realloc(p->m_nombres, sizeof(char **) * (g_hash_table_size(p->m_modulos) + 1));
+  p->m_nombres[g_hash_table_size(p->m_modulos)] = (char *)nombre;
   dato->m_pipeline = p;
   dato->m_argumentos = argumentos;
   g_hash_table_insert(p->m_modulos, (gpointer)nombre, (gpointer)dato);
@@ -150,10 +167,11 @@ static void pipeline_conectar(const pipeline_t * p, const char *origen, const ch
   g_hash_table_insert(or->m_enlaces, (gpointer)strdup(destino), (gpointer)conexion);
 }
 
-int  pipeline_borrar(pipeline_t * p) 
+int pipeline_borrar(pipeline_t * p) 
 {
   if(p) {
     g_hash_table_destroy(p->m_modulos);
+    free(p->m_nombres);
     free(p);
     return 0;
   }
@@ -221,7 +239,7 @@ pipeline_t * pipeline_cargar(const char *ruta, const char *dir, funcion_error_t 
     p->m_modulos = g_hash_table_new_full(g_str_hash, g_str_equal, pipeline_borrar_cadena, pipeline_borrar_elemento);
     p->m_funcion_error = funcion_error;
     p->m_dato_funcion_error = (gpointer)dato;
-
+    p->m_nombres = 0;
     cur = cur->xmlChildrenNode;
     cur = cur->next;
     while (cur != NULL) {
@@ -231,6 +249,7 @@ pipeline_t * pipeline_cargar(const char *ruta, const char *dir, funcion_error_t 
 	cur = cur->next;
     }
     xmlFreeDoc(doc);
+    p->m_nombres[g_hash_table_size(p->m_modulos)] = 0;
     return p;
 }
 static void pipeline_ciclo_recursivo(pipeline_t *p, elemento_t *e, const char *puerto_entrada, const void *dato_entrada);
@@ -245,11 +264,13 @@ static void pipeline_enviar(gpointer key, gpointer value, gpointer user_data) {
 }
 static void pipeline_ciclo_recursivo(pipeline_t *p, elemento_t *e, const char *puerto_entrada, const void *dato_entrada)
 {
-  if(e && e->m_modulo && e->m_modulo->m_ciclo) {
-    pipeline_salida_error(p, e->m_nombre, e->m_modulo->m_nombre,
-			  e->m_modulo->m_ciclo(e->m_modulo, puerto_entrada, dato_entrada));
+  if(e->m_activado) {
+    if(e && e->m_modulo && e->m_modulo->m_ciclo) {
+      pipeline_salida_error(p, e->m_nombre, e->m_modulo->m_nombre,
+			    e->m_modulo->m_ciclo(e->m_modulo, puerto_entrada, dato_entrada));
+    }
+    g_hash_table_foreach(e->m_enlaces, pipeline_enviar, e);
   }
-  g_hash_table_foreach(e->m_enlaces, pipeline_enviar, e);
 }
 static void pipeline_ciclo_pre(gpointer key, gpointer value, gpointer user_data) {
   elemento_t*e = (elemento_t*)value;

@@ -4,7 +4,7 @@
     \version 0.1
  */  
     
-/*! \mainpage
+/*! 
   \section intro Introduccion
   Por comentar...
 
