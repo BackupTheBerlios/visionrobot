@@ -11,6 +11,7 @@
 data_in* buffer_in;
 data_out*  buffer_out;
 Filtro* filtro;
+respuesta_t opciones;
 
 BOOL APIENTRY DllMain( HANDLE hModule, 
                        DWORD  ul_reason_for_call, 

@@ -28,10 +28,10 @@ Filtro::Filtro()
 //---------------------------------------------------------------------------
 
 
-data_out* Filtro::Filtrar(Byte* buffer, int h, int w)
+data_out* Filtro::Filtrar(BYTE* buffer, int h, int w)
 {
-   Byte* tipo_orden= new Byte[h*w*4];
-   Byte* orden= new Byte[h*w*4];
+   BYTE* tipo_orden= new BYTE[h*w*4];
+   BYTE* orden= new BYTE[h*w*4];
    int cont,cont2,acX,acX2,acY,acY2,posY;
    cont=cont2=acX=acX2=acY=acY2=0;
    data_out* salida;
@@ -98,7 +98,7 @@ data_out* Filtro::Filtrar(Byte* buffer, int h, int w)
 //---------------------------------------------------------------------------
 
 
-Byte* Filtro::Centrar(Byte* dibujo, int difY, int difX, int h, int w)
+BYTE* Filtro::Centrar(BYTE* dibujo, int difY, int difX, int h, int w)
 {
   if(difY<0){
     int y;
