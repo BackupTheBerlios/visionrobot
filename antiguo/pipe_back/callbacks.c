@@ -2,8 +2,6 @@
     \brief Funciones de eventos de Gtk
     \author zosco
     \version 0.1
-    \todo \li No funciona cargar de archivo al principio
-          \li Algo anda mal es ver si se ha modificado. Cuando se crea uno vacío y se guarda y se sale, pregunta
  */
 /*
  *  This program is free software; you can redistribute it and/or modify
@@ -39,6 +37,9 @@ guint id;
 char archivo[TAM_ARCHIVO];
 gboolean modificado = FALSE;
 GtkWidget *status_bar;
+
+GdkGC *gc;
+GdkDrawable *ww;
 
 void on_borrar1_activate(GtkMenuItem * menuitem, gpointer user_data)
 {
@@ -95,7 +96,7 @@ void abre(char *file)
 	strcpy(archivo, file);
 	modificado = FALSE;
 	mostrar(GTK_STATUSBAR(status_bar), archivo, &id);
-	g_free(file);
+	//free(file);
 	GtkWidget *fixed = lookup_widget(window1, "fixed1");
 	insertar(GTK_FIXED(fixed), pipeline);
 	gtk_widget_set_sensitive(lookup_widget(window1, "nuevo2"), TRUE);
@@ -114,7 +115,9 @@ void abre(char *file)
 
 void on_abrir2_activate(GtkMenuItem * menuitem, gpointer user_data)
 {
-    abre(abrir_ventana(window1));
+  gchar * file = abrir_ventana(window1);
+  abre(file);
+  g_free(file);
 }
 
 
@@ -139,7 +142,7 @@ void on_guardar2_activate(GtkMenuItem * menuitem, gpointer user_data)
 		     buffer,
 		     window1, status_bar, archivo, &id, &modificado);
 
-    if (archivo[0] == '\0') {
+    if (buffer != archivo) {
 	free(buffer);
     }
 }
@@ -219,6 +222,25 @@ void on_window1_destroy(GtkObject * object, gpointer user_data)
     gtk_main_quit();
 }
 
+gint expose_event(GtkWidget *widget, GdkEvent *event, gpointer data)
+{
+  printf("pinta cual pintor"); fflush(stdout);
+  int i, j;
+  for(i = 0; i < pipeline->m_numero; ++i) {
+    for(j = 0; j < pipeline->m_elemento[i].m_numero_conexiones; ++j) {
+      gdk_draw_line (ww, gc, pipeline->m_elemento[i].m_widget->allocation.x,
+		     pipeline->m_elemento[i].m_widget->allocation.y, 
+		     500, 500);
+		     //pipeline->m_elemento[j].m_widget->allocation.x,
+		     //pipeline->m_elemento[j].m_widget->allocation.y);
+    }
+  }
+  //gdk_draw_line (ww, gc, 10, 20, 100, 20);
+  
+  return FALSE;
+}
+
+
 void on_window1_show(GtkWidget * widget, gpointer user_data)
 {
     status_bar = lookup_widget(window1, "statusbar1");
@@ -229,6 +251,12 @@ void on_window1_show(GtkWidget * widget, gpointer user_data)
     if (user_data != 0) {
 	abre((char *) user_data);
     }
+
+    GtkWidget *fixed = lookup_widget(window1, "fixed1");
+    ww = fixed->window;
+    gc = gdk_gc_new(ww);
+    gtk_signal_connect (GTK_OBJECT(fixed), "expose_event",
+			GTK_SIGNAL_FUNC(expose_event), NULL);
 }
 
 void on_propiedades1_activate(GtkMenuItem * menuitem, gpointer user_data)

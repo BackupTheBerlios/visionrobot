@@ -244,7 +244,7 @@ void guardar_como_aux(pipeline_t * pipeline, char *file,
     if (file != 0) {
 	guardar(pipeline, file);
 	strcpy(archivo, file);
-	modificado = FALSE;
+	*modificado = FALSE;
 	mostrar(GTK_STATUSBAR(status_bar), archivo, id);
 	gtk_widget_set_sensitive(lookup_widget(window1, "guardar2"),
 				 FALSE);
@@ -301,7 +301,6 @@ int parar_timer()
 
 void catch_alarm(int sig)
 {
-    //  g_print("jajajaj, funciona!!!!");
     haz_un_ciclo(pipeline);
     signal(sig, catch_alarm);
 }
