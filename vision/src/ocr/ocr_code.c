@@ -1,7 +1,8 @@
+
 /*! \file ocr_code.c
     \brief Implementación del ocr.
     \author Diego Sánchez
-    \version 0.1
+    \version 0.2
  */  
     
 /*
@@ -27,6 +28,7 @@
 #include <math.h>
 #include <values.h>
 #include <string.h>
+
 
 //---------------------------------------------------------------------------
 
@@ -384,7 +386,7 @@ const char* ocr_semantic_match(filtro_gestos_in_imagen_t* dibujo, pack_init_t* p
       freeConstellation(constelacion);
       return strdup(total);
     }
-    free(dibujo->m_imagen);  
+    free(dibujo->m_imagen);
     free(dibujo);
     freeConstellation(constelacion);
   }
@@ -392,17 +394,50 @@ const char* ocr_semantic_match(filtro_gestos_in_imagen_t* dibujo, pack_init_t* p
 }
 
 
+int ocr_save(const char* ruta, pack_init_t* packInit)
+{
+  char id;
+  int top,i,j,vali,k;
+  double val;
+  char* word;
+  FILE* archivo = fopen(ruta, "wb");
+  top= packInit->dataBase->m_top;
+  fwrite(&top, sizeof(int), 1, archivo);
+  for(i=0; i<top; i++){
+    id= packInit->dataBase->m_list[i]->m_id;
+    fwrite(&id, sizeof(char), 1, archivo);
+    for(j=0; j<NUMPTOS; j++){
+      val= packInit->dataBase->m_list[i]->m_list[j];
+      fwrite(&val, sizeof(double), 1, archivo);
+    }
+  }
+  for(i=0; i<NUMWORDS; i++){
+    vali= packInit->list[i];
+    fwrite(&vali, sizeof(int), 1, archivo);
+  }
+  for(i=0; i<NUMWORDS; i++){
+     for(j=0; j<packInit->list[i]; j++){
+        word= packInit->blocks[i][j];
+        for(k=0;k<i+1;k++){
+          fwrite(&word[k], sizeof(char), 1, archivo);
+        }
+     }
+  }
+  fclose(archivo);
+  return 0;
+}
+
+
 pack_init_t* ocr_init(const char* ruta)
 {
-  //Leer el archivo binario
   char c;
-  float d;
-  int num,ent,i,j;
+  double d;
+  int num,ent,i,j,k;
   char buffer[128];
   pack_init_t* out= (pack_init_t*)malloc(sizeof(pack_init_t));
   hexadecagon_t* hexadecagon;
-  FILE* archivo = fopen(ruta, "r");
-  fscanf(archivo,"%i\n",&num);
+  FILE* archivo = fopen(ruta, "rb");
+  fread(&num, sizeof(int), 1, archivo);
   out->dataBase= (constellation_t*)malloc(sizeof(constellation_t));
   out->dataBase->m_list= (hexadecagon_t**)malloc(sizeof(hexadecagon_t*)*num);
   out->dataBase->m_top=0;
@@ -410,27 +445,29 @@ pack_init_t* ocr_init(const char* ruta)
   out->blocks= (char***)malloc(sizeof(char**)*NUMWORDS);
   for(i=0; i<num; i++){
      hexadecagon= (hexadecagon_t*)malloc(sizeof(hexadecagon_t));
-     fscanf(archivo,"%c\n",&c);
+     fread(&c, sizeof(char), 1, archivo);
      hexadecagon->m_id=c;
      for(j=0; j<NUMPTOS; j++){
-       fscanf(archivo,"%f ",&d);
+       fread(&d, sizeof(double), 1, archivo);
        hexadecagon->m_list[j]= (float)d;
      }
-     fscanf(archivo,"\n");
      out->dataBase->m_list[out->dataBase->m_top]= hexadecagon;
      out->dataBase->m_top++;
   }
   for(i=0; i<NUMWORDS; i++){
-    fscanf(archivo,"%i\n",&ent);
+    fread(&ent, sizeof(int), 1, archivo);
     out->list[i]= ent;
     out->blocks[i]= (char**)malloc(sizeof(char*)*ent);
   }
-  i=j=0;
-  while(!feof(archivo)){
-    fscanf(archivo, "%s\n", buffer);
-    out->blocks[i][j]= strdup(buffer);
-    j++;
-    if(j>=out->list[i]){j=0; i++;}
+  for(i=0; i<NUMWORDS; i++){
+     for(j=0; j<out->list[i]; j++){
+        for(k=0; k<i+1; k++){
+           fread(&c,sizeof(char),1,archivo);
+           buffer[k]=c;
+        }
+        buffer[i+1]='\0';
+        out->blocks[i][j]= strdup(buffer);
+     }
   }
   fclose(archivo);
   return out;
@@ -451,3 +488,7 @@ int ocr_free_pack_init(pack_init_t* packInit)
   return 0;
 }
 
+
+
+
+ 
