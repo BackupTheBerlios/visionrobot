@@ -5,7 +5,7 @@
 
 void propiedades_modulo_cerrar(propiedades_modulo_t * propiedades_modulo_)
 {
-     gtk_widget_destroy(propiedades_modulo_->propiedades_modulo);
+  gtk_widget_destroy(propiedades_modulo_->propiedades_modulo);
     g_free(propiedades_modulo_);
 }
 

@@ -3,15 +3,9 @@
 
 #include <gtk/gtk.h>
 
-#include "pipeline.h"
+#include <pipeline.h>
 
 #define TAM_ARCHIVO 64
-
-typedef struct {
-    GtkWidget *m_widget;
-    gint m_x;
-    gint m_y;
-} botones_t;
 
 typedef struct {
     GtkWidget *window1;
@@ -74,7 +68,6 @@ typedef struct {
     guint m_timer;
     gboolean m_seguir_timer;
     guint m_retardo;
-    botones_t *botones;
 } ventana_principal_t;
 
 ventana_principal_t *ventana_principal_crear();

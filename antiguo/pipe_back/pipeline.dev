@@ -1,7 +1,7 @@
 [Project]
 FileName=pipeline.dev
 Name=pipeline
-UnitCount=13
+UnitCount=11
 Type=0
 Ver=1
 ObjFiles=
@@ -12,7 +12,7 @@ ResourceIncludes=
 MakeIncludes=
 Compiler=-mms-bitfields_@@_
 CppCompiler=
-Linker=../../Dev-Cpp/lib/libxml2.lib_@@_../../Dev-Cpp/lib/libgtk-win32-2.0.dll.a_@@_../../Dev-Cpp/lib/libglib-2.0.dll.a_@@_../../Dev-Cpp/lib/libgobject-2.0.dll.a_@@_../../Dev-Cpp/lib/libgdk_pixbuf-2.0.dll.a_@@_../../Dev-Cpp/lib/libgdk-win32-2.0.dll.a_@@_
+Linker=../../Dev-Cpp/lib/libgtk-win32-2.0.dll.a_@@_../../Dev-Cpp/lib/libglib-2.0.dll.a_@@_../../Dev-Cpp/lib/libgobject-2.0.dll.a_@@_../../Dev-Cpp/lib/libgdk_pixbuf-2.0.dll.a_@@_../../Dev-Cpp/lib/libgdk-win32-2.0.dll.a_@@_../../Dev-Cpp/lib/libpipeline.a_@@_../../Dev-Cpp/lib/libxml2.lib_@@_
 IsCpp=0
 Icon=pipeline.ico
 ExeOutput=
@@ -27,7 +27,7 @@ CustomMakefile=
 IncludeVersionInfo=1
 SupportXPThemes=0
 CompilerSet=0
-CompilerSettings=0000000000010101000000
+CompilerSettings=0000000000010001000000
 
 [Unit2]
 FileName=dialogo_abrir.h
@@ -80,7 +80,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit10]
-FileName=propiedades_modulo.c
+FileName=ventana_principal.c
 CompileCpp=0
 Folder=pipeline
 Compile=1
@@ -90,7 +90,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit11]
-FileName=propiedades_modulo.h
+FileName=ventana_principal.h
 CompileCpp=0
 Folder=pipeline
 Compile=1
@@ -188,7 +188,7 @@ ProductVersion=0.3.0
 AutoIncBuildNr=0
 
 [Unit9]
-FileName=pipeline.h
+FileName=propiedades_modulo.h
 CompileCpp=0
 Folder=pipeline
 Compile=1
@@ -218,7 +218,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit8]
-FileName=pipeline.c
+FileName=propiedades_modulo.c
 CompileCpp=0
 Folder=pipeline
 Compile=1

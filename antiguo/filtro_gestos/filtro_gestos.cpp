@@ -37,7 +37,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 
 
 int ciclo (){
-	buffer_out= filtro->Filtrar(buffer_in->m_imagen, buffer_in->m_alto ,buffer_in->m_ancho);
+	//buffer_out= filtro->Filtrar(buffer_in->m_imagen, buffer_in->m_alto ,buffer_in->m_ancho);
 	return 0;
 }
 int set_datos(const void * datos){
@@ -58,6 +58,7 @@ int iniciar() {
 	return 0;
 }
 int propiedades(){
+    PON_ERROR("Abriendo propiedades...\n");
   // Carlos -->
   if(abrir_preferencias(&opciones)) {
      filtro->SetColor(240,160,120,70,120,70,100,50,100,50,100,50);

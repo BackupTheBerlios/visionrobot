@@ -19,15 +19,15 @@ ExeOutput=
 ObjectOutput=
 OverrideOutput=0
 OverrideOutputName=filtro_gestos.dll
-HostApplication=
+HostApplication=C:\cvs\pipe\pipeline.exe
 Folders=
-CommandLine=
+CommandLine=c:\cvs\pipe\vision.xml
 UseCustomMakefile=0
 CustomMakefile=
 IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=0
-CompilerSettings=0000000000000000000000
+CompilerSettings=0000000000000001000000
 
 [Unit1]
 FileName=Codigo_Filtro.cpp
