@@ -58,3 +58,6 @@ int cerrar(){
       delete filtro;
 	return 0;
 }
+char * error() {
+  return 0;
+}

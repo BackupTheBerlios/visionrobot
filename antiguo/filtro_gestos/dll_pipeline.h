@@ -39,6 +39,11 @@ DLLEXPORT int propiedades() ;
 */
 DLLEXPORT int cerrar();
 
+/*! \brief Devuelve una cadena de error o información, para depurar
+    \return 0 si no hay que escribir nada, un puntero a char si hay información
+*/
+DLLEXPORT char * error();
+
 #endif
 
 

@@ -80,16 +80,6 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit6]
-FileName=filtro_gestos_vc.cpp
-CompileCpp=1
-Folder=filtro_gestos
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit7]
 FileName=preferencias.c
 CompileCpp=1
 Folder=filtro_gestos
@@ -99,8 +89,18 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit8]
+[Unit7]
 FileName=preferencias.h
+CompileCpp=1
+Folder=filtro_gestos
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit8]
+FileName=filtro_gestos.cpp
 CompileCpp=1
 Folder=filtro_gestos
 Compile=1
