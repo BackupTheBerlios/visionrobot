@@ -12,6 +12,7 @@ typedef struct {
     int m_tolerancia;
 } gestion_dato_t;
 
+
 static char *gestion_ciclo(modulo_t *modulo, const char *puerto, const void *entrada)
 {
   if(entrada) {
@@ -43,7 +44,9 @@ static char *gestion_ciclo(modulo_t *modulo, const char *puerto, const void *ent
              cont++;
            }
         }
-        dato->m_salida= actual;
+	// Aquí había dato->m_salida = actual, supongo que querías esto
+        strcpy(dato->m_salida, actual);
+
         g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, &dato->m_salida);
       }
     }
@@ -57,11 +60,13 @@ static char *gestion_ciclo(modulo_t *modulo, const char *puerto, const void *ent
 }
 
 static char *gestion_iniciar(modulo_t *modulo, GHashTable *argumentos) {
-  gestion_dato_t *dato = (gestion_dato_t *)modulo->m_dato;
-  g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, 0);
+   gestion_dato_t *dato = (gestion_dato_t *)modulo->m_dato;
+  g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, 0);  
 
-  char *argumento = g_hash_table_lookup(argumentos,"anterior");
-  strcpy(dato->m_anterior, argumento);
+  // Comento esto porque la estructura no tiene ningún m_anterior, tú
+  // sabrás si tienes que añadir m_argumento o quitar esta línea
+  //char *argumento = g_hash_table_lookup(argumentos,"anterior");
+  //strcpy(dato->m_anterior, argumento);
 
   dato->m_tolerancia = atoi(g_hash_table_lookup(argumentos,"tolerancia"));
   dato->m_historial = g_array_new (FALSE, FALSE, sizeof (char) * 128);
@@ -76,7 +81,8 @@ static char *gestion_iniciar(modulo_t *modulo, GHashTable *argumentos) {
 static char *gestion_cerrar(modulo_t *modulo)
 {
   gestion_dato_t *dato = (gestion_dato_t *)modulo->m_dato;
-  g_array_free(m_historial, TRUE);
+  // Aquí te he añadido el "dato->", que te faltaba
+  g_array_free(dato->m_historial, TRUE);
   free(dato);
   free(modulo);
   return "cerrado";

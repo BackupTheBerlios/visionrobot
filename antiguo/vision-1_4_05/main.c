@@ -7,17 +7,8 @@
 #include <string.h>
 
 static GladeXML* xml = 0;
-static guint timer = 3000;
 
-//#define OPCIONES_LINEA
-
-#ifdef OPCIONES_LINEA
-static GOptionEntry entries[] = {
-  { "timer", 't', 0, G_OPTION_ARG_INT, &timer, "Establece el intervalo del temporizador generador de ciclos, en milisegundos", "T" },
-  { NULL }
-};
-#endif
-
+#define OPCIONES_LINEA ((GLIB_MAJOR_VERSION==2 && GLIB_MINOR_VERSION >= 6) || (GLIB_MAJOR_VERSION>2))
 
 void funcion_error(const char *nombre, const char *textos) {
   if(xml && nombre && textos) {
@@ -44,8 +35,13 @@ gboolean tick(gpointer data)
 int main(int argc, char **argv)
 {
   int valor;
+  guint timer = 1000;
 
-#ifdef OPCIONES_LINEA
+#if OPCIONES_LINEA
+  const GOptionEntry entries[] = {
+    { "timer", 't', 0, G_OPTION_ARG_INT, &timer, "Establece el intervalo del temporizador generador de ciclos, en milisegundos", "T" },
+    { NULL }
+  };  
   GOptionContext* contexto = g_option_context_new (" <pipeline> - ejecuta un pipeline definido en un XML válido");
   g_option_context_add_main_entries (contexto, entries, 0);
   g_option_context_add_group (contexto, gtk_get_option_group (TRUE));
@@ -75,7 +71,7 @@ int main(int argc, char **argv)
     }
   }
 
-#ifdef OPCIONES_LINEA
+#if OPCIONES_LINEA
   g_option_context_free(contexto);
 #endif 
 

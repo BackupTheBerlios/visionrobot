@@ -16,9 +16,6 @@ typedef struct {
   char m_buffer_error[128];  
   char *m_error;
   char m_iniciado;
-  /*filtro_gestos_in_imagen_t m_buffer;
-    filtro_gestos_in_imagen_t m_salida;*/
-  ILuint m_id_captura;
   const char *m_iniciar;
   const char *m_filtrar;
   const char *m_parametros;
@@ -87,16 +84,12 @@ static char *filtro_ciclo(modulo_t *modulo, const char *puerto, const void *valu
 {
   dato_filtro_t * dato = (dato_filtro_t *)modulo->m_dato;
   char *aux = 0;
-  if (dato) {
+  if (value && dato) {
     if(!strcmp(puerto, PUERTO_IMAGEN)) {
       if(1 != dato->m_iniciado) {
 	dato->m_iniciado = 1;
 	filtro_gestos_in_imagen_t* imagen = (filtro_gestos_in_imagen_t *) value;
-	/*	dato->m_buffer.m_alto = dato->m_salida.m_alto = imagen->m_alto;
-		dato->m_buffer.m_ancho = dato->m_salida.m_ancho = imagen->m_ancho;
-		dato->m_buffer.m_imagen = imagen->m_imagen;
-		dato->m_buffer.m_bytes = dato->m_salida.m_bytes = imagen->m_bytes;*/
-	/*dato->m_salida.m_*/color_t *imagen_salida = (color_t *)malloc(sizeof(color_t) *
+	color_t *imagen_salida = (color_t *)malloc(sizeof(color_t) *
 						    imagen->m_ancho *
 						    imagen->m_alto *
 						    imagen->m_bytes) ;
@@ -107,19 +100,19 @@ static char *filtro_ciclo(modulo_t *modulo, const char *puerto, const void *valu
 			      imagen_salida, imagen->m_ancho, imagen->m_alto, imagen->m_bytes,
 			      &aux);
       }
-      else if(/*dato->m_buffer.m_imagen*/value) {
+      else {
 	// El filtro espera que la funcion de filtro le devuelva
 	// 0 si todo es negro
 	// 1 si no todo es negro
 	int color;
-	color_t *imagen;
+	filtro_gestos_in_imagen_t *imagen;
 	filtro_llamar_funcion(dato->m_lua, dato->m_filtrar, ">bsp", &color, &aux, &imagen);
 	GHashTable *tabla = modulo->m_tabla;
 	if(!color) {
 	  g_hash_table_insert(tabla, PUERTO_SALIDA, 0);
 	}
 	else {
-	  g_hash_table_insert(tabla, PUERTO_SALIDA, imagen/*&dato->m_salida*/);
+	  g_hash_table_insert(tabla, PUERTO_SALIDA, imagen);
 	}
 	dato->m_error = dato->m_buffer_error;
       }
@@ -133,15 +126,13 @@ static char *filtro_ciclo(modulo_t *modulo, const char *puerto, const void *valu
     }
     else if(!strcmp(puerto, PUERTO_PARAMETROS)) {
       filtro_gestos_in_parametros_t* parametros = (filtro_gestos_in_parametros_t*)value;
-      if(parametros) {
-	filtro_llamar_funcion(dato->m_lua, dato->m_parametros, "iiiiii>s",
-			      parametros->m_rojo_sup,
-			      parametros->m_rojo_inf,
-			      parametros->m_verde_sup,
-			      parametros->m_verde_inf,
-			      parametros->m_azul_sup,
-			      parametros->m_azul_inf, &aux);
-      }
+      filtro_llamar_funcion(dato->m_lua, dato->m_parametros, "iiiiii>s",
+			    parametros->m_rojo_sup,
+			    parametros->m_rojo_inf,
+			    parametros->m_verde_sup,
+			    parametros->m_verde_inf,
+			    parametros->m_azul_sup,
+			    parametros->m_azul_inf, &aux);
     }
     if(aux) {
       strcpy(dato->m_buffer_error, aux);
@@ -153,7 +144,7 @@ static char *filtro_ciclo(modulo_t *modulo, const char *puerto, const void *valu
     return dato->m_error;
   }
   else {
-    return "fallo en el filtro";
+    return 0;
   }
 }
 
@@ -329,15 +320,20 @@ static int filtro_gestos_centrar (lua_State *L) {
 
 static int filtro_gestos_rotar(lua_State * L) {
   filtro_gestos_in_imagen_t *a = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
+  ILfloat f =  (ILfloat)luaL_checkint(L, 2);
   ilBindImage(a->m_id);
-  ilLoadL(IL_RAW, a->m_imagen, a->m_ancho * a->m_alto * a->m_bytes);  
-  iluRotate(45.0f);
+  ILenum e;
+  ilLoadL(IL_RAW, a->m_imagen, a->m_ancho * a->m_alto * a->m_bytes);
+  while((e = ilGetError()) != IL_NO_ERROR) {
+    printf("normal, no te jode: id del error es %i.\n", e);
+  }
+  iluRotate(f);
   return 0;
 }
 
 static int filtro_gestos_difuminar (lua_State *L) {
   filtro_gestos_in_imagen_t *a = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
-  filtro_gestos_in_imagen_t *b = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 2);
+  filtro_gestos_in_imagen_t *b = (filtro_gestos_in_imagen_t*)lua_touserdata(L, 2);
   int parametro_difuminado = luaL_checkint(L, 3);
   int reduccion = luaL_checkint(L, 4);
   color_t m_rojoInf = (color_t)luaL_checkint(L, 5);
@@ -474,10 +470,6 @@ static char *filtro_iniciar(modulo_t *modulo, GHashTable *argumentos)
   dato->m_filtrar = g_hash_table_lookup(argumentos, "filtrar");
   dato->m_cerrar = g_hash_table_lookup(argumentos, "cerrar");
   dato->m_parametros = g_hash_table_lookup(argumentos, "parametros");
-  //  GHashTable *tabla = modulo->m_tabla;
-  /*  dato->m_salida.m_imagen = 0;
-      dato->m_buffer.m_imagen = 0;*/
-  //g_hash_table_insert(tabla, PUERTO_SALIDA, &dato->m_salida);
   ilInit();
   iluInit();
   return dato->m_buffer_error;;
@@ -485,11 +477,7 @@ static char *filtro_iniciar(modulo_t *modulo, GHashTable *argumentos)
 static char *filtro_cerrar(modulo_t *modulo)
 {
   dato_filtro_t * dato = (dato_filtro_t *)modulo->m_dato;
-  /*ilDeleteImages(dato->m_buffer->m_id);
-    ilDeleteImages(dato->m_salida->m_id);*/
-  //  color_t *imagen = 
   filtro_llamar_funcion(dato->m_lua, dato->m_cerrar, "");
-  //free(imagen);
   lua_close(dato->m_lua);
   free(dato);
   free(modulo);
