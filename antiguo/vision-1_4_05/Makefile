@@ -21,7 +21,7 @@ libgestion.so: gestion.c
 	gcc $(OPTS) -shared -o libgestion.so gestion.c `pkg-config glib-2.0 --cflags --libs`
 
 libfiltro_gestos.so: filtro_gestos.c
-	gcc $(OPTS) -I../include -shared -o libfiltro_gestos.so filtro_gestos.c -L../lib -lIL -lILU -llua -llualib `pkg-config glib-2.0 --cflags --libs`
+	gcc $(OPTS) -I../include -shared -o libfiltro_gestos.so filtro_gestos.c -llua -llualib `pkg-config glib-2.0 --cflags --libs`
 
 libred_neuronal.so: red.c red_neuronal.c
 	gcc $(OPTS) -shared -o libred_neuronal.so red.c red_neuronal.c `pkg-config glib-2.0 --cflags --libs`

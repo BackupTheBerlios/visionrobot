@@ -28,11 +28,13 @@
 #include <gmodule.h>
 
 typedef struct {
+  pipeline_t *m_pipeline;
   gboolean m_inicio;
   GModule * m_handler;
   modulo_t * m_modulo;
   GHashTable *m_argumentos;
   GHashTable *m_enlaces;
+  const char *m_nombre;
 } elemento_t;
 
 typedef struct {
@@ -45,14 +47,8 @@ struct pipeline_s {
   funcion_error_t m_funcion_error;
 };
 
-typedef struct {
-  pipeline_t *m_pipeline;
-  elemento_t *m_elemento;
-} pipeline_dato_t; 
-
-
-static void pipeline_salida_error(const pipeline_t *pipeline, const char *nombre, const char *texto) {
-    pipeline->m_funcion_error(nombre, texto);
+static void pipeline_salida_error(const pipeline_t *pipeline, const char *nombre, const char *nombre2, const char *texto) {
+    pipeline->m_funcion_error(nombre, nombre2, texto);
 }
 
 
@@ -70,19 +66,17 @@ static int  pipeline_set_ruta(pipeline_t* p, const char * elemento, const char *
       typedef modulo_t *(*funcion_modulo_t) ();
       funcion_modulo_t f;
       if(g_module_symbol(dato->m_handler, "get_modulo", (gpointer *)&f) != TRUE) {
-	pipeline_salida_error(p, "Bibliotecas", g_module_error());
 	dev = -1;
       }
       else {
 	dato->m_modulo = f ? f() : 0;
 	dato->m_modulo->m_tabla = g_hash_table_new(g_str_hash, g_str_equal);
-	pipeline_salida_error(p, "Bibliotecas", g_module_error());
       }
     }    
-    else {
-      pipeline_salida_error(p, "Bibliotecas", g_module_error());
+    else {      
       dev = -1;
     }
+    pipeline_salida_error(p, "Pipeline", "Bibliotecas", g_module_error());
   }
   else {
     dev = -1;
@@ -104,7 +98,13 @@ static void pipeline_borrar_cadena(gpointer a) {
 static void pipeline_cerrar_elemento(elemento_t *dato)
 {
   if (dato->m_modulo && dato->m_modulo->m_cerrar)   {
+    char *nombre = strdup(dato->m_modulo->m_nombre);
+    char *cadena = strdup(dato->m_modulo->m_cerrar(dato->m_modulo));    
     g_hash_table_destroy(dato->m_modulo->m_tabla);
+    pipeline_salida_error(dato->m_pipeline, dato->m_nombre, nombre,
+			  cadena);
+    free(cadena);
+    free(nombre);
   }
   if(dato->m_handler) {
     g_module_close(dato->m_handler);
@@ -118,6 +118,7 @@ static void pipeline_borrar_elemento(gpointer a) {
   pipeline_cerrar_elemento(dato);
   if(dato->m_argumentos) g_hash_table_destroy(dato->m_argumentos);
   if(dato->m_enlaces) g_hash_table_destroy(dato->m_enlaces);
+  free((char *)dato->m_nombre);
   free(dato);
 }
 
@@ -127,6 +128,8 @@ static pipeline_t * pipeline_annadir(pipeline_t * p, const char *nombre, const c
   dato->m_inicio = !strcmp(inicio, "1") ? TRUE : FALSE;
   dato->m_modulo = 0;
   dato->m_handler = 0;  
+  dato->m_nombre = strdup(nombre);
+  dato->m_pipeline = p;
   dato->m_argumentos = argumentos;
   g_hash_table_insert(p->m_modulos, (gpointer)nombre, (gpointer)dato);
   pipeline_set_ruta(p, nombre, ruta, dir);
@@ -230,19 +233,18 @@ static void pipeline_ciclo_recursivo(pipeline_t *p, elemento_t *e, const char *p
 static void pipeline_enviar(gpointer key, gpointer value, gpointer user_data) {
   conexion_t *conexion = (conexion_t*)value;
   char *puerto_salida = conexion->m_salida;
-  pipeline_dato_t *d = (pipeline_dato_t*)user_data;
+  elemento_t *d = (elemento_t *)user_data;
   elemento_t *destino = g_hash_table_lookup(d->m_pipeline->m_modulos, (char *)key);
-  void *dato = g_hash_table_lookup(d->m_elemento->m_modulo->m_tabla, puerto_salida);
+  void *dato = g_hash_table_lookup(d->m_modulo->m_tabla, puerto_salida);
   pipeline_ciclo_recursivo(d->m_pipeline, destino, conexion->m_puerto, dato);
 }
 static void pipeline_ciclo_recursivo(pipeline_t *p, elemento_t *e, const char *puerto_entrada, const void *dato_entrada)
 {
   if(e && e->m_modulo && e->m_modulo->m_ciclo) {
-    pipeline_salida_error(p, e->m_modulo->m_nombre,
+    pipeline_salida_error(p, e->m_nombre, e->m_modulo->m_nombre,
 			  e->m_modulo->m_ciclo(e->m_modulo, puerto_entrada, dato_entrada));
   }
-  pipeline_dato_t d = {p, e};
-  g_hash_table_foreach(e->m_enlaces, pipeline_enviar, &d);
+  g_hash_table_foreach(e->m_enlaces, pipeline_enviar, e);
 }
 static void pipeline_ciclo_pre(gpointer key, gpointer value, gpointer user_data) {
   elemento_t*e = (elemento_t*)value;
@@ -260,7 +262,7 @@ static void pipeline_iniciar_elemento(gpointer key, gpointer value, gpointer use
 {
   elemento_t *dato = (elemento_t*)value;
   if (dato->m_modulo && dato->m_modulo->m_iniciar) {
-    pipeline_salida_error((pipeline_t*)user_data, dato->m_modulo->m_nombre,
+    pipeline_salida_error((pipeline_t*)user_data, dato->m_nombre, dato->m_modulo->m_nombre,
 			  dato->m_modulo->m_iniciar(dato->m_modulo, dato->m_argumentos));
   }
 }

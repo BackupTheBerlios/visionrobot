@@ -17,9 +17,10 @@ gv -->
 	verbo,
 	gn.
 
+
 % Expresiones aritmeticas
 expresion(Z) --> 
-	termino(X), [s], expresion(Y), {Z is X + Y}.
+	termino(X), [+], expresion(Y), {Z is X + Y}.
 expresion(Z) -->
 	termino(X), [-], expresion(Y), {Z is X - Y}.
 expresion(Z) -->
@@ -37,9 +38,7 @@ factor(N) -->
 factor(N) -->
 	[-], factor(M), {N is - M}.
 factor(N) -->
-	[(], expresion(N), [)].
-factor(N) -->
-	[X].
+	[N], {member(N,[0,1,2,3,4,5,6,7,8,9])}.
 
 
 

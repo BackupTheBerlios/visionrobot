@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <glib.h>
 #include <string.h>
+#include <stdio.h>
 
 #define PUERTO_ENTRADA "entrada_red"
 #define PUERTO_SALIDA  "salida_texto"
@@ -15,13 +16,17 @@ typedef struct {
 
 static char *gestion_ciclo(modulo_t *modulo, const char *puerto, const void *entrada)
 {
+  return 0;
   if(entrada) {
+    //printf("gestion: puerto = %s\n", puerto);
     if(!strcmp(PUERTO_ENTRADA, puerto)) {
 
       const char *cadena = (const char *)entrada;
       gestion_dato_t *dato = (gestion_dato_t *)modulo->m_dato;
-
-      if(strcmp(entrada, "no_gesto") != 0){
+      //printf("gestion: cadena = %s\n", cadena);
+      // Te he cambiado esto, el strcmp. Cuando es igual, esto devuelve cero,
+      // tú lo tenías al revés
+      if(!strcmp(entrada, "no_gesto")){
         //Si la imagen tratada por la red, es reconocida como no_gesto, no se la pasa nada al modulo de salida
         //para que esta no escriba nada, y el ultimo gesto sea el q aun tenga validez.
         g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, 0);
@@ -60,7 +65,7 @@ static char *gestion_ciclo(modulo_t *modulo, const char *puerto, const void *ent
 }
 
 static char *gestion_iniciar(modulo_t *modulo, GHashTable *argumentos) {
-   gestion_dato_t *dato = (gestion_dato_t *)modulo->m_dato;
+  gestion_dato_t *dato = (gestion_dato_t *)modulo->m_dato;
   g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, 0);  
 
   // Comento esto porque la estructura no tiene ningún m_anterior, tú

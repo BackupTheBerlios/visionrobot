@@ -40,12 +40,14 @@ extern "C"  {
     
 #endif
 
-  /*! \brief Define una función de retrollamada que procesa un error. Esta función será llamada por el pipeline
-             para controlar los errores
-      \param nombre El causante del mensaje
+  /*! \brief Define una función de retrollamada que procesa un error.
+
+             Esta función será llamada por el pipeline para controlar los errores. La función debe aceptar que cualquiera de los parámetros sea 0.
+      \param nombre El causante del mensaje, generalmente el nombre del elemento
+      \param modulo El nombre del módulo
       \param texto El texto que define el mensaje
   */
-  typedef void (*funcion_error_t)(const char *nombre, const char *texto);
+  typedef void (*funcion_error_t)(const char *nombre, const char *modulo, const char *texto);
   
   /*! \brief La estructura de datos del pipeline. Es privada y dependiente de la implementación,
     para acceder a ella hay que usar los métodos provistos.

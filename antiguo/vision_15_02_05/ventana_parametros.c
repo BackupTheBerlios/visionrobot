@@ -4,7 +4,7 @@
           \section modulo Módulo
 	  Este módulo tiene como función el establecimiento de los parámetros del filtro, el color fundamental, y la tolerancia a errores de este. Está pensado para admitir un color. Funciona con GTK, por lo que el programa que lo instancie deberá iniciar previamente estas librerías.
 	  Funciona con el archivo "ventana_parametros.glade", que deberá estar en el mismo directorio.
-	  Para usar el módulo habrá que conectarlo a un módulo de filtros. Después elegir, pinchando en el botón de color, el color fundamental (puede ayudarse de la herramienta de cuentagotas para adquirir el color de la pantalla), y con la barra de desplazamiento establecer asimismo la tolerancia. El módulo envía al filtro una estructura con los valores elegidos.
+	  Para usar el módulo habrá que conectarlo a un módulo de filtros. Después elegir, pinchando en el botón de color, el color fundamental (puede ayudarse de la herramienta de cuentagotas para adquirir el color de la pantalla), y con la barra de desplazamiento establecer asimismo la tolerancia de cada color (rojo, verde y azul). El módulo envía al filtro una estructura con los valores elegidos.
 
 	  \section puertos Puertos
 	  El módulo no dispone de puertos de entrada, ya que es un módulo de inicio (debe especificarse en el XML con inicio="1"), y como salida tiene:
@@ -77,27 +77,38 @@ static guint16 ventana_parametros_incremento(double numero, double valor, double
 static color_t ventana_parametros_suma(guint16 color, gdouble porcentaje) {
   return ventana_parametros_int_to_char(ventana_parametros_incremento((double)MAX_GUINT, (double)color, porcentaje));
 }
-static void ventana_parametros_calcular_orden(filtro_gestos_in_parametros_t * parametros, GdkColor* color, gdouble porcentaje) {
-  parametros->m_rojo_sup = ventana_parametros_suma(color->red, porcentaje);
-  parametros->m_verde_sup = ventana_parametros_suma(color->green, porcentaje);
-  parametros->m_azul_sup = ventana_parametros_suma(color->blue, porcentaje);
-  parametros->m_rojo_inf = ventana_parametros_suma(color->red, -porcentaje);
-  parametros->m_verde_inf = ventana_parametros_suma(color->green, -porcentaje);
-  parametros->m_azul_inf = ventana_parametros_suma(color->blue, -porcentaje);
+static void ventana_parametros_calcular_orden(filtro_gestos_in_parametros_t * parametros, GdkColor* color,
+					      gdouble porcentaje_rojo, 
+					      gdouble porcentaje_verde,
+					      gdouble porcentaje_azul) {
+  parametros->m_rojo_sup = ventana_parametros_suma(color->red, porcentaje_rojo);
+  parametros->m_verde_sup = ventana_parametros_suma(color->green, porcentaje_verde);
+  parametros->m_azul_sup = ventana_parametros_suma(color->blue, porcentaje_azul);
+  parametros->m_rojo_inf = ventana_parametros_suma(color->red, -porcentaje_rojo);
+  parametros->m_verde_inf = ventana_parametros_suma(color->green, -porcentaje_verde);
+  parametros->m_azul_inf = ventana_parametros_suma(color->blue, -porcentaje_azul);
 }
 static void ventana_parametros_color_ordenes(GtkWidget *w) {
   GdkColor color;
   gtk_color_button_get_color(GTK_COLOR_BUTTON(ventana_parametros_get_widget(w, "bot_color_ordenes")), &color);
   ventana_parametros_dato_t *dato = ventana_parametros_get_dato(w);
   dato->m_cambio = 1;
-  gdouble valor = ventana_parametros_get_valor(w, "hsc_tolerancia_ordenes");
-  ventana_parametros_calcular_orden(&dato->m_filtro, &color, valor);
+  gdouble valor_rojo = ventana_parametros_get_valor(w, "hsc_tolerancia_rojo");
+  gdouble valor_verde = ventana_parametros_get_valor(w, "hsc_tolerancia_verde");
+  gdouble valor_azul = ventana_parametros_get_valor(w, "hsc_tolerancia_azul");
+  ventana_parametros_calcular_orden(&dato->m_filtro, &color, valor_rojo, valor_verde, valor_azul);
 }
 void on_bot_color_ordenes_color_set(GtkColorButton *widget, gpointer user_data){
   ventana_parametros_color_ordenes(GTK_WIDGET(widget));
 }
 
-void on_hsc_tolerancia_ordenes_value_changed(GtkRange *range, gpointer user_data){
+void on_hsc_tolerancia_rojo_value_changed(GtkRange *range, gpointer user_data){
+  ventana_parametros_color_ordenes(GTK_WIDGET(range));
+}
+void on_hsc_tolerancia_verde_value_changed(GtkRange *range, gpointer user_data){
+  ventana_parametros_color_ordenes(GTK_WIDGET(range));
+}
+void on_hsc_tolerancia_azul_value_changed(GtkRange *range, gpointer user_data){
   ventana_parametros_color_ordenes(GTK_WIDGET(range));
 }
 
@@ -115,27 +126,39 @@ static char *ventana_parametros_ciclo(modulo_t *modulo, const char *puerto, cons
 }
 
 static char *ventana_parametros_iniciar(modulo_t *modulo, GHashTable *argumentos) {
-  if (g_hash_table_size(argumentos) < 4) {
+  if (g_hash_table_size(argumentos) < 6) {
     return "faltan parametros";
   }
   ventana_parametros_dato_t *dato = (ventana_parametros_dato_t*)modulo->m_dato;
   dato->m_xml = glade_xml_new("ventana_parametros.glade", NULL, NULL);
   GtkWidget *ventana = glade_xml_get_widget(dato->m_xml, "win_parametros_filtro");
+
+  char *titulo = (char *)g_hash_table_lookup(argumentos, "titulo");
+  if(titulo) {
+    gtk_window_set_title(GTK_WINDOW(ventana), titulo);
+  }
   GtkWidget *color_ordenes = glade_xml_get_widget(dato->m_xml, "bot_color_ordenes");
-  GtkWidget *tolerancia_ordenes = glade_xml_get_widget(dato->m_xml, "hsc_tolerancia_ordenes");
+  GtkWidget *w_tolerancia_rojo = glade_xml_get_widget(dato->m_xml, "hsc_tolerancia_rojo");
+  GtkWidget *w_tolerancia_verde = glade_xml_get_widget(dato->m_xml, "hsc_tolerancia_verde");
+  GtkWidget *w_tolerancia_azul = glade_xml_get_widget(dato->m_xml, "hsc_tolerancia_azul");
   g_object_set_data(G_OBJECT(ventana), "modulo", (gpointer)modulo);
   glade_xml_signal_autoconnect(dato->m_xml);
   dato->m_cambio = 1;
   GdkColor color;
-  double tolerancia;
+  double tolerancia_rojo;
+  double tolerancia_verde;
+  double tolerancia_azul;
   color.red = ventana_parametros_char_to_int((color_t)atoi(g_hash_table_lookup(argumentos, "rojo")));
   color.green = ventana_parametros_char_to_int((color_t)atoi(g_hash_table_lookup(argumentos, "verde")));
   color.blue = ventana_parametros_char_to_int((color_t)atoi(g_hash_table_lookup(argumentos, "azul")));
-  tolerancia = atof(g_hash_table_lookup(argumentos, "tolerancia"));
+  tolerancia_rojo = atof(g_hash_table_lookup(argumentos, "tolerancia_rojo"));
+  tolerancia_verde = atof(g_hash_table_lookup(argumentos, "tolerancia_verde"));
+  tolerancia_azul = atof(g_hash_table_lookup(argumentos, "tolerancia_azul"));
   gtk_color_button_set_color(GTK_COLOR_BUTTON(color_ordenes), &color);
-  gtk_range_set_value(GTK_RANGE(tolerancia_ordenes), (gdouble)tolerancia);
-
-  ventana_parametros_calcular_orden(&dato->m_filtro, &color, tolerancia);
+  gtk_range_set_value(GTK_RANGE(w_tolerancia_rojo), (gdouble)tolerancia_rojo);
+  gtk_range_set_value(GTK_RANGE(w_tolerancia_verde), (gdouble)tolerancia_verde);
+  gtk_range_set_value(GTK_RANGE(w_tolerancia_azul), (gdouble)tolerancia_azul);
+  ventana_parametros_calcular_orden(&dato->m_filtro, &color, tolerancia_rojo, tolerancia_verde, tolerancia_azul);
 
   return "iniciado";
 }

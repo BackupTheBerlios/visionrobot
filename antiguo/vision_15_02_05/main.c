@@ -10,11 +10,13 @@ static GladeXML* xml = 0;
 
 #define OPCIONES_LINEA ((GLIB_MAJOR_VERSION==2 && GLIB_MINOR_VERSION >= 6) || (GLIB_MAJOR_VERSION>2))
 
-void funcion_error(const char *nombre, const char *textos) {
-  if(xml && nombre && textos) {
+void funcion_error(const char *nombre, const char *modulo, const char *textos) {
+  if(xml && nombre && textos && modulo) {
     GString *valor = g_string_new("");
-    g_string_sprintf(valor, "%s: %s\n", strdup(nombre), strdup(textos));
-    printf("%s: %s\n", nombre, textos);
+    g_string_sprintf(valor, "%s [%s]: %s\n", strdup(nombre), strdup(modulo), strdup(textos));
+    // Sacar la salida por pantalla hace fácil redirigir el resultado de depuración
+    // a un archivo de texto: pipeline --timer=500 vision.xml > vision.log
+    printf("%s", valor->str);
     GtkWidget* texto =  glade_xml_get_widget(xml, "txt_error");
     GtkTextIter iter;
     GtkTextBuffer * buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(texto));
