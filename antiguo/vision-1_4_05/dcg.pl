@@ -6,7 +6,31 @@ sintactico(S) -->
 	expresion(S).
 
 % Transforma una cadena de caracteres en un lista
-lexico(E, L).
+
+token([[N] | CS], [N], CS) :-
+	number(N).
+
+token([[+] | CS], [+], CS).
+
+token([[-] | CS], [-], CS).
+
+token([[/] | CS], [/], CS).
+
+token([[*] | CS], [*], CS).
+
+haz_token([], []).
+
+haz_token(C, [[ ] | TS]) :-
+	!,
+	haz_token(C, TS).
+
+haz_token(C, [T | TS]) :-
+	token(C, T, CS),
+	haz_token(CS, TS).
+
+
+lexico(E, L) :-
+	haz_token(E, L).
 
 % Expresiones aritmeticas
 expresion(Z) --> 
