@@ -9,15 +9,24 @@
 	(red_neuronal_in_t *) malloc(sizeof(red_neuronal_in_t));
     filtro->m_salida->m_orden = 0;
     filtro->m_salida->m_tipo_orden = 0;
+    filtro->m_orden_param = 0;
+    filtro->m_tipo_orden = 0;
     return filtro;
 }
 void filtro_gestos_borrar(filtro_t ** filtro)
 {
-    if (filtro && (*filtro)) {
-	free(*filtro);
-	free((*filtro)->m_salida);
-	*filtro = 0;
+  filtro_t *p_filtro = *filtro;
+  if (filtro && p_filtro) {
+    free(p_filtro);
+    free(p_filtro->m_salida);
+    if(p_filtro->m_orden_param) {
+      free(p_filtro->m_orden_param);
     }
+    if(p_filtro->m_tipo_orden) {
+      free(p_filtro->m_tipo_orden);
+    }
+    *filtro = 0;
+  }
 }
 
 red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro)
@@ -47,21 +56,27 @@ red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro)
     //DELETEME
     //    printf("FILTRO termina valiendo %p.\n", filtro);
 
-    if(filtro->m_salida->m_orden) {
+    //if(filtro->m_salida->m_orden) {
       //free(filtro->m_salida->m_orden);
-    }
+    //}
     //DELETEME
     //printf("FILTRO tras borrar orden: %p.\n", filtro);
 
-    if(filtro->m_salida->m_tipo_orden) {
+    //    if(filtro->m_salida->m_tipo_orden) {
       //free(filtro->m_salida->m_tipo_orden);
-    }
+    //}
     //DELETEME
     //printf("FILTRO tras borrar tipo orden: %p.\n", filtro);
 
 
-    color_t *tipo_orden = (color_t *) malloc(sizeof(color_t) * h * w * bytes);
-    color_t *orden = (color_t *) malloc(sizeof(color_t) * h * w * bytes);
+    if(!filtro->m_tipo_orden) {
+      filtro->m_tipo_orden = (color_t *) malloc(sizeof(color_t) * h * w * bytes);
+    }
+    if(!filtro->m_orden_param) {
+      filtro->m_orden_param = (color_t *) malloc(sizeof(color_t) * h * w * bytes);
+    }
+    color_t *tipo_orden = filtro->m_tipo_orden;//(color_t *) malloc(sizeof(color_t) * h * w * bytes);
+    color_t *orden = filtro->m_orden_param;//(color_t *) malloc(sizeof(color_t) * h * w * bytes);
     int cont, cont2, acX, acX2, acY, acY2, posY;
     cont = cont2 = acX = acX2 = acY = acY2 = 0;
     int y, x, j, i;

@@ -25,33 +25,41 @@ typedef struct {
 } datos_ventana_t;
 
 
-static GdkPixbuf *ventana_get_pixbuf(modulo_t * modulo) {
+static GdkPixbuf *ventana_get_pixbuf(modulo_t * modulo) {  
   datos_ventana_t * datos = (datos_ventana_t *)modulo->m_dato;
+  if(datos->m_imagen->m_imagen) {
 
-  GdkPixbuf * pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB,
-				      FALSE, 8,datos->m_imagen->m_ancho, datos->m_imagen->m_alto);
-  guchar * p = gdk_pixbuf_get_pixels (pixbuf);
-  guchar * b = datos->m_imagen->m_imagen;
-  
-  
-  int ancho_for = datos->m_imagen->m_ancho * datos->m_imagen->m_bytes;
-  int i, j;
-  for(j = 0; j < datos->m_imagen->m_alto; ++j) {
-    char * aux = &p[(j + 1) * ancho_for]; 
-    for(i = 0; i < ancho_for; ++i) {
-      *--aux = *b++;      
+    GdkPixbuf * pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB,
+					FALSE, 8,datos->m_imagen->m_ancho, datos->m_imagen->m_alto);
+    guchar * p = gdk_pixbuf_get_pixels (pixbuf);
+    guchar * b = datos->m_imagen->m_imagen;
+    
+    
+    int ancho_for = datos->m_imagen->m_ancho * datos->m_imagen->m_bytes;
+    int i, j;
+    for(j = 0; j < datos->m_imagen->m_alto; ++j) {
+      char * aux = &p[(j + 1) * ancho_for]; 
+      for(i = 0; i < ancho_for; ++i) {
+	*--aux = *b++;      
+      }
     }
+    return pixbuf;
   }
-  return pixbuf;
+  else {
+    return 0;
+  }
 }
 
 gboolean ventana_foto(GtkWidget *w, GdkEventKey *event, gpointer data) {
   modulo_t *modulo = (modulo_t *)data;
   datos_ventana_t *datos = (datos_ventana_t *)modulo->m_dato;
   if(event->keyval == GDK_F5) {
-    gdk_pixbuf_save(ventana_get_pixbuf(modulo),
-		    datos->nombre_foto,
-		    datos->extension, 0, 0);
+    GdkPixbuf *pixbuf = ventana_get_pixbuf(modulo);
+    if(pixbuf) {
+      gdk_pixbuf_save(pixbuf,
+		      datos->nombre_foto,
+		      datos->extension, 0, 0);
+    }
   }
   return FALSE;
 }

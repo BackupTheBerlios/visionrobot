@@ -13,7 +13,7 @@
 
 
 typedef struct {
-  filtro_gestos_in_t *m_filtro;
+  filtro_gestos_in_t m_filtro;
   ventana_imagen_in_t m_imagen;
   unsigned char m_rojo;
   unsigned char m_verde;
@@ -25,7 +25,7 @@ typedef struct {
 static void imagenes_generar_imagen(modulo_t *modulo) {
   int i, j;
   dato_imagenes_t *dato = (dato_imagenes_t*)modulo->m_dato;
-  filtro_gestos_in_t* imagen = (filtro_gestos_in_t*)dato->m_filtro;
+  filtro_gestos_in_t* imagen = (filtro_gestos_in_t*)&dato->m_filtro;
 
   if(dato->m_aleatorio) {
     for(i = 0; i < imagen->m_dato.imagen.m_alto; i++) {
@@ -56,7 +56,7 @@ static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
 {
   if(g_hash_table_size(argumentos) < 3) return "faltan parametros";
   dato_imagenes_t *dato = (dato_imagenes_t*)modulo->m_dato;
-  filtro_gestos_in_t* imagen = dato->m_filtro;
+  filtro_gestos_in_t* imagen = &dato->m_filtro;
 
   char * rojo = g_hash_table_lookup(argumentos,"rojo");
   char * verde = g_hash_table_lookup(argumentos,"verde");
@@ -95,9 +95,9 @@ static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
 static char *imagenes_cerrar(modulo_t* modulo)
 {
   dato_imagenes_t *dato = (dato_imagenes_t*)modulo->m_dato;
-  filtro_gestos_in_t* imagen = dato->m_filtro;
+  filtro_gestos_in_t* imagen = &dato->m_filtro;
   free(imagen->m_dato.imagen.m_imagen);
-  free(imagen);
+  //  free(imagen);
   free(dato);
   free(modulo);
   return "cerrado";
@@ -112,6 +112,6 @@ modulo_t * get_modulo()
   modulo->m_cerrar = imagenes_cerrar;
   modulo->m_ciclo = imagenes_ciclo;
   modulo->m_dato = (dato_imagenes_t*)malloc(sizeof(dato_imagenes_t));  
-  ((dato_imagenes_t*)modulo->m_dato)->m_filtro = (filtro_gestos_in_t*)malloc(sizeof(filtro_gestos_in_t));  
+  //  ((dato_imagenes_t*)modulo->m_dato)->m_filtro = (filtro_gestos_in_t*)malloc(sizeof(filtro_gestos_in_t));  
   return modulo;
 }

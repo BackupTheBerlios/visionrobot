@@ -1,11 +1,16 @@
 <?xml version="1.0"?>
 
 <!--
+TODO: esta DTD está incompleta, lo de conexion/ sale mal
 DTD para los archivos descriptores de un pipeline
 -->
 
-<!ELEMENT pipeline (modulo+)>
-<!ELEMENT modulo (argumento*, modulo*)>
+<!ELEMENT pipeline (modulo+, conexion*)>
+<!ELEMENT modulo (argumento*)>
 <!ELEMENT argumento (#PCDATA)>
-<!ATTLIST modulo ruta CDATA #REQUIRED>
+<!ELEMENT conexion EMPTY>
+<!ATTLIST conexion origen CDATA #REQUIRED
+                   destino CDATA #REQUIRED>
+<!ATTLIST modulo ruta CDATA #REQUIRED
+                 nombre CDATA #REQUIRED>
 <!ATTLIST argumento tipo CDATA #REQUIRED>

@@ -16,7 +16,7 @@ static GtkWidget *ventana_parametros_get_widget(GtkWidget *w, const char *nombre
   return glade_xml_get_widget(xml, nombre);
 }
 
-static ventana_parametros_dato_t *get_dato(GtkWidget *w) {
+static ventana_parametros_dato_t *ventana_parametros_get_dato(GtkWidget *w) {
   GtkWidget *ventana = ventana_parametros_get_widget(w, "win_parametros_filtro");
   modulo_t * modulo = g_object_get_data(G_OBJECT(ventana), "modulo");
   ventana_parametros_dato_t *dato = (ventana_parametros_dato_t*)modulo->m_dato;
@@ -28,41 +28,60 @@ static gdouble ventana_parametros_get_valor(GtkWidget *w, const char *nombre) {
   return gtk_range_get_value(GTK_RANGE(scroll_ordenes));
 }
 
+guint16 ventana_parametros_char_to_int(color_t color) {
+  return color * 65535 / 255;
+}
+
+color_t ventana_parametros_int_to_char(guint16 color) {
+  return color * 255 / 65535;
+}
+
 static int ventana_parametros_incremento(int valor, double porcentaje) {
  return floor(((float)valor) * porcentaje / 100.0f);
+}
+
+static void ventana_parametros_get_colores(GdkColor *color, gdouble tolerancia, int *inc_rojo, int *inc_verde, int *inc_azul) {
+  *inc_rojo = ventana_parametros_incremento(color->red, tolerancia);
+  *inc_verde = ventana_parametros_incremento(color->green, tolerancia);
+  *inc_azul = ventana_parametros_incremento(color->blue, tolerancia);  
+}
+
+static void ventana_parametros_calcular_orden(filtro_gestos_in_parametros_t * parametros, GdkColor* color, gdouble valor) {
+  int inc_rojo, inc_verde, inc_azul;
+  ventana_parametros_get_colores(color, valor, &inc_rojo, &inc_verde, &inc_azul);
+  parametros->m_rojo_sup_orden = ventana_parametros_int_to_char(color->red + inc_rojo);
+  parametros->m_verde_sup_orden = ventana_parametros_int_to_char(color->green + inc_verde);
+  parametros->m_azul_sup_orden = ventana_parametros_int_to_char(color->blue + inc_azul);
+  parametros->m_rojo_inf_orden = ventana_parametros_int_to_char(color->red - inc_rojo);
+  parametros->m_verde_inf_orden = ventana_parametros_int_to_char(color->green - inc_verde);
+  parametros->m_azul_inf_orden = ventana_parametros_int_to_char(color->blue - inc_azul);
+}
+
+static void ventana_parametros_calcular_param(filtro_gestos_in_parametros_t * parametros, GdkColor* color, gdouble valor) {
+  int inc_rojo, inc_verde, inc_azul;
+  ventana_parametros_get_colores(color, valor, &inc_rojo, &inc_verde, &inc_azul);
+  parametros->m_rojo_sup_param = ventana_parametros_int_to_char(color->red + inc_rojo);
+  parametros->m_verde_sup_param = ventana_parametros_int_to_char(color->green + inc_verde);
+  parametros->m_azul_sup_param = ventana_parametros_int_to_char(color->blue + inc_azul);
+  parametros->m_rojo_inf_param = ventana_parametros_int_to_char(color->red - inc_rojo);
+  parametros->m_verde_inf_param = ventana_parametros_int_to_char(color->green - inc_verde);
+  parametros->m_azul_inf_param = ventana_parametros_int_to_char(color->blue - inc_azul);
 }
 
 static void ventana_parametros_color_ordenes(GtkWidget *w) {
   GdkColor color;
   gtk_color_button_get_color(GTK_COLOR_BUTTON(ventana_parametros_get_widget(w, "bot_color_ordenes")), &color);
-  ventana_parametros_dato_t *dato = get_dato(w);
+  ventana_parametros_dato_t *dato = ventana_parametros_get_dato(w);
   gdouble valor = ventana_parametros_get_valor(w, "hsc_tolerancia_ordenes");
-  int inc_rojo = ventana_parametros_incremento(color.red, valor);
-  int inc_verde = ventana_parametros_incremento(color.green, valor);
-  int inc_azul = ventana_parametros_incremento(color.blue, valor);
-  dato->m_filtro.m_dato.parametros.m_rojo_sup_orden = color.red + inc_rojo;
-  dato->m_filtro.m_dato.parametros.m_verde_sup_orden = color.green + inc_verde;
-  dato->m_filtro.m_dato.parametros.m_azul_sup_orden = color.blue + inc_azul;
-  dato->m_filtro.m_dato.parametros.m_rojo_inf_orden = color.red - inc_rojo;
-  dato->m_filtro.m_dato.parametros.m_verde_inf_orden = color.green - inc_verde;
-  dato->m_filtro.m_dato.parametros.m_azul_inf_orden = color.blue - inc_azul;
+  ventana_parametros_calcular_orden(&dato->m_filtro.m_dato.parametros, &color, valor);
 }
 
 static void ventana_parametros_color_parametros(GtkWidget *w) {
   GdkColor color;
-  gtk_color_button_get_color(GTK_COLOR_BUTTON(ventana_parametros_get_widget(w, "bot_color_ordenes")), &color);
-  ventana_parametros_dato_t *dato = get_dato(w);
-  gdouble valor = ventana_parametros_get_valor(w, "hsc_tolerancia_ordenes");
-  int inc_rojo = ventana_parametros_incremento(color.red, valor);
-  int inc_verde = ventana_parametros_incremento(color.green, valor);
-  int inc_azul = ventana_parametros_incremento(color.blue, valor);
-  dato->m_filtro.m_dato.parametros.m_rojo_sup_param = color.red + inc_rojo;
-  dato->m_filtro.m_dato.parametros.m_verde_sup_param = color.green + inc_verde;
-  dato->m_filtro.m_dato.parametros.m_azul_sup_param = color.blue + inc_azul;
-  dato->m_filtro.m_dato.parametros.m_rojo_inf_param = color.red - inc_rojo;
-  dato->m_filtro.m_dato.parametros.m_verde_inf_param = color.green - inc_verde;
-  dato->m_filtro.m_dato.parametros.m_azul_inf_param = color.blue - inc_azul;
-
+  gtk_color_button_get_color(GTK_COLOR_BUTTON(ventana_parametros_get_widget(w, "bot_color_parametros")), &color);
+  ventana_parametros_dato_t *dato = ventana_parametros_get_dato(w);
+  gdouble valor = ventana_parametros_get_valor(w, "hsc_tolerancia_parametros");
+  ventana_parametros_calcular_param(&dato->m_filtro.m_dato.parametros, &color, valor);
 }
 
 void on_bot_color_ordenes_color_set(GtkColorButton *widget, gpointer user_data){
@@ -81,35 +100,48 @@ void on_hsc_tolerancia_parametros_value_changed(GtkRange *range, gpointer user_d
   ventana_parametros_color_parametros(GTK_WIDGET(range));
 }
 
-static char *ventana_parametros_ciclo(modulo_t *modulo, char tipo, GHashTable *lista)
-{
+static char *ventana_parametros_ciclo(modulo_t *modulo, char tipo, GHashTable *lista){
   return 0;
 }
 
+
+
 static char *ventana_parametros_iniciar(modulo_t *modulo, GHashTable *argumentos) {
-  if (g_hash_table_size(argumentos) < 12) {
+  if (g_hash_table_size(argumentos) < 8) {
     return "faltan parametros";
   }
   ventana_parametros_dato_t *dato = (ventana_parametros_dato_t*)modulo->m_dato;
   dato->m_xml = glade_xml_new("ventana_parametros.glade", NULL, NULL);
   GtkWidget *ventana = glade_xml_get_widget(dato->m_xml, "win_parametros_filtro");
+  GtkWidget *color_ordenes = glade_xml_get_widget(dato->m_xml, "bot_color_ordenes");
+  GtkWidget *color_parametros = glade_xml_get_widget(dato->m_xml, "bot_color_parametros");
+  GtkWidget *tolerancia_ordenes = glade_xml_get_widget(dato->m_xml, "hsc_tolerancia_ordenes");
+  GtkWidget *tolerancia_parametros = glade_xml_get_widget(dato->m_xml, "hsc_tolerancia_parametros");
   g_object_set_data(G_OBJECT(ventana), "modulo", (gpointer)modulo);
   glade_xml_signal_autoconnect(dato->m_xml);
   dato->m_filtro.m_tipo = PIPELINE_FILTRO_GESTOS_PARAMETROS;
   g_hash_table_insert(modulo->m_tabla, GINT_TO_POINTER(PIPELINE_FILTRO_GESTOS), &dato->m_filtro);
-  dato->m_filtro.m_dato.parametros.m_rojo_sup_orden = (unsigned char)atoi(g_hash_table_lookup(argumentos, "orden_superior_rojo"));
-  dato->m_filtro.m_dato.parametros.m_rojo_inf_orden = (unsigned char)atoi(g_hash_table_lookup(argumentos, "orden_inferior_rojo"));
-  dato->m_filtro.m_dato.parametros.m_verde_sup_orden = (unsigned char)atoi(g_hash_table_lookup(argumentos, "orden_superior_verde"));
-  dato->m_filtro.m_dato.parametros.m_verde_inf_orden = (unsigned char)atoi(g_hash_table_lookup(argumentos, "orden_inferior_verde"));
-  dato->m_filtro.m_dato.parametros.m_azul_sup_orden = (unsigned char)atoi(g_hash_table_lookup(argumentos, "orden_superior_azul"));
-  dato->m_filtro.m_dato.parametros.m_azul_inf_orden = (unsigned char)atoi(g_hash_table_lookup(argumentos, "orden_inferior_azul"));
-  dato->m_filtro.m_dato.parametros.m_rojo_sup_param = (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_superior_rojo"));
-  dato->m_filtro.m_dato.parametros.m_rojo_inf_param = (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_inferior_rojo"));
-  dato->m_filtro.m_dato.parametros.m_verde_sup_param = (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_superior_verde"));
-  dato->m_filtro.m_dato.parametros.m_verde_inf_param = (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_inferior_verde"));
-  dato->m_filtro.m_dato.parametros.m_azul_sup_param = (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_superior_azul"));
-  dato->m_filtro.m_dato.parametros.m_azul_inf_param = (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_inferior_azul"));
-  
+
+  GdkColor color;
+  double tolerancia;
+  color.red = ventana_parametros_char_to_int((color_t)atoi(g_hash_table_lookup(argumentos, "orden_rojo")));
+  color.green = ventana_parametros_char_to_int((color_t)atoi(g_hash_table_lookup(argumentos, "orden_verde")));
+  color.blue = ventana_parametros_char_to_int((color_t)atoi(g_hash_table_lookup(argumentos, "orden_azul")));
+  tolerancia = atof(g_hash_table_lookup(argumentos, "orden_tolerancia"));
+  gtk_color_button_set_color(GTK_COLOR_BUTTON(color_ordenes), &color);
+  gtk_range_set_value(GTK_RANGE(tolerancia_ordenes), (gdouble)tolerancia);
+
+  ventana_parametros_calcular_orden(&dato->m_filtro.m_dato.parametros, &color, tolerancia);
+
+  color.red = ventana_parametros_char_to_int((color_t)atoi(g_hash_table_lookup(argumentos, "param_rojo")));
+  color.green = ventana_parametros_char_to_int((color_t)atoi(g_hash_table_lookup(argumentos, "param_verde")));
+  color.blue = ventana_parametros_char_to_int((color_t)atoi(g_hash_table_lookup(argumentos, "param_azul")));
+  tolerancia = atof(g_hash_table_lookup(argumentos, "param_tolerancia"));
+  gtk_color_button_set_color(GTK_COLOR_BUTTON(color_parametros), &color);
+  gtk_range_set_value(GTK_RANGE(tolerancia_parametros), (gdouble)tolerancia);
+
+  ventana_parametros_calcular_param(&dato->m_filtro.m_dato.parametros, &color, tolerancia);
+
   return "iniciado";
 }
 
