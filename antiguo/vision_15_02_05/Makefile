@@ -1,6 +1,6 @@
 OPTS=-Wall -g
 
-all: etags libsalida.so libfiltro_gestos.so libred_neuronal.so libimagenes.so libventana_imagen.so libventana_parametros.so pipeline libprolog.so libgestion.so
+all: libsalida.so libfiltro_gestos.so libred_neuronal.so libimagenes.so libventana_imagen.so libventana_parametros.so pipeline libprolog.so libgestion.so
 
 etags:	
 	etags *.c
