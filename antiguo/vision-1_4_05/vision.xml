@@ -18,20 +18,18 @@
       <argumento tipo="param_superior_azul">210</argumento>
       <argumento tipo="param_inferior_azul">5</argumento>
       <modulo ruta="/home/carlos/vision/ventana_imagen.so">
-	<argumento tipo="ancho">320</argumento>
-	<argumento tipo="alto">240</argumento>
+	<argumento tipo="nombre_foto">filtro</argumento>
       </modulo>
-<!--
+      
       <modulo ruta="/home/carlos/vision/red_neuronal.so">
 	<argumento tipo="archivo">/home/carlos/vision/orden.net</argumento>
 	<modulo ruta="/home/carlos/vision/salida.so">
 	  <argumento tipo="texto">Visión por computador</argumento>
 	</modulo>
-      </modulo> -->
+      </modulo>
     </modulo>
     <modulo ruta="/home/carlos/vision/ventana_imagen.so">
-      <argumento tipo="ancho">320</argumento>
-      <argumento tipo="alto">240</argumento>
+      <argumento tipo="nombre_foto">imagen</argumento>
     </modulo>
   </modulo>
 </pipeline>
