@@ -2,30 +2,27 @@
 #define _PIPELINE_SDK_H_
 
 #ifdef __cplusplus
-extern "C"  {
-    
-#endif	/*  */
-    
-	/*#ifdef WIN32
-	   #define DLLEXPORT __declspec (dllexport)
-	   #else
-	   #define DLLEXPORT
-	   #endif
-	 */ 
-     typedef struct {
-	 /*DLLEXPORT*/ char *m_nombre;
-	 /*DLLEXPORT*/ char m_error[128];
-	 /*DLLEXPORT*/ char *(*m_iniciar) (int argc, const char **argv);
-	 /*DLLEXPORT*/ char *(*m_ciclo) (const void *in, void **out);
-	 /*DLLEXPORT*/ char *(*m_cerrar) ();
-    } modulo_t;
-      typedef modulo_t *(*funcion_get_modulo) ();
-     modulo_t * get_modulo();
-      void __attribute__ ((constructor)) init(void);
-    void __attribute__ ((destructor)) fini(void);
-    
+extern "C"  {
+#endif
+
+  typedef struct {
+    char m_tipo;
+    void *m_dato;
+  } pipeline_dato_t;  
+
+  typedef struct modulo_s{
+    char *m_nombre;
+    void *m_dato;
+    char *(*m_iniciar) (struct modulo_s* modulo, int argc, const char **argv);
+    char *(*m_ciclo) (struct modulo_s* modulo, const pipeline_dato_t *in, pipeline_dato_t *out);
+    char *(*m_cerrar) (struct modulo_s* modulo);
+  } modulo_t;  
+  
+  modulo_t * get_modulo();
+
+  
 #ifdef __cplusplus
 } 
-#endif	/*  */
+#endif
 
-#endif				//_PIPELINE_SDK_H_
+#endif

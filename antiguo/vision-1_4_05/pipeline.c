@@ -55,7 +55,7 @@ int  pipeline_cerrar_biblioteca(elemento_t * elemento)
     if (elemento->m_modulo && elemento->m_modulo->m_cerrar)
 	 {
 	pipeline_salida_error(elemento->m_modulo->m_nombre,
-			       elemento->m_modulo->m_cerrar());
+			       elemento->m_modulo->m_cerrar(elemento->m_modulo));
 	}
     pipeline_free_library(elemento->m_handler);
     elemento->m_modulo = 0;
@@ -186,15 +186,15 @@ elemento_t * pipeline_cargar(const char *ruta)
     xmlFreeDoc(doc);
     return elemento;
 }
-int  pipeline_ciclo(const elemento_t * elemento, const void *dato) 
+int  pipeline_ciclo(const elemento_t * elemento, const pipeline_dato_t *dato) 
 {
-    void *arg = 0;
+    pipeline_dato_t arg = {0, 0};
     int i;
     if (elemento->m_modulo && elemento->m_modulo->m_ciclo) {
-	char *error = elemento->m_modulo->m_ciclo(dato, &arg);
+	char *error = elemento->m_modulo->m_ciclo(elemento->m_modulo, dato, &arg);
 	pipeline_salida_error(elemento->m_modulo->m_nombre, error);
 	for (i = 0; i < elemento->m_numero_conexiones; ++i) {
-	    pipeline_ciclo(elemento->m_destino[i], arg);
+	    pipeline_ciclo(elemento->m_destino[i], &arg);
 	}
     }
     return 0;
@@ -203,7 +203,8 @@ int  pipeline_iniciar(const elemento_t * elemento)
 {
     if (elemento->m_modulo && elemento->m_modulo->m_iniciar) {
 	pipeline_salida_error(elemento->m_modulo->m_nombre,
-			       elemento->m_modulo->m_iniciar(elemento->
+			       elemento->m_modulo->m_iniciar(elemento->m_modulo, 
+							     elemento->
 							      m_numero_argumentos,
 							      (const char
 								**)
@@ -255,7 +256,7 @@ pipeline_set_argumentos(elemento_t * elemento,
 	    }
 	elemento->m_handler = pipeline_load_library(ruta);
 	if (elemento->m_handler) {
-	    funcion_get_modulo f = 
+	  	    funcion_get_modulo f = 
 		(funcion_get_modulo) pipeline_get_symbol(elemento->
 							 m_handler,
 							 "get_modulo");

@@ -1,0 +1,6 @@
+#ifndef _VENTANA_IMAGEN_SDK_H_
+#define _VENTANA_IMAGEN_SDK_H_
+
+#define PIPELINE_VENTANA_IMAGEN 0x04
+
+#endif

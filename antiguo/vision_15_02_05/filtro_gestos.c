@@ -1,50 +1,31 @@
 #include "filtro.h"
 #include "pipeline_sdk.h"
+#include "ventana_imagen_sdk.h"
 #include <stdlib.h>
 #include <string.h>
-static modulo_t modulo_pipeline;
-static filtro_t *filtro = 0;
-int i = 0;
-int escribe(char *imagen, int ancho, int alto, int bytes)
+
+static char buffer_error[128];
+
+static char *ciclo(modulo_t *modulo, const pipeline_dato_t *in, pipeline_dato_t *out)
 {
-  i++;
-  if (i != 3)
-    return;
-  int i, j, suma;
-  for (i = 0; i < alto; i++) {
-    for(j = 0; j < ancho * bytes; j++) {
-      suma += imagen[(i * ancho * bytes) + j];
-    }
-  }
-  return suma / (alto * ancho * bytes);
-}
-char *ciclo(const void *in, void **out)
-{
+  filtro_t *filtro = (filtro_t*)modulo->m_dato;
   if (filtro) {
-    filtro->m_buffer = (filtro_gestos_in_t *) in;
-    
-    int llegada = escribe(filtro->m_buffer->m_imagen,
-			  filtro->m_buffer->m_ancho,
-			  filtro->m_buffer->m_alto,
-			  filtro->m_buffer->m_bytes);
-
-    *out = filtro_gestos_filtrar(filtro);
-    
-    int salida = escribe(filtro->m_salida->m_orden,
-			 filtro->m_salida->m_ancho,
-			 filtro->m_salida->m_alto,
-			 filtro->m_salida->m_bytes);
-
-    sprintf(modulo_pipeline.m_error,
-	    "IN [%ix%ix%i, %i], OUT [%ix%ix%i, %i]",
-	    filtro->m_buffer->m_ancho, filtro->m_buffer->m_alto,
-	    filtro->m_buffer->m_bytes, llegada, filtro->m_salida->m_ancho,
-	    filtro->m_salida->m_alto, filtro->m_salida->m_bytes, salida);
-    return modulo_pipeline.m_error;
+    filtro->m_buffer = (filtro_gestos_in_t *) in->m_dato;
+    if(filtro->m_buffer) {
+      out->m_tipo = PIPELINE_FILTRO_GESTOS;
+      out->m_dato = filtro_gestos_filtrar(filtro);
+      sprintf(buffer_error,
+	      "IN [%ix%ix%i], OUT [%ix%ix%i]",
+	      filtro->m_buffer->m_ancho, filtro->m_buffer->m_alto,
+	      filtro->m_buffer->m_bytes, filtro->m_salida->m_ancho,
+	      filtro->m_salida->m_alto, filtro->m_salida->m_bytes);
+      return buffer_error;
+    }
+    return "imagen vacía";
   }
   return "fallo en el filtro";
 }
-int valor(const char *tipo, int argc, const char **argv)
+static int valor(const char *tipo, int argc, const char **argv)
 {
   int i;
   for (i = 0; i < argc; i += 2) {
@@ -54,12 +35,13 @@ int valor(const char *tipo, int argc, const char **argv)
   }
   return 0;
 }
-char *iniciar(int argc, const char **argv)
+static char *iniciar(modulo_t *modulo, int argc, const char **argv)
 {
   if (argc < 12) {
     return "faltan parámetros";
   }
-  filtro = filtro_gestos_crear();
+  modulo->m_dato = filtro_gestos_crear();
+  filtro_t *filtro = (filtro_t*)modulo->m_dato;
   filtro_gestos_set_color(filtro,
 			      valor("orden_superior_rojo", argc, argv),
 			      valor("orden_inferior_rojo", argc, argv),
@@ -75,23 +57,21 @@ char *iniciar(int argc, const char **argv)
 			      valor("param_inferior_azul", argc, argv));
     return "iniciado";
 }
-char *cerrar()
+static char *cerrar(modulo_t *modulo)
 {
-    filtro_gestos_borrar(&filtro);
+    filtro_gestos_borrar((filtro_t**)&modulo->m_dato);
+    free(modulo);
     return "cerrado";
 }
 
 modulo_t * get_modulo()
 {
-    return &modulo_pipeline;
+  modulo_t *modulo = (modulo_t*)malloc(sizeof(modulo_t));
+  modulo->m_nombre = "Filtro";
+  modulo->m_iniciar = iniciar;
+  modulo->m_cerrar = cerrar;
+  modulo->m_ciclo = ciclo;
+  modulo->m_dato = 0;
+  return modulo;
+
 }
-void __attribute__ ((constructor)) init(void)
-{
-  modulo_pipeline.m_nombre = "Filtro:";
-  modulo_pipeline.m_iniciar = iniciar;
-  modulo_pipeline.m_cerrar = cerrar;
-  modulo_pipeline.m_ciclo = ciclo;
-} 
-void __attribute__ ((destructor)) fini(void)
-{
-} 

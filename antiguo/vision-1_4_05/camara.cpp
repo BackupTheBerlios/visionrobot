@@ -8,6 +8,7 @@
 static modulo_t modulo_pipeline;
 static Captura *c;
 static filtro_gestos_in_t imagen;
+static char buffer_error[128];
 
 int valor(const char *tipo, int argc, const char **argv) {
   int i;
@@ -25,8 +26,8 @@ char* ciclo (const void *in, void **out){
   int tam = c->GetFrame((BYTE**)&imagen.m_imagen);
   imagen.m_bytes = (tam / imagen.m_alto) / imagen.m_ancho;
   *out = &imagen;
-  sprintf(modulo_pipeline.m_error, "[%p, %ix%ix%i]", ((filtro_gestos_in_t *)(*out))->m_imagen, ((filtro_gestos_in_t *)(*out))->m_ancho, ((filtro_gestos_in_t *)(*out))->m_alto, ((filtro_gestos_in_t *)(*out))->m_bytes);
-  return modulo_pipeline.m_error;
+  sprintf(buffer_error, "[%p, %ix%ix%i]", ((filtro_gestos_in_t *)(*out))->m_imagen, ((filtro_gestos_in_t *)(*out))->m_ancho, ((filtro_gestos_in_t *)(*out))->m_alto, ((filtro_gestos_in_t *)(*out))->m_bytes);
+  return buffer_error;
 }
 
 char* iniciar(int argc, const char **argv){
@@ -37,8 +38,8 @@ char* iniciar(int argc, const char **argv){
   
   c = new Captura(); 
   c->Iniciar(valor("camara", argc, argv), 0, imagen.m_ancho, imagen.m_alto);  
-  sprintf(modulo_pipeline.m_error, "Iniciado. Creado contexto de cámara de %ix%i", imagen.m_ancho, imagen.m_alto);
-  return modulo_pipeline.m_error;
+  sprintf(buffer_error, "Iniciado. Creado contexto de cámara de %ix%i", imagen.m_ancho, imagen.m_alto);
+  return buffer_error;
 }
 
 char * cerrar() {

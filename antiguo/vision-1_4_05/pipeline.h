@@ -59,6 +59,7 @@ extern "C"  {
 #endif	/*  */
     
 #include "pipeline_sdk.h"
+  typedef modulo_t *(*funcion_get_modulo) ();
      struct elemento_s  {
 	tipo_handler_t m_handler;	/*!< El interfaz con la biblioteca dinámica */
 	char **m_argumentos;	/*!< Una lista de cadenas, que representan argumentos */
@@ -72,19 +73,18 @@ extern "C"  {
      
 /*! \brief Declaración del tipo de los elementos para su uso */ 
     typedef struct elemento_s elemento_t;
-    elemento_t * pipeline_nuevo(elemento_t * padre, const char *ruta);
-    int  pipeline_cerrar_biblioteca(elemento_t * elemento);
-     int  pipeline_cerrar_todo(elemento_t * elemento);
-     int  pipeline_borrar(elemento_t * elemento);
-     int 
-	pipeline_guardar(const elemento_t * elemento, const char *ruta);
-    elemento_t * pipeline_cargar(const char *ruta);
-    int  pipeline_ciclo(const elemento_t * elemento, const void *dato);
-    int  pipeline_iniciar(const elemento_t * elemento);
-    int  pipeline_iniciar_todo(const elemento_t * elemento);
-    void  pipeline_borrar_argumentos(elemento_t * elemento);
-     void 
-	pipeline_set_argumentos(elemento_t * elemento, 
+  elemento_t * pipeline_nuevo(elemento_t * padre, const char *ruta);
+  int  pipeline_cerrar_biblioteca(elemento_t * elemento);
+  int  pipeline_cerrar_todo(elemento_t * elemento);
+  int  pipeline_borrar(elemento_t * elemento);
+  int  pipeline_guardar(const elemento_t * elemento, const char *ruta);
+  elemento_t * pipeline_cargar(const char *ruta);
+  int  pipeline_ciclo(const elemento_t * elemento, const pipeline_dato_t *dato);
+  int  pipeline_iniciar(const elemento_t * elemento);
+  int  pipeline_iniciar_todo(const elemento_t * elemento);
+  void  pipeline_borrar_argumentos(elemento_t * elemento);
+  void 
+  pipeline_set_argumentos(elemento_t * elemento, 
 				const char **argumentos,
 				int numero_argumentos);
     int  pipeline_set_ruta(elemento_t * elemento, const char *ruta);

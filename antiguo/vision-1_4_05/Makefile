@@ -1,27 +1,37 @@
 OPTS=-g
-LIBS=# -ldl
+LIBS=-ldl
 
-all: camara.dll salida.dll filtro_gestos.dll red_neuronal.dll camara.dll pipeline.exe
+all: etags salida.so filtro_gestos.so red_neuronal.so imagenes.so ventana_imagen.so pipeline
 
-salida.dll: salida.c
-	gcc $(OPTS) -shared -o salida.dll salida.c
+etags:	
+	etags *.c
 
-filtro_gestos.dll: filtro_gestos.c filtro.c
-	gcc $(OPTS) -shared -o filtro_gestos.dll filtro.c filtro_gestos.c
+ventana_imagen.so: ventana_imagen.c
+	gcc $(OPTS) -shared -o ventana_imagen.so ventana_imagen.c `pkg-config --cflags gtk+-2.0` `pkg-config --libs gtk+-2.0`
 
-red_neuronal.dll: red.c red_neuronal.c
-	gcc $(OPTS) -shared -o red_neuronal.dll red.c red_neuronal.c
+salida.so: salida.c
+	gcc $(OPTS) -shared -o salida.so salida.c
 
-camara.dll: camara.cpp Captura.cpp
-	g++ $(OPTS) -shared -o camara.dll camara.cpp Captura.cpp -lstrmiids -luuid -loleaut32 -lole32 -lquartz
+filtro_gestos.so: filtro_gestos.c filtro.c
+	gcc $(OPTS) -shared -o filtro_gestos.so filtro.c filtro_gestos.c
 
-pipeline.exe: main.c libpipeline.a
-	gcc $(OPTS) main.c -o pipeline -L ./ -lpipeline -lxml2 
+red_neuronal.so: red.c red_neuronal.c
+	gcc $(OPTS) -shared -o red_neuronal.so red.c red_neuronal.c
+
+imagenes.so: imagenes.c
+	gcc $(OPTS) -shared -o imagenes.so imagenes.c
+
+#camara.so: camara.cpp Captura.cpp
+#	g++ $(OPTS) -shared -o camara.so camara.cpp Captura.cpp -lstrmiids -luuid -loleaut32 -lole32 -lquartz
+
+pipeline: main.c libpipeline.a
+	gcc $(OPTS) main.c -o pipeline -L ./ -lpipeline -lxml2 $(LIBS)
 
 libpipeline.a: pipeline.c
 	gcc $(OPTS) -c pipeline.c -o libpipeline.a `xml2-config --cflags`
 
 clean:
-	rm -rf pipeline.exe
-	rm -rf *.dll
+	rm -rf pipeline
+	rm -rf *.a
+	rm -rf *.so
 	rm -rf *.o
