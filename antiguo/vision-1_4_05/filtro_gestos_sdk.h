@@ -28,33 +28,6 @@ typedef struct {
 //***********************************************************************************
 //Nuevas estructuras para el filtro de carteles
 
-typedef struct {
-        color_t ru;
-        color_t rd;
-        color_t gu;
-        color_t gd;
-        color_t bu;
-        color_t bd;
-} special_colour_t;
-
-typedef struct {
-        int x;
-        int y;
-} coord_t;
-
-typedef struct {
-        coord_t ii;
-        coord_t si;
-        coord_t id;
-        coord_t sd;
-        int grados;
-}bounds_t;
-
-typedef struct{
-    color_t* dibujo;
-    int ancho;
-    int alto;
-}dato_t;
 
 //*****************************************************************************
 

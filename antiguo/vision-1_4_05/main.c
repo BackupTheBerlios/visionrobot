@@ -1,3 +1,12 @@
+/*!
+  \file   main.c
+  \author Carlos León
+  \date   Sun Mar 13 22:13:36 2005
+  
+  \brief  Programa principal de "Visión por computador"
+  
+  
+*/
 #include "pipeline.h"
 #include <stdio.h>
 #include <stdlib.h>

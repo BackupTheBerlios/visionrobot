@@ -34,16 +34,6 @@ typedef struct {
 #define min(x, y) (x) < (y) ? (x) : (y)
 #define max(x, y) (x) > (y) ? (x) : (y)
 
-/*
-typedef struct {
-        color_t ru;
-        color_t rd;
-        color_t gu;
-        color_t gd;
-        color_t bu;
-        color_t bd;
-} special_colour_t;
-*/
 
 typedef filtro_gestos_in_parametros_t special_colour_t;
 
@@ -60,13 +50,6 @@ typedef struct {
         int grados;
 }bounds_t;
 
-/*
-typedef struct{
-    color_t* dibujo;
-    int ancho;
-    int alto;
-}dato_t;
-*/
 typedef filtro_gestos_in_imagen_t dato_t;
 
 

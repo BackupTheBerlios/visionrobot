@@ -1,6 +1,6 @@
 /*! \file red_neuronal.c
-    \brief Implementacion de la red.
-    \author Diego Sanchez
+    \brief Implementación de la red.
+    \author Diego Sánchez
     \version 0.2
  */  
     

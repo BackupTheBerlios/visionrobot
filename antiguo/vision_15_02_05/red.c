@@ -1,3 +1,12 @@
+/*!
+  \file   red.c
+  \author Carlos León
+  \date   Sun Mar 13 22:12:21 2005
+  
+  \brief  Módulo de red neuronal.
+  
+  
+*/
 #include "red_neuronal.h"
 #include "red_neuronal_sdk.h"
 #include "pipeline_sdk.h"
