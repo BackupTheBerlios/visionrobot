@@ -57,13 +57,13 @@ void * get_datos(){
 	return buffer_out;
 }
 int iniciar() {
-      opciones.ruta = "";
+      strcpy(opciones.ruta, "");
       opciones.tipo = ORDEN;
       principal= new Principal();
       
       if(abrir_propiedades_red(&opciones))
       {
-                                          
+         entrenada = true;                                 
         /* Tú sabrás qué hay que poner aquí, que a mí no me compila
            y no lo entiendo        
         principal->AbrirRed(opciones.ruta);

@@ -19,6 +19,8 @@ typedef unsigned char BYTE;
 typedef struct t_data_out{
         BYTE* tipo_orden;
         BYTE* orden;
+        int ancho;
+	      int alto;
 }data_out;
 
 typedef struct t_data_in{

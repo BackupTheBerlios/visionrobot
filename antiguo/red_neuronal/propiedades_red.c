@@ -20,8 +20,8 @@ gboolean abrir_propiedades_red(red_t * red) {
   gboolean devolver;
 
   if (gtk_dialog_run(GTK_DIALOG(dialogo->dlg_propiedades_red)) == GTK_RESPONSE_OK) {
-     free(red->ruta);
-     red->ruta = (char*)gtk_entry_get_text(GTK_ENTRY(dialogo->entry_ruta));
+     //free(red->ruta);
+     strcpy(red->ruta, (char*)gtk_entry_get_text(GTK_ENTRY(dialogo->entry_ruta)));
      if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(dialogo->rbt_ordenes))) {
          red->tipo = ORDEN;
      }

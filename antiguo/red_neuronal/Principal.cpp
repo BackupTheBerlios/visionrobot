@@ -23,6 +23,7 @@ void Principal::AbrirRed(char* fileName)
 
 char* Principal::Reconocer(BYTE* dibujo, int ancho, int alto, tipoFoto tipo)
 {
+  if(!red) return "";
   Imagen* imagen= new Imagen(dibujo,ancho,alto);
   Sleep(100);
   CargaInputImagen(dibujo,ancho,alto,red);
@@ -51,6 +52,7 @@ char* Principal::Reconocer(BYTE* dibujo, int ancho, int alto, tipoFoto tipo)
 void Principal::CargaInputImagen(BYTE* dibujo, int ancho, int alto, RedNeuronal* red)
 {
   int k=0;
+  if(!red) return;
   double* entrada = red->GetCapaEntrada();
   for(int i=0;i<alto;i++){
     for (int j=0;j<ancho*4;j++){

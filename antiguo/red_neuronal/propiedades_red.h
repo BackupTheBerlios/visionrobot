@@ -19,7 +19,7 @@ extern "C" {
 
 /*! \brief Define la estructura de datos de las opciones */
 typedef struct {
-  char * ruta;
+  char ruta[128];
   tipoFoto tipo;
 } red_t;
 

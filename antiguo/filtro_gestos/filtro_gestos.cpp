@@ -43,20 +43,23 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 int ciclo (){
   if(buffer_in && buffer_in->m_imagen != 0) {
 	buffer_out= filtro->Filtrar(buffer_in->m_imagen, buffer_in->m_alto ,buffer_in->m_ancho);
+	buffer_out->ancho = buffer_in->m_ancho;
+  buffer_out->alto = buffer_in->m_alto;	
   }
   return 0;
 }
 int set_datos(const void * datos){
-	buffer_in= (data_in*)datos;
-	if(buffer_in) {
- 	  sprintf(cadena_error, "Filtro de gestos recibe imagen de %i x %i.\n", buffer_in->m_ancho, buffer_in->m_alto);
-	  hay_error = 1;
-    buffer_out= NULL;
- }
-	return 0;
+  buffer_in= (data_in*)datos;
+  if(buffer_in) {
+    sprintf(cadena_error, "Filtro de gestos recibe imagen de %i x %i.\n", buffer_in->m_ancho, buffer_in->m_alto);
+    hay_error = 1;    
+  }
+  return 0;
 }
 void * get_datos(){
-	return buffer_out;
+  data_out * aux = buffer_out;
+  buffer_out= NULL;
+  return aux;
 }
 int iniciar() {
     PON_ERROR("Iniciando filtro de gestos...\n");
