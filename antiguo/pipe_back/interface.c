@@ -584,6 +584,9 @@ GtkWidget *create_dialog1(void)
     return dialog1;
 }
 
+
+
+
 GtkWidget *create_propiedades_modulo(void)
 {
     GtkWidget *propiedades_modulo;
