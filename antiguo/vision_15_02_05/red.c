@@ -11,26 +11,20 @@
 typedef struct {
   char m_buffer_error[128];
   char m_salida[128];
-  red_neuronal_t *m_red_ordenes;
-  red_neuronal_t *m_red_parametros;
-  //  char *m_error;
+  red_neuronal_t *m_red;
 } red_dato_t;
 
 static char *red_ciclo(modulo_t *modulo, const char *puerto, const void *value)
 {
   if(!strcmp(puerto, PUERTO_IMAGEN)) {
     red_dato_t * dato = (red_dato_t*)modulo->m_dato;
-    red_neuronal_t *red_o = dato->m_red_ordenes;
-    red_neuronal_t *red_p = dato->m_red_parametros;
+    red_neuronal_t *red = dato->m_red;
     red_neuronal_in_t * red_in = (red_neuronal_in_t *)value;
-    if(red_o && red_p) {
-      sprintf(dato->m_salida, "orden = %s, parametro = %s", 
-	      red_neuronal_reconocer(red_o, red_in->m_tipo_orden,
+    if(red) {
+      sprintf(dato->m_salida, "salida = %s", 
+	      red_neuronal_reconocer(red, red_in->m_imagen,
 				     red_in->m_ancho, red_in->m_alto,
-				     red_in->m_bytes, ORDEN),
-	      red_neuronal_reconocer(red_p, red_in->m_orden,
-				     red_in->m_ancho, red_in->m_alto,
-				     red_in->m_bytes, PARAM));
+				     red_in->m_bytes));
     }
   }
   return 0;
@@ -41,28 +35,28 @@ static char *red_iniciar(modulo_t *modulo, GHashTable *argumentos)
 	return "falta algun nombre de archivo para cargar";
     }
     red_dato_t * dato = (red_dato_t*)modulo->m_dato;
-    char *archivo_ordenes = g_hash_table_lookup(argumentos, "archivo_ordenes");
-    char *archivo_parametros = g_hash_table_lookup(argumentos, "archivo_parametros");
-    dato->m_red_ordenes = red_neuronal_abrir(archivo_ordenes);
-    dato->m_red_parametros = red_neuronal_abrir(archivo_parametros);
+    char *archivo = g_hash_table_lookup(argumentos, "archivo");
+    const char *salida[4];
+    salida[0] = g_hash_table_lookup(argumentos, "salida1");
+    salida[1] = g_hash_table_lookup(argumentos, "salida2");
+    salida[2] = g_hash_table_lookup(argumentos, "salida3");
+    salida[3] = g_hash_table_lookup(argumentos, "salida4");
+    dato->m_red = red_neuronal_abrir(archivo, salida);
     g_hash_table_insert(modulo->m_tabla, PUERTO_TEXTO, &dato->m_salida);
-    red_neuronal_t *red_o = dato->m_red_ordenes;
-    red_neuronal_t *red_p = dato->m_red_parametros;
-    if (!red_o || !red_p) {
-      return "no se ha cargado algun archivo";
+    red_neuronal_t *red = dato->m_red;
+    if (!red) {
+      return "no se ha cargado el archivo";
     }    
     else {
-	sprintf(dato->m_buffer_error, "ordenes = %s, parametros = %s", archivo_ordenes, archivo_parametros);
+	sprintf(dato->m_buffer_error, "archivo cargado = %s", archivo);
 	return dato->m_buffer_error;
     }    
 }
 static char *red_cerrar(modulo_t *modulo)
 {
   red_dato_t * dato = (red_dato_t*)modulo->m_dato;
-  red_neuronal_t *red_o = dato->m_red_ordenes;
-  red_neuronal_t *red_p = dato->m_red_parametros;
-  red_neuronal_borrar(&red_o);
-  red_neuronal_borrar(&red_p);
+  red_neuronal_t *red = dato->m_red;
+  red_neuronal_borrar(&red);
   free(dato);
   free(modulo);
   return "cerrado";

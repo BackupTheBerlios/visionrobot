@@ -34,28 +34,32 @@
 #define _RED_NEURONAL_H_
 
 
-typedef enum { ORDEN, PARAM } tipo_foto_t;
+//typedef enum { ORDEN, PARAM } tipo_foto_t;
 
 
 typedef struct {
-    int numEntrada;
-     int numOculta;
-     int numSalida;
-     double *capaEntrada;
-     double *capaOculta;
-     double *capaSalida;
-     double *pesosEntrada;
-     double *pesosOculta;
+  int numEntrada;
+  int numOculta;
+  int numSalida;
+  double *capaEntrada;
+  double *capaOculta;
+  double *capaSalida;
+  double *pesosEntrada;
+  double *pesosOculta;
+  // Esto debería ser una lista dinámica,
+  // pero ya que la implementación está para 4 neuronas
+  // lo dejo así
+  // Carlos
+  const char *m_salida[4];
 } red_neuronal_t;
 
 
-red_neuronal_t * red_neuronal_crear(int en, int oc, int sa);
+red_neuronal_t * red_neuronal_crear(int en, int oc, int sa, const char *salida[]);
 void red_neuronal_borrar(red_neuronal_t **);
 void red_neuronal_computar_capas(red_neuronal_t * red);
-red_neuronal_t * red_neuronal_abrir(const char *file);
-char *red_neuronal_reconocer(red_neuronal_t * red, char *dibujo,
-			      int ancho, int alto, int bytes,
-			      tipo_foto_t tipo);
+red_neuronal_t * red_neuronal_abrir(const char *file, const char *salida[]);
+const char *red_neuronal_reconocer(red_neuronal_t * red, char *dibujo,
+			      int ancho, int alto, int bytes/*,tipo_foto_t tipo*/);
 
 #endif
 

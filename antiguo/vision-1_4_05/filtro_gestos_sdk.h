@@ -11,19 +11,12 @@ typedef struct {
 } filtro_gestos_in_imagen_t;
 
 typedef struct {
-  char m_cambio;
-  color_t m_rojo_sup_orden;
-  color_t m_rojo_inf_orden;
-  color_t m_verde_sup_orden;
-  color_t m_verde_inf_orden; 
-  color_t m_azul_sup_orden; 
-  color_t m_azul_inf_orden;
-  color_t m_rojo_sup_param;
-  color_t m_rojo_inf_param;
-  color_t m_verde_sup_param;
-  color_t m_verde_inf_param; 
-  color_t m_azul_sup_param; 
-  color_t m_azul_inf_param;
+  color_t m_rojo_sup;
+  color_t m_rojo_inf;
+  color_t m_verde_sup;
+  color_t m_verde_inf; 
+  color_t m_azul_sup; 
+  color_t m_azul_inf;
 } filtro_gestos_in_parametros_t;
 
-#endif				//_FILTRO_GESTOS_SDK_H_
+#endif

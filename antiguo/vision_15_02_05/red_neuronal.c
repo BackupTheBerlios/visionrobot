@@ -28,7 +28,7 @@
 
 //---------------------------------------------------------------------------
 
-red_neuronal_t * red_neuronal_crear(int en, int oc, int sa) 
+red_neuronal_t * red_neuronal_crear(int en, int oc, int sa, const char *salida[]) 
 {
     red_neuronal_t * red = (red_neuronal_t *) malloc(sizeof(red_neuronal_t));
     red->numEntrada = en;
@@ -39,6 +39,10 @@ red_neuronal_t * red_neuronal_crear(int en, int oc, int sa)
     red->capaSalida = (double *) malloc(sizeof(double) * (red->numSalida + 1));
     red->pesosEntrada = (double *) malloc(sizeof(double) * ((red->numEntrada + 1) * (red->numOculta + 1)));
     red->pesosOculta = (double *) malloc(sizeof(double) * ((red->numOculta + 1) * (red->numSalida + 1)));
+    red->m_salida[0] = salida[0];
+    red->m_salida[1] = salida[1];
+    red->m_salida[2] = salida[2];
+    red->m_salida[3] = salida[3];
     return red;
 }
 
@@ -90,7 +94,7 @@ void red_neuronal_computar_capas(red_neuronal_t * red)
 
 //---------------------------------------------------------------------------
 //Lee de un archivo una red ya entrenada
-red_neuronal_t * red_neuronal_abrir(const char *file)
+red_neuronal_t * red_neuronal_abrir(const char *file, const char *salida[])
 {
     FILE * archivo;
     int ne, no, ns;
@@ -100,7 +104,7 @@ red_neuronal_t * red_neuronal_abrir(const char *file)
 	return 0;
     }
     fscanf(archivo, "%d %d %d", &ne, &no, &ns);
-    red_neuronal_t * redA = red_neuronal_crear(ne, no, ns);
+    red_neuronal_t * redA = red_neuronal_crear(ne, no, ns, salida);
     double *pesosEntrada2 = (double *) malloc(sizeof(double) * ((ne + 1) * (no + 1)));
     double *pesosOculta2 = (double *) malloc(sizeof(double) * ((no + 1) * (ns + 1)));
     int i;
@@ -149,48 +153,54 @@ void red_neuronal_cargar_input_imagen(red_neuronal_t * red, char *dibujo,
 //---------------------------------------------------------------------------
 /*Propaga la informacion desde la entrada hasta la salida de la red
 y genera un salida dependiendo de lo qua ha reconocido*/
-char *red_neuronal_reconocer(red_neuronal_t * red, char *dibujo,
-			     int ancho, int alto, int bytes,
-			     tipo_foto_t tipo) {
+const char *red_neuronal_reconocer(red_neuronal_t * red, char *dibujo,
+			     int ancho, int alto, int bytes/*,*/
+			     /*tipo_foto_t tipo*/) {
   if(!red)
     return "red no cargada";
   if (!dibujo)
     return "no hay dibujo";
   red_neuronal_cargar_input_imagen(red, dibujo, ancho, alto, bytes);
   red_neuronal_computar_capas(red);
-  switch (tipo) {
-  case ORDEN:
+  int i;
+  for(i = 0; i < 4; ++i) {
+    if(red->capaSalida[i + 1] > 0.5) {
+      return red->m_salida[i];
+    }
+  }
+  /*switch (tipo) {
+    case ORDEN:
     if (red->capaSalida[1] > 0.5)
       return "parar";
-    
-    else if (red->capaSalida[2] > 0.5)
+      
+      else if (red->capaSalida[2] > 0.5)
       return "girar";
-    
-    else if (red->capaSalida[3] > 0.5)
+      
+      else if (red->capaSalida[3] > 0.5)
       return "girar_negativo";
-    
+      
     else if (red->capaSalida[4] > 0.5)
-      return "avanzar";
+    return "avanzar";
     
     else
-      return "no_gesto";
-  case PARAM:
+    return "no_gesto";
+    case PARAM:
     if (red->capaSalida[1] > 0.5)
-      return "nula";
+    return "nula";
     
     else if (red->capaSalida[2] > 0.5)
-      return "baja";
+    return "baja";
     
     else if (red->capaSalida[3] > 0.5)
-      return "media";
+    return "media";
     
     else if (red->capaSalida[4] > 0.5)
-      return "alta";
+    return "alta";
     
     else
-      return "maxima";
-  }
-  return "";
+    return "maxima";
+    }*/
+  return "no_gesto";
 }
 
 //---------------------------------------------------------------------------

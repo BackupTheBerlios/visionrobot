@@ -1,33 +1,28 @@
-function iniciar(_imagen, _tipo_orden, _orden_param, _ancho, _alto, _bytes) 
+function iniciar(_imagen,_ancho, _alto, _bytes,
+		 _salida,_anchos, _altos, _bytess)
    captura = imagen.new (_imagen, ancho, alto, bytes)
-   tipo_orden = imagen.new (_tipo_orden, ancho, alto, bytes)
-   orden_param = imagen.new (_orden_param, ancho, alto, bytes)
+   salida = imagen.new (_salida, anchos, altos, bytess)
    ancho = _ancho
    alto = _alto
    bytes = _bytes
+   io.write ("Se inicia el filtro con " .. ancho .. "x" .. alto .. "x" ..bytes ..".\n")
 end
 
-function filtrar(oir, osr, oiv, osv, oia, osa,
-		 pir, psr, piv, psv, pia, psa)
-   local azul, verde, rojo, punto
+function filtrar()
+   local punto, valor
    for j = 0, alto - 1 do
-      for i = 0, (ancho * bytes) - 1, bytes do
+      for i = 0, (ancho * bytes) - 1 do
 	 punto = ancho * bytes * j + i
-	 rojo = imagen.get(captura, punto)
-	 verde = imagen.get(captura, punto + 1)
-	 azul = imagen.get(captura, punto + 2)
-	 if rojo >= oir and rojo <= osr and
-	    verd >= oiv and verde <= osv and
-	    azul >= oia and azul <= osa then
-	    imagen.set(tipo_orden, punto, 255)
-	    imagen.set(tipo_orden, punto + 1, 255)
-	    imagen.set(tipo_orden, punto + 2, 255)
-	 else 
-	    imagen.set(tipo_orden, punto, 0)
-	    imagen.set(tipo_orden, punto + 1, 0)
-	    imagen.set(tipo_orden, punto + 2, 0)
-	 end
+	 valor = imagen.get(captura, punto)
+	 imagen.set(salida, punto, 0)
       end
    end
 end
+
+function parametros(oir, osr, oiv, osv, oia, osa)
+   io.write("Parametros que le llegan al filtro: [" .. oir ..", "
+	    .. osr .. ", " .. oiv .. ", " .. osv .. ", " .. oia ..
+	       ", " ..osa .. "]\n")
+end
+
 

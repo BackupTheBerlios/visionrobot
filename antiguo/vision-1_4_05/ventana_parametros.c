@@ -11,6 +11,7 @@
 #define PUERTO_FILTRO "salida_filtro"
 
 typedef struct {
+  char m_cambio;
   GladeXML* m_xml;
   filtro_gestos_in_parametros_t m_filtro;
 } ventana_parametros_dato_t;
@@ -52,41 +53,21 @@ static color_t ventana_parametros_suma(guint16 color, gdouble porcentaje) {
   return ventana_parametros_int_to_char(ventana_parametros_incremento((double)MAX_GUINT, (double)color, porcentaje));
 }
 static void ventana_parametros_calcular_orden(filtro_gestos_in_parametros_t * parametros, GdkColor* color, gdouble porcentaje) {
-  parametros->m_cambio = 1;
-  parametros->m_rojo_sup_orden = ventana_parametros_suma(color->red, porcentaje);
-  parametros->m_verde_sup_orden = ventana_parametros_suma(color->green, porcentaje);
-  parametros->m_azul_sup_orden = ventana_parametros_suma(color->blue, porcentaje);
-  parametros->m_rojo_inf_orden = ventana_parametros_suma(color->red, -porcentaje);
-  parametros->m_verde_inf_orden = ventana_parametros_suma(color->green, -porcentaje);
-  parametros->m_azul_inf_orden = ventana_parametros_suma(color->blue, -porcentaje);
+  parametros->m_rojo_sup = ventana_parametros_suma(color->red, porcentaje);
+  parametros->m_verde_sup = ventana_parametros_suma(color->green, porcentaje);
+  parametros->m_azul_sup = ventana_parametros_suma(color->blue, porcentaje);
+  parametros->m_rojo_inf = ventana_parametros_suma(color->red, -porcentaje);
+  parametros->m_verde_inf = ventana_parametros_suma(color->green, -porcentaje);
+  parametros->m_azul_inf = ventana_parametros_suma(color->blue, -porcentaje);
 }
-
-static void ventana_parametros_calcular_param(filtro_gestos_in_parametros_t * parametros, GdkColor* color, gdouble porcentaje) {
-  parametros->m_cambio = 1;
-  parametros->m_rojo_sup_param = ventana_parametros_suma(color->red, porcentaje);
-  parametros->m_verde_sup_param = ventana_parametros_suma(color->green, porcentaje);
-  parametros->m_azul_sup_param = ventana_parametros_suma(color->blue, porcentaje);
-  parametros->m_rojo_inf_param = ventana_parametros_suma(color->red, -porcentaje);
-  parametros->m_verde_inf_param = ventana_parametros_suma(color->green, -porcentaje);
-  parametros->m_azul_inf_param = ventana_parametros_suma(color->blue, -porcentaje);
-}
-
 static void ventana_parametros_color_ordenes(GtkWidget *w) {
   GdkColor color;
   gtk_color_button_get_color(GTK_COLOR_BUTTON(ventana_parametros_get_widget(w, "bot_color_ordenes")), &color);
   ventana_parametros_dato_t *dato = ventana_parametros_get_dato(w);
+  dato->m_cambio = 1;
   gdouble valor = ventana_parametros_get_valor(w, "hsc_tolerancia_ordenes");
   ventana_parametros_calcular_orden(&dato->m_filtro, &color, valor);
 }
-
-static void ventana_parametros_color_parametros(GtkWidget *w) {
-  GdkColor color;
-  gtk_color_button_get_color(GTK_COLOR_BUTTON(ventana_parametros_get_widget(w, "bot_color_parametros")), &color);
-  ventana_parametros_dato_t *dato = ventana_parametros_get_dato(w);
-  gdouble valor = ventana_parametros_get_valor(w, "hsc_tolerancia_parametros");
-  ventana_parametros_calcular_param(&dato->m_filtro, &color, valor);
-}
-
 void on_bot_color_ordenes_color_set(GtkColorButton *widget, gpointer user_data){
   ventana_parametros_color_ordenes(GTK_WIDGET(widget));
 }
@@ -95,52 +76,41 @@ void on_hsc_tolerancia_ordenes_value_changed(GtkRange *range, gpointer user_data
   ventana_parametros_color_ordenes(GTK_WIDGET(range));
 }
 
-void on_bot_color_parametros_color_set(GtkColorButton *widget, gpointer user_data){
-  ventana_parametros_color_parametros(GTK_WIDGET(widget));
-}
-
-void on_hsc_tolerancia_parametros_value_changed(GtkRange *range, gpointer user_data){
-  ventana_parametros_color_parametros(GTK_WIDGET(range));
-}
-
 static char *ventana_parametros_ciclo(modulo_t *modulo, const char *puerto, const void *value){
+  ventana_parametros_dato_t *dato = (ventana_parametros_dato_t *)modulo->m_dato;
+  if(dato->m_cambio == 1) {
+    dato->m_cambio = 2;
+    g_hash_table_insert(modulo->m_tabla, PUERTO_FILTRO, &dato->m_filtro);
+  }
+  else if (dato->m_cambio == 2) {
+    dato->m_cambio = 0;
+    g_hash_table_insert(modulo->m_tabla, PUERTO_FILTRO, 0);
+  }
   return 0;
 }
 
 static char *ventana_parametros_iniciar(modulo_t *modulo, GHashTable *argumentos) {
-  if (g_hash_table_size(argumentos) < 8) {
+  if (g_hash_table_size(argumentos) < 4) {
     return "faltan parametros";
   }
   ventana_parametros_dato_t *dato = (ventana_parametros_dato_t*)modulo->m_dato;
   dato->m_xml = glade_xml_new("ventana_parametros.glade", NULL, NULL);
   GtkWidget *ventana = glade_xml_get_widget(dato->m_xml, "win_parametros_filtro");
   GtkWidget *color_ordenes = glade_xml_get_widget(dato->m_xml, "bot_color_ordenes");
-  GtkWidget *color_parametros = glade_xml_get_widget(dato->m_xml, "bot_color_parametros");
   GtkWidget *tolerancia_ordenes = glade_xml_get_widget(dato->m_xml, "hsc_tolerancia_ordenes");
-  GtkWidget *tolerancia_parametros = glade_xml_get_widget(dato->m_xml, "hsc_tolerancia_parametros");
   g_object_set_data(G_OBJECT(ventana), "modulo", (gpointer)modulo);
   glade_xml_signal_autoconnect(dato->m_xml);
-  g_hash_table_insert(modulo->m_tabla, PUERTO_FILTRO, &dato->m_filtro);
-
+  dato->m_cambio = 1;
   GdkColor color;
   double tolerancia;
-  color.red = ventana_parametros_char_to_int((color_t)atoi(g_hash_table_lookup(argumentos, "orden_rojo")));
-  color.green = ventana_parametros_char_to_int((color_t)atoi(g_hash_table_lookup(argumentos, "orden_verde")));
-  color.blue = ventana_parametros_char_to_int((color_t)atoi(g_hash_table_lookup(argumentos, "orden_azul")));
-  tolerancia = atof(g_hash_table_lookup(argumentos, "orden_tolerancia"));
+  color.red = ventana_parametros_char_to_int((color_t)atoi(g_hash_table_lookup(argumentos, "rojo")));
+  color.green = ventana_parametros_char_to_int((color_t)atoi(g_hash_table_lookup(argumentos, "verde")));
+  color.blue = ventana_parametros_char_to_int((color_t)atoi(g_hash_table_lookup(argumentos, "azul")));
+  tolerancia = atof(g_hash_table_lookup(argumentos, "tolerancia"));
   gtk_color_button_set_color(GTK_COLOR_BUTTON(color_ordenes), &color);
   gtk_range_set_value(GTK_RANGE(tolerancia_ordenes), (gdouble)tolerancia);
 
   ventana_parametros_calcular_orden(&dato->m_filtro, &color, tolerancia);
-
-  color.red = ventana_parametros_char_to_int((color_t)atoi(g_hash_table_lookup(argumentos, "param_rojo")));
-  color.green = ventana_parametros_char_to_int((color_t)atoi(g_hash_table_lookup(argumentos, "param_verde")));
-  color.blue = ventana_parametros_char_to_int((color_t)atoi(g_hash_table_lookup(argumentos, "param_azul")));
-  tolerancia = atof(g_hash_table_lookup(argumentos, "param_tolerancia"));
-  gtk_color_button_set_color(GTK_COLOR_BUTTON(color_parametros), &color);
-  gtk_range_set_value(GTK_RANGE(tolerancia_parametros), (gdouble)tolerancia);
-
-  ventana_parametros_calcular_param(&dato->m_filtro, &color, tolerancia);
 
   return "iniciado";
 }
