@@ -1,10 +1,28 @@
-function ciclo(r, orden)
+
+-- Ciclo del robot
+
+function ciclo(orden, parametro)
+
    if orden == "avanzar" then
-      robot.avanzar(r, 10)
+
+      robot.avanzar(parametro)
+
+   elseif orden == "girar" then
+
+      robot.girar_derecha(parametro)
+
+   elseif orden == "girar_negativo" then
+
+      robot.girar_izquierda(parametro)
+
    elseif orden == "parar" then
-      robot.avanzar(r, 0)      
+
+      robot.parar(parametro)
+
    else
       return "Orden no reconocida"
    end
-   return "Recibido " .. orden .. "."
+
+   return "Recibido " .. orden .. ", " .. parametro .. "."
+
 end

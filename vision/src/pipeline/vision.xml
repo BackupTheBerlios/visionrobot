@@ -75,7 +75,7 @@
     <argumento nombre="neutro">no_gesto</argumento>
     <conexion puerto="salida_texto">
       <destino puerto="entrada_texto">salida</destino>
-      <destino puerto="entrada_texto">robot</destino>
+      <destino puerto="entrada_orden">post_gestion</destino>
     </conexion>
   </modulo>
 
@@ -86,6 +86,14 @@
     <argumento nombre="neutro">no_gesto</argumento>
     <conexion puerto="salida_texto">
       <destino puerto="entrada_texto">salida</destino>
+      <destino puerto="entrada_param">post_gestion</destino>
+    </conexion>
+  </modulo>
+
+  <!-- Modulo de post-gestion, se encarga de unir las ordenes con los parametros -->
+  <modulo ruta="post_gestion" nombre="post_gestion">
+    <conexion puerto="salida_robot">
+      <destino puerto="entrada_robot">robot</destino>
     </conexion>
   </modulo>
   
@@ -149,7 +157,6 @@
   <modulo ruta="robot" nombre="robot">
     <argumento nombre="guion">share/vision/robot.lua</argumento>
     <argumento nombre="funcion">ciclo</argumento>
-    <argumento nombre="dispositivo">/dev/ttyS0</argumento>
-    <argumento nombre="timer">1</argumento>
+    <argumento nombre="puerto">1</argumento>
   </modulo>  
 </pipeline>

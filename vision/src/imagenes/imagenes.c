@@ -158,10 +158,10 @@ static char* imagenes_generar_imagen(modulo_t *modulo) {
       yu = dato->m_video.yuv;
       im = imagen->m_imagen;
       while(im != fin) {
-	y = ((*yu) | 0xF0);
-	u = ((*yu) | 0x0C) >> 2;
-	v = ((*yu) | 0x03);
-	/*	*im = y + 1.403 * v;
+	y = ((*yu) & 0xF0) >> 4;
+	u = ((*yu) & 0x0C) >> 2;
+	v = ((*yu) & 0x03);
+	/**im = y + 1.403 * v;
 	*(im + 1) = y - 0.344 * u - 0.714 * v;
 	*(im + 2) = y + 1.770 * u;*/
 	*im = y + 1.402 * (v - 128);

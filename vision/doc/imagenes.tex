@@ -11,7 +11,7 @@ El módulo sigue las interfaces de comunicación con el {\em pipeline}, de modo qu
 
 En el ciclo de imágenes se procede según sea el funcionamiento. En el caso de que las imágenes cambien cada ciclo (no pasa cuando son imágenes de un color fijo o cargadas de archivo), se obtiene del recurso indicado el búfer en el formato que ofrezca la biblioteca, y se transforma al formato de salida común, como se ha comentado en la sección anterior. Una vez que se ha hecho esto, se ``deposita'' en el puerto de salida la imagen resultante, habiendo ya dado uniformidad a las diferentes entradas, haciendo que el {\em pipeline} no dependa de las fuentes generadores de imágenes a más bajo nivel.
 
-En la función de cerrar simplemente libera los recursos.
+En la función de cerrar simplemente libera los recurss.
 
 \section {Bibliotecas}
 Para la generación resultados desde diferentes fuentes, el módulo hace uso de una serie de librerías; son las siguientes:
@@ -28,4 +28,4 @@ Para la generación resultados desde diferentes fuentes, el módulo hace uso de un
 \end {itemize}
 
 \section {Código}
-Ver anexo: documentación del módulo de imágenes.x
+Ver anexo: documentación del módulo de imágenes.c, en \ref {imagenes_8c} (página \pageref{imagenes_8c}).
