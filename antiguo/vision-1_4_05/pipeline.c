@@ -46,6 +46,7 @@ typedef struct {
 struct pipeline_s {
   GHashTable *m_modulos;
   funcion_error_t m_funcion_error;
+  gpointer m_dato_funcion_error;
 };
 
 static void pipeline_salida_error(const pipeline_t *pipeline, const char *nombre, const char *nombre2, const char *texto) {
@@ -190,7 +191,7 @@ static pipeline_t * pipeline_leer_xml(pipeline_t * p, xmlDocPtr doc, xmlNodePtr 
   return p;
 }
 
-pipeline_t * pipeline_cargar(const char *ruta, const char *dir, funcion_error_t funcion_error) 
+pipeline_t * pipeline_cargar(const char *ruta, const char *dir, funcion_error_t funcion_error, const void *dato) 
 {
     xmlDocPtr doc;
     xmlNodePtr cur;
@@ -219,6 +220,7 @@ pipeline_t * pipeline_cargar(const char *ruta, const char *dir, funcion_error_t 
     pipeline_t *p = (pipeline_t*)malloc(sizeof(pipeline_t));
     p->m_modulos = g_hash_table_new_full(g_str_hash, g_str_equal, pipeline_borrar_cadena, pipeline_borrar_elemento);
     p->m_funcion_error = funcion_error;
+    p->m_dato_funcion_error = (gpointer)dato;
 
     cur = cur->xmlChildrenNode;
     cur = cur->next;

@@ -46,8 +46,9 @@ extern "C"  {
       \param nombre El causante del mensaje, generalmente el nombre del elemento
       \param modulo El nombre del módulo
       \param texto El texto que define el mensaje
+      \param dato El dato auxiliar que ha definido el usuario en <code>pipeline_cargar()</code>
   */
-  typedef void (*funcion_error_t)(const char *nombre, const char *modulo, const char *texto);
+  typedef void (*funcion_error_t)(const char *nombre, const char *modulo, const char *texto, void *dato);
   
   /*! \brief La estructura de datos del pipeline. Es privada y dependiente de la implementación,
     para acceder a ella hay que usar los métodos provistos.
@@ -68,8 +69,9 @@ extern "C"  {
 		 es necesario indicar la ruta en la que se encuentran los módulos. Este parámetro se encarga de ello.
       \param funcion_error Un puntero a una función de retrollamada que gestiona los mensajes de salida (no sólo de error
                            del pipeline
+      \param dato El dato auxiliar que se le pasa a la función de error. Puede ser una estructura de cualquier tipo.
   */
-  pipeline_t * pipeline_cargar(const char *ruta, const char *dir, funcion_error_t funcion_error) ;
+  pipeline_t * pipeline_cargar(const char *ruta, const char *dir, funcion_error_t funcion_error, const void *dato) ;
 
   /*! \brief Realiza un ciclo completo en el pipeline. Esto corresponde a llamar al ciclo de las funciones
             marcadas como <em>iniciales</em> (incio="1" en el XML), y llamar al ciclo de todos los módulos

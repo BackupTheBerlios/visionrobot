@@ -1,0 +1,14 @@
+\chapter{Diseño}
+
+\section{Introducción}
+
+\subsection {Arquitectura de la aplicación}
+Al diseñar la aplicación escogimos implementar un sistema altamente modular para conseguir un alto grado de independencia en el desarrollo y de facilidad de ampliación. Por esta razón hemos invertido parte del trabajo en desarrollar una plataforma propia de enlace de módulos, en la que la una parte de la aplicación (lo que hemos denominado {\em pipeline} o {\em tubería}), se encargue de realizar el trabajo mecánico, que, básicamente, se compone de:
+\begin{itemize}
+\item Conectar los módulos mediante puertos independientes con diferente información por puerto, pudiendo crear conexiones {\em 1 a 1}, {\em n a 1}, {\em 1 a n}, y {\em n a n}.
+\item Iniciar y cerrar los módulos, creando y liberando la memoria necesaria y llamando a las funciones pertinentes de cada módulo.
+\item Gestionar un reloj de ciclos de ejecución, transmitiendo la acción por el grafo que forma la arquitectura de módulos.
+\item Control de proyectos de aplicación dinámicos, mediante definición de los mismos en {\bf XML}. De esta forma, diferentes archivos de configuración de proyecto puden crear aplicaciones totalmente distintas sin tener que reprogramar nada.
+\item Manejo de errores mediante retrollamadas a funciones definidas por el usuario.
+\end{itemize}
+El {\em pipeline} es multiplataforma y funciona con módulos compilados desde {\em cualquier lenguaje estándar} como bibliotecas dinámicas.

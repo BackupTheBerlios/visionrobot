@@ -14,12 +14,12 @@
 #include <glade/glade.h>
 #include <gtk/gtk.h>
 #include <string.h>
-
-static GladeXML* xml = 0;
+#include <math.h>
 
 #define OPCIONES_LINEA ((GLIB_MAJOR_VERSION==2 && GLIB_MINOR_VERSION >= 6) || (GLIB_MAJOR_VERSION>2))
 
-void funcion_error(const char *nombre, const char *modulo, const char *textos) {
+void funcion_error(const char *nombre, const char *modulo, const char *textos, void *dato) {
+  GladeXML  *xml = (GladeXML *)dato;
   if(xml && nombre && textos && modulo) {
     GString *valor = g_string_new("");
     g_string_sprintf(valor, "%s [%s]: %s\n", strdup(nombre), strdup(modulo), strdup(textos));
@@ -38,10 +38,17 @@ void funcion_error(const char *nombre, const char *modulo, const char *textos) {
 
 gboolean tick(gpointer data)
 {
-    pipeline_t *p = (pipeline_t *)data;
+    pipeline_t *p = (pipeline_t *)g_object_get_data(G_OBJECT(data), "pipeline");
     pipeline_ciclo(p);
     return TRUE;
 }
+
+void on_hsc_tolerancia_rojo_value_changed(GtkRange *range, gpointer user_data){
+  GladeXML *xml = glade_get_widget_tree(GTK_WIDGET(range));
+  GtkWidget *ventana = glade_xml_get_widget(xml, "win_pipeline");
+  g_timeout_add((int)floor(gtk_range_get_value(range)), tick, ventana);
+}
+
 
 int main(int argc, char **argv)
 {
@@ -67,11 +74,15 @@ int main(int argc, char **argv)
   else {
     gtk_init(&argc, &argv);
     glade_init();
-    xml = glade_xml_new("ventana_pipeline.glade", NULL, NULL);
+    GladeXML *xml = glade_xml_new("ventana_pipeline.glade", NULL, NULL);
     glade_xml_signal_autoconnect(xml);
-    pipeline_t * p = pipeline_cargar(argv[1], g_get_current_dir(), funcion_error);
+    GtkWidget *ventana = glade_xml_get_widget(xml, "win_pipeline");
+    pipeline_t * p = pipeline_cargar(argv[1], g_get_current_dir(), funcion_error, xml);
+    g_object_set_data(G_OBJECT(ventana), "pipeline", p);
+    GtkWidget *hsc_timer = glade_xml_get_widget(xml, "hsc_temporizador");
+    gtk_range_set_value(GTK_RANGE(hsc_timer), (gdouble)timer);
     if(p) {
-      g_timeout_add(timer, tick, p);
+      g_timeout_add(timer, tick, ventana);
       pipeline_iniciar(p);	
       gtk_main();
       pipeline_borrar(p);
