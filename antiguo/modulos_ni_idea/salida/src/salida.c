@@ -48,7 +48,7 @@ void * get_datos() {
   return 0;
 }
 
-int iniciar() {
+int iniciar(const char **argumentos) {
   ventana = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   scroll = gtk_scrolled_window_new(NULL, NULL);
   gtk_widget_show(scroll);

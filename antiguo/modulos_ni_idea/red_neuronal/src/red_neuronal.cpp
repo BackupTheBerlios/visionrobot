@@ -56,7 +56,7 @@ int set_datos(const void * datos){
 void * get_datos(){
 	return buffer_out;
 }
-int iniciar() {
+int iniciar(const char **argumentos) {
       strcpy(opciones.ruta, "");
       opciones.tipo = ORDEN;
       principal= new Principal();

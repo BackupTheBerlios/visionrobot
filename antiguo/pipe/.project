@@ -5,6 +5,7 @@
 	<projects>
 		<project>camara</project>
 		<project>filtro_gestos</project>
+		<project>libpipeline</project>
 		<project>red_neuronal</project>
 		<project>salida</project>
 	</projects>

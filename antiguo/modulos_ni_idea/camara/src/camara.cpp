@@ -72,7 +72,7 @@ void * get_datos() {
 }
 
 
-int iniciar() {	
+int iniciar(const char **argumentos) {
 	PON_ERROR("Iniciando camara...\n");
 	datos_salida.m_alto = 240;
 	datos_salida.m_ancho = 320;

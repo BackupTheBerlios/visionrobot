@@ -8,6 +8,7 @@
 <tool superClass="cdt.managedbuild.tool.gnu.c.compiler.cygwin.exe.debug" id="cdt.managedbuild.tool.gnu.c.compiler.cygwin.exe.debug.1579186515" name="GCC C Compiler">
 <option superClass="gnu.c.compiler.option.include.paths" id="gnu.c.compiler.option.include.paths.1279640721" valueType="includePath">
 <listOptionValue value="&quot;C:\eclipse\workspace\pipe\include&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\workspace\libpipeline\include&quot;" builtIn="false"/>
 <listOptionValue value="&quot;C:\eclipse\include&quot;" builtIn="false"/>
 <listOptionValue value="&quot;C:\eclipse\include\atk-1.0&quot;" builtIn="false"/>
 <listOptionValue value="&quot;C:\eclipse\include\glib-2.0&quot;" builtIn="false"/>

@@ -26,6 +26,7 @@
 #include <libxml/parser.h>
 
 #define MAX_CONEXIONES 32
+#define MAX_ARGUMENTOS 32
 
 #ifdef WIN32
 #define pipeline_free_library(x) FreeLibrary((x))
@@ -61,11 +62,12 @@ int pipeline_poner_a_cero(elemento_t * elemento) {
 }
 
 elemento_t *pipeline_nuevo(pipeline_t * pipeline, const char *nombre,
-			      const char * ruta)
+			      const char * ruta, const char **argumentos)
 {
     pipeline->m_elemento[pipeline->m_numero].m_id = pipeline->m_numero;
     pipeline->m_elemento[pipeline->m_numero].m_numero_conexiones = 0;
     pipeline->m_elemento[pipeline->m_numero].m_iniciado = 0;
+    pipeline->m_elemento[pipeline->m_numero].m_argumentos = (char **)argumentos;
     strcpy(pipeline->m_elemento[pipeline->m_numero].m_ruta, ruta);
     strcpy(pipeline->m_elemento[pipeline->m_numero].m_nombre, nombre);
     pipeline_poner_a_cero(&pipeline->m_elemento[pipeline->m_numero]);
@@ -138,6 +140,8 @@ int pipeline_guardar(const pipeline_t * pipeline, const char *ruta)
     xmlNodePtr modulo;
     xmlNodePtr nombre;
     xmlNodePtr r;
+    /*xmlNodePtr x;
+    xmlNodePtr y;*/
     xmlNodePtr error_pipe;
     xmlNodePtr *c;
     xmlNodePtr id;
@@ -157,7 +161,7 @@ int pipeline_guardar(const pipeline_t * pipeline, const char *ruta)
 	modulo = xmlNewNode(NULL, BAD_CAST "modulo");
 	nombre = xmlNewNode(NULL, BAD_CAST "nombre");
 	r = xmlNewNode(NULL, BAD_CAST "ruta");
-/*	x = xmlNewNode(NULL, BAD_CAST "x");
+	/*x = xmlNewNode(NULL, BAD_CAST "x");
 	y = xmlNewNode(NULL, BAD_CAST "y");*/
 	id = xmlNewNode(NULL, BAD_CAST "id");
 
@@ -165,7 +169,7 @@ int pipeline_guardar(const pipeline_t * pipeline, const char *ruta)
 	xmlAddChild(modulo, id);
 	xmlAddChild(modulo, nombre);
 	xmlAddChild(modulo, r);
-/*	xmlAddChild(modulo, x);
+	/*xmlAddChild(modulo, x);
 	xmlAddChild(modulo, y);*/
 
 	sprintf(buffer, "%i", pipeline->m_elemento[i].m_id);
@@ -173,7 +177,7 @@ int pipeline_guardar(const pipeline_t * pipeline, const char *ruta)
 	xmlNodeSetContent(nombre,
 			  BAD_CAST pipeline->m_elemento[i].m_nombre);
 	xmlNodeSetContent(r, BAD_CAST pipeline->m_elemento[i].m_ruta);
-/*	sprintf(buffer, "%i", pipeline->m_elemento[i].m_x);
+	/*sprintf(buffer, "%i", pipeline->m_elemento[i].m_x);
 	xmlNodeSetName(x, BAD_CAST buffer);
 	sprintf(buffer, "%i", pipeline->m_elemento[i].m_y);
 	xmlNodeSetName(y, BAD_CAST buffer);*/
@@ -189,6 +193,14 @@ int pipeline_guardar(const pipeline_t * pipeline, const char *ruta)
 	    xmlNodeSetContent(c[j], BAD_CAST buffer);
 	}
 	free(c);
+    
+    char **aux = (char **)pipeline->m_elemento[i].m_argumentos;
+    while(*aux) {
+        xmlNodePtr arg = xmlNewNode(NULL, BAD_CAST "argumento");
+        xmlAddChild(modulo, arg);
+        xmlNodeSetContent(arg, BAD_CAST *aux);
+        aux++;
+    }
     }
     xmlDocSetRootElement(doc, pipe);
     FILE *f = fopen(ruta, "w");
@@ -205,7 +217,10 @@ int pipeline_parse_modulo(xmlDocPtr doc, xmlNodePtr cur, pipeline_t * pipeline,
     xmlChar *nombre = 0;
     xmlChar *ruta = 0;
     xmlChar *key;
-    //int x, y;
+    xmlChar *arg = 0;
+    char *argumentos[MAX_ARGUMENTOS];
+    int cuenta_args = 0;
+    int x, y;
     int j = 0;
     cur = cur->xmlChildrenNode;
     while (cur != NULL) {
@@ -241,6 +256,14 @@ int pipeline_parse_modulo(xmlDocPtr doc, xmlNodePtr cur, pipeline_t * pipeline,
 		ruta = strdup("");
 	    }
 	}
+    if ((!xmlStrcmp(cur->name, (const xmlChar *) "argumento"))) {        
+        arg = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+        if (!ruta) {
+        ruta = strdup("");
+        }
+        argumentos[cuenta_args++] = ruta;
+    }
+   
 	if ((!xmlStrcmp(cur->name, (const xmlChar *) "conexion"))) {
 	    key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 	    if (!key) {
@@ -252,7 +275,8 @@ int pipeline_parse_modulo(xmlDocPtr doc, xmlNodePtr cur, pipeline_t * pipeline,
 	}
 	cur = cur->next;
     }
-    pipeline_nuevo(pipeline, nombre, ruta);
+    argumentos[cuenta_args] = 0;
+    pipeline_nuevo(pipeline, nombre, ruta, argumentos);
     free(nombre);
     free(ruta);
     return j;
@@ -364,7 +388,7 @@ void pipeline_cambiar_biblioteca(elemento_t * elemento)
 	    (funcion_1) pipeline_get_function(elemento->m_handler,
 					      F_CICLO);
 	elemento->m_funcion_iniciar =
-	    (funcion_1) pipeline_get_function(elemento->m_handler,
+	    (funcion_5) pipeline_get_function(elemento->m_handler,
 					      F_INICIAR);
 	elemento->m_funcion_propiedades =
 	    (funcion_1) pipeline_get_function(elemento->m_handler,
@@ -440,7 +464,7 @@ int pipeline_iniciar(const pipeline_t * pipeline, elemento_t * elemento)
   if(!elemento->m_iniciado) {    
     	elemento->m_iniciado = 1;
     if (elemento->m_funcion_iniciar) {
-	elemento->m_funcion_iniciar();
+	elemento->m_funcion_iniciar((const char **)elemento->m_argumentos);
 	pipeline_enviar_error(pipeline, elemento);
 
 	return 0;
@@ -497,3 +521,20 @@ int pipeline_iniciar_todas(pipeline_t * pipeline) {
     }
     return 0;
 }
+
+
+ void pipeline_borrar_argumentos(elemento_t * elemento) {
+    char ** aux = elemento->m_argumentos;
+    char ** aux2;
+    while(aux) {
+        aux2 = aux;
+        free(aux);
+        aux = ++aux2;
+    }
+    free(elemento->m_argumentos);
+    elemento->m_argumentos = 0;
+ }
+ 
+   void pipeline_establecer_argumentos(elemento_t * elemento, const char **argumentos) {
+    elemento->m_argumentos = (char **)argumentos;
+   }

@@ -25,10 +25,25 @@ typedef struct {
     GtkWidget *dialog_action_area4;
     GtkWidget *cancelbutton2;
     GtkWidget *okbutton2;
+    GtkWidget *lista;
+    GtkWidget *etiqueta_lista;
+    GtkWidget *hbox_lista;
+    GtkWidget *vbox_etiqueta;
+    GtkWidget *hseparator_lista;
+    GtkWidget *scroll_lista;
+    GtkWidget *vbox_lista_botones;
+    GtkWidget *boton_nuevo;
+    GtkWidget *boton_eliminar;
+    guint elegido;
 } propiedades_modulo_t;
 
 void propiedades_modulo_cerrar(propiedades_modulo_t * propiedades_modulo);
 
 propiedades_modulo_t *propiedades_modulo_crear();
+
+const char ** propiedades_modulo_argumentos(propiedades_modulo_t * propiedades);
+
+void propiedades_modulo_establecer_lista(propiedades_modulo_t * propiedades, const char **argumentos);
+
 
 #endif

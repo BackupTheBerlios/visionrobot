@@ -70,11 +70,21 @@ typedef struct {
     guint m_retardo;
 } ventana_principal_t;
 
+/*! \brief Crea una ventana principal
+    \return Un puntero a la estructura de datos de la ventana
+*/
 ventana_principal_t *ventana_principal_crear();
 
+/*! \brief Libera la memoria de la ventana, y la cierra
+    \param ventana_principal La ventana que borramos
+*/
 void ventana_principal_borrar(ventana_principal_t * ventana_principal);
 
-void ventana_principal_abrir(char *file,
-			     ventana_principal_t * ventana_principal);
+/*! \brief Abre un archivo en la ventana
+    \param ventana_principal La ventana en la que abrimos el archivo
+    \param ruta La ruta del archivo que abrimos
+*/
+void ventana_principal_abrir(ventana_principal_t * ventana_principal,
+        const char *ruta);
 
 #endif

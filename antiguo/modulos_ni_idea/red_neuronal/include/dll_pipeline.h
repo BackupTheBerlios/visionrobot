@@ -25,9 +25,11 @@ DLLEXPORT int set_datos(const void * datos) ;
 DLLEXPORT void * get_datos();
 
 /*! \brief Inicia el módulo. En esta función hay que crear las estructuras de datos
+    \param argumentos Una lista terminada en 0 de cadenas de caracteres que se le pasan al módulo
     \return 0 si no hay error, -1 en caso de fallo
 */
-DLLEXPORT int iniciar() ;
+DLLEXPORT int iniciar(const char **argumentos) ;
+
 
 /*! \brief Función que muestra propiedades de configuración o cualquier cosa útil algo ajena al pipeline
     \return 0 si no hay error, -1 en caso de fallo

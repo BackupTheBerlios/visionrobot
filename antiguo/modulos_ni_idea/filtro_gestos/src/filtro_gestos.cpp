@@ -103,7 +103,7 @@ cerrar_ventana(GtkWidget * widget,
 			  return TRUE;
 }  
 
-int iniciar() {
+int iniciar(const char **argumentos) {
     PON_ERROR("Iniciando filtro de gestos...\n");
       filtro= new Filtro();
 

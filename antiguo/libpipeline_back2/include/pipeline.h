@@ -54,7 +54,7 @@ extern "C" {
 #include <dlfcn.h>
 #endif
 
-  /*! \brief Para el ciclo, iniciar, propiedades y cerrar */
+  /*! \brief Para el ciclo, propiedades y cerrar */
     typedef int (*funcion_1) ();
   /*! \brief Para get_datos */
     typedef void *(*funcion_2) ();
@@ -62,6 +62,8 @@ extern "C" {
     typedef int (*funcion_3) (const void *);
   /*! \brief Para error */
     typedef char *(*funcion_4) ();
+    /*! \brief Para iniciar */
+    typedef int (*funcion_5) (const char **);
 
 /*! \brief La estructura de datos de cada elemento del pipe */
     struct elemento_s {
@@ -73,9 +75,9 @@ extern "C" {
       void *
 #endif
       m_handler; /*!< El interfaz con la biblioteca dinámica */
-
+      char ** m_argumentos; /*!< Una lista de cadenas, que representan argumentos */
       funcion_1 m_funcion_ciclo;  /*!< La función para el ciclo */
-      funcion_1 m_funcion_iniciar; /*!< La función para iniciar */
+      funcion_5 m_funcion_iniciar; /*!< La función para iniciar */
       funcion_1 m_funcion_propiedades; /*!< La función de propiedades */
       funcion_1 m_funcion_cerrar; /*!< La función para cerrar */
       funcion_2 m_funcion_get_datos; /*!< La función para devolver datos */
@@ -110,9 +112,10 @@ extern "C" {
     \param pipeline El pipe en el se crea
     \param nombre El nombre que aparecerá reflejado
     \param ruta La ruta a la biblioteca dinámica
+    \param argumentos La lista de argumentos del pipeline
     \return El nuevo elemento
 */
-    elemento_t *pipeline_nuevo(pipeline_t * pipeline, const char *nombre, const char *ruta);
+    elemento_t *pipeline_nuevo(pipeline_t * pipeline, const char *nombre, const char *ruta, const char **argumentos);
 /*! \brief Borra un pipe
     \param pipeline El pipe que se borra
     \return Devuelve 0
@@ -200,6 +203,15 @@ extern "C" {
   */
   int pipeline_iniciar_todas(pipeline_t * pipeline);
     
+  /*! \brief Borra la lista de argumentos
+     \param elemento El elemento dueño de la lista
+  */  
+  void pipeline_borrar_argumentos(elemento_t * elemento);
+  /*! \brief Establece la lista de argumentos
+     \param elemento El elemento dueño de la lista
+     \param argumentos Los argumentos que establecemos
+  */  
+  void pipeline_establecer_argumentos(elemento_t * elemento, const char **argumentos);
 
 #ifdef __cplusplus
 }
