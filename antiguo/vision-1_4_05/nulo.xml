@@ -9,7 +9,8 @@
 
   <!-- Generador de imagenes -->
   <modulo ruta="imagenes" nombre="imagenes" inicio="1">
-    <argumento nombre="archivo">avanzar.xpm</argumento>
+    <argumento nombre="video">1.mpg</argumento>
+<!--    <argumento nombre="archivo">avanzar.xpm</argumento> -->
     <argumento nombre="ancho">320</argumento>
     <argumento nombre="alto">240</argumento>
     <argumento nombre="bytes">3</argumento>

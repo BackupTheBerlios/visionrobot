@@ -4,6 +4,7 @@
            \section modulo Descripción del módulo
            Este módulo puede generar imágenes de varios tipos:
 	   <ul>
+	      <li>Reproducir un video.
 	      <li>Imágenes aleatorias, creando puntos diseminados de diferentes colores por la imagen
 	      <li>Una imagen plana de un color fijo
 	      <li>Cargar un archivo de imagen
@@ -20,6 +21,7 @@
 	   \section argumentos Argumentos
 	   Los argumentos que soporta el módulo son:
 	   <ul>
+	     <li><em>video</em>: Si este atributo existe, se carga el video correspondiente.
 	     <li><em>camara</em>: Si este atributo existe y es igual a 1, se considera que se toma la imagen de un dispositivo externo.
 	     <li><em>alto</em>: El alto de la imagen, obligatorio.
 	     <li><em>ancho</em>: El ancho de la imagen, obligatorio.
@@ -42,9 +44,27 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <sane/sane.h>
 #include <unistd.h>
+#include <xine.h>
+#include <xine/xineutils.h>
+
 
 //! Tipo enumerado que define qué tipo de función va a realizar el módulo en una instancia determinada
-typedef enum {CAMARA, IMAGEN, ALEATORIO, COLOR} tipo_imagen_t;
+typedef enum {CAMARA,		/*!< Si se usa el método de captura directa de cámara. */
+	      IMAGEN,		/*!< Si se carga una imagen desde un archivo. */
+	      ALEATORIO,	/*!< Si se generan imágenes aleatorias. */
+	      COLOR,		/*!< Si se plasma un color definido en la pantalla. */
+	      VIDEO		/*!< Si se reproduce un video. */
+} tipo_imagen_t;
+
+//! Estructura de datos para el video.
+typedef struct {
+  xine_t              *xine;
+  xine_stream_t       *stream;
+  xine_video_port_t   *vo_port;
+  xine_audio_port_t   *ao_port;
+  xine_event_queue_t  *event_queue;
+  int running;
+} video_t;
 
 /*! \brief La estructura de datos que tiene cada módulo. */
 typedef struct {
@@ -56,8 +76,9 @@ typedef struct {
   int m_ancho_anterior;		/*!< El ancho del frame anterior, para la cámara. Si es diferente del actual, se cambia la imagen. De este modo controlamos el tamaño que tomamos. */
   GdkPixbuf *m_imagen_archivo;	/*!< Un GdkPixbuf que almacena la imagen que hemos abierto (si es que hemos abierto alguna). */
   char m_buffer_error[128];	/*!< El buffer donde guardamos los mensajes de error, para devolverlos. */
-  tipo_imagen_t m_tipo; /*!< El tipo de función que hemos elegido. */
+  tipo_imagen_t m_tipo;         /*!< El tipo de función que hemos elegido. */
   SANE_Handle m_handle;		/*!< El <em>handle</em> de la interfaz con SANE. */
+  video_t m_video;
 } dato_imagenes_t;
 
 /*! \brief El nombre del puerto de salida de una imagen */
@@ -122,6 +143,9 @@ static char* imagenes_generar_imagen(modulo_t *modulo) {
       }
     }
     break;
+  case VIDEO:
+    xine_gui_send_vo_data(dato->m_video.stream, XINE_GUI_SEND_EXPOSE_EVENT, imagen->m_imagen);
+    break;
   case COLOR:
     for(i = 0; i < imagen->m_alto; i++) {
       for(j = 0; j < ancho_for; j += 3) {
@@ -148,6 +172,22 @@ static char *imagenes_ciclo(modulo_t* modulo, const char *puerto, const void *va
   return imagenes_generar_imagen(modulo);
 }
 
+//! Funcion de retrollamada para Xine.
+/*! 
+  
+\param user_data Información de usuario.
+\param event Evento que se le pasa.
+*/
+static void event_listener(void *user_data, const xine_event_t *event) {
+  dato_imagenes_t *dato = (dato_imagenes_t *)user_data;
+  switch(event->type) { 
+  case XINE_EVENT_UI_PLAYBACK_FINISHED:
+    dato->m_video.running = 0;
+    break;
+  }
+}
+
+
 //! Función que llama el pipeline y sirve para iniciar el interfaz de imágnenes.
 /*!  Crea la memoria necesaria y ajusta los parámetros pertinenetes del módulo, según esté especificado en el XML.
   
@@ -164,6 +204,7 @@ static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
   dato->m_buffer_camara = 0;
   dato->m_ancho_anterior = -1;
   dato->m_imagen_archivo = 0;
+  char *video = (char*)g_hash_table_lookup(argumentos,"video");
   char *camara = (char*)g_hash_table_lookup(argumentos,"camara");
   imagen->m_alto = atoi(g_hash_table_lookup(argumentos,"alto"));
   imagen->m_ancho = atoi(g_hash_table_lookup(argumentos,"ancho"));
@@ -176,7 +217,37 @@ static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
   int cam = 0;
   SANE_Int info;
   if(camara) cam = atoi(camara);
-  if(cam) {
+  if(video) {
+    char *vo_driver    = "auto";
+    char *ao_driver    = "auto";
+    char configfile[2048];
+    x11_visual_t vis;
+    dato->m_video.xine = xine_new();
+    sprintf(configfile, "%s%s", xine_get_homedir(), "/.xine/config");
+    xine_config_load(dato->m_video.xine, configfile);
+    xine_init(dato->m_video.xine);
+
+    vis.display           = display;
+    vis.screen            = screen;
+    vis.d                 = window;
+    vis.dest_size_cb      = dest_size_cb;
+    vis.frame_output_cb   = frame_output_cb;
+    vis.user_data         = NULL;
+    pixel_aspect          = res_v / res_h;
+
+    dato->m_video.running = 0;
+    dato->m_video.vo_port = xine_open_video_driver(dato->m_video.xine, 
+						   vo_driver, XINE_VISUAL_TYPE_X11, (void *) &vis);
+    dato->m_video.ao_port     = xine_open_audio_driver(dato->m_video.xine , ao_driver, NULL);
+    dato->m_video.stream      = xine_stream_new(dato->m_video.xine, dato->m_video.ao_port, dato->m_video.vo_port);
+    dato->m_video.event_queue = xine_event_new_queue(dato->m_video.stream);
+    xine_event_create_listener_thread(dato->m_video.event_queue, event_listener, dato);
+    
+    /*xine_gui_send_vo_data(dato->m_video.stream, XINE_GUI_SEND_DRAWABLE_CHANGED, (void *) window);
+      xine_gui_send_vo_data(dato->m_video.stream, XINE_GUI_SEND_VIDEOWIN_VISIBLE, (void *) 1);*/
+
+  }
+  else if(cam) {
     dato->m_tipo = CAMARA;
     if(sane_init(0, 0) != SANE_STATUS_GOOD) {
       devolver = "No se puede iniciar SANE";
@@ -277,6 +348,15 @@ static char *imagenes_cerrar(modulo_t* modulo)
   if(CAMARA == dato->m_tipo) {
     sane_close(dato->m_handle);
     sane_exit();
+  }
+  else if(VIDEO == dato->m_tipo) {
+    xine_close(dato->m_video.stream);
+    xine_event_dispose_queue(dato->m_video.event_queue);
+    xine_dispose(dato->m_video.stream);
+    if(dato->m_video.ao_port)
+      xine_close_audio_driver(dato->m_video.xine, dato->m_video.ao_port);  
+    xine_close_video_driver(dato->m_video.xine, dato->m_video.vo_port);  
+    xine_exit(dato->m_video.xine);
   }
   free(dato->m_buffer_camara);
   filtro_gestos_in_imagen_t* imagen = &dato->m_filtro;

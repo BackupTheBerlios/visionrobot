@@ -91,7 +91,8 @@
   
   <!-- Generador de imagenes -->
   <modulo ruta="imagenes" nombre="imagenes" inicio="1">
-<!--    <argumento nombre="camara">1</argumento> -->
+    <argumento nombre="video">1.mpg</argumento>
+    <argumento nombre="camara">1</argumento>
     <argumento nombre="archivo">avanzar.xpm</argumento>
     <argumento nombre="rojo">32</argumento>
     <argumento nombre="verde">45</argumento>
