@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?fileVersion 2.1.0?>
+
+<ManagedProjectBuildInfo>
+<project id="salida.cdt.managedbuild.target.gnu.cygwin.so.1195392111" name="Shared Library (Gnu on Windows)" projectType="cdt.managedbuild.target.gnu.cygwin.so">
+<configuration id="cdt.managedbuild.config.gnu.cygwin.so.debug.255182982" name="Debug" parent="cdt.managedbuild.config.gnu.cygwin.so.debug" artifactName="salida" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" artifactExtension="dll" cleanCommand="rm -rf">
+<toolChain superClass="cdt.managedbuild.toolchain.gnu.cygwin.so.debug" id="cdt.managedbuild.toolchain.gnu.cygwin.so.debug.1569655080" name="%ToolChainName.Dbg">
+<tool superClass="cdt.managedbuild.tool.gnu.c.compiler.cygwin.so.debug" id="cdt.managedbuild.tool.gnu.c.compiler.cygwin.so.debug.1668200445" name="GCC C Compiler">
+<option superClass="gnu.c.compiler.option.include.paths" id="gnu.c.compiler.option.include.paths.918408795" valueType="includePath">
+<listOptionValue value="&quot;C:\eclipse\include\gtk-2.0&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\include\pango-1.0&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\lib\glib-2.0\include&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\lib\gtk-2.0\include&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\workspace\salida\include&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\include&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\include\atk-1.0&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\include\glib-2.0&quot;" builtIn="false"/>
+</option>
+</tool>
+<tool superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.so.debug" id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.so.debug.938110706" name="GCC C++ Compiler"/>
+<tool superClass="cdt.managedbuild.tool.gnu.c.linker.cygwin.so.debug" id="cdt.managedbuild.tool.gnu.c.linker.cygwin.so.debug.2115626847" name="GCC C Linker">
+<option superClass="gnu.c.link.option.libs" id="gnu.c.link.option.libs.964983839" valueType="libs">
+<listOptionValue value="gtk-win32-2.0.dll" builtIn="false"/>
+<listOptionValue value="gobject-2.0.dll" builtIn="false"/>
+<listOptionValue value="glib-2.0.dll" builtIn="false"/>
+</option>
+<option superClass="gnu.c.link.option.paths" id="gnu.c.link.option.paths.857286623" valueType="stringList">
+<listOptionValue value="&quot;C:\eclipse\lib&quot;" builtIn="false"/>
+</option>
+</tool>
+<tool superClass="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.so.debug" id="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.so.debug.193001579" name="GCC C++ Linker"/>
+<tool superClass="cdt.managedbuild.tool.gnu.assembler.cygwin.so.debug" id="cdt.managedbuild.tool.gnu.assembler.cygwin.so.debug.2002647328" name="GCC Assembler"/>
+</toolChain>
+</configuration>
+<configuration id="cdt.managedbuild.config.gnu.cygwin.so.release.339630946" name="Release" parent="cdt.managedbuild.config.gnu.cygwin.so.release" artifactName="salida" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" artifactExtension="dll" cleanCommand="rm -rf">
+<toolChain superClass="cdt.managedbuild.toolchain.gnu.cygwin.so.release" id="cdt.managedbuild.toolchain.gnu.cygwin.so.release.830271217" name="%ToolChainName.Rel">
+<tool superClass="cdt.managedbuild.tool.gnu.c.compiler.cygwin.so.release" id="cdt.managedbuild.tool.gnu.c.compiler.cygwin.so.release.757130043" name="GCC C Compiler"/>
+<tool superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.so.release" id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.so.release.190860644" name="GCC C++ Compiler"/>
+<tool superClass="cdt.managedbuild.tool.gnu.c.linker.cygwin.so.release" id="cdt.managedbuild.tool.gnu.c.linker.cygwin.so.release.479878479" name="GCC C Linker"/>
+<tool superClass="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.so.release" id="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.so.release.386016933" name="GCC C++ Linker"/>
+<tool superClass="cdt.managedbuild.tool.gnu.assembler.cygwin.so.release" id="cdt.managedbuild.tool.gnu.assembler.cygwin.so.release.1711319657" name="GCC Assembler"/>
+</toolChain>
+</configuration>
+</project>
+</ManagedProjectBuildInfo>
