@@ -134,7 +134,7 @@ int pipeline_guardar(pipeline_t * pipeline, const char *ruta)
     sprintf(buffer, "%i", pipeline->m_error);
     error_pipe = xmlNewNode(NULL, BAD_CAST "error_pipe");
     xmlAddChild(pipe, error_pipe);
-    xmlNodeSetName(error_pipe, BAD_CAST buffer);
+    xmlNodeSetContent(error_pipe, BAD_CAST buffer);
 
     int i, j;
     for (i = 0; i < pipeline->m_numero; ++i) {
@@ -153,10 +153,10 @@ int pipeline_guardar(pipeline_t * pipeline, const char *ruta)
 	xmlAddChild(modulo, y);*/
 
 	sprintf(buffer, "%i", pipeline->m_elemento[i].m_id);
-	xmlNodeSetName(id, BAD_CAST buffer);
-	xmlNodeSetName(nombre,
+	xmlNodeSetContent(id, BAD_CAST buffer);
+	xmlNodeSetContent(nombre,
 			  BAD_CAST pipeline->m_elemento[i].m_nombre);
-	xmlNodeSetName(r, BAD_CAST pipeline->m_elemento[i].m_ruta);
+	xmlNodeSetContent(r, BAD_CAST pipeline->m_elemento[i].m_ruta);
 /*	sprintf(buffer, "%i", pipeline->m_elemento[i].m_x);
 	xmlNodeSetName(x, BAD_CAST buffer);
 	sprintf(buffer, "%i", pipeline->m_elemento[i].m_y);
@@ -170,7 +170,7 @@ int pipeline_guardar(pipeline_t * pipeline, const char *ruta)
 	    xmlAddChild(modulo, c[j]);
 	    sprintf(buffer, "%i",
 		    pipeline->m_elemento[i].m_destino[j]->m_id);
-	    xmlNodeSetName(c[j], BAD_CAST buffer);
+	    xmlNodeSetContent(c[j], BAD_CAST buffer);
 	}
 	free(c);
     }
