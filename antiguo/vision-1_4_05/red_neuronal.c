@@ -1,61 +1,58 @@
+/*! \file red_neuronal.c
+    \brief Implementacion de la red.
+    \author Diego Sanchez
+    \version 0.2
+ */  
+    
+/*
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */ 
+
+
 #include "red_neuronal.h"
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
+
+//---------------------------------------------------------------------------
+
 red_neuronal_t * red_neuronal_crear(int en, int oc, int sa) 
 {
-    red_neuronal_t * red =
-	(red_neuronal_t *) malloc(sizeof(red_neuronal_t));
+    red_neuronal_t * red = (red_neuronal_t *) malloc(sizeof(red_neuronal_t));
     red->numEntrada = en;
     red->numOculta = oc;
     red->numSalida = sa;
     red->capaEntrada = (double *) malloc(sizeof(double) * red->numEntrada + 1);
     red->capaOculta = (double *) malloc(sizeof(double) * red->numOculta + 1);
     red->capaSalida = (double *) malloc(sizeof(double) * red->numSalida + 1);
-    red->ocultaD = (double *) malloc(sizeof(double) * red->numOculta + 1);
-    red->salidaD = (double *) malloc(sizeof(double) * red->numSalida + 1);
-    red->objetivo = (double *) malloc(sizeof(double) * red->numSalida + 1);
     red->pesosEntrada = (double *) malloc(sizeof(double) * ((red->numEntrada + 1) * (red->numOculta + 1)));
     red->pesosOculta = (double *) malloc(sizeof(double) * ((red->numOculta + 1) * (red->numSalida + 1)));
-    red->pesosEntradaAnterior = (double *) malloc(sizeof(double) * ((red->numEntrada + 1) * (red->numOculta + 1)));
-    red->pesosOcultaAnterior = (double *) malloc(sizeof(double) * ((red->numOculta + 1) * (red->numSalida + 1)));
-    int i, j;
-    for (i = 0; i <= red->numEntrada; i++)
-	for (j = 0; j <= red->numOculta; j++) {
-	    int ra = rand() * 100 / RAND_MAX;
-	    if (ra == 50)
-		ra = 51;
-	    double ran = (((ra * 0.01) * 2) - 1);
-	    red->pesosEntrada[(i * (red->numOculta + 1)) + j] = ran;
-	    red->pesosEntradaAnterior[(i * (red->numOculta + 1)) + j] =
-		0.0;
-    } for (i = 0; i <= red->numOculta; i++)
-	for (j = 0; j <= red->numSalida; j++) {
-	    int ra = rand() * 100 / RAND_MAX;
-	    if (ra == 50)
-		ra = 51;
-	    double ran = (((ra * 0.01) * 2) - 1);
-	    red->pesosOculta[(i * (red->numSalida + 1)) + j] = ran;
-	    red->pesosOcultaAnterior[(i * (red->numSalida + 1)) + j] =
-		0.0;
-	} return red;
+    return red;
 }
 
 
 //---------------------------------------------------------------------------
-void red_neuronal_borrar(red_neuronal_t ** red) 
+
+void red_neuronal_borrar(red_neuronal_t ** red)
 {
     if (red && (*red)) {
 	free((*red)->capaOculta);
 	free((*red)->capaEntrada);
 	free((*red)->capaSalida);
-	free((*red)->ocultaD);
-	free((*red)->salidaD);
-	free((*red)->objetivo);
 	free((*red)->pesosEntrada);
-	free((*red)->pesosEntradaAnterior);
 	free((*red)->pesosOculta);
-	free((*red)->pesosOcultaAnterior);
 	*red = 0;
     }
 }
@@ -63,16 +60,14 @@ void red_neuronal_borrar(red_neuronal_t ** red)
 
 //---------------------------------------------------------------------------
 //Calcula el valor de la unidades de la capa2
-void red_neuronal_calcular_capa( /*red_neuronal_t * red, */ int num1,
-				 int num2, double *capa1, double *capa2,
+void red_neuronal_calcular_capa(int num1, int num2, double *capa1, double *capa2,
 				 double *pesos) 
 {
     double sum;
+    int j,k;
     capa1[0] = 1;
-    int j;
     for (j = 1; j <= num2; j++) {
 	sum = 0;
-	int k;
 	for (k = 0; k <= num1; k++)
 	    sum += pesos[(k * (num2 + 1)) + j] * capa1[k];
 	capa2[j] = (1 / (1 + exp(-sum)));
@@ -93,7 +88,8 @@ void red_neuronal_computar_capas(red_neuronal_t * red)
 } 
 
 //---------------------------------------------------------------------------
-    red_neuronal_t * red_neuronal_abrir(const char *file) 
+//Lee de un archivo una red ya entrenada
+red_neuronal_t * red_neuronal_abrir(const char *file)
 {
     FILE * archivo;
     int ne, no, ns;
@@ -126,6 +122,10 @@ void red_neuronal_computar_capas(red_neuronal_t * red)
     fclose(archivo);
     return redA;
 }
+
+
+//---------------------------------------------------------------------------
+//Carga un vector de char que reprentan la imagen, en la entrada de la red
 void red_neuronal_cargar_input_imagen(red_neuronal_t * red, char *dibujo,
 					int ancho, int alto, int bytes) 
 {
@@ -137,20 +137,24 @@ void red_neuronal_cargar_input_imagen(red_neuronal_t * red, char *dibujo,
     for (i = 0; i < alto; i++) {
 	int j;
 	for (j = 0; j < ancho * bytes; j++) {
-	    entrada[k] = (double) (dibujo[(i * ancho * bytes) + j] / 255);
+	    entrada[k] = (double) ((unsigned char)dibujo[(i * ancho * bytes) + j] / 255);
 	    k++;
 	    j += bytes - 1;
 	}	
     }
-} 
+}
+
+
+//---------------------------------------------------------------------------
+/*Propaga la informacion desde la entrada hasta la salida de la red
+y genera un salida dependiendo de lo qua ha reconocido*/
 char *red_neuronal_reconocer(red_neuronal_t * red, char *dibujo,
 					int ancho, int alto, int bytes,
-					tipo_foto_t tipo) 
+					tipo_foto_t tipo)
 {
-    if (!red)
+    if(!red)
 	return "red no cargada";
-    
-	if (!dibujo)
+    if (!dibujo)
 	return "no hay dibujo";
     red_neuronal_cargar_input_imagen(red, dibujo, ancho, alto, bytes);
     red_neuronal_computar_capas(red);
@@ -170,7 +174,6 @@ char *red_neuronal_reconocer(red_neuronal_t * red, char *dibujo,
 	
 	else
 	    return "No_Gesto";
-	break;
     case PARAM:
 	if (red->capaSalida[1] > 0.5)
 	    return "Nula";
@@ -186,9 +189,12 @@ char *red_neuronal_reconocer(red_neuronal_t * red, char *dibujo,
 	
 	else
 	    return "Maxima";
-	break;
     }
     return "";
 }
+
+//---------------------------------------------------------------------------
+
+
 
 
