@@ -109,9 +109,9 @@ static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
   dato_imagenes_t *dato = (dato_imagenes_t*)modulo->m_dato;
   filtro_gestos_in_imagen_t* imagen = &dato->m_filtro;
   dato->m_imagen_archivo = 0;
-  char * rojo = g_hash_table_lookup(argumentos,"rojo");
-  char * verde = g_hash_table_lookup(argumentos,"verde");
-  char * azul = g_hash_table_lookup(argumentos,"azul");
+  char * rojo = (char*)g_hash_table_lookup(argumentos,"rojo");
+  char * verde = (char*)g_hash_table_lookup(argumentos,"verde");
+  char * azul = (char*)g_hash_table_lookup(argumentos,"azul");
   char * archivo_imagen = g_hash_table_lookup(argumentos,"archivo");
   if(archivo_imagen) {
     dato->m_tipo = IMAGEN;

@@ -19,18 +19,18 @@
 
   <modulo ruta="filtro_gestos" nombre="filtro_gestos">
     <argumento nombre="difuminado">2</argumento>
-	<argumento nombre="reduccion">10</argumento>
+    <argumento nombre="reduccion">10</argumento>
     <conexion puerto="salida_imagen_orden">
       <destino puerto="entrada_imagen">ventana_filtro_orden</destino>
     </conexion>
-
+    
     <conexion puerto="salida_imagen_param">
       <destino puerto="entrada_imagen">ventana_filtro_param</destino>
     </conexion>
-
+    
     <!-- <conexion puerto_origen="A" destino="red_neuronal" puerto_destino="entrada_imagen"/> -->
   </modulo>
-
+  
   <modulo ruta="ventana_imagen" nombre="ventana_filtro_param">
     <argumento nombre="nombre_foto">filtro_param.png</argumento>
     <argumento nombre="extension">png</argumento>
