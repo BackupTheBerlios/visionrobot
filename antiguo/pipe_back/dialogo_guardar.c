@@ -1,5 +1,5 @@
 #include "dialogo_guardar.h"
-#include "funciones.h"
+//#include "funciones.h"
 #include <stdlib.h>
 
 void dialogo_guardar_cerrar(dialogo_guardar_t * dialogo_guardar){
@@ -18,7 +18,7 @@ dialogo_guardar_t *dialogo_guardar_crear()
     gtk_widget_set_name(dialogo_guardar->filechooserdialog2, "filechooserdialog2");
     
     #ifndef WIN32  
-    dialogo_guardar->filechooserdialog2_icon_pixbuf = create_pixbuf("pipeline.xpm");
+    dialogo_guardar->filechooserdialog2_icon_pixbuf = gdk_pixbuf_new_from_file("pipeline.xpm", 0);
     if (dialogo_guardar->filechooserdialog2_icon_pixbuf) {
 	gtk_window_set_icon(GTK_WINDOW(dialogo_guardar->filechooserdialog2),
 			    dialogo_guardar->filechooserdialog2_icon_pixbuf);

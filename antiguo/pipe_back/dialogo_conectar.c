@@ -1,5 +1,5 @@
 #include "dialogo_conectar.h"
-#include "funciones.h"
+//#include "funciones.h"
 
 #include <stdlib.h>
 
@@ -16,7 +16,7 @@ dialogo_conectar_t *dialogo_conectar_crear()
 			 "Selecci\303\263n de m\303\263dulo");
 			 
 			 #ifndef WIN32  
-    dialogo_conectar->dialog1_icon_pixbuf = create_pixbuf("pipeline.xpm");
+    dialogo_conectar->dialog1_icon_pixbuf = gdk_pixbuf_new_from_file("pipeline.xpm", 0);
     if (dialogo_conectar->dialog1_icon_pixbuf) {
 	gtk_window_set_icon(GTK_WINDOW(dialogo_conectar->dialog1), dialogo_conectar->dialog1_icon_pixbuf);
 	gdk_pixbuf_unref(dialogo_conectar->dialog1_icon_pixbuf);

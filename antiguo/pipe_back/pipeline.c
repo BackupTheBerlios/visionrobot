@@ -25,8 +25,19 @@
 #include <stdio.h>
 #include <libxml/parser.h>
 
+#ifdef WIN32
+#define pipeline_free_library(x) FreeLibrary((x))
+#define pipeline_load_library(x) LoadLibrary((x))
+#define pipeline_get_function(x, y) GetProcAddress((x), TEXT((y)));
+#else
+#define pipeline_free_library(x) dlclose((x))
+#define pipeline_load_library(x) dlopen((x), RTLD_LAZY) 
+#define pipeline_get_function(x, y) dlsym((x),(y));
+#endif
 
-pipeline_t *crear_pipeline()
+#define ERROR_PIPELINE(y, x) if((x)->m_funcion_error) pipeline_error((y), (x)->m_funcion_error())
+
+pipeline_t *pipeline_crear()
 {
     pipeline_t *p = (pipeline_t *) malloc(sizeof(pipeline_t));
     p->m_numero = 0;
@@ -35,7 +46,7 @@ pipeline_t *crear_pipeline()
     return p;
 }
 
-elemento_t *nuevo(pipeline_t * pipeline, const char *nombre, gint x,
+elemento_t *pipeline_nuevo(pipeline_t * pipeline, const char *nombre, gint x,
 		  gint y, gchar * ruta)
 {
     pipeline->m_elemento[pipeline->m_numero].m_widget =
@@ -49,41 +60,42 @@ elemento_t *nuevo(pipeline_t * pipeline, const char *nombre, gint x,
     strcpy(pipeline->m_elemento[pipeline->m_numero].m_ruta, ruta);
     strcpy(pipeline->m_elemento[pipeline->m_numero].m_nombre, nombre);
     pipeline->m_elemento[pipeline->m_numero].m_handler = 0;
-    cambiar_biblioteca(&pipeline->m_elemento[pipeline->m_numero]);
+    pipeline_cambiar_biblioteca(&pipeline->m_elemento[pipeline->m_numero]);
     pipeline->m_numero++;
     return &pipeline->m_elemento[pipeline->m_numero - 1];
 }
 
-int cerrar_biblioteca(elemento_t * elemento) {
+int pipeline_cerrar_biblioteca(elemento_t * elemento) {
   if(elemento->m_funcion_cerrar) {
     // estoy hay que ponerlo, sólo si se exige que se controle en la dlls
     //elemento->m_funcion_cerrar();
   }
-#ifdef WIN32
+/*#ifdef WIN32
   FreeLibrary(elemento->m_handler);
 #else
   dlclose(elemento->m_handler);
-#endif
+#endif*/
+        pipeline_free_library(elemento->m_handler);
   
   return 0;
 }
 
-int cerrar_todas_bibliotecas(pipeline_t * pipeline) {
+int pipeline_cerrar_todas_bibliotecas(pipeline_t * pipeline) {
   int id;
   for (id = 0; id < pipeline->m_numero; ++id) {
     if (pipeline->m_elemento[id].m_handler != NULL) {
-      cerrar_biblioteca(&pipeline->m_elemento[id]);
+      pipeline_cerrar_biblioteca(&pipeline->m_elemento[id]);
     }
   }
   return 0;
 }
 
-int vaciar_pipeline(pipeline_t * pipeline)
+int pipeline_vaciar(pipeline_t * pipeline)
 {
     int id;
     for (id = 0; id < pipeline->m_numero; ++id) {
 	if (pipeline->m_elemento[id].m_handler != NULL) {
-	  cerrar_biblioteca(&pipeline->m_elemento[id]);
+	  pipeline_cerrar_biblioteca(&pipeline->m_elemento[id]);
 	}
 	gtk_widget_destroy(GTK_WIDGET(pipeline->m_elemento[id].m_widget));
     }
@@ -91,19 +103,19 @@ int vaciar_pipeline(pipeline_t * pipeline)
     return 0;
 }
 
-int borrar(pipeline_t * pipeline, gint id)
+int pipeline_borrar(pipeline_t * pipeline, gint id)
 {
     int i;
     gtk_widget_destroy(GTK_WIDGET(pipeline->m_elemento[id].m_widget));
     if (pipeline->m_elemento[id].m_handler) {
-      cerrar_biblioteca(&pipeline->m_elemento[id]);
+      pipeline_cerrar_biblioteca(&pipeline->m_elemento[id]);
     }
     for (i = id; i < pipeline->m_numero; ++i) {
 	pipeline->m_elemento[i] = pipeline->m_elemento[i + 1];
     }
     return --pipeline->m_numero;
 }
-int guardar(pipeline_t * pipeline, const char *ruta)
+int pipeline_guardar(pipeline_t * pipeline, const char *ruta)
 {
     xmlNodePtr pipe;
     xmlNodePtr modulo;
@@ -221,13 +233,13 @@ int parseModulo(xmlDocPtr doc, xmlNodePtr cur, pipeline_t * pipeline, guint **li
 	}
 	cur = cur->next;
     }
-    nuevo(pipeline, nombre, x, y, ruta);
+    pipeline_nuevo(pipeline, nombre, x, y, ruta);
     free(nombre);
     free(ruta);
     return j;
 }
 
-pipeline_t *cargar(const char *ruta)
+pipeline_t *pipeline_cargar(const char *ruta)
 {
     xmlDocPtr doc;
     xmlNodePtr cur;
@@ -252,7 +264,7 @@ pipeline_t *cargar(const char *ruta)
 	return 0;
     }
     i = 0;
-    pipeline_t *pipe = crear_pipeline();
+    pipeline_t *pipe = pipeline_crear();
     cur = cur->xmlChildrenNode;
     
     char *key;
@@ -280,7 +292,7 @@ pipeline_t *cargar(const char *ruta)
     int k;
     for(k = 0; k < pipe->m_numero; ++k) {
       for(i = 0; i < num_conexiones[k]; ++i) {
-	conectar(pipe, k, lista_objetivo[k][i]);
+	pipeline_conectar(pipe, k, lista_objetivo[k][i]);
       }
     }
 
@@ -291,7 +303,7 @@ pipeline_t *cargar(const char *ruta)
     return pipe;
 }
 
-int conectar(pipeline_t * pipeline, gint origen, gint destino)
+int pipeline_conectar(pipeline_t * pipeline, gint origen, gint destino)
 {
     if (pipeline && origen < pipeline->m_numero
 	&& destino < pipeline->m_numero && origen >= 0 && destino >= 0) {
@@ -307,104 +319,37 @@ int conectar(pipeline_t * pipeline, gint origen, gint destino)
 }
 
 
-void cambiar_biblioteca(elemento_t * elemento) //pipeline_t * pipeline, gint id)
+void pipeline_cambiar_biblioteca(elemento_t * elemento) //pipeline_t * pipeline, gint id)
 {
-#ifdef WIN32
-  if (elemento->m_handler) {
-    FreeLibrary(elemento->m_handler);
-  }
-    elemento->m_handler =
-	LoadLibrary(elemento->m_ruta);
-    if (elemento->m_handler) {
-	elemento->m_funcion_ciclo =
-	    (funcion_1) GetProcAddress(elemento->m_handler,
-				       TEXT(F_CICLO));
-	if(!elemento->m_funcion_ciclo)
-	  elemento->m_funcion_ciclo =
-	    (funcion_1) GetProcAddress(elemento->m_handler,
-				       TEXT(F_CICLO_));
-	
-	elemento->m_funcion_iniciar =
-	  (funcion_1) GetProcAddress(elemento->m_handler,
-				     TEXT(F_INICIAR));
-	if(!elemento->m_funcion_iniciar)
-	  elemento->m_funcion_iniciar =
-	    (funcion_1) GetProcAddress(elemento->m_handler,
-				       TEXT(F_INICIAR_));
-				       
-   elemento->m_funcion_error =
-	  (funcion_4) GetProcAddress(elemento->m_handler,
-				     TEXT(F_ERROR));
-	if(!elemento->m_funcion_error)
-	  elemento->m_funcion_error =
-	    (funcion_4) GetProcAddress(elemento->m_handler,
-				       TEXT(F_ERROR_));               				       
-	
-	elemento->m_funcion_propiedades =
-	  (funcion_1) GetProcAddress(elemento->m_handler,
-				     TEXT(F_PROPIEDADES));
-	if(!elemento->m_funcion_propiedades)
-	  elemento->m_funcion_propiedades =
-	    (funcion_1) GetProcAddress(elemento->m_handler,
-				       TEXT(F_PROPIEDADES_));
-	
-	
-	elemento->m_funcion_cerrar =
-	  (funcion_1) GetProcAddress(elemento->m_handler,
-				     TEXT(F_CERRAR));
-	if(!elemento->m_funcion_cerrar)
-	  elemento->m_funcion_cerrar =
-	    (funcion_1) GetProcAddress(elemento->m_handler,
-				       TEXT(F_CERRAR_));
-	
-	
-	elemento->m_funcion_get_datos =
-	  (funcion_2) GetProcAddress(elemento->m_handler,
-				     TEXT(F_GET_DATOS));
-	if(!elemento->m_funcion_get_datos)
-	  elemento->m_funcion_get_datos =
-	    (funcion_2) GetProcAddress(elemento->m_handler,
-				       TEXT(F_GET_DATOS_));
-	
-	
-	elemento->m_funcion_set_datos =
-	  (funcion_3) GetProcAddress(elemento->m_handler,
-				     TEXT(F_SET_DATOS));
-	if(!elemento->m_funcion_set_datos)
-	  elemento->m_funcion_set_datos =
-	    (funcion_3) GetProcAddress(elemento->m_handler,
-				       TEXT(F_SET_DATOS_));
 
-    }
-#else
-    if (elemento->m_handler) {
-	dlclose(elemento->m_handler);
-    }
-    elemento->m_handler =
-	dlopen(elemento->m_ruta, RTLD_LAZY);
-    if (elemento->m_handler) {
+ if(elemento->m_handler) {
+   pipeline_free_library(elemento->m_handler);
+ }
+ elemento->m_handler =
+	pipeline_load_library(elemento->m_ruta);
+	
+	if (elemento->m_handler) {
 	elemento->m_funcion_ciclo =
-	    (funcion_1) dlsym(elemento->m_handler, F_CICLO);
+	    (funcion_1) pipeline_get_function(elemento->m_handler, F_CICLO);
 	elemento->m_funcion_iniciar =
-	    (funcion_1) dlsym(elemento->m_handler,
+	    (funcion_1) pipeline_get_function(elemento->m_handler,
 			      F_INICIAR);
 	elemento->m_funcion_propiedades =
-	    (funcion_1) dlsym(elemento->m_handler,
+	    (funcion_1) pipeline_get_function(elemento->m_handler,
 			      F_PROPIEDADES);
 	elemento->m_funcion_cerrar =
-	    (funcion_1) dlsym(elemento->m_handler,
+	    (funcion_1) pipeline_get_function(elemento->m_handler,
 			      F_CERRAR);
 	elemento->m_funcion_get_datos =
-	    (funcion_2) dlsym(elemento->m_handler,
+	    (funcion_2) pipeline_get_function(elemento->m_handler,
 			      F_GET_DATOS);
 	elemento->m_funcion_set_datos =
-	    (funcion_3) dlsym(elemento->m_handler,
+	    (funcion_3) pipeline_get_function(elemento->m_handler,
 			      F_SET_DATOS);
    elemento->m_funcion_error =
-	  (funcion_4) dlsym(elemento->m_handler,
+	  (funcion_4) pipeline_get_function(elemento->m_handler,
 				     TEXT(F_ERROR));
     }    
-#endif
     else {
       elemento->m_funcion_ciclo = 0;
       elemento->m_funcion_iniciar = 0;
@@ -419,8 +364,64 @@ void cambiar_biblioteca(elemento_t * elemento) //pipeline_t * pipeline, gint id)
 int pipeline_error(pipeline_t * pipeline, const char * error) {
     if(error && pipeline->m_error != -1) {
        if(pipeline->m_elemento[pipeline->m_error].m_funcion_set_datos) {
-         pipeline->m_elemento[pipeline->m_error].m_funcion_set_datos((char *)error);
+         pipeline->m_elemento[pipeline->m_error].m_funcion_set_datos((const char *)error);
        }
     }
     
+}
+
+int pipeline_ciclo(pipeline_t * pipeline)
+{
+    int i;
+    int j;
+    for (i = 0; i < pipeline->m_numero; ++i) {
+  	   if (pipeline->m_elemento[i].m_iniciado) {
+   	      if(pipeline->m_elemento[i].m_funcion_get_datos) {
+	           void *datos = pipeline->m_elemento[i].m_funcion_get_datos();
+	           ERROR_PIPELINE(pipeline, &pipeline->m_elemento[i]);
+	           for (j = 0; j < pipeline->m_elemento[i].m_numero_conexiones; ++j) {
+                if(pipeline->m_elemento[i].m_destino[j]->m_funcion_set_datos) {
+       		         pipeline->m_elemento[i].m_destino[j]->m_funcion_set_datos(datos);
+                   ERROR_PIPELINE(pipeline, pipeline->m_elemento[i].m_destino[j]);
+	              }
+	           }
+          }
+  	   }
+    }
+    for (i = 0; i < pipeline->m_numero; ++i) {
+	     if (pipeline->m_elemento[i].m_iniciado) {	  
+	        if (pipeline->m_elemento[i].m_funcion_ciclo) {
+		          pipeline->m_elemento[i].m_funcion_ciclo();
+          		ERROR_PIPELINE(pipeline, &pipeline->m_elemento[i]);
+	        }
+	     }
+    }
+    return 0;
+}
+
+int pipeline_iniciar(pipeline_t * pipeline, elemento_t * elemento)
+{
+    char buffer[MAX_NOMBRE];
+    elemento->m_iniciado = 1;
+    sprintf(buffer, "* %s", elemento->m_nombre);
+    gtk_button_set_label(GTK_BUTTON(elemento->m_widget), buffer);
+    if (elemento->m_funcion_iniciar) {
+    	elemento->m_funcion_iniciar();
+     	ERROR_PIPELINE(pipeline, elemento);
+      return 0;
+    }
+    return -1;
+}
+
+int pipeline_parar(elemento_t * elemento)
+{
+    char buffer[MAX_NOMBRE];
+    elemento->m_iniciado = 0;
+    sprintf(buffer, "%s", elemento->m_nombre);
+    gtk_button_set_label(GTK_BUTTON(elemento->m_widget), buffer);
+    if (elemento->m_funcion_cerrar) {
+	elemento->m_funcion_cerrar();
+	return 0;
+    }
+    return -1;
 }

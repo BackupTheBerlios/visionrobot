@@ -37,13 +37,13 @@
 #define F_GET_DATOS "get_datos"
 #define F_ERROR "error"
 
-#define F_CICLO_ "_ciclo"
+/*#define F_CICLO_ "_ciclo"
 #define F_INICIAR_ "_iniciar"
 #define F_CERRAR_ "_cerrar"
 #define F_PROPIEDADES_ "_propiedades"
 #define F_SET_DATOS_ "_set_datos"
 #define F_GET_DATOS_ "_get_datos"
-#define F_ERROR_ "_error"
+#define F_ERROR_ "_error"*/
 
 
 #ifdef __cplusplus
@@ -59,7 +59,7 @@ extern "C" {
 /*! \brief Provisionalmente, la llamada a cada ciclo del pipeline */
     typedef int (*funcion_1) ();
     typedef void *(*funcion_2) ();
-    typedef int (*funcion_3) (void *);
+    typedef int (*funcion_3) (const void *);
     typedef char *(*funcion_4) ();
 
 /*! \brief La estructura de datos de cada elemento del pipe */
@@ -106,7 +106,7 @@ extern "C" {
 /*! \brief Crea un pipe
     \return El pipe creado
 */
-    pipeline_t *crear_pipeline();
+    pipeline_t *pipeline_crear();
 /*! \brief Crea un módulo en el pipe
     \param pipeline El pipe en el se crea
     \param nombre El nombre que aparecerá reflejado
@@ -115,36 +115,36 @@ extern "C" {
     \param ruta La ruta a la biblioteca dinámica
     \return El nuevo elemento
 */
-    elemento_t *nuevo(pipeline_t * pipeline, const char *nombre, gint x,
+    elemento_t *pipeline_nuevo(pipeline_t * pipeline, const char *nombre, gint x,
 		      gint y, gchar * ruta);
 /*! \brief Borra un pipe
     \param pipeline El pipe que se borra
     \return Devuelve 0
 */
-    int vaciar_pipeline(pipeline_t * pipeline);
+    int pipeline_vaciar(pipeline_t * pipeline);
 /*! \brief Borra un módulo
     \param pipeline El pipe
     \param id El id del módulo
     \return Devuelve 0
 */
-    int borrar(pipeline_t * pipeline, gint id);
+    int pipeline_borrar(pipeline_t * pipeline, gint id);
 /*! \brief Guarda un pipeline en XML
     \param pipeline El pipe
     \param archivo La ruta en la que se guarda
     \return Devuelve 0
 */
-    int guardar(pipeline_t * pipeline, const char *archivo);
+    int pipeline_guardar(pipeline_t * pipeline, const char *archivo);
     /*! \brief Carga un pipeline
        \param ruta La ruta del archivo XML    
        \return El nuevo pipeline
      */
-    pipeline_t *cargar(const char *ruta);
+    pipeline_t *pipeline_cargar(const char *ruta);
 
     /*! \brief Carga los símbolos de la nueva biblioteca
        \param pipeline El pipe sobre el que cargamos la biblioteca
        \param id El id del elemento sobre el que hacemos los cambios
      */
-  void cambiar_biblioteca(elemento_t * elemento);//pipeline_t * pipeline, gint id);
+  void pipeline_cambiar_biblioteca(elemento_t * elemento);//pipeline_t * pipeline, gint id);
 
     /*! \brief Conecta dos módulos
        \param pipeline El pipeline que contiene los módulos
@@ -152,12 +152,15 @@ extern "C" {
        \param destino El índice del elemento destino
        \return 0 si todo va bien, -1 en casa
      */
-    int conectar(pipeline_t * pipeline, gint origen, gint destino);
+    int pipeline_conectar(pipeline_t * pipeline, gint origen, gint destino);
 
-  int cerrar_biblioteca(elemento_t * elemento);
-  int cerrar_todas_bibliotecas(pipeline_t * pipeline);
+  int pipeline_cerrar_biblioteca(elemento_t * elemento);
+  int pipeline_cerrar_todas_bibliotecas(pipeline_t * pipeline);
   
   int pipeline_error(pipeline_t * pipeline, const char * error);
+  int pipeline_ciclo(pipeline_t * pipeline);
+  int pipeline_iniciar(pipeline_t * pipeline, elemento_t * elemento);
+  int pipeline_parar(elemento_t * elemento);
 
 #ifdef __cplusplus
 }

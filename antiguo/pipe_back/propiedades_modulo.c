@@ -1,6 +1,6 @@
 #include "propiedades_modulo.h"
-#include "funciones.h"
-#include "auxiliar.h"
+#include "dialogo_abrir.h"
+//#include "funciones.h"
 #include <stdlib.h>
 
 void propiedades_modulo_cerrar(propiedades_modulo_t * propiedades_modulo_) {
@@ -12,7 +12,7 @@ void on_button6_activate(GtkButton * button, gpointer user_data)
 {
   propiedades_modulo_t * propiedades_modulo_ = (propiedades_modulo_t *)user_data;
   GtkWidget *dialog = propiedades_modulo_->propiedades_modulo;
-  gchar *file = abrir_ventana(dialog);
+  gchar *file = dialogo_abrir_ventana(dialog);
   if(file) {
     GtkWidget *modulo = propiedades_modulo_->entry5;
     gtk_entry_set_text(GTK_ENTRY(modulo), file);
@@ -31,7 +31,7 @@ propiedades_modulo_t * propiedades_modulo_crear()
 			 "Propiedades del m\303\263dulo");
 
 #ifndef WIN32  			 
-    propiedades_modulo_o->propiedades_modulo_icon_pixbuf = create_pixbuf("pipeline.xpm");
+    propiedades_modulo_o->propiedades_modulo_icon_pixbuf = gdk_pixbuf_new_from_file("pipeline.xpm", 0);
     if (propiedades_modulo_o->propiedades_modulo_icon_pixbuf) {
 	gtk_window_set_icon(GTK_WINDOW(propiedades_modulo_o->propiedades_modulo),
 			    propiedades_modulo_o->propiedades_modulo_icon_pixbuf);

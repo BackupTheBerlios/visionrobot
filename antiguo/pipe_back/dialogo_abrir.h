@@ -17,4 +17,10 @@ dialogo_abrir_t *dialogo_abrir_crear();
 
 void dialogo_abrir_cerrar(dialogo_abrir_t * dialogo_abrir);
 
+/*! \brief Abre un archivo, mostrando un cuadro de diálogo
+    \param w La ventana padre
+    \return El puntero a FILE del archivo abierto
+*/
+char *dialogo_abrir_ventana(GtkWidget * w);
+
 #endif

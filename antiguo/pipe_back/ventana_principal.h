@@ -67,12 +67,14 @@ typedef struct {
     gboolean modificado;
     GdkGC *gc;
     GdkDrawable *ww;  
+    guint m_timer;
+    gboolean m_seguir_timer;
 } ventana_principal_t;
 
 ventana_principal_t * ventana_principal_crear();
 
 void ventana_principal_borrar(ventana_principal_t * ventana_principal);
 
-void abre(char *file, ventana_principal_t * ventana_principal);
+//void abre(char *file, ventana_principal_t * ventana_principal);
 
 #endif

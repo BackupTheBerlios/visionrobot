@@ -1,6 +1,20 @@
 #include "dialogo_abrir.h"
-#include "funciones.h"
+//#include "funciones.h"
 #include <stdlib.h>
+
+char *dialogo_abrir_ventana(GtkWidget * w)
+{
+  // a ver si hay que cargarse algo
+  dialogo_abrir_t * dialogo_abrir = dialogo_abrir_crear();
+  GtkWidget *dialog = dialogo_abrir->filechooserdialog1;
+  char *filename = 0;
+  if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
+    filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+  }
+  //gtk_widget_destroy(dialog);
+  dialogo_abrir_cerrar(dialogo_abrir);
+  return filename;
+}
 
 void dialogo_abrir_cerrar(dialogo_abrir_t * dialogo_abrir) {
   gtk_widget_destroy(dialogo_abrir->filechooserdialog1);
@@ -16,7 +30,7 @@ dialogo_abrir_t *dialogo_abrir_crear()
     gtk_widget_set_name(dialogo_abrir->filechooserdialog1, "filechooserdialog1");
     
     #ifndef WIN32  
-    dialogo_abrir->filechooserdialog1_icon_pixbuf = create_pixbuf("pipeline.xpm");
+    dialogo_abrir->filechooserdialog1_icon_pixbuf = gdk_pixbuf_new_from_file("pipeline.xpm", 0);
     if (dialogo_abrir->filechooserdialog1_icon_pixbuf) {
 	gtk_window_set_icon(GTK_WINDOW(dialogo_abrir->filechooserdialog1),
 			    dialogo_abrir->filechooserdialog1_icon_pixbuf);
