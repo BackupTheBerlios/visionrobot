@@ -8,9 +8,9 @@
 #include "Codigo_Filtro.h"
 #include "preferencias.h"
 
-entrada* buffer_in;
-salida*  buffer_out;
-respuesta_t opciones;
+data_in* buffer_in;
+data_out*  buffer_out;
+Filtro* filtro;
 
 BOOL APIENTRY DllMain( HANDLE hModule, 
                        DWORD  ul_reason_for_call, 
@@ -30,27 +30,30 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 
 
 int ciclo (){
-	buffer_out= Filtro(buffer_in->m_imagen, buffer_in->m_alto ,buffer_in->m_ancho);
+	buffer_out= filtro->Filtrar(buffer_in->m_imagen, buffer_in->m_alto ,buffer_in->m_ancho);
 	return 0;
 }
 int set_datos(const void * datos){
-	buffer_in= (entrada*)datos;
-    buffer_out= NULL;
+	buffer_in= (data_in*)datos;
+      buffer_out= NULL;
 	return 0;
 }
 void * get_datos(){
 	return buffer_out;
 }
 int iniciar() {
+      filtro= new Filtro();
 	return 0;
 }
 int propiedades(){
   // Carlos -->
   if(abrir_preferencias(&opciones)) {
-    // Añadir el código que hay que realizar con esas opciones
+     filtro->SetColor(240,160,120,70,120,70,100,50,100,50,100,50);
+    // Temporalmente
   }
   // <--
 }
 int cerrar(){
+      delete filtro;
 	return 0;
 }
