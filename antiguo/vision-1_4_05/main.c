@@ -9,9 +9,7 @@
 static GladeXML* xml = 0;
 static guint timer = 1000;
 
-#ifdef GTK
 #define OPCIONES_LINEA
-#endif
 
 #ifdef OPCIONES_LINEA
 static GOptionEntry entries[] = {
@@ -48,7 +46,7 @@ int main(int argc, char **argv)
   int valor;
 
 #ifdef OPCIONES_LINEA
-  GOptionContext* contexto = g_option_context_new (" <pipeline> - ejecuta un pipeline definido en un XML v√°lido");
+  GOptionContext* contexto = g_option_context_new (" <pipeline> - ejecuta un pipeline definido en un XML v·lido");
   g_option_context_add_main_entries (contexto, entries, 0);
   g_option_context_add_group (contexto, gtk_get_option_group (TRUE));
   g_option_context_parse (contexto, &argc, &argv, 0);

@@ -25,7 +25,7 @@ static char *prolog_ciclo(modulo_t *modulo, const char *puerto, const void *dato
 
 static char *prolog_iniciar(modulo_t *modulo, GHashTable *argumentos) {
   char *plav[2];
-  plav[0] = program;
+  plav[0] = "pipeline";
   plav[1] = NULL;
 
   PL_initialise(1, plav);

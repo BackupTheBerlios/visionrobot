@@ -1,2 +1,4 @@
 frase (E, S) :-
-	S is 45.
+	S is 24,
+	write(S),
+	nl.

@@ -25,6 +25,10 @@ static char *red_ciclo(modulo_t *modulo, const char *puerto, const void *value)
 	      red_neuronal_reconocer(red, red_in->m_imagen,
 				     red_in->m_ancho, red_in->m_alto,
 				     red_in->m_bytes));
+      g_hash_table_insert(modulo->m_tabla, PUERTO_TEXTO, &dato->m_salida);
+    }
+    else {
+      g_hash_table_insert(modulo->m_tabla, PUERTO_TEXTO, 0);
     }
   }
   return 0;

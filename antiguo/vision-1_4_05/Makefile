@@ -1,6 +1,6 @@
 OPTS=-Wall -g
 
-all: etags libsalida.so libfiltro_gestos.so libred_neuronal.so libimagenes.so libventana_imagen.so libventana_parametros.so pipeline
+all: etags libsalida.so libfiltro_gestos.so libred_neuronal.so libimagenes.so libventana_imagen.so libventana_parametros.so libprolog.so pipeline
 
 etags:	
 	etags *.c
@@ -15,7 +15,7 @@ libsalida.so: salida.c
 	gcc $(OPTS) -shared -o libsalida.so salida.c `pkg-config glib-2.0 --cflags --libs` `pkg-config libglade-2.0 --cflags --libs`
 
 libprolog.so: prolog.c
-	gcc $(OPTS) -shared -o libprolog.so prolog.c
+	gcc $(OPTS) -shared -o libprolog.so prolog.c `pkg-config glib-2.0 --cflags --libs` -I/usr/lib/pl-5.4.7/include/ -L/usr/lib/pl-5.4.7/lib/i686-linux/ -lpl -lcurses
 
 libfiltro_gestos.so: filtro_gestos.c
 	gcc $(OPTS) -I../include -shared -o libfiltro_gestos.so filtro_gestos.c -L../lib -llua -llualib `pkg-config glib-2.0 --cflags --libs` 

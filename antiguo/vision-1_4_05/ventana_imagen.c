@@ -27,7 +27,7 @@ typedef struct {
 
 static GdkPixbuf *ventana_get_pixbuf(modulo_t * modulo) {  
   datos_ventana_t * datos = (datos_ventana_t *)modulo->m_dato;
-  if(datos->m_imagen->m_imagen) {
+  if(datos->m_imagen && datos->m_imagen->m_imagen) {
 
     GdkPixbuf * pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB,
 					FALSE, 8,datos->m_imagen->m_ancho, datos->m_imagen->m_alto);
