@@ -7,7 +7,7 @@
 <data>
 <item id="cdt_indexer">
 <indexEnabled indexValue="true"/>
-<indexerProblemsEnabled indexProblemsValue="7"/>
+<indexerProblemsEnabled indexProblemsValue="0"/>
 </item>
 <item id="org.eclipse.cdt.core.pathentry">
 <pathentry kind="src" path=""/>
