@@ -4,6 +4,7 @@
 #include <gdk/gdkkeysyms.h>
 #include "auxiliar.h"
 #include "funciones.h"
+#include <string.h>
 
 gint expose_event(GtkWidget *widget, GdkEvent *event, gpointer data);
 
