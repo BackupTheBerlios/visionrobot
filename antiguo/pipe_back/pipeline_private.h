@@ -20,4 +20,4 @@
 #define PRODUCT_NAME	"Pipeline (Visión por Computador)"
 #define PRODUCT_VERSION	"0.3.0"
 
-#endif /*PIPELINE_PRIVATE_H*/
+#endif				/*PIPELINE_PRIVATE_H */

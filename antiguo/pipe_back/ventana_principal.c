@@ -1,6 +1,11 @@
+/*! \file ventana_principal.h
+    \brief Ventana principal de la aplicación
+    \author Carlos León
+    \version 0.1
+ */
+
 #include "ventana_principal.h"
 
-//#include <stdlib.h>
 #include <gdk/gdkkeysyms.h>
 #include "dialogo_abrir.h"
 #include "dialogo_guardar.h"
@@ -13,26 +18,109 @@
 #include <glib.h>
 
 
-#define get_widget(_x, _y) (GTK_TOGGLE_BUTTON(((GtkFixedChild *)g_list_nth_data(gtk_container_get_children(GTK_CONTAINER((_x)->fixed1)), (_y)))->widget))
+#define get_widget(_x, _y) GTK_TOGGLE_BUTTON(((GtkFixedChild * )g_list_nth_data(( (GtkFixed *)(_x)->fixed1)->children, (_y)))->widget)
 
-#define get_x(_x, _y) ((gint)(((GtkFixedChild *)g_list_nth_data(gtk_container_get_children(GTK_CONTAINER((_x)->fixed1)), (_y)))->x))
+#define get_x(_x, _y) (gint)(((GtkFixedChild * )g_list_nth_data(( (GtkFixed *)(_x)->fixed1)->children, (_y)))->x)
 
-#define get_y(_x, _y) ((gint)(((GtkFixedChild *)g_list_nth_data(gtk_container_get_children(GTK_CONTAINER((_x)->fixed1)), (_y)))->y))
+#define get_y(_x, _y) (gint)(((GtkFixedChild * )g_list_nth_data(( (GtkFixed *)(_x)->fixed1)->children, (_y)))->y)
+
+
+gboolean ventana_principal_tick(gpointer data)
+{
+    ventana_principal_t *ventana = (ventana_principal_t *) data;
+    pipeline_ciclo(ventana->pipeline);
+    return ventana->m_seguir_timer;
+}
 
 
 
-void ventana_principal_info(ventana_principal_t *ventana, const gchar * texto)
+int ventana_principal_crear_timer(ventana_principal_t * ventana,
+				  guint retardo)
+{
+    ventana->m_timer =
+	g_timeout_add(retardo, ventana_principal_tick, ventana);
+    ventana->m_seguir_timer = TRUE;
+    return 0;
+
+}
+
+int ventana_principal_parar_timer(ventana_principal_t * ventana)
+{
+    ventana->m_seguir_timer = FALSE;
+    return 0;
+}
+
+
+
+
+gint ventana_principal_expose_event(GtkWidget * widget, GdkEvent * event,
+				    gpointer data)
+{
+    ventana_principal_t *ventana_principal = (ventana_principal_t *) data;
+    int i, j;
+
+    for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
+	int x_origen = (int) get_x(ventana_principal, i);
+	int y_origen = get_y(ventana_principal, i);
+	for (j = 0;
+	     j <
+	     ventana_principal->pipeline->m_elemento[i].
+	     m_numero_conexiones; ++j) {
+	    int x_destino =
+		get_x(ventana_principal, ventana_principal->pipeline->
+		      m_elemento[i].m_destino[j]->m_id);
+	    int y_destino =
+		get_y(ventana_principal, ventana_principal->pipeline->
+		      m_elemento[i].m_destino[j]->m_id);
+	    gdk_draw_line(ventana_principal->ww, ventana_principal->gc,
+			  x_origen, y_origen, x_destino, y_destino);
+	}
+    }
+
+    return FALSE;
+}
+
+
+
+int ventana_principal_elegir_modulo(ventana_principal_t * ventana)
 {
 
-    GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(ventana->window1),
-					       GTK_DIALOG_MODAL |
-					       GTK_DIALOG_DESTROY_WITH_PARENT,
-					       GTK_MESSAGE_INFO,
-					       GTK_BUTTONS_CLOSE,
-					       texto);
+    dialogo_conectar_t *dialogo_conectar = dialogo_conectar_crear();
+    GtkWidget *dialog = dialogo_conectar->dialog1;
+    GtkWidget *combo = dialogo_conectar->comboboxentry1;
+
+    int i;
+    for (i = 0; i < ventana->pipeline->m_numero; ++i) {
+	gtk_combo_box_append_text(GTK_COMBO_BOX(combo),
+				  ventana->pipeline->m_elemento[i].
+				  m_nombre);
+    }
+
+    int respuesta =
+	gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK ?
+	respuesta = gtk_combo_box_get_active(GTK_COMBO_BOX(combo)) : -1;
+
+    dialogo_conectar_cerrar(dialogo_conectar);
+
+    return respuesta;
+}
+
+
+void ventana_principal_info(ventana_principal_t * ventana,
+			    const gchar * texto)
+{
+
+    GtkWidget *dialog =
+	gtk_message_dialog_new(GTK_WINDOW(ventana->window1),
+			       GTK_DIALOG_MODAL |
+			       GTK_DIALOG_DESTROY_WITH_PARENT,
+			       GTK_MESSAGE_INFO,
+			       GTK_BUTTONS_CLOSE,
+			       texto);
     gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy(dialog);
 }
+
 void ventana_principal_acerca_de(ventana_principal_t * ventana)
 {
     char *buffer =
@@ -40,7 +128,8 @@ void ventana_principal_acerca_de(ventana_principal_t * ventana)
     ventana_principal_info(ventana, buffer);
 }
 
-void ventana_principal_mostrar(ventana_principal_t* ventana, const char *info)
+void ventana_principal_mostrar(ventana_principal_t * ventana,
+			       const char *info)
 {
     char buffer[128];
     sprintf(buffer, "Visi\303\263n por computador");
@@ -48,41 +137,43 @@ void ventana_principal_mostrar(ventana_principal_t* ventana, const char *info)
 	sprintf(buffer, "%s - %s", buffer, info);
     }
     gtk_statusbar_pop(GTK_STATUSBAR(ventana->statusbar1), ventana->id);
-    ventana->id = gtk_statusbar_push(GTK_STATUSBAR(ventana->statusbar1), 0, buffer);
+    ventana->id =
+	gtk_statusbar_push(GTK_STATUSBAR(ventana->statusbar1), 0, buffer);
 }
 
-gboolean ventana_principal_confirmacion(ventana_principal_t *ventana, const gchar * texto)
+gboolean ventana_principal_confirmacion(ventana_principal_t * ventana,
+					const gchar * texto)
 {
-    GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(ventana->window1),
-					       GTK_DIALOG_MODAL |
-					       GTK_DIALOG_DESTROY_WITH_PARENT,
-					       GTK_MESSAGE_QUESTION,
-					       GTK_BUTTONS_YES_NO,
-					       texto);
+    GtkWidget *dialog =
+	gtk_message_dialog_new(GTK_WINDOW(ventana->window1),
+			       GTK_DIALOG_MODAL |
+			       GTK_DIALOG_DESTROY_WITH_PARENT,
+			       GTK_MESSAGE_QUESTION,
+			       GTK_BUTTONS_YES_NO,
+			       texto);
     gint result = gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy(dialog);
     return result == GTK_RESPONSE_YES;
 }
 
-gboolean ventana_principal_salir(ventana_principal_t *ventana)
+gboolean ventana_principal_salir(ventana_principal_t * ventana)
 {
     return ventana->modificado ? ventana_principal_confirmacion(ventana,
-				     "El pipeline ha sido modificado y no se ha guardado.\n\302\277 Realmente desea salir ?")
+								"El pipeline ha sido modificado y no se ha guardado.\n\302\277 Realmente desea salir ?")
 	: TRUE;
 }
 
 
-
-
-
-void ventana_principal_guardar_como_aux(ventana_principal_t * ventana_principal,
-		      const char *file)
+void ventana_principal_guardar_como_aux(ventana_principal_t *
+					ventana_principal,
+					const char *file)
 {
     if (file != 0) {
 	pipeline_guardar(ventana_principal->pipeline, file);
 	strcpy(ventana_principal->archivo, file);
 	ventana_principal->modificado = FALSE;
-	ventana_principal_mostrar(ventana_principal, ventana_principal->archivo);
+	ventana_principal_mostrar(ventana_principal,
+				  ventana_principal->archivo);
 	gtk_widget_set_sensitive(ventana_principal->guardar2, FALSE);
     }
 }
@@ -99,17 +190,18 @@ char *ventana_principal_guardar_ventana(ventana_principal_t * ventana)
     return filename;
 }
 
-void ventana_principal_establecer(ventana_principal_t *ventana_principal)
+void ventana_principal_establecer(ventana_principal_t * ventana_principal)
 {
     int i, si = 0, cual;
     gboolean todas_iniciadas = TRUE;
     gboolean todas_paradas = TRUE;
-    guint numero = g_list_length(gtk_container_get_children(GTK_CONTAINER(ventana_principal->fixed1)));
-    for (i = 0; i < numero/*ventana_principal->pipeline->m_numero*/; ++i) {
+    guint numero =
+	g_list_length(gtk_container_get_children
+		      (GTK_CONTAINER(ventana_principal->fixed1)));
+    for (i = 0; i < numero; ++i) {
 
-	if (gtk_toggle_button_get_active
-	    (get_widget(ventana_principal, i))) {
-	
+	if (gtk_toggle_button_get_active(get_widget(ventana_principal, i))) {
+
 	    si++;
 	    cual = i;
 	}
@@ -120,7 +212,7 @@ void ventana_principal_establecer(ventana_principal_t *ventana_principal)
 	    todas_iniciadas = FALSE;
 	}
     }
-    gboolean b = /*ventana_principal->pipeline->m_numero*/numero > 0;
+    gboolean b = numero > 0;
 
     gtk_widget_set_sensitive(ventana_principal->establecer_error, b);
 
@@ -153,32 +245,27 @@ void ventana_principal_pinchado(GtkWidget * menuitem, gpointer user_data)
     ventana_principal_establecer(ventana_principal);
 }
 
-void ventana_principal_crear_boton(ventana_principal_t *ventana, const char *nombre, int x, int y) {
-  GtkWidget * boton = 
-    gtk_toggle_button_new_with_label(strdup(nombre));
-  gtk_widget_show(GTK_WIDGET(boton));
-  gtk_fixed_put(GTK_FIXED(ventana->fixed1), GTK_WIDGET(boton), x, y); 
-  g_signal_connect((gpointer)boton, "toggled", G_CALLBACK(ventana_principal_pinchado),
-		   ventana);
+void ventana_principal_crear_boton(ventana_principal_t * ventana,
+				   const char *nombre, int x, int y)
+{
+    GtkWidget *boton = gtk_toggle_button_new_with_label(strdup(nombre));
+    gtk_widget_show(GTK_WIDGET(boton));
+    gtk_fixed_put(GTK_FIXED(ventana->fixed1), GTK_WIDGET(boton), x, y);
+    g_signal_connect((gpointer) boton, "toggled",
+		     G_CALLBACK(ventana_principal_pinchado), ventana);
 }
 
 void ventana_principal_borrar(ventana_principal_t * ventana_principal)
 {
-    gtk_widget_destroy(ventana_principal->window1);
+    //gtk_widget_destroy(ventana_principal->window1);
     pipeline_vaciar(ventana_principal->pipeline);
-    //    free(ventana_principal->botones);
     g_free(ventana_principal);
 }
 
 
 void ventana_principal_borrar_boton(ventana_principal_t * ventana, int id)
 {
-    int i;
-    gtk_widget_destroy(GTK_WIDGET(/*ventana->botones[id].m_widget)*/get_widget(ventana, id)));
-
-    /*    for (i = id; i < ventana->pipeline->m_numero; ++i) {
-	ventana->botones[i] = ventana->botones[i + 1];
-	}*/
+    gtk_widget_destroy(GTK_WIDGET(get_widget(ventana, id)));
 }
 
 void on_borrar1_activate(GtkMenuItem * menuitem, gpointer user_data)
@@ -192,63 +279,79 @@ void on_borrar1_activate(GtkMenuItem * menuitem, gpointer user_data)
 	int i;
 	for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
 	    if (gtk_toggle_button_get_active
-		(GTK_TOGGLE_BUTTON(get_widget(ventana_principal, i)/*ventana_principal->botones
-				   /*pipeline->m_elemento * [i].
-				     m_widget*/))) {
+		(get_widget(ventana_principal, i))) {
 		pipeline_borrar(ventana_principal->pipeline, i);
 		ventana_principal_borrar_boton(ventana_principal, i);
 		i--;
 		ventana_principal->modificado = TRUE;
 	    }
 	}
-	ventana_principal_establecer( /*ventana_principal->pipeline, */ ventana_principal);
+	ventana_principal_establecer(ventana_principal);
     }
 }
 
 
-void ventana_principal_propiedades(ventana_principal_t * ventana, gint id_elemento)
+void ventana_principal_propiedades(ventana_principal_t * ventana,
+				   gint id_elemento)
 {
-  propiedades_modulo_t * propiedades = propiedades_modulo_crear();
-  if(id_elemento != -1) {
-    gtk_entry_set_text(GTK_ENTRY(propiedades->entry2), strdup(ventana->pipeline->m_elemento[id_elemento].m_nombre));
-    gtk_entry_set_text(GTK_ENTRY(propiedades->entry5), strdup(ventana->pipeline->m_elemento[id_elemento].m_ruta));
-    char buffer[64];
-    sprintf(buffer, "%i", get_x(ventana, id_elemento));
-    gtk_entry_set_text(GTK_ENTRY(propiedades->entry5), strdup(buffer));
-    sprintf(buffer, "%i", get_x(ventana, id_elemento));
-    gtk_entry_set_text(GTK_ENTRY(propiedades->entry5), strdup(buffer));
-  }
-  if(gtk_dialog_run(GTK_DIALOG(propiedades->propiedades_modulo)) == GTK_RESPONSE_OK) {
-    if(id_elemento == -1) {
-      /*pipeline_nuevo(ventana->pipeline, 
-		     gtk_entry_get_text(GTK_ENTRY(propiedades->entry2)),
-		     gtk_entry_get_text(GTK_ENTRY(propiedades->entry5)));*/
-		  //ventana->pipeline->m_numero++;
-      ventana_principal_crear_boton(ventana,
-				    gtk_entry_get_text(GTK_ENTRY(propiedades->entry2)),
-				    atoi(gtk_entry_get_text(GTK_ENTRY(propiedades->entry3))),
-				    atoi(gtk_entry_get_text(GTK_ENTRY(propiedades->entry4))));
+    propiedades_modulo_t *propiedades = propiedades_modulo_crear();
+    if (id_elemento != -1) {
+	gtk_entry_set_text(GTK_ENTRY(propiedades->entry2),
+			   ventana->pipeline->
+			   m_elemento[id_elemento].m_nombre);
+	gtk_entry_set_text(GTK_ENTRY(propiedades->entry5),
+			   ventana->pipeline->
+			   m_elemento[id_elemento].m_ruta);
+	char buffer[64];
+	sprintf(buffer, "%i", get_x(ventana, id_elemento));
+	gtk_entry_set_text(GTK_ENTRY(propiedades->entry3), strdup(buffer));
+	sprintf(buffer, "%i", get_y(ventana, id_elemento));
+	gtk_entry_set_text(GTK_ENTRY(propiedades->entry4), strdup(buffer));
     }
-    else {
-      if(strcmp(ventana->pipeline->m_elemento[id_elemento].m_ruta,
-		gtk_entry_get_text(GTK_ENTRY(propiedades->entry5)))) {
-	strcpy(ventana->pipeline->m_elemento[id_elemento].m_ruta,
-               gtk_entry_get_text(GTK_ENTRY(propiedades->entry5)));  
-	pipeline_cambiar_biblioteca(&ventana->pipeline->m_elemento[id_elemento]);
-      }   
-      strcpy(ventana->pipeline->m_elemento[id_elemento].m_nombre,
-	     gtk_entry_get_text(GTK_ENTRY(propiedades->entry2))); 	
-      gtk_button_set_label(GTK_BUTTON
-			   (get_widget(ventana, id_elemento)),
-			   strdup(gtk_entry_get_text(GTK_ENTRY(propiedades->entry2))));
-				  
-      gtk_fixed_move(GTK_FIXED(ventana->fixed1),
-		     GTK_WIDGET(get_widget(ventana, id_elemento)),
-		     atoi(gtk_entry_get_text(GTK_ENTRY(propiedades->entry3))),
-		     atoi(gtk_entry_get_text(GTK_ENTRY(propiedades->entry4))));
+    if (gtk_dialog_run(GTK_DIALOG(propiedades->propiedades_modulo)) ==
+	GTK_RESPONSE_OK) {
+	ventana->modificado = TRUE;
+	if (id_elemento == -1) {
+	    pipeline_nuevo(ventana->pipeline,
+			   gtk_entry_get_text(GTK_ENTRY
+					      (propiedades->entry2)),
+			   gtk_entry_get_text(GTK_ENTRY
+					      (propiedades->entry5)));
+	    ventana_principal_crear_boton(ventana,
+					  gtk_entry_get_text(GTK_ENTRY
+							     (propiedades->
+							      entry2)),
+					  atoi(gtk_entry_get_text
+					       (GTK_ENTRY
+						(propiedades->entry3))),
+					  atoi(gtk_entry_get_text
+					       (GTK_ENTRY
+						(propiedades->entry4))));
+	} else {
+	    if (strcmp(ventana->pipeline->m_elemento[id_elemento].m_ruta,
+		       gtk_entry_get_text(GTK_ENTRY(propiedades->entry5))))
+	    {
+		strcpy(ventana->pipeline->m_elemento[id_elemento].m_ruta,
+		       gtk_entry_get_text(GTK_ENTRY(propiedades->entry5)));
+		pipeline_cambiar_biblioteca(&ventana->pipeline->
+					    m_elemento[id_elemento]);
+	    }
+	    strcpy(ventana->pipeline->m_elemento[id_elemento].m_nombre,
+		   gtk_entry_get_text(GTK_ENTRY(propiedades->entry2)));
+	    gtk_button_set_label(GTK_BUTTON
+				 (get_widget(ventana, id_elemento)),
+				 strdup(gtk_entry_get_text
+					(GTK_ENTRY(propiedades->entry2))));
+
+	    gtk_fixed_move(GTK_FIXED(ventana->fixed1),
+			   GTK_WIDGET(get_widget(ventana, id_elemento)),
+			   atoi(gtk_entry_get_text
+				(GTK_ENTRY(propiedades->entry3))),
+			   atoi(gtk_entry_get_text
+				(GTK_ENTRY(propiedades->entry4))));
+	}
     }
-  }
-  propiedades_modulo_cerrar(propiedades);
+    propiedades_modulo_cerrar(propiedades);
 }
 
 void on_acerca_de1_activate(GtkMenuItem * menuitem, gpointer user_data)
@@ -267,10 +370,10 @@ void on_nuevo2_activate(GtkMenuItem * menuitem, gpointer user_data)
 	(ventana_principal,
 	 "\302\277 Realmente desea eliminar todos los m\303\263dulos del pipeline ?"))
     {
-      int i;
-    for(i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
-      ventana_principal_borrar_boton(ventana_principal, i);
-    }
+	int i;
+	for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
+	    ventana_principal_borrar_boton(ventana_principal, i);
+	}
 	pipeline_vaciar(ventana_principal->pipeline);
 	ventana_principal->pipeline = pipeline_crear();
 	ventana_principal->archivo[0] = '\0';
@@ -378,19 +481,17 @@ void on_conectar1_activate(GtkMenuItem * menuitem, gpointer user_data)
 	int i;
 	for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
 	    if (gtk_toggle_button_get_active
-		(GTK_TOGGLE_BUTTON(/*ventana_principal->botones
-				   /*pipeline->m_elemento * [i].
-				   m_widget*/get_widget(ventana_principal, i)))) {
+		(get_widget(ventana_principal, i))) {
 		if (pipeline_conectar
 		    (ventana_principal->pipeline, i, destino) == -1) {
 		    ventana_principal_info(ventana_principal,
-			 "No se pudo realizar la conexi\303\263n.");
+					   "No se pudo realizar la conexi\303\263n.");
 		} else {
-		    ventana_principal_expose_event(0, 0, ventana_principal);
+		    ventana_principal_expose_event(0, 0,
+						   ventana_principal);
 		}
 	    }
 	}
-	//    establecer(pipeline, window1);
     }
 
 }
@@ -415,43 +516,6 @@ void on_window1_destroy(GtkObject * object, gpointer user_data)
     gtk_main_quit();
 }
 
-gint ventana_principal_expose_event(GtkWidget * widget, GdkEvent * event, gpointer data)
-{
-    ventana_principal_t *ventana_principal = (ventana_principal_t *) data;
-    int i, j;
-
-    for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
-	int x_origen =
-	  //ventana_principal->botones [i].m_x;
-	  (int)get_x(ventana_principal, i);
-	int y_origen =
-	  //	    ventana_principal->botones [i].m_y;
-	  get_y(ventana_principal, i);
-	for (j = 0;
-	     j <
-	     ventana_principal->pipeline->m_elemento[i].
-	     m_numero_conexiones; ++j) {
-	    int x_destino =
-	      /*ventana_principal->botones[ventana_principal->pipeline->
-					   m_elemento[i].m_destino[j]->
-					   m_id].m_x;*/
-	      get_x(ventana_principal, ventana_principal->pipeline->
-					   m_elemento[i].m_destino[j]->
-					   m_id);
-	    int y_destino =
-	      /*		ventana_principal->botones[ventana_principal->pipeline->
-					   m_elemento[i].m_destino[j]->
-					   m_id].m_y;*/
-	      get_y(ventana_principal, ventana_principal->pipeline->
-					   m_elemento[i].m_destino[j]->
-					   m_id);
-	    gdk_draw_line(ventana_principal->ww, ventana_principal->gc,
-			  x_origen, y_origen, x_destino, y_destino);
-	}
-    }
-
-    return FALSE;
-}
 
 
 void on_window1_show(GtkWidget * widget, gpointer user_data)
@@ -471,7 +535,8 @@ void on_window1_show(GtkWidget * widget, gpointer user_data)
     ventana_principal->ww = fixed->window;
     ventana_principal->gc = gdk_gc_new(ventana_principal->ww);
     gtk_signal_connect(GTK_OBJECT(fixed), "expose_event",
-		       GTK_SIGNAL_FUNC(ventana_principal_expose_event), ventana_principal);
+		       GTK_SIGNAL_FUNC(ventana_principal_expose_event),
+		       ventana_principal);
 }
 
 void on_propiedades1_activate(GtkMenuItem * menuitem, gpointer user_data)
@@ -480,8 +545,7 @@ void on_propiedades1_activate(GtkMenuItem * menuitem, gpointer user_data)
 	(ventana_principal_t *) user_data;
     int i;
     for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
-	if (gtk_toggle_button_get_active
-	    (GTK_TOGGLE_BUTTON(/*ventana_principal->botones[i].m_widget*/get_widget(ventana_principal, i)))) {
+	if (gtk_toggle_button_get_active(get_widget(ventana_principal, i))) {
 	    ventana_principal_propiedades(ventana_principal, i);
 	}
     }
@@ -508,8 +572,7 @@ void on_propiedades_biblioteca_activate(GtkButton * button,
     for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
 	if (ventana_principal->pipeline->m_elemento[i].m_iniciado) {
 	    if (gtk_toggle_button_get_active
-		(GTK_TOGGLE_BUTTON(/*ventana_principal->botones[i].
-				     m_widget*/get_widget(ventana_principal, i)))) {
+		(get_widget(ventana_principal, i))) {
 		if (ventana_principal->pipeline->m_elemento[i].
 		    m_funcion_propiedades) {
 		    ventana_principal->pipeline->m_elemento[i].
@@ -524,7 +587,8 @@ void on_ciclos_biblioteca_activate(GtkButton * button, gpointer user_data)
 {
     ventana_principal_t *ventana_principal =
 	(ventana_principal_t *) user_data;
-    ventana_principal_crear_timer(ventana_principal, ventana_principal->m_retardo);
+    ventana_principal_crear_timer(ventana_principal,
+				  ventana_principal->m_retardo);
 }
 
 void on_iniciar_biblioteca_activate(GtkButton * button, gpointer user_data)
@@ -533,8 +597,7 @@ void on_iniciar_biblioteca_activate(GtkButton * button, gpointer user_data)
 	(ventana_principal_t *) user_data;
     int i;
     for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
-	if (gtk_toggle_button_get_active
-	    (GTK_TOGGLE_BUTTON(/*ventana_principal->botones[i].m_widget*/get_widget(ventana_principal, i)))) {
+	if (gtk_toggle_button_get_active(get_widget(ventana_principal, i))) {
 	    pipeline_iniciar(ventana_principal->pipeline,
 			     &ventana_principal->pipeline->m_elemento[i]);
 
@@ -575,14 +638,12 @@ void on_cerrar_biblioteca_activate(GtkButton * button, gpointer user_data)
 	(ventana_principal_t *) user_data;
     int i;
     for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
-	if (gtk_toggle_button_get_active
-	    (GTK_TOGGLE_BUTTON(/*ventana_principal->botones
-				 /*pipeline->m_elemento * [i].m_widget*/get_widget(ventana_principal, i)))) {
+	if (gtk_toggle_button_get_active(get_widget(ventana_principal, i))) {
 	    pipeline_parar(ventana_principal->pipeline,
 			   &ventana_principal->pipeline->m_elemento[i]);
 	}
     }
-    ventana_principal_establecer( /*ventana_principal->pipeline, */ ventana_principal);
+    ventana_principal_establecer(ventana_principal);
 }
 
 void on_cerrar_todas_biblioteca_activate(GtkButton * button,
@@ -595,7 +656,7 @@ void on_cerrar_todas_biblioteca_activate(GtkButton * button,
 	pipeline_parar(ventana_principal->pipeline,
 		       &ventana_principal->pipeline->m_elemento[i]);
     }
-    ventana_principal_establecer( /*ventana_principal->pipeline, */ ventana_principal);
+    ventana_principal_establecer(ventana_principal);
 }
 
 void on_ciclo_biblioteca_activate(GtkButton * button, gpointer user_data)
@@ -606,119 +667,28 @@ void on_ciclo_biblioteca_activate(GtkButton * button, gpointer user_data)
 }
 
 
-
-
-
-
-
-
-
-
-/*gchar *entrada(GtkWidget * w, const gchar * pregunta)
-{
-    GtkWidget *d = create_dialog1();
-    gchar *respuesta = 0;
-    GtkWidget *label = lookup_widget(d, "label3");
-    gtk_label_set_text(GTK_LABEL(label), pregunta);
-    gchar *res = 0;
-    if (gtk_dialog_run(GTK_DIALOG(d)) == GTK_RESPONSE_OK) {
-	GtkWidget *entry = lookup_widget(d, "entry1");
-	respuesta = (gchar *) gtk_entry_get_text(GTK_ENTRY(entry));
-	res = strdup(respuesta);
-    }
-
-    gtk_widget_destroy(d);
-    return res;
-}
-
-void ventana_principal_insertar( ventana_principal_t * ventana)
-{
-    int id;
-    for (id = 0; id < ventana->pipeline->m_numero; ++id) {
-	gtk_fixed_put(GTK_FIXED(ventana->fixed1),
-		      GTK_WIDGET(get_widget(ventana, i)),		      
-		      10, (30 * i) + 10);
-
-    }
-}
-*/
-
-
-
-
-gboolean ventana_principal_tick(gpointer data)
-{
-    ventana_principal_t *ventana = (ventana_principal_t *) data;
-    pipeline_ciclo(ventana->pipeline);
-    return ventana->m_seguir_timer;
-}
-
-int ventana_principal_crear_timer(ventana_principal_t * ventana, guint retardo)
-{
-    ventana->m_timer = g_timeout_add(retardo, ventana_principal_tick, ventana);
-    ventana->m_seguir_timer = TRUE;
-    return 0;
-
-}
-
-int ventana_principal_parar_timer(ventana_principal_t * ventana)
-{
-    ventana->m_seguir_timer = FALSE;
-    return 0;
-}
-
-
-
-int ventana_principal_elegir_modulo(ventana_principal_t* ventana)
-{
-
-    dialogo_conectar_t *dialogo_conectar = dialogo_conectar_crear();
-    GtkWidget *dialog = dialogo_conectar->dialog1;
-    GtkWidget *combo = dialogo_conectar->comboboxentry1;	//lookup_widget(dialog, "comboboxentry1");
-
-    int i;
-    for (i = 0; i < ventana->pipeline->m_numero; ++i) {
-	gtk_combo_box_append_text(GTK_COMBO_BOX(combo),
-				  ventana->pipeline->m_elemento[i].m_nombre);
-    }
-
-    int respuesta =
-	gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK ?
-	respuesta = gtk_combo_box_get_active(GTK_COMBO_BOX(combo)) : -1;
-
-    //gtk_widget_destroy(dialog);
-    dialogo_conectar_cerrar(dialogo_conectar);
-
-    return respuesta;
-}
-
-
-
 void ventana_principal_abrir(char *file,
 			     ventana_principal_t * ventana_principal)
 {
     if (file != 0) {
 	pipeline_vaciar(ventana_principal->pipeline);
 	ventana_principal->pipeline = pipeline_cargar(file);
-	
+
 	int i;
-	for(i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
-    ventana_principal_crear_boton(ventana_principal, ventana_principal->pipeline->m_elemento[i].m_nombre, 10, (30 * i) + 10);
-  }
+	for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
+	    ventana_principal_crear_boton(ventana_principal,
+					  ventana_principal->pipeline->
+					  m_elemento[i].m_nombre, 10,
+					  (30 * i) + 10);
+	}
 	if (!ventana_principal->pipeline)
 	    ventana_principal->pipeline = pipeline_crear();
 	strcpy(ventana_principal->archivo, file);
 	ventana_principal->modificado = FALSE;
 	ventana_principal_mostrar(ventana_principal,
-		ventana_principal->archivo);
-	//ventana_principal_insertar(ventana_principal);
+				  ventana_principal->archivo);
 	gtk_widget_set_sensitive(ventana_principal->nuevo2, TRUE);
 	gtk_widget_set_sensitive(ventana_principal->guardar_como2, TRUE);
-/*	for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
-	    g_signal_connect((gpointer) ventana_principal->botones[i].
-			     m_widget, "toggled", G_CALLBACK(ventana_principal_pinchado),
-			     ventana_principal);
-	}*/
 	ventana_principal_establecer(ventana_principal);
     }
 
@@ -730,7 +700,6 @@ ventana_principal_t *ventana_principal_crear()
 	(ventana_principal_t *) malloc(sizeof(ventana_principal_t));
     ventana_principal->accel_group = gtk_accel_group_new();
     ventana_principal->m_retardo = 0;
-    //    ventana_principal->botones = (botones_t*)malloc(sizeof(botones_t) * 20);
 
     ventana_principal->window1 = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_widget_set_name(ventana_principal->window1, "window1");

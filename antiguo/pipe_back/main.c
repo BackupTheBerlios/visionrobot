@@ -1,6 +1,6 @@
 /*! \file main.c
     \brief Programa principal
-    \author zosco
+    \author Carlos León
     \version 0.1
  */
 
