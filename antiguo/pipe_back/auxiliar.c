@@ -41,7 +41,7 @@ gboolean confirmacion(GtkWidget * w, const gchar * texto)
 gboolean salir(GtkWidget * w, gboolean modificado)
 {
     return modificado ? confirmacion(w,
-				     "El pipeline ha sido modificado y no se ha guardado.\n¿ Realmente desea salir ?")
+				     "El pipeline ha sido modificado y no se ha guardado.\n\302\277 Realmente desea salir ?")
 	: TRUE;
 }
 void info(GtkWidget * w, const gchar * texto)
@@ -59,8 +59,9 @@ void info(GtkWidget * w, const gchar * texto)
 
 void acerca_de(GtkWidget * w)
 {
-    info(w,
-	 "Visión por computador - Pipeline\nVersión 0.1\nCarlos León, Jorge Mendoza, Diego Sánchez\nSistemas Informáticos 2004/2005\nFacultad de Informática (UCM)");
+    char *buffer =
+	"Visi\303\263n por computador - Pipeline\nVersi\303\263n 0.1\nCarlos Le\303\263n, Jorge Mendoza, Diego S\303\241nchez\nSistemas Inform\303\241ticos 2004/2005\nFacultad de Inform\303\241tica (UCM)";
+    info(w, buffer);
 }
 
 char *abrir_ventana(GtkWidget * w)
@@ -174,7 +175,7 @@ void propiedades(gint id_elemento, GtkFixed * fixed, pipeline_t * pipeline,
 void mostrar(GtkStatusbar * b, const char *info, guint * id)
 {
     char buffer[128];
-    sprintf(buffer, "Visión por computador");
+    sprintf(buffer, "Visi\303\263n por computador");
     if (info) {
 	sprintf(buffer, "%s - %s", buffer, info);
     }
@@ -185,16 +186,50 @@ void mostrar(GtkStatusbar * b, const char *info, guint * id)
 
 void establecer(pipeline_t * pipeline, GtkWidget * window1)
 {
-    int i, si = 0;
+    int i, si = 0, cual;
+    gboolean todas_iniciadas = TRUE;
+    gboolean todas_paradas = TRUE;
     for (i = 0; i < pipeline->m_numero; ++i) {
 	if (gtk_toggle_button_get_active
 	    (GTK_TOGGLE_BUTTON(pipeline->m_elemento[i].m_widget))) {
 	    si++;
+	    cual = i;
+	}
+	if (pipeline->m_elemento[i].m_iniciado == 1) {
+	    todas_paradas = FALSE;
+	}
+	if (pipeline->m_elemento[i].m_iniciado == 0) {
+	    todas_iniciadas = FALSE;
 	}
     }
+    gboolean b = pipeline->m_numero > 0;
+    gtk_widget_set_sensitive(lookup_widget
+			     (window1, "iniciar_todas_biblioteca"), b
+			     && !todas_iniciadas);
+    gtk_widget_set_sensitive(lookup_widget
+			     (window1, "cerrar_todas_biblioteca"), b
+			     && !todas_paradas);
+    gtk_widget_set_sensitive(lookup_widget(window1, "ciclos_biblioteca"),
+			     b);
+    gtk_widget_set_sensitive(lookup_widget(window1, "ciclo_biblioteca"),
+			     b);
+    gtk_widget_set_sensitive(lookup_widget(window1, "parar_biblioteca"),
+			     b);
+
     gtk_widget_set_sensitive(lookup_widget(window1, "conectar1"), si == 1);
     gtk_widget_set_sensitive(lookup_widget(window1, "propiedades1"),
 			     si == 1);
+    gtk_widget_set_sensitive(lookup_widget
+			     (window1, "propiedades_biblioteca"), si == 1);
+    gtk_widget_set_sensitive(lookup_widget(window1, "iniciar_biblioteca"),
+			     si == 1
+			     && pipeline->m_elemento[cual].m_iniciado ==
+			     0);
+    gtk_widget_set_sensitive(lookup_widget(window1, "cerrar_biblioteca"),
+			     si == 1
+			     && pipeline->m_elemento[cual].m_iniciado ==
+			     1);
+
     gtk_widget_set_sensitive(lookup_widget(window1, "borrar1"), si > 0);
 }
 

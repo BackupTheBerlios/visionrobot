@@ -40,7 +40,9 @@ GtkWidget *status_bar;
 void on_borrar1_activate(GtkMenuItem * menuitem, gpointer user_data)
 {
     if (confirmacion
-	(window1, "¿ Realmente desea borrar los módulos elegidos ?")) {
+	(window1,
+	 "\302\277 Realmente desea borrar los m\303\263dulos elegidos ?"))
+    {
 	int i;
 	for (i = 0; i < pipeline->m_numero; ++i) {
 	    if (gtk_toggle_button_get_active
@@ -65,7 +67,8 @@ void on_nuevo2_activate(GtkMenuItem * menuitem, gpointer user_data)
 {
     if (confirmacion
 	(window1,
-	 "¿ Realmente desea eliminar todos los módulos del pipeline ?")) {
+	 "\302\277 Realmente desea eliminar todos los m\303\263dulos del pipeline ?"))
+    {
 	vaciar_pipeline(pipeline);
 	pipeline = crear_pipeline();
 	archivo[0] = '\0';
@@ -188,7 +191,7 @@ void on_window1_show(GtkWidget * widget, gpointer user_data)
 {
     status_bar = lookup_widget(window1, "statusbar1");
     id = gtk_statusbar_push(GTK_STATUSBAR(status_bar), 0,
-			    "Visión por computador");
+			    "Visi\303\263n por computador");
     pipeline = crear_pipeline();
 
 }
@@ -232,4 +235,63 @@ void on_button6_activate(GtkButton * button, gpointer user_data)
     gchar *file = abrir_ventana(dialog);
     GtkWidget *modulo = lookup_widget(dialog, "entry5");
     gtk_entry_set_text(GTK_ENTRY(modulo), file);
+}
+
+void on_propiedades_biblioteca_activate(GtkButton * button,
+					gpointer user_data)
+{
+}
+void on_ciclos_biblioteca_activate(GtkButton * button, gpointer user_data)
+{
+}
+void on_iniciar_biblioteca_activate(GtkButton * button, gpointer user_data)
+{
+
+    int i;
+    for (i = 0; i < pipeline->m_numero; ++i) {
+	if (gtk_toggle_button_get_active
+	    (GTK_TOGGLE_BUTTON(pipeline->m_elemento[i].m_widget))) {
+	    pipeline->m_elemento[i].m_iniciado = 1;
+	}
+    }
+    establecer(pipeline, window1);
+}
+
+void on_iniciar_todas_biblioteca_activate(GtkButton * button,
+					  gpointer user_data)
+{
+    int i;
+    for (i = 0; i < pipeline->m_numero; ++i) {
+	pipeline->m_elemento[i].m_iniciado = 1;
+    }
+    establecer(pipeline, window1);
+}
+
+void on_parar_biblioteca_activate(GtkButton * button, gpointer user_data)
+{
+}
+void on_cerrar_biblioteca_activate(GtkButton * button, gpointer user_data)
+{
+    int i;
+    for (i = 0; i < pipeline->m_numero; ++i) {
+	if (gtk_toggle_button_get_active
+	    (GTK_TOGGLE_BUTTON(pipeline->m_elemento[i].m_widget))) {
+	    pipeline->m_elemento[i].m_iniciado = 0;
+	}
+    }
+    establecer(pipeline, window1);
+}
+
+void on_cerrar_todas_biblioteca_activate(GtkButton * button,
+					 gpointer user_data)
+{
+    int i;
+    for (i = 0; i < pipeline->m_numero; ++i) {
+	pipeline->m_elemento[i].m_iniciado = 0;
+    }
+    establecer(pipeline, window1);
+}
+
+void on_ciclo_biblioteca_activate(GtkButton * button, gpointer user_data)
+{
 }

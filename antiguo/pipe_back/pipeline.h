@@ -29,6 +29,13 @@
 #define MAX_RUTA 128
 #define MAX_NOMBRE 64
 
+#define F_CICLO "ciclo"
+#define F_INICIAR "iniciar"
+#define F_CERRAR "cerrar"
+#define F_PROPIEDADES "propiedades"
+#define F_SET_DATOS "set_datos"
+#define F_GET_DATOS "get_datos"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -40,7 +47,9 @@ extern "C" {
 #endif
 
 /*! \brief Provisionalmente, la llamada a cada ciclo del pipeline */
-    typedef int (*funcion_ciclo) ();
+    typedef int (*funcion_1) ();
+    typedef void *(*funcion_2) ();
+    typedef int (*funcion_3) (void *);
 
 /*! \brief La estructura de datos de cada elemento del pipe */
     struct elemento_s {
@@ -54,8 +63,13 @@ extern "C" {
 #endif
 	 m_handler;
 
-	funcion_ciclo m_funcion_ciclo;
-
+	funcion_1 m_funcion_ciclo;
+	funcion_1 m_funcion_iniciar;
+	funcion_1 m_funcion_propiedades;
+	funcion_1 m_funcion_cerrar;
+	funcion_2 m_funcion_get_datos;
+	funcion_3 m_funcion_set_datos;
+	char m_iniciado;
 	gchar m_ruta[MAX_RUTA];
 	gchar m_nombre[MAX_NOMBRE];
 	struct elemento_s *m_destino[MAX_CONEXIONES];
@@ -66,6 +80,7 @@ extern "C" {
 
 /*! \brief La estructura de datos del pipeline */
     struct pipeline_s {
+	gboolean m_corriendo;
 	int m_numero;
 	elemento_t m_elemento[MAX_ELEMENTOS];
     };

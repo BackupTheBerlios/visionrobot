@@ -98,3 +98,17 @@ on___ndice_de_la_ayuda1_activate(GtkMenuItem * menuitem,
 void pinchado(GtkMenuItem * menuitem, gpointer user_data);
 
 void on_button6_activate(GtkButton * button, gpointer user_data);
+
+void on_propiedades_biblioteca_activate(GtkButton * button,
+					gpointer user_data);
+
+void on_ciclo_biblioteca_activate(GtkButton * button, gpointer user_data);
+void on_ciclos_biblioteca_activate(GtkButton * button, gpointer user_data);
+void on_iniciar_biblioteca_activate(GtkButton * button,
+				    gpointer user_data);
+void on_iniciar_todas_biblioteca_activate(GtkButton * button,
+					  gpointer user_data);
+void on_parar_biblioteca_activate(GtkButton * button, gpointer user_data);
+void on_cerrar_biblioteca_activate(GtkButton * button, gpointer user_data);
+void on_cerrar_todas_biblioteca_activate(GtkButton * button,
+					 gpointer user_data);

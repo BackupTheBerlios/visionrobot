@@ -47,6 +47,16 @@ GtkWidget *create_window1(void)
     GtkWidget *pipeline1;
     GtkWidget *pipeline1_menu;
     GtkWidget *crear1;
+
+    GtkWidget *propiedades_biblioteca;
+    GtkWidget *ciclo_biblioteca;
+    GtkWidget *ciclos_biblioteca;
+    GtkWidget *parar_biblioteca;
+    GtkWidget *iniciar_biblioteca;
+    GtkWidget *iniciar_todas_biblioteca;
+    GtkWidget *cerrar_todas_biblioteca;
+    GtkWidget *cerrar_biblioteca;
+
     GtkWidget *image108;
     GtkWidget *propiedades1;
     GtkWidget *image109;
@@ -60,6 +70,7 @@ GtkWidget *create_window1(void)
     GtkWidget *__ndice_de_la_ayuda1;
     GtkWidget *image112;
     GtkWidget *separador4;
+    GtkWidget *separador5;
     GtkWidget *acerca_de1;
     GtkWidget *image113;
     GtkWidget *scrolledwindow1;
@@ -199,7 +210,8 @@ GtkWidget *create_window1(void)
     gtk_widget_show(image108);
     gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(crear1), image108);
 
-    propiedades1 = gtk_image_menu_item_new_with_mnemonic("_Propiedades");
+    propiedades1 =
+	gtk_image_menu_item_new_with_mnemonic("_Propiedades...");
     gtk_widget_set_name(propiedades1, "propiedades1");
     gtk_widget_show(propiedades1);
     gtk_container_add(GTK_CONTAINER(pipeline1_menu), propiedades1);
@@ -215,7 +227,86 @@ GtkWidget *create_window1(void)
     gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(propiedades1),
 				  image109);
 
-    conectar1 = gtk_image_menu_item_new_with_mnemonic("C_onectar");
+
+    separador5 = gtk_separator_menu_item_new();
+    gtk_widget_set_name(separador5, "separador3");
+    gtk_widget_show(separador5);
+    gtk_container_add(GTK_CONTAINER(pipeline1_menu), separador5);
+    gtk_widget_set_sensitive(separador5, FALSE);
+
+    propiedades_biblioteca =
+	gtk_image_menu_item_new_with_mnemonic("_Info...");
+    gtk_widget_set_name(propiedades_biblioteca, "propiedades_biblioteca");
+    gtk_widget_show(propiedades_biblioteca);
+    gtk_container_add(GTK_CONTAINER(pipeline1_menu),
+		      propiedades_biblioteca);
+    gtk_widget_set_sensitive(propiedades_biblioteca, FALSE);
+
+    ciclos_biblioteca =
+	gtk_image_menu_item_new_with_mnemonic("_Arrancar pipeline...");
+    gtk_widget_set_name(ciclos_biblioteca, "ciclos_biblioteca");
+    gtk_widget_show(ciclos_biblioteca);
+    gtk_container_add(GTK_CONTAINER(pipeline1_menu), ciclos_biblioteca);
+    gtk_widget_set_sensitive(ciclos_biblioteca, FALSE);
+
+    ciclo_biblioteca = gtk_image_menu_item_new_with_mnemonic("_Un ciclo");
+    gtk_widget_set_name(ciclo_biblioteca, "ciclo_biblioteca");
+    gtk_widget_show(ciclo_biblioteca);
+    gtk_container_add(GTK_CONTAINER(pipeline1_menu), ciclo_biblioteca);
+    gtk_widget_set_sensitive(ciclo_biblioteca, FALSE);
+
+    parar_biblioteca =
+	gtk_image_menu_item_new_with_mnemonic("_Parar pipeline");
+    gtk_widget_set_name(parar_biblioteca, "parar_biblioteca");
+    gtk_widget_show(parar_biblioteca);
+    gtk_container_add(GTK_CONTAINER(pipeline1_menu), parar_biblioteca);
+    gtk_widget_set_sensitive(parar_biblioteca, FALSE);
+
+    iniciar_biblioteca =
+	gtk_image_menu_item_new_with_mnemonic("Inicia_r m\303\263dulo...");
+    gtk_widget_set_name(iniciar_biblioteca, "iniciar_biblioteca");
+    gtk_widget_show(iniciar_biblioteca);
+    gtk_container_add(GTK_CONTAINER(pipeline1_menu), iniciar_biblioteca);
+    gtk_widget_set_sensitive(iniciar_biblioteca, FALSE);
+
+    iniciar_todas_biblioteca =
+	gtk_image_menu_item_new_with_mnemonic("Iniciar _todos...");
+    gtk_widget_set_name(iniciar_todas_biblioteca,
+			"iniciar_todas_biblioteca");
+    gtk_widget_show(iniciar_todas_biblioteca);
+    gtk_container_add(GTK_CONTAINER(pipeline1_menu),
+		      iniciar_todas_biblioteca);
+    gtk_widget_set_sensitive(iniciar_todas_biblioteca, FALSE);
+
+    cerrar_todas_biblioteca =
+	gtk_image_menu_item_new_with_mnemonic("C_errar todos...");
+    gtk_widget_set_name(cerrar_todas_biblioteca,
+			"cerrar_todas_biblioteca");
+    gtk_widget_show(cerrar_todas_biblioteca);
+    gtk_container_add(GTK_CONTAINER(pipeline1_menu),
+		      cerrar_todas_biblioteca);
+    gtk_widget_set_sensitive(cerrar_todas_biblioteca, FALSE);
+
+    cerrar_biblioteca =
+	gtk_image_menu_item_new_with_mnemonic("_Cerrar m\303\263dulo...");
+    gtk_widget_set_name(cerrar_biblioteca, "cerrar_biblioteca");
+    gtk_widget_show(cerrar_biblioteca);
+    gtk_container_add(GTK_CONTAINER(pipeline1_menu), cerrar_biblioteca);
+    gtk_widget_set_sensitive(cerrar_biblioteca, FALSE);
+
+
+
+
+
+
+
+
+
+
+
+
+
+    conectar1 = gtk_image_menu_item_new_with_mnemonic("C_onectar...");
     gtk_widget_set_name(conectar1, "conectar1");
     gtk_widget_show(conectar1);
     gtk_container_add(GTK_CONTAINER(pipeline1_menu), conectar1);
@@ -248,7 +339,7 @@ GtkWidget *create_window1(void)
     gtk_widget_show(image111);
     gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(borrar1), image111);
 
-    ayuda1 = gtk_menu_item_new_with_mnemonic("_Ayuda");
+    ayuda1 = gtk_menu_item_new_with_mnemonic("A_yuda");
     gtk_widget_set_name(ayuda1, "ayuda1");
     gtk_widget_show(ayuda1);
     gtk_container_add(GTK_CONTAINER(menubar1), ayuda1);
@@ -343,6 +434,32 @@ GtkWidget *create_window1(void)
 		     G_CALLBACK(on___ndice_de_la_ayuda1_activate), NULL);
     g_signal_connect((gpointer) acerca_de1, "activate",
 		     G_CALLBACK(on_acerca_de1_activate), NULL);
+    g_signal_connect((gpointer) propiedades_biblioteca, "activate",
+		     G_CALLBACK(on_propiedades_biblioteca_activate), NULL);
+
+    g_signal_connect((gpointer) ciclo_biblioteca, "activate",
+		     G_CALLBACK(on_ciclo_biblioteca_activate), NULL);
+
+    g_signal_connect((gpointer) ciclos_biblioteca, "activate",
+		     G_CALLBACK(on_ciclos_biblioteca_activate), NULL);
+
+    g_signal_connect((gpointer) parar_biblioteca, "activate",
+		     G_CALLBACK(on_parar_biblioteca_activate), NULL);
+
+    g_signal_connect((gpointer) iniciar_biblioteca, "activate",
+		     G_CALLBACK(on_iniciar_biblioteca_activate), NULL);
+
+    g_signal_connect((gpointer) iniciar_todas_biblioteca, "activate",
+		     G_CALLBACK(on_iniciar_todas_biblioteca_activate),
+		     NULL);
+
+    g_signal_connect((gpointer) cerrar_biblioteca, "activate",
+		     G_CALLBACK(on_cerrar_biblioteca_activate), NULL);
+
+    g_signal_connect((gpointer) cerrar_todas_biblioteca, "activate",
+		     G_CALLBACK(on_cerrar_todas_biblioteca_activate),
+		     NULL);
+
 
     /* Store pointers to all widgets, for use by lookup_widget(). */
     GLADE_HOOKUP_OBJECT_NO_REF(window1, window1, "window1");
@@ -357,6 +474,17 @@ GtkWidget *create_window1(void)
     GLADE_HOOKUP_OBJECT(window1, separador1, "separador1");
     GLADE_HOOKUP_OBJECT(window1, guardar_como2, "guardar_como2");
     GLADE_HOOKUP_OBJECT(window1, image105, "image105");
+
+    GLADE_HOOKUP_OBJECT(window1, ciclos_biblioteca, "ciclos_biblioteca");
+    GLADE_HOOKUP_OBJECT(window1, ciclo_biblioteca, "ciclo_biblioteca");
+    GLADE_HOOKUP_OBJECT(window1, parar_biblioteca, "parar_biblioteca");
+    GLADE_HOOKUP_OBJECT(window1, iniciar_biblioteca, "iniciar_biblioteca");
+    GLADE_HOOKUP_OBJECT(window1, iniciar_todas_biblioteca,
+			"iniciar_todas_biblioteca");
+    GLADE_HOOKUP_OBJECT(window1, cerrar_todas_biblioteca,
+			"cerrar_todas_biblioteca");
+    GLADE_HOOKUP_OBJECT(window1, cerrar_biblioteca, "cerrar_biblioteca");
+
     GLADE_HOOKUP_OBJECT(window1, guardar2, "guardar2");
     GLADE_HOOKUP_OBJECT(window1, image106, "image106");
     GLADE_HOOKUP_OBJECT(window1, separador2, "separador2");
@@ -367,6 +495,8 @@ GtkWidget *create_window1(void)
     GLADE_HOOKUP_OBJECT(window1, crear1, "crear1");
     GLADE_HOOKUP_OBJECT(window1, image108, "image108");
     GLADE_HOOKUP_OBJECT(window1, propiedades1, "propiedades1");
+    GLADE_HOOKUP_OBJECT(window1, propiedades_biblioteca,
+			"propiedades_biblioteca");
     GLADE_HOOKUP_OBJECT(window1, image109, "image109");
     GLADE_HOOKUP_OBJECT(window1, conectar1, "conectar1");
     GLADE_HOOKUP_OBJECT(window1, image110, "image110");
@@ -379,6 +509,7 @@ GtkWidget *create_window1(void)
 			"__ndice_de_la_ayuda1");
     GLADE_HOOKUP_OBJECT(window1, image112, "image112");
     GLADE_HOOKUP_OBJECT(window1, separador4, "separador4");
+    GLADE_HOOKUP_OBJECT(window1, separador5, "separador5");
     GLADE_HOOKUP_OBJECT(window1, acerca_de1, "acerca_de1");
     GLADE_HOOKUP_OBJECT(window1, image113, "image113");
     GLADE_HOOKUP_OBJECT(window1, scrolledwindow1, "scrolledwindow1");
