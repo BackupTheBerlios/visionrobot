@@ -8,13 +8,13 @@
 <tool superClass="cdt.managedbuild.tool.gnu.c.compiler.cygwin.exe.debug" id="cdt.managedbuild.tool.gnu.c.compiler.cygwin.exe.debug.1579186515" name="GCC C Compiler">
 <option superClass="gnu.c.compiler.option.include.paths" id="gnu.c.compiler.option.include.paths.1279640721" valueType="includePath">
 <listOptionValue value="&quot;C:\eclipse\workspace\pipe\include&quot;" builtIn="false"/>
-<listOptionValue value="&quot;C:\Dev-Cpp\include&quot;" builtIn="false"/>
-<listOptionValue value="&quot;C:\Dev-Cpp\include\atk-1.0&quot;" builtIn="false"/>
-<listOptionValue value="&quot;C:\Dev-Cpp\include\glib-2.0&quot;" builtIn="false"/>
-<listOptionValue value="&quot;C:\Dev-Cpp\include\gtk-2.0&quot;" builtIn="false"/>
-<listOptionValue value="&quot;C:\Dev-Cpp\lib\glib-2.0\include&quot;" builtIn="false"/>
-<listOptionValue value="&quot;C:\Dev-Cpp\lib\gtk-2.0\include&quot;" builtIn="false"/>
-<listOptionValue value="&quot;C:\Dev-Cpp\include\pango-1.0&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\include&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\include\atk-1.0&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\include\glib-2.0&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\include\gtk-2.0&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\lib\glib-2.0\include&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\lib\gtk-2.0\include&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\include\pango-1.0&quot;" builtIn="false"/>
 </option>
 <option superClass="gnu.c.compiler.option.misc.other" id="gnu.c.compiler.option.misc.other.749915310" value="-c -fmessage-length=0 -mms-bitfields" valueType="string"/>
 </tool>
@@ -30,7 +30,7 @@
 <listOptionValue value="xml2" builtIn="false"/>
 </option>
 <option superClass="gnu.c.link.option.paths" id="gnu.c.link.option.paths.1464122442" valueType="stringList">
-<listOptionValue value="&quot;C:\Dev-Cpp\lib&quot;" builtIn="false"/>
+<listOptionValue value="&quot;C:\eclipse\lib&quot;" builtIn="false"/>
 <listOptionValue value="&quot;C:\cvs\libpipeline&quot;" builtIn="false"/>
 </option>
 <option superClass="gnu.c.link.option.ldflags" id="gnu.c.link.option.ldflags.1769186311" value="-mwindows" valueType="string"/>
