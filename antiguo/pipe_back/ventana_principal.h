@@ -76,6 +76,8 @@ typedef struct {
 
 ventana_principal_t * ventana_principal_crear();
 
-void ventana_principal_borrar();
+void ventana_principal_borrar(ventana_principal_t * ventana_principal);
+
+void abre(char *file, ventana_principal_t * ventana_principal);
 
 #endif

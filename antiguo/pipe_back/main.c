@@ -39,6 +39,10 @@ int main(int argc, char *argv[])
     ventana_principal_t * ventana_principal = ventana_principal_crear();
 
     gtk_widget_show(ventana_principal->window1);
+    
+    if(argc > 1) {
+            abre(argv[1], ventana_principal);
+    }
 
     gtk_main();
 

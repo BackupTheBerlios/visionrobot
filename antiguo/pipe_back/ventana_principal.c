@@ -760,9 +760,12 @@ ventana_principal_t * ventana_principal = (ventana_principal_t *)user_data;
     int i;
     for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
 	if (ventana_principal->pipeline->m_elemento[i].m_iniciado) {
+     if (gtk_toggle_button_get_active
+	(GTK_TOGGLE_BUTTON(ventana_principal->pipeline->m_elemento[i].m_widget))) {
 	    if (ventana_principal->pipeline->m_elemento[i].m_funcion_propiedades) {
 		ventana_principal->pipeline->m_elemento[i].m_funcion_propiedades();
 	    }
+     }
 	}
     }
 

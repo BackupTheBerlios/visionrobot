@@ -1,0 +1,36 @@
+/* THIS FILE WILL BE OVERWRITTEN BY DEV-C++ */
+/* DO NOT EDIT! */
+
+#include <windows.h> // include for version info constants
+
+
+A ICON MOVEABLE PURE LOADONCALL DISCARDABLE "pipeline.ico"
+
+//
+// TO CHANGE VERSION INFORMATION, EDIT PROJECT OPTIONS...
+//
+1 VERSIONINFO
+FILEVERSION 0,3,0,0
+PRODUCTVERSION 0,3,0,0
+FILETYPE VFT_APP
+{
+  BLOCK "StringFileInfo"
+	 {
+		 BLOCK "040A04E4"
+		 {
+			 VALUE "CompanyName", "Carlos León"
+			 VALUE "FileVersion", "0.3.0"
+			 VALUE "FileDescription", "Pipeline para Visión por Computador"
+			 VALUE "InternalName", "pipeline.exe"
+			 VALUE "LegalCopyright", "Copyright (c) 2004 Carlos León"
+			 VALUE "LegalTrademarks", ""
+			 VALUE "OriginalFilename", "pipeline.exe"
+			 VALUE "ProductName", "Pipeline (Visión por Computador)"
+			 VALUE "ProductVersion", "0.3.0"
+		 }
+	 }
+  BLOCK "VarFileInfo"
+	 {
+		 VALUE "Translation", 0x040A, 1252
+	 }
+}
