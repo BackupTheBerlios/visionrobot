@@ -139,13 +139,21 @@ extern "C" {
        \param elemento El elemento que va a variar su biblioteca
      */
     void pipeline_cambiar_biblioteca(elemento_t * elemento);
-    /*! \brief Conecta dos módulos
+    /*! \brief Conecta dos módulos. No se permiten varias conexiones entre dos mismos elementos.
        \param pipeline El pipeline que contiene los módulos
        \param origen El índice del elemento origen
        \param destino El índice del elemento destino
        \return 0 si todo va bien, -1 en caso de error
      */
     int pipeline_conectar(pipeline_t * pipeline, int origen,int destino);
+  /*! \brief Desconecta dos módulos
+       \param pipeline El pipeline que contiene los módulos
+       \param origen El índice del elemento origen
+       \param destino El índice del elemento destino
+       \return 0 si todo va bien, -1 en caso de error
+  */
+  int pipeline_desconectar(pipeline_t * pipeline, int origen,int destino);
+
   /*! \brief Cierra la comunicación con la biblioteca, llamando antes a "cerrar"
       \param elemento El elemento cuya biblioteca vamos a cerrar
       \return -1 en caso de error, 0 si todo va bien

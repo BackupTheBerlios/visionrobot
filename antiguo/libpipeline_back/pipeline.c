@@ -65,18 +65,8 @@ elemento_t *pipeline_nuevo(pipeline_t * pipeline, const char *nombre,
     pipeline->m_elemento[pipeline->m_numero].m_id = pipeline->m_numero;
     pipeline->m_elemento[pipeline->m_numero].m_numero_conexiones = 0;
     pipeline->m_elemento[pipeline->m_numero].m_iniciado = 0;
-/*    pipeline->m_elemento[pipeline->m_numero].m_ruta = strdup(ruta);
-    pipeline->m_elemento[pipeline->m_numero].m_nombre = strdup(nombre);*/
     strcpy(pipeline->m_elemento[pipeline->m_numero].m_ruta, ruta);
     strcpy(pipeline->m_elemento[pipeline->m_numero].m_nombre, nombre);
-    /*pipeline->m_elemento[pipeline->m_numero].m_handler = 0;
-    pipeline->m_elemento[pipeline->m_numero].m_funcion_ciclo =  0;
-  	pipeline->m_elemento[pipeline->m_numero].m_funcion_iniciar =  0;
-	  pipeline->m_elemento[pipeline->m_numero].m_funcion_propiedades = 0;
-  	pipeline->m_elemento[pipeline->m_numero].m_funcion_cerrar = 0;
-  	pipeline->m_elemento[pipeline->m_numero].m_funcion_get_datos = 0;
-    pipeline->m_elemento[pipeline->m_numero].m_funcion_set_datos = 0;
-	  pipeline->m_elemento[pipeline->m_numero].m_funcion_error = 0;*/
     pipeline_poner_a_cero(&pipeline->m_elemento[pipeline->m_numero]);
     pipeline_cambiar_biblioteca(&pipeline->m_elemento[pipeline->m_numero]);
     pipeline->m_numero++;
@@ -124,10 +114,21 @@ int pipeline_borrar(pipeline_t * pipeline, int id)
     if (pipeline->m_elemento[id].m_handler) {
 	   pipeline_cerrar_biblioteca(&pipeline->m_elemento[id]);
     }
+
+    for(i = 0; i < pipeline->m_numero; ++i) {
+      int j;
+      for(j = 0; j < pipeline->m_elemento[i].m_numero_conexiones; ++j) {
+	if(pipeline->m_elemento[i].m_destino[j]->m_id == id) {
+	  pipeline_desconectar(pipeline, i, id);
+	}
+      }
+    }
+
     for (i = id; i < pipeline->m_numero; ++i) {
     	pipeline->m_elemento[i] = pipeline->m_elemento[i + 1];
 	    pipeline->m_elemento[i].m_id = i;
     }
+
     return --pipeline->m_numero;
 }
 int pipeline_guardar(const pipeline_t * pipeline, const char *ruta)
@@ -331,6 +332,13 @@ int pipeline_conectar(pipeline_t * pipeline, int origen,
     if (pipeline && origen < pipeline->m_numero
 	&& destino < pipeline->m_numero && origen >= 0 && destino >= 0) {
 
+      int i;
+      for(i = 0; i < pipeline->m_elemento[origen].m_numero_conexiones; ++i) {
+	if(pipeline->m_elemento[origen].m_destino[i]->m_id == destino) {
+	  return -1;
+	}
+      }
+
       pipeline->m_elemento[origen].m_destino[pipeline->
 					     m_elemento[origen].
 					     m_numero_conexiones] =
@@ -373,7 +381,7 @@ void pipeline_cambiar_biblioteca(elemento_t * elemento)
 	    (funcion_4) pipeline_get_function(elemento->m_handler,
 					      F_ERROR);
     } else {
-pipeline_poner_a_cero(elemento);
+      pipeline_poner_a_cero(elemento);
     }
 }
 
@@ -459,3 +467,16 @@ int pipeline_abrir_propiedades(const pipeline_t * pipeline, const elemento_t * e
     }
 }
 
+
+int pipeline_desconectar(pipeline_t * pipeline, int origen,int destino) {
+  int i;
+  for(i = 0; i < pipeline->m_elemento[origen].m_numero_conexiones; ++i) {
+    if(pipeline->m_elemento[origen].m_destino[i]->m_id == destino) {
+      int j;
+      for(j = i; j < pipeline->m_elemento[origen].m_numero_conexiones; ++j) {
+	pipeline->m_elemento[origen].m_destino[j] = pipeline->m_elemento[origen].m_destino[j + 1];
+      }
+      pipeline->m_elemento[origen].m_numero_conexiones--;
+    }
+  }
+}
