@@ -1,0 +1,89 @@
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "vision"
+%%% End: 
+
+\chapter{Módulo de Entorno 3D}
+
+\section{Introducción}
+
+El entorno virtual 3d constituye un interface visual con el usuario que puede observar la simulación de las evoluciones de un robot que se desplaza por un escenario siguiendo las órdenes procesadas por el sistema de visión por computador.
+
+Con esta aplicación, es posible evaluar y testar las funcionalidades que se han implementado sin tener que llegar a la integración del sistema en una entidad robótica real.
+\section{Especificación}
+
+Para cumplir con su cometido, la aplicación debe poseer las siguientes características funcionales:
+
+\subsection{Representación tridimensional de un entorno/escenario}
+
+Teniendo en cuenta que una de las principales motivaciones para elaborar un sistema de órdenes mediante visión artificial es la de implementar un dispositivo de navegación que permita a un autómata desplazarse por su entorno, es fundamental simular gráficamente un escenario sobre el cuál el robot virtual pueda desenvolverse. Esta representación debe ser lo más inmersiva posible para que la precisión de la simulación sea adecuada.
+\subsection{Representación de un robot capaz de desplazarse por su entorno}
+
+Debe existir una entidad (en este caso un modelo 3D) dentro de la simulación que represente la ubicación, orientación y desplazamientos resultantes de las distintas órdenes procesadas por el sistema de control. Aunque en principio no es relevante, se ha intentando que esta entidad cumpla con ciertos criterios de diseño que empaticen con los sistemas motrices más comunes en autómatas (uso de ruedas, orugas, etc).
+\subsection{Sistema de control}
+
+Las diferentes órdenes que son procesadas por el sistema de visión artificial, son analizadas para establecer las nuevas propiedades de posicionamiento, dirección, etc de la entidad que representa al robot. Esta interacción se realiza mediante el paso de mensajes distribuidos por el pipe que se encarga de la interconexión entre los diferentes módulos. Además, es necesario que de forma autónoma la aplicación pueda procesar diferentes comandos emitidos por el usuario mediante el teclado y ratón para poder controlar otros aspectos secundarios de la simulación, como son el posicionamiento de la cámara, activación de diferentes efectos gráficos, etc.
+ 
+\subsection{Sistema de cámaras interactivas}
+
+Para poder visualizar de forma óptima todos los componentes de la simulación, es necesario poseer un sistema de cámaras que permita seguir cómodamente las evoluciones del robot por el escenario, así como permitir al usuario adaptar la posición de las distintas cámaras para obtener el ángulo de visión más relevante en cada momento.
+
+\section{Implementación}
+
+La consecución de las especificaciones previamente expuestas se ha conseguido mediante la implementación de un amplio conjunto de características relacionadas principalmente con la programación gráfica 3D. A continuación se describen detalladamente:
+
+\subsection{Uso de DirectX 9.0}
+
+La implementación de los gráficos tridimensionales se ha realizada sobre la librería gráfica Direct3D incluida en DirectX 9.0. Se ha optado por este estándar en vez del uso también muy extendido de la librería OpenGl por razones académicas, en el sentido de que previamente habíamos tenido experiencia con OpenGl en otros proyectos y esta se presentaba como una oportunidad idónea para investigar nuevas tecnologías. Cabe señalar que ambas librerías poseen similar potencialidad por lo que la elección por razones funcionales no era especialmente relevante.
+\subsection{Modelos 3D creados sobre 3dStudio Max 6.0}
+
+Se ha empleado la herramienta de modelado 3dStudio Max para la elaboración de los modelos tridimensionales tanto del escenario como del robot. Para su posterior integración con la aplicación, se ha utilizado un conversor que compatibiliza el formato usado por 3dStudio con el usado por Direct3D (archivos .X). En cuanto al apartado de las texturas, se ha utilizado Adobe PhotoShop para su realización.
+\subsection{Terreno generado a partir de un mapa de altura}
+
+Como parte del escenario, se ha incluido un terreno que es generado de forma procedural a partir de un mapa de altura. Una vez calculado la malla 3D de dicho terreno, se genera de forma procedural  la textura a partir de diferentes imágenes que se interpolan siguiendo como criterio la altitud del terreno. De esta forma, según lo alto o bajo que esté el terreno, este presentará el aspecto de diferentes materiales ( hierba para las zonas bajas, roca en las cumbres de las montañas, etc). Por último se utiliza un algoritmo primitivo de sombreado que ilumina la textura resultante de forma coherente respecto a la posición de la luz en el escenario ( en este caso del sol).
+
+\subsection{Iluminación dinámica}
+
+Para otorgar una mayor sensación de integración de la entidad que se desplaza con  el escenario, se ha utilizado iluminación dinámica. De esta forma el robot es iluminado correctamente según su posición actual, incrementando además el realismo en la percepción de los materiales al visualizarse efectos de brillo, luz difusa, variación cromática,etc.
+
+ 
+\subsection{Iluminación estática. LightMaps}
+
+Los elementos estáticos del escenario no requieren de iluminación dinámica ya que su posición no varía durante la ejecución de la aplicación. Para ahorrar recursos, es habitual el uso de texturas secundarias también llamadas lightmaps que codifican la información sobre la iluminación que ese objeto recibe. En este caso, se ha utilizado una única textura resultado de la fusión de la textura primaria y los lightmaps para optimizar el rendimiento.
+
+ 
+\subsection{Sombreado Dinámico. Stencil Buffer}
+
+De forma análoga a la iluminación dinámica, el sombreado dinámico es un efecto que permite la integración de objetos móviles en escenarios de forma muy realista. Se ha implementado un algoritmo de sombreado que se basa en el uso del Stencil Buffer. Este algoritmo es bastante costoso en cuanto a recursos de la tarjeta gráfica, por lo que sueles implementarse para ser soportado por tarjetas con aceleración 3D de última generación.
+
+\subsection{Luces Glow. Lens Flares}
+
+Las luces Glow son puntos lumínicos que producen un haz a su alrededor cuando se mira directamente. En este caso, se ha implementado un punto de luz que representa al sol. Además, se ha implementado un efecto conocido como Lens Flares que se produce cuando se enfoca un sistema óptico (cámara de fotos, de video,etc) sobre un foco de luz intensa. Este efecto produce  una serie de reflejos residuales que se ubican de forma relativa a la luz que los origina. Se ha introducido por razones estéticas y para incrementar la inmersión en el entorno virtual.
+
+\subsection{Sistema de cámaras}
+
+Se han implementando varios sistemas de cámaras para ofrecer múltiples posibilidades al usuario de seguir la acción que se desarrolla en la simulación. Se dividen en:
+
+\begin{itemize}
+
+\item Cámara de seguimiento rígido: La cámara se sitúa siempre detrás del robot y sigue cada uno de sus movimientos permaneciendo siempre a una misma distancia.
+
+\item Cámara de seguimiento orbital: A diferencia de la anterior, esta cámara orbita alrededor del robot manteniendo siempre su punto de enfoque fijado en él.
+
+\item Cámara fija: Se establece una posición de la cámara donde permanece fija mientras enfoca y sigue los movimientos del robot.
+
+\item Cámara libre: Con esta cámara se puede navegar por todo el escenario así como enfocar a los puntos de mayor interés para el usuario.
+\end {itemize}
+
+\subsection{Sistemas de partículas}
+
+De forma genérica, se ha implementado un sistema de partículas para poder introducir efectos especiales y atmosféricos como pueden ser humo, fuego, lluvia, nieve, etc. Los sistemas de partículas combinan una representación gráfica mediante billboards( polígonos especiales que mantienen siempre su orientación respecto a la cámara) y un sistema de control físico que determina el comportamiento de las partículas en cuanto a aceleración, dirección, tiempo de vida, turbulencia, etc.
+
+ 
+\section{Diseño}
+
+El diseño de la aplicación es bastante sencillo en cuanto a su estructura jerárquica. Existe una clase que contiene a la VentanaPrincipal de la aplicación y que constituye el núcleo de la ejecución. Esta clase contiene un objeto del tipo Escena que es el que administra el resto de entidades con sus correspondientes representaciones gráficas. Así, la escena es el contenedor para otros objetos como son el Terreno, el Cielo, SistemaPartículas, Cámara, y el resto de entidades como el escenario y el propio robot que pertenecen a la clase Objeto. Respecto a esta última clase, destacar que posee como atributo un objeto de la clase Mesh que constituye la representación gráfica de la entidad (es decir, la maya 3d). Para gestionar la carga de los diferentes modelos 3d, existe una clase estática llamada MeshManager que comprueba que no se carguen en memoria varios modelos del mismo tipo. Por tanto, la creación de objetos del tipo Mesh se realiza siempre a través de esta clase gestora y nunca directamente. Por último, existen dos clases estáticas que se encargan de la interacción del usuario mediante el ratón y teclado ( clase Entrada) y otra que gestiona la impresión de texto en pantalla (clase Texto).
+
+Respecto al flujo de ejecución, se puede resumir en que existe un método que es llamado externamente de forma periódica. Dicho método hace que en cada ciclo se actualice la posición de cada uno de los objetos de la escena y posteriormente se renderice. Este proceso se hace de forma delegada, de forma que VentanaPrincipal llamará al método Render() de la Escena, la cuál llamará recursivamentea a los respectivos métodos Render() de cada una de las entidades que contiene.
+
+A continuación se muestra un diagrama UML que de forma esquemática muestra las relaciones anteriormente descritas entre las principales clases que componen la apliación:

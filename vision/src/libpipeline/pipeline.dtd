@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+DTD para los archivos descriptores de un pipeline
+-->
+
+<!ELEMENT pipeline (modulo*)>
+<!ELEMENT modulo (argumento*, conexion*)>
+<!ELEMENT argumento (#PCDATA)>
+<!ELEMENT conexion (destino+)>
+<!ELEMENT destino (#PCDATA)>
+<!ATTLIST conexion puerto CDATA #REQUIRED>
+<!ATTLIST destino puerto CDATA #REQUIRED>                 
+<!ATTLIST modulo inicio CDATA "0"
+                 ruta CDATA #REQUIRED
+                 nombre ID #REQUIRED>
+<!ATTLIST argumento nombre CDATA #REQUIRED>
