@@ -6,6 +6,9 @@
 #ifndef _CAPTURA_H_INCLUIDO_
 #define _CAPTURA_H_INCLUIDO_
 
+#include <vcl.h>
+#pragma hdrstop
+
 
 #include <atl/atlbase.h>
 #include <dshow.h>
@@ -51,18 +54,16 @@ public:
    /*! \brief Captura la cámara en un buffer interno de la clase. <em>No borrar el buffer</em>
        \return El número de bytes leídos
    */
-	DWORD CogerFrame();
-   /*! \brief Devuelve el bitmap creado con CrearBitmap
-       \return Un puntero al TBitmap (VCL)
-   */
-	inline Graphics::TBitmap * GetBitmap() {return m_pBitmap;}
+  DWORD CogerFrame();
+
    /*! \brief Destructor, elimina los recursos */
-	virtual ~Captura();
-   /*! \brief Transforma el buffer capturado con CogerFrame en un TBitmap de VCL
+   virtual ~Captura();
+      /*! \brief Transforma el buffer capturado con CogerFrame en un TBitmap de VCL
        \param bInvertido Un booleano que dice si la imagen será especular o igual a la original
        \return Un puntero al bitmap
    */
 	Graphics::TBitmap *  CrearBitmap(bool bInvertido);
+
    /*! \brief Devuelve el ancho de la imagen
       \return El ancho de la imagen
    */
@@ -77,7 +78,6 @@ protected:
 	IMediaControl *m_pMC;
 	IMediaEventEx *m_pME ;
 
-	Graphics::TBitmap * m_pBitmap;
 	IVMRWindowlessControl9 *m_pWC;
 	IPin * m_pCamOutPin;
 	IBaseFilter *m_pDF;
@@ -89,9 +89,9 @@ protected:
 
 	BYTE *m_pFrame;
 	long m_nTamFrame;
+        Graphics::TBitmap * m_pBitmap;
 
-
-	bool EnlazarFiltro(int id, IBaseFiltro **pFiltro);
+	bool EnlazarFiltro(int id, IBaseFilter **pFiltro);
 	HRESULT IniciarWindowlessVMR(HWND hwnd);
 	HRESULT IniciarVentanaVideo(HWND hwnd,int ancho, int alto);
 	void PararCaptura();

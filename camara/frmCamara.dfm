@@ -161,6 +161,20 @@ object Form1: TForm1
       Height = 13
       Caption = 'Tipo:'
     end
+    object Label9: TLabel
+      Left = 520
+      Top = 56
+      Width = 31
+      Height = 13
+      Caption = 'Turno:'
+    end
+    object Label10: TLabel
+      Left = 560
+      Top = 56
+      Width = 81
+      Height = 17
+      Caption = 'Label10'
+    end
     object Edit1: TEdit
       Left = 104
       Top = 20
@@ -174,7 +188,7 @@ object Form1: TForm1
       Left = 520
       Top = 16
       Width = 121
-      Height = 113
+      Height = 33
       Caption = '&Clic'
       Default = True
       TabOrder = 1
@@ -195,6 +209,15 @@ object Form1: TForm1
       Height = 21
       TabOrder = 3
       Text = 'Edit3'
+    end
+    object Button8: TButton
+      Left = 520
+      Top = 72
+      Width = 121
+      Height = 33
+      Caption = '&Establecer turno'
+      TabOrder = 4
+      OnClick = Button8Click
     end
   end
   object Button1: TButton

@@ -25,7 +25,7 @@
     <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
     <RELEASELIBPATH value="$(BCB)\lib\release"/>
     <LINKER value="tlink32"/>
-    <USERDEFINES value="_DEBUG"/>
+    <USERDEFINES value=""/>
     <SYSDEFINES value="_RTLDLL;NO_STRICT;USEPACKAGES"/>
     <MAINSOURCE value="Camara.cpp"/>
     <INCLUDEPATH value="&quot;C:\Archivos de programa\Borland\CBuilder5\Projects\&quot;;$(BCB)\include;$(BCB)\include\vcl;&quot;..\dx4devc\Directx8 for DEV-C\Includes&quot;"/>
@@ -35,12 +35,12 @@
   <OPTIONS>
     <IDLCFLAGS value="-I&quot;C:\Archivos de programa\Borland\CBuilder5\Projects\.&quot; -I$(BCB)\include 
       -I$(BCB)\include\vcl -I&quot;..\dx4devc\Directx8 for DEV-C\Includes&quot; 
-      -src_suffix cpp -D_DEBUG -boa"/>
-    <CFLAG1 value="-Od -Vx -Ve -X- -r- -a8 -b- -k -y -v -vi- -c -tW -tWM"/>
-    <PFLAGS value="-$YD -$W -$O- -v -JPHNE -M"/>
+      -src_suffix cpp -boa"/>
+    <CFLAG1 value="-O2 -Vx -Ve -X- -a8 -b- -k- -vi -c -tW -tWM"/>
+    <PFLAGS value="-$Y- -$L- -$D- -v -JPHNE -M"/>
     <RFLAGS value=""/>
-    <AFLAGS value="/mx /w2 /zd"/>
-    <LFLAGS value="-D&quot;&quot; -aa -Tpe -x -Gn -v"/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-D&quot;&quot; -aa -Tpe -x -Gn"/>
   </OPTIONS>
   <LINKER>
     <ALLOBJ value="c0w32.obj $(PACKAGES) Memmgr.Lib sysinit.obj $(OBJFILES)"/>

@@ -1,8 +1,4 @@
-#include <vcl.h>
-#pragma hdrstop
-
 #include "Captura.h"
-#pragma package(smart_init)
 
 #define SAFE_RELEASE(x) { if (x) x->Release(); x = NULL; }
 
@@ -42,14 +38,14 @@ HRESULT Captura::Iniciar(int iDeviceID,HWND hWnd, int iWidth, int iHeight)
       	if(!EnlazarFiltro(iDeviceID, &m_pDF))
 			return S_FALSE;
 
-                m_pBitmap->Height = iHeight;
-                m_pBitmap->Width = iWidth;
-                m_pBitmap->PixelFormat = pf24bit;
-
    		hr=m_pGB->AddFilter(m_pDF, L"Video Capture");
 		if (FAILED(hr))
 		return hr;
 
+                m_pBitmap->Height = iHeight;
+                m_pBitmap->Width = iWidth;
+                m_pBitmap->PixelFormat = pf24bit;
+                
       		CComPtr<IEnumPins> pEnum;
 	        m_pDF->EnumPins(&pEnum);
 
@@ -245,7 +241,7 @@ void Captura::PararCaptura()
 
 }
 
-void Captura::CloseInterfaces(void)
+void Captura::Cerrar(void)
 {
     HRESULT hr;
 
@@ -406,7 +402,7 @@ BOOL Captura::Pausa()
 
     if(((m_psEstado == PAUSADO) || (m_psEstado == PARADO)) )
     {
-		this->StopCapture();
+		this->PararCaptura();
         if (SUCCEEDED(m_pMC->Run()))
             m_psEstado = EJECUTANDO;
 		
@@ -433,7 +429,7 @@ DWORD Captura::GetFrame(BYTE **pFrame)
 	return m_nTamFrame;
 }
 
-int  Captura::EnumDevices(HWND hList)
+int  Captura::Enumerar(HWND hList)
 {
 	if (!hList)
 		return  -1;
@@ -476,12 +472,12 @@ int  Captura::EnumDevices(HWND hList)
 			if (hr == NOERROR) 
 			{
 				TCHAR str[2048];		
-				
+
 
 				id++;
 				WideCharToMultiByte(CP_ACP,0,var.bstrVal, -1, str, 2048, NULL, NULL);
-				
-				
+
+
 				(long)SendMessage(hList, CB_ADDSTRING, 0,(LPARAM)str);
 
 				SysFreeString(var.bstrVal);
@@ -492,7 +488,6 @@ int  Captura::EnumDevices(HWND hList)
     }
 	return id;
 }
-
 Graphics::TBitmap *  Captura::CrearBitmap(bool bInvertido) {
     BYTE * pFrame;
     DWORD size = CogerFrame();
@@ -531,8 +526,6 @@ Graphics::TBitmap *  Captura::CrearBitmap(bool bInvertido) {
     }
     return m_pBitmap;
 }
-
-
 
 //---------------------------------------------------------------------------
 

@@ -20,6 +20,7 @@ __fastcall TForm1::TForm1(TComponent* Owner)
         Edit1->Text = ruta;
         Edit2->Text = "";
         Edit3->Text = "";
+        Label10->Caption = turno;
 }
 
 //---------------------------------------------------------------------------
@@ -62,6 +63,7 @@ void __fastcall TForm1::Button7Click(TObject *Sender)
         Label7->Caption = ruta + Edit3->Text + "_" + Edit2->Text + "_" + turno + ".bmp";
         Image1->Picture->SaveToFile(Label7->Caption);
         turno++;
+        Label10->Caption = turno;
 }
 //---------------------------------------------------------------------------
 
@@ -123,4 +125,11 @@ SaveDialog1->Filter =  "Bitmap (*.bmp)|*.bmp|Todos los archivos (*.*)|*.*";
 
 
 
+
+void __fastcall TForm1::Button8Click(TObject *Sender)
+{
+        turno = atoi(InputBox("Turno", "Establezca el turno", "0").c_str());
+        Label10->Caption = turno;
+}
+//---------------------------------------------------------------------------
 

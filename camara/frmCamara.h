@@ -42,6 +42,9 @@ __published:	// IDE-managed Components
     TEdit *Edit2;
     TLabel *Label8;
     TEdit *Edit3;
+        TLabel *Label9;
+        TLabel *Label10;
+        TButton *Button8;
         void __fastcall Button4Click(TObject *Sender);
         void __fastcall Timer1Timer(TObject *Sender);
         void __fastcall TrackBar1Change(TObject *Sender);
@@ -54,9 +57,10 @@ __published:	// IDE-managed Components
         void __fastcall Button2Click(TObject *Sender);
         void __fastcall Button5Click(TObject *Sender);
         void __fastcall Button6Click(TObject *Sender);
+        void __fastcall Button8Click(TObject *Sender);
 private:	// User declarations
         void Pinta();
-        CVMR_Capture *c;
+        Captura *c;
         AnsiString ruta;
         bool iniciado;
         unsigned turno;

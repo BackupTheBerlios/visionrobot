@@ -5,8 +5,8 @@
 USERES("Camara.res");
 USEFORM("frmCamara.cpp", Form1);
 USEUNIT("Captura.cpp");
-USELIB("..\CBuilder_DX92_libs\quartz.lib");
-USELIB("..\CBuilder_DX92_libs\strmiids.lib");
+USELIB("C:\Archivos de programa\Borland\CBuilder5\Lib\bcb\strmiids.lib");
+USELIB("C:\Archivos de programa\Borland\CBuilder5\Lib\bcb\quartz.lib");
 //---------------------------------------------------------------------------
 WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
@@ -15,7 +15,7 @@ WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
                  Application->Initialize();
                  Application->Title = "Cámara";
                  Application->CreateForm(__classid(TForm1), &Form1);
-         Application->Run();
+                 Application->Run();
         }
         catch (Exception &exception)
         {
