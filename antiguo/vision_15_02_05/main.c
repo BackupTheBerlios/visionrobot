@@ -22,8 +22,8 @@ void funcion_error(const char *nombre, const char *texto) {
 
 gboolean tick(gpointer data)
 {
-    elemento_t *elemento = (elemento_t *)data;
-    pipeline_ciclo(elemento);
+    pipeline_t *p = (pipeline_t *)data;
+    pipeline_ciclo(p);
     return TRUE;
 }
 
@@ -38,12 +38,12 @@ int main(int argc, char **argv)
     glade_init();
     xml = glade_xml_new("ventana_pipeline.glade", NULL, NULL);
     glade_xml_signal_autoconnect(xml);
-    elemento_t * e = pipeline_cargar(argv[1], funcion_error);
-    g_timeout_add(300, tick, e);
-    pipeline_iniciar(e);	
+    pipeline_t * p = pipeline_cargar(argv[1], funcion_error);
+    g_timeout_add(300, tick, p);
+    pipeline_iniciar(p);	
     gtk_main();
-    pipeline_cerrar(e);
-    pipeline_borrar(e);
+    pipeline_cerrar(p);
+    pipeline_borrar(p);
     return 0;
   }
 }

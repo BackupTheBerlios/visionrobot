@@ -1,12 +1,16 @@
 OPTS=-g -Wall
 
-all: etags salida.so filtro_gestos.so red_neuronal.so imagenes.so ventana_imagen.so pipeline
+all: etags salida.so filtro_gestos.so red_neuronal.so imagenes.so ventana_imagen.so ventana_parametros.so pipeline
 
 etags:	
 	etags *.c
 
 ventana_imagen.so: ventana_imagen.c
 	gcc $(OPTS) -shared -o ventana_imagen.so ventana_imagen.c `pkg-config --cflags gtk+-2.0` `pkg-config --libs gtk+-2.0`  `pkg-config libglade-2.0 --cflags --libs`
+
+ventana_parametros.so: ventana_parametros.c
+	gcc $(OPTS) -shared -o ventana_parametros.so ventana_parametros.c `pkg-config --cflags gtk+-2.0` `pkg-config --libs gtk+-2.0`  `pkg-config libglade-2.0 --cflags --libs`
+
 
 salida.so: salida.c
 	gcc $(OPTS) -shared -o salida.so salida.c `pkg-config glib-2.0 --cflags --libs` `pkg-config libglade-2.0 --cflags --libs`

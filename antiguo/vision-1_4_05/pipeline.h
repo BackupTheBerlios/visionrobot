@@ -48,22 +48,27 @@ extern "C"  {
   typedef void (*funcion_error_t)(const char *nombre, const char *texto);
   
   typedef struct {
+    GString * m_nombre;
     GModule * m_handler;
     modulo_t * m_modulo;
     funcion_error_t m_funcion_error;
     GHashTable *m_argumentos;
-  } dato_elemento_t;
+    GSList *m_enlaces;
+  } elemento_t;
 
-  typedef GNode elemento_t;
+  typedef GSList pipeline_t;
 
-  elemento_t * pipeline_annadir(elemento_t * padre, const char *ruta, funcion_error_t funcion_error, GHashTable *argumentos);
-  int  pipeline_cerrar(elemento_t * elemento);
+  /*int  pipeline_cerrar(elemento_t * elemento);
   int  pipeline_borrar(elemento_t * elemento);
   int  pipeline_guardar(const elemento_t * elemento, const char *ruta);
   elemento_t * pipeline_cargar(const char *ruta, funcion_error_t funcion_error);
-  int  pipeline_ciclo(const elemento_t * elemento);//, const pipeline_dato_t *dato);
-  int  pipeline_iniciar(const elemento_t * elemento);
-
+  int  pipeline_ciclo(const elemento_t * elemento);
+  int  pipeline_iniciar(const elemento_t * elemento);*/
+  int  pipeline_cerrar(pipeline_t * p) ;
+  int  pipeline_borrar(pipeline_t * p) ;
+  pipeline_t * pipeline_cargar(const char *ruta, funcion_error_t funcion_error) ;
+  int pipeline_ciclo(const pipeline_t * p);
+  int  pipeline_iniciar(const pipeline_t * p);
   
 #ifdef __cplusplus
 } 

@@ -16,7 +16,18 @@ typedef struct {
 } filtro_gestos_in_imagen_t;
 
 typedef struct {
-  int m_rojo;
+  color_t m_rojo_sup_orden;
+  color_t m_rojo_inf_orden;
+  color_t m_verde_sup_orden;
+  color_t m_verde_inf_orden; 
+  color_t m_azul_sup_orden; 
+  color_t m_azul_inf_orden;
+  color_t m_rojo_sup_param;
+  color_t m_rojo_inf_param;
+  color_t m_verde_sup_param;
+  color_t m_verde_inf_param; 
+  color_t m_azul_sup_param; 
+  color_t m_azul_inf_param;
 } filtro_gestos_in_parametros_t;
 
 typedef union {

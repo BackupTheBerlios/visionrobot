@@ -15,12 +15,12 @@ typedef struct {
 static void filtro_ciclo_aux(gpointer key, gpointer value, gpointer user_data) {
   if(GPOINTER_TO_INT(key) == PIPELINE_FILTRO_GESTOS) {
     modulo_t *modulo = (modulo_t*)user_data;
-    filtro_t *filtro = (filtro_t*)((dato_filtro_t *)modulo->m_dato)->m_filtro;
-    filtro->m_buffer = (filtro_gestos_in_t *) value;
+    filtro_t *filtro = (filtro_t*)((dato_filtro_t *)modulo->m_dato)->m_filtro;    
     dato_filtro_t* dato = (dato_filtro_t* )modulo->m_dato;
+    filtro_gestos_in_t *parametros;
     switch(filtro->m_buffer->m_tipo) {
     case PIPELINE_FILTRO_GESTOS_IMAGEN:
-
+      filtro->m_buffer = (filtro_gestos_in_t *) value;
       if(filtro->m_buffer) {
 	filtro_gestos_filtrar(filtro);
 	
@@ -37,6 +37,34 @@ static void filtro_ciclo_aux(gpointer key, gpointer value, gpointer user_data) {
       }
       break;
     case PIPELINE_FILTRO_GESTOS_PARAMETROS:
+      parametros = (filtro_gestos_in_t*)value;
+      //      parametros->m_dato.parametros.m_rojo_sup_orden;
+
+  filtro_gestos_set_color(filtro,
+			  parametros->m_dato.parametros.m_rojo_sup_orden,
+			  parametros->m_dato.parametros.m_rojo_inf_orden,
+			  parametros->m_dato.parametros.m_verde_sup_orden,
+			  parametros->m_dato.parametros.m_verde_inf_orden,
+			  parametros->m_dato.parametros.m_azul_sup_orden,
+			  parametros->m_dato.parametros.m_azul_inf_orden,
+			  parametros->m_dato.parametros.m_rojo_sup_param,
+			  parametros->m_dato.parametros.m_rojo_inf_param,
+			  parametros->m_dato.parametros.m_verde_sup_param,
+			  parametros->m_dato.parametros.m_verde_inf_param,
+			  parametros->m_dato.parametros.m_azul_sup_param,
+			  parametros->m_dato.parametros.m_azul_inf_param);
+  /*(unsigned char)atoi(g_hash_table_lookup(argumentos, "orden_superior_rojo" )),
+    (unsigned char)atoi(g_hash_table_lookup(argumentos, "orden_inferior_rojo")),
+    (unsigned char)atoi(g_hash_table_lookup(argumentos, "orden_superior_verde")),
+    (unsigned char)atoi(g_hash_table_lookup(argumentos, "orden_inferior_verde")),
+    (unsigned char)atoi(g_hash_table_lookup(argumentos, "orden_superior_azul")),
+    (unsigned char)atoi(g_hash_table_lookup(argumentos, "orden_inferior_azul")),
+    (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_superior_rojo")),
+    (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_inferior_rojo")),
+    (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_superior_verde")),
+    (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_inferior_verde")),
+    (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_superior_azul")),
+    (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_inferior_azul")));*/
       break;
     }
   }
@@ -56,9 +84,9 @@ static char *filtro_ciclo(modulo_t *modulo, char tipo, GHashTable *lista)//, con
 static char *filtro_iniciar(modulo_t *modulo, GHashTable *argumentos)
 {
   
-  if (g_hash_table_size(argumentos) < 12) {
+  /*if (g_hash_table_size(argumentos) < 12) {
     return "faltan parametros";
-  }
+    }*/
   ((dato_filtro_t *)modulo->m_dato)->m_filtro = filtro_gestos_crear();
   filtro_t *filtro = ((dato_filtro_t *)modulo->m_dato)->m_filtro;
   GHashTable *tabla = modulo->m_tabla;
@@ -66,7 +94,7 @@ static char *filtro_iniciar(modulo_t *modulo, GHashTable *argumentos)
   g_hash_table_insert(tabla, GINT_TO_POINTER(PIPELINE_RED_NEURONAL),filtro->m_salida);
   g_hash_table_insert(tabla, GINT_TO_POINTER(PIPELINE_VENTANA_IMAGEN), &(((dato_filtro_t *)modulo->m_dato)->m_imagen));
 
-  filtro_gestos_set_color(filtro,
+  /* filtro_gestos_set_color(filtro,
 			      (unsigned char)atoi(g_hash_table_lookup(argumentos, "orden_superior_rojo" )),
 			      (unsigned char)atoi(g_hash_table_lookup(argumentos, "orden_inferior_rojo")),
 			      (unsigned char)atoi(g_hash_table_lookup(argumentos, "orden_superior_verde")),
@@ -78,7 +106,7 @@ static char *filtro_iniciar(modulo_t *modulo, GHashTable *argumentos)
 			      (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_superior_verde")),
 			      (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_inferior_verde")),
 			      (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_superior_azul")),
-			      (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_inferior_azul")));
+			      (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_inferior_azul")));*/
     return "iniciado";
 }
 static char *filtro_cerrar(modulo_t *modulo)
