@@ -6,8 +6,10 @@
 #define PIPELINE_FILTRO_GESTOS_IMAGEN 0x0
 #define PIPELINE_FILTRO_GESTOS_PARAMETROS 0x01
 
+typedef unsigned char color_t;
+
 typedef struct {
-  char *m_imagen;
+  color_t *m_imagen;
   int m_alto;
   int m_ancho;
   int m_bytes;

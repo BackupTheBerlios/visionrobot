@@ -15,6 +15,10 @@
 typedef struct {
   filtro_gestos_in_t *m_filtro;
   ventana_imagen_in_t m_imagen;
+  unsigned char m_rojo;
+  unsigned char m_verde;
+  unsigned char m_azul;
+  char m_aleatorio;
 } dato_imagenes_t;
 
 
@@ -23,10 +27,21 @@ static void imagenes_generar_imagen(modulo_t *modulo) {
   dato_imagenes_t *dato = (dato_imagenes_t*)modulo->m_dato;
   filtro_gestos_in_t* imagen = (filtro_gestos_in_t*)dato->m_filtro;
 
-  for(i = 0; i < imagen->m_dato.imagen.m_alto; i++) {
-    for(j = 0; j < imagen->m_dato.imagen.m_ancho * imagen->m_dato.imagen.m_bytes; j += 1) {
-      imagen->m_dato.imagen.m_imagen[i * imagen->m_dato.imagen.m_ancho * imagen->m_dato.imagen.m_bytes + j] =
-	(int)(g_random_double() * 255);
+  if(dato->m_aleatorio) {
+    for(i = 0; i < imagen->m_dato.imagen.m_alto; i++) {
+      for(j = 0; j < imagen->m_dato.imagen.m_ancho * imagen->m_dato.imagen.m_bytes; j += 1) {
+	imagen->m_dato.imagen.m_imagen[i * imagen->m_dato.imagen.m_ancho * imagen->m_dato.imagen.m_bytes + j] =
+	  (int)(g_random_double() * 255);
+      }
+    }
+  }
+  else {
+    for(i = 0; i < imagen->m_dato.imagen.m_alto; i++) {
+      for(j = 0; j < imagen->m_dato.imagen.m_ancho * imagen->m_dato.imagen.m_bytes; j += 3) {
+	imagen->m_dato.imagen.m_imagen[i * imagen->m_dato.imagen.m_ancho * imagen->m_dato.imagen.m_bytes + j] = dato->m_azul;
+	imagen->m_dato.imagen.m_imagen[i * imagen->m_dato.imagen.m_ancho * imagen->m_dato.imagen.m_bytes + j + 1] = dato->m_verde;
+	imagen->m_dato.imagen.m_imagen[i * imagen->m_dato.imagen.m_ancho * imagen->m_dato.imagen.m_bytes + j + 2] = dato->m_rojo;
+      }
     }
   }
 }
@@ -40,8 +55,22 @@ static char *imagenes_ciclo(modulo_t* modulo, char tipo, GHashTable *lista)
 static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
 {
   if(g_hash_table_size(argumentos) < 3) return "faltan parametros";
+  dato_imagenes_t *dato = (dato_imagenes_t*)modulo->m_dato;
+  filtro_gestos_in_t* imagen = dato->m_filtro;
 
-  filtro_gestos_in_t* imagen = (filtro_gestos_in_t*)((dato_imagenes_t*)modulo->m_dato)->m_filtro;
+  char * rojo = g_hash_table_lookup(argumentos,"rojo");
+  char * verde = g_hash_table_lookup(argumentos,"verde");
+  char * azul = g_hash_table_lookup(argumentos,"azul");
+  if(rojo && verde && azul) {
+    dato->m_rojo = (unsigned char)atoi(rojo);
+    dato->m_verde = (unsigned char)atoi(verde);
+    dato->m_azul = (unsigned char)atoi(azul);
+    dato->m_aleatorio = 0;
+  }
+  else {
+    dato->m_aleatorio = 1;
+  }
+    
   imagen->m_tipo = PIPELINE_FILTRO_GESTOS_IMAGEN;
   imagen->m_dato.imagen.m_alto = atoi(g_hash_table_lookup(argumentos,"alto"));
   imagen->m_dato.imagen.m_ancho = atoi(g_hash_table_lookup(argumentos,"ancho"));
@@ -51,8 +80,7 @@ static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
 		  imagen->m_dato.imagen.m_alto *
 		  imagen->m_dato.imagen.m_ancho *
 		  imagen->m_dato.imagen.m_bytes);
-
-  dato_imagenes_t *dato = (dato_imagenes_t*)modulo->m_dato;
+  
   dato->m_imagen.m_imagen = imagen->m_dato.imagen.m_imagen;
   dato->m_imagen.m_alto = imagen->m_dato.imagen.m_alto;
   dato->m_imagen.m_ancho = imagen->m_dato.imagen.m_ancho;

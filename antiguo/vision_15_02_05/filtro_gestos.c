@@ -67,18 +67,18 @@ static char *filtro_iniciar(modulo_t *modulo, GHashTable *argumentos)
   g_hash_table_insert(tabla, GINT_TO_POINTER(PIPELINE_VENTANA_IMAGEN), &(((dato_filtro_t *)modulo->m_dato)->m_imagen));
 
   filtro_gestos_set_color(filtro,
-			      atoi(g_hash_table_lookup(argumentos, "orden_superior_rojo" )),
-			      atoi(g_hash_table_lookup(argumentos, "orden_inferior_rojo")),
-			      atoi(g_hash_table_lookup(argumentos, "orden_superior_verde")),
-			      atoi(g_hash_table_lookup(argumentos, "orden_inferior_verde")),
-			      atoi(g_hash_table_lookup(argumentos, "orden_superior_azul")),
-			      atoi(g_hash_table_lookup(argumentos, "orden_inferior_azul")),
-			      atoi(g_hash_table_lookup(argumentos, "param_superior_rojo")),
-			      atoi(g_hash_table_lookup(argumentos, "param_inferior_rojo")),
-			      atoi(g_hash_table_lookup(argumentos, "param_superior_verde")),
-			      atoi(g_hash_table_lookup(argumentos, "param_inferior_verde")),
-			      atoi(g_hash_table_lookup(argumentos, "param_superior_azul")),
-			      atoi(g_hash_table_lookup(argumentos, "param_inferior_azul")));
+			      (unsigned char)atoi(g_hash_table_lookup(argumentos, "orden_superior_rojo" )),
+			      (unsigned char)atoi(g_hash_table_lookup(argumentos, "orden_inferior_rojo")),
+			      (unsigned char)atoi(g_hash_table_lookup(argumentos, "orden_superior_verde")),
+			      (unsigned char)atoi(g_hash_table_lookup(argumentos, "orden_inferior_verde")),
+			      (unsigned char)atoi(g_hash_table_lookup(argumentos, "orden_superior_azul")),
+			      (unsigned char)atoi(g_hash_table_lookup(argumentos, "orden_inferior_azul")),
+			      (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_superior_rojo")),
+			      (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_inferior_rojo")),
+			      (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_superior_verde")),
+			      (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_inferior_verde")),
+			      (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_superior_azul")),
+			      (unsigned char)atoi(g_hash_table_lookup(argumentos, "param_inferior_azul")));
     return "iniciado";
 }
 static char *filtro_cerrar(modulo_t *modulo)
