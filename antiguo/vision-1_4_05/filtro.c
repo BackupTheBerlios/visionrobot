@@ -28,8 +28,8 @@ red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro)
 	filtro->m_salida->m_orden = 0;
 	return filtro->m_salida;
     }
-    int h = filtro->m_buffer->m_alto;
-    int w = filtro->m_buffer->m_ancho;
+    int h = filtro->m_buffer->m_dato.imagen.m_alto;
+    int w = filtro->m_buffer->m_dato.imagen.m_ancho;
     int m_rojoInf_orden = filtro->m_orden.m_inferior.m_r;
     int m_rojoSup_orden = filtro->m_orden.m_superior.m_r;
     int m_verdeInf_orden = filtro->m_orden.m_inferior.m_v;
@@ -42,8 +42,8 @@ red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro)
     int m_verdeSup_param = filtro->m_parametro.m_superior.m_v;
     int m_azulInf_param = filtro->m_parametro.m_inferior.m_a;
     int m_azulSup_param = filtro->m_parametro.m_superior.m_a;
-    int bytes = filtro->m_buffer->m_bytes;
-    char *buffer = filtro->m_buffer->m_imagen;
+    int bytes = filtro->m_buffer->m_dato.imagen.m_bytes;
+    char *buffer = filtro->m_buffer->m_dato.imagen.m_imagen;
     //DELETEME
     //    printf("FILTRO termina valiendo %p.\n", filtro);
 
@@ -54,7 +54,7 @@ red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro)
     //printf("FILTRO tras borrar orden: %p.\n", filtro);
 
     if(filtro->m_salida->m_tipo_orden) {
-      //      free(filtro->m_salida->m_tipo_orden);
+      //free(filtro->m_salida->m_tipo_orden);
     }
     //DELETEME
     //printf("FILTRO tras borrar tipo orden: %p.\n", filtro);
@@ -175,9 +175,9 @@ void filtro_gestos_set_color(filtro_t * filtro, int rs, int ri, int vs,
 char *filtro_gestos_centrar(filtro_t * filtro, char *dibujo, int difY,
 				int difX)
 {
-    int h = filtro->m_buffer->m_alto;
-    int w = filtro->m_buffer->m_ancho;
-    int bytes = filtro->m_buffer->m_bytes;
+    int h = filtro->m_buffer->m_dato.imagen.m_alto;
+    int w = filtro->m_buffer->m_dato.imagen.m_ancho;
+    int bytes = filtro->m_buffer->m_dato.imagen.m_bytes;
     
 	//char *dibujo = filtro->m_buffer->m_imagen;
 	if (difY < 0) {

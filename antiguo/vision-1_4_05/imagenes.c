@@ -10,7 +10,6 @@
 #include "ventana_imagen_sdk.h"
 #include <stdlib.h>
 #include <string.h>
-//#include <time.h>
 
 
 typedef struct {
@@ -22,44 +21,41 @@ typedef struct {
 static void imagenes_generar_imagen(modulo_t *modulo) {
   int i, j;
   dato_imagenes_t *dato = (dato_imagenes_t*)modulo->m_dato;
-  filtro_gestos_in_t* imagen = (filtro_gestos_in_t*)dato->m_filtro;//modulo->m_dato;
-  for(i = 0; i < imagen->m_alto; i++) {
-    for(j = 0; j < imagen->m_ancho * imagen->m_bytes; j += 1) {
-      //      float numero = ((float)rand()) / ((float)RAND_MAX);
-      imagen->m_imagen[i * imagen->m_ancho * imagen->m_bytes + j] = (int)(g_random_double()/*numero*/ * 255);
+  filtro_gestos_in_t* imagen = (filtro_gestos_in_t*)dato->m_filtro;
+  for(i = 0; i < imagen->m_dato.imagen.m_alto; i++) {
+    for(j = 0; j < imagen->m_dato.imagen.m_ancho * imagen->m_dato.imagen.m_bytes; j += 1) {
+      imagen->m_dato.imagen.m_imagen[i * imagen->m_dato.imagen.m_ancho * imagen->m_dato.imagen.m_bytes + j] =
+	(int)(g_random_double() * 255);
     }
   }
 }
 
-static char *imagenes_ciclo(modulo_t* modulo, char tipo, GHashTable *lista)//, const pipeline_dato_t *in, pipeline_dato_t *out)
+static char *imagenes_ciclo(modulo_t* modulo, char tipo, GHashTable *lista)
 {
   imagenes_generar_imagen(modulo);
-  /*  out->m_tipo = PIPELINE_IMAGENES;
-      out->m_dato = modulo->m_tabla;*/
-  //  filtro_gestos_in_t* imagen = (filtro_gestos_in_t*)modulo->m_dato;
   return "saco imagen";
 }
 
 static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
 {
   if(g_hash_table_size(argumentos) < 3) return "faltan parámetros";
-  //srand(time(0));
 
   filtro_gestos_in_t* imagen = (filtro_gestos_in_t*)((dato_imagenes_t*)modulo->m_dato)->m_filtro;
-  imagen->m_alto = atoi(g_hash_table_lookup(argumentos,"alto"));
-  imagen->m_ancho = atoi(g_hash_table_lookup(argumentos,"ancho"));
-  imagen->m_bytes = atoi(g_hash_table_lookup(argumentos,"bytes"));
-  imagen->m_imagen =
+  imagen->m_tipo = PIPELINE_FILTRO_GESTOS_PARAMETROS;
+  imagen->m_dato.imagen.m_alto = atoi(g_hash_table_lookup(argumentos,"alto"));
+  imagen->m_dato.imagen.m_ancho = atoi(g_hash_table_lookup(argumentos,"ancho"));
+  imagen->m_dato.imagen.m_bytes = atoi(g_hash_table_lookup(argumentos,"bytes"));
+  imagen->m_dato.imagen.m_imagen =
     (char*)malloc(sizeof(char) *
-		  imagen->m_alto *
-		  imagen->m_ancho *
-		  imagen->m_bytes);
+		  imagen->m_dato.imagen.m_alto *
+		  imagen->m_dato.imagen.m_ancho *
+		  imagen->m_dato.imagen.m_bytes);
 
   dato_imagenes_t *dato = (dato_imagenes_t*)modulo->m_dato;
-  dato->m_imagen.m_imagen = imagen->m_imagen;
-  dato->m_imagen.m_alto = imagen->m_alto;
-  dato->m_imagen.m_ancho = imagen->m_ancho;
-  dato->m_imagen.m_bytes = imagen->m_bytes;
+  dato->m_imagen.m_imagen = imagen->m_dato.imagen.m_imagen;
+  dato->m_imagen.m_alto = imagen->m_dato.imagen.m_alto;
+  dato->m_imagen.m_ancho = imagen->m_dato.imagen.m_ancho;
+  dato->m_imagen.m_bytes = imagen->m_dato.imagen.m_bytes;
   g_hash_table_insert(modulo->m_tabla, GINT_TO_POINTER(PIPELINE_VENTANA_IMAGEN), &dato->m_imagen);
   g_hash_table_insert(modulo->m_tabla, GINT_TO_POINTER(PIPELINE_FILTRO_GESTOS), imagen);
 
@@ -71,7 +67,7 @@ static char *imagenes_cerrar(modulo_t* modulo)
 {
   dato_imagenes_t *dato = (dato_imagenes_t*)modulo->m_dato;
   filtro_gestos_in_t* imagen = dato->m_filtro;
-  free(imagen->m_imagen);
+  free(imagen->m_dato.imagen.m_imagen);
   free(imagen);
   free(dato);
   free(modulo);

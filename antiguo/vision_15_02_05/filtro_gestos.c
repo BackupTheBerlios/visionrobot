@@ -9,7 +9,6 @@
 typedef struct {
   filtro_t *m_filtro;
   ventana_imagen_in_t m_imagen;
-  //  GHashTable *m_tabla;
   char m_buffer_error[128];  
 } dato_filtro_t;
 
@@ -19,19 +18,26 @@ static void filtro_ciclo_aux(gpointer key, gpointer value, gpointer user_data) {
     filtro_t *filtro = (filtro_t*)((dato_filtro_t *)modulo->m_dato)->m_filtro;
     filtro->m_buffer = (filtro_gestos_in_t *) value;
     dato_filtro_t* dato = (dato_filtro_t* )modulo->m_dato;
-    if(filtro->m_buffer) {
-      filtro_gestos_filtrar(filtro);
+    switch(filtro->m_buffer->m_tipo) {
+    case PIPELINE_FILTRO_GESTOS_IMAGEN:
 
-      dato->m_imagen.m_imagen =  filtro->m_salida->m_tipo_orden;
-      dato->m_imagen.m_alto =  filtro->m_salida->m_alto;
-      dato->m_imagen.m_ancho =  filtro->m_salida->m_ancho;
-      dato->m_imagen.m_bytes =  filtro->m_salida->m_bytes;
+      if(filtro->m_buffer) {
+	filtro_gestos_filtrar(filtro);
+	
+	dato->m_imagen.m_imagen =  filtro->m_salida->m_tipo_orden;
+	dato->m_imagen.m_alto =  filtro->m_salida->m_alto;
+	dato->m_imagen.m_ancho =  filtro->m_salida->m_ancho;
+	dato->m_imagen.m_bytes =  filtro->m_salida->m_bytes;
 
-      sprintf(((dato_filtro_t *)modulo->m_dato)->m_buffer_error,
-	      "IN [%ix%ix%i], OUT [%ix%ix%i]",
-	      filtro->m_buffer->m_ancho, filtro->m_buffer->m_alto,
-	      filtro->m_buffer->m_bytes, filtro->m_salida->m_ancho,
-	      filtro->m_salida->m_alto, filtro->m_salida->m_bytes);
+	sprintf(((dato_filtro_t *)modulo->m_dato)->m_buffer_error,
+		"IN [%ix%ix%i], OUT [%ix%ix%i]",
+		filtro->m_buffer->m_dato.imagen.m_ancho, filtro->m_buffer->m_dato.imagen.m_alto,
+		filtro->m_buffer->m_dato.imagen.m_bytes, filtro->m_salida->m_ancho,
+		filtro->m_salida->m_alto, filtro->m_salida->m_bytes);
+      }
+      break;
+    case PIPELINE_FILTRO_GESTOS_PARAMETROS:
+      break;
     }
   }
 }
@@ -40,7 +46,6 @@ static char *filtro_ciclo(modulo_t *modulo, char tipo, GHashTable *lista)//, con
 {
   filtro_t *filtro = (filtro_t*)((dato_filtro_t *)modulo->m_dato)->m_filtro;
   if (filtro) {
-    //argumento_filtro_t argumento = {modulo, out};
     g_hash_table_foreach(lista, filtro_ciclo_aux, modulo);
     return ((dato_filtro_t *)modulo->m_dato)->m_buffer_error;
   }
@@ -56,7 +61,6 @@ static char *filtro_iniciar(modulo_t *modulo, GHashTable *argumentos)
   }
   ((dato_filtro_t *)modulo->m_dato)->m_filtro = filtro_gestos_crear();
   filtro_t *filtro = ((dato_filtro_t *)modulo->m_dato)->m_filtro;
-  //((dato_filtro_t *)modulo->m_dato)->m_tabla = g_hash_table_new(g_int_hash, g_int_equal);
   GHashTable *tabla = modulo->m_tabla;
 
   g_hash_table_insert(tabla, GINT_TO_POINTER(PIPELINE_RED_NEURONAL),filtro->m_salida);
@@ -79,7 +83,6 @@ static char *filtro_iniciar(modulo_t *modulo, GHashTable *argumentos)
 }
 static char *filtro_cerrar(modulo_t *modulo)
 {
-  //g_hash_table_destroy(((dato_filtro_t *)modulo->m_dato)->m_tabla);
   filtro_gestos_borrar((filtro_t**)&(((dato_filtro_t *)modulo->m_dato)->m_filtro));
   free((dato_filtro_t *)modulo->m_dato);
   free(modulo);
