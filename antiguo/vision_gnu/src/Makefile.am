@@ -1,0 +1,1 @@
+SUBDIRS=libpipeline pipeline filtro_gestos salida red_neuronal camara entorno_3d
