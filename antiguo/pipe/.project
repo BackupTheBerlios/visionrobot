@@ -3,6 +3,10 @@
 	<name>pipe</name>
 	<comment></comment>
 	<projects>
+		<project>camara</project>
+		<project>filtro_gestos</project>
+		<project>red_neuronal</project>
+		<project>salida</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

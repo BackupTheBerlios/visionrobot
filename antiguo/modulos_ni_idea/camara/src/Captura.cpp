@@ -141,7 +141,7 @@ bool Captura::EnlazarFiltro(int deviceId, IBaseFilter **pFilter)
     ULONG cFetched;
     IMoniker *pM;
 	int index = 0;
-    while(hr = pEm->Next(1, &pM, &cFetched) && hr==S_OK && index <= deviceId)
+    while(hr = pEm->Next(1, &pM, &cFetched),  hr==S_OK,  index <= deviceId)
     {
 		IPropertyBag *pBag;
 		hr = pM->BindToStorage(0, 0, IID_IPropertyBag, (void **)&pBag);

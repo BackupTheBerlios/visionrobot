@@ -30,8 +30,8 @@
 <listOptionValue value="xml2" builtIn="false"/>
 </option>
 <option superClass="gnu.c.link.option.paths" id="gnu.c.link.option.paths.1464122442" valueType="stringList">
+<listOptionValue value="&quot;C:\eclipse\workspace\libpipeline\Debug&quot;" builtIn="false"/>
 <listOptionValue value="&quot;C:\eclipse\lib&quot;" builtIn="false"/>
-<listOptionValue value="&quot;C:\cvs\libpipeline&quot;" builtIn="false"/>
 </option>
 <option superClass="gnu.c.link.option.ldflags" id="gnu.c.link.option.ldflags.1769186311" value="-mwindows" valueType="string"/>
 </tool>
