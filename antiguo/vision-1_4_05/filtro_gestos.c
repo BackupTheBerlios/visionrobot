@@ -25,36 +25,26 @@ static char *filtro_ciclo(modulo_t *modulo, const pipeline_dato_t *in, pipeline_
   }
   return "fallo en el filtro";
 }
-static int filtro_valor(const char *tipo, int argc, const char **argv)
+static char *filtro_iniciar(modulo_t *modulo, GHashTable *argumentos)
 {
-  int i;
-  for (i = 0; i < argc; i += 2) {
-    if (!strcmp(tipo, argv[i])) {
-      return atoi(argv[i + 1]);
-    }
-  }
-  return 0;
-}
-static char *filtro_iniciar(modulo_t *modulo, int argc, const char **argv)
-{
-  if (argc < 12) {
+  if (g_hash_table_size(argumentos) < 12) {
     return "faltan parámetros";
   }
   modulo->m_dato = filtro_gestos_crear();
   filtro_t *filtro = (filtro_t*)modulo->m_dato;
   filtro_gestos_set_color(filtro,
-			      filtro_valor("orden_superior_rojo", argc, argv),
-			      filtro_valor("orden_inferior_rojo", argc, argv),
-			      filtro_valor("orden_superior_verde", argc, argv),
-			      filtro_valor("orden_inferior_verde", argc, argv),
-			      filtro_valor("orden_superior_azul", argc, argv),
-			      filtro_valor("orden_inferior_azul", argc, argv),
-			      filtro_valor("param_superior_rojo", argc, argv),
-			      filtro_valor("param_inferior_rojo", argc, argv),
-			      filtro_valor("param_superior_verde", argc, argv),
-			      filtro_valor("param_inferior_verde", argc, argv),
-			      filtro_valor("param_superior_azul", argc, argv),
-			      filtro_valor("param_inferior_azul", argc, argv));
+			      atoi(g_hash_table_lookup(argumentos, "orden_superior_rojo" )),
+			      atoi(g_hash_table_lookup(argumentos, "orden_inferior_rojo")),
+			      atoi(g_hash_table_lookup(argumentos, "orden_superior_verde")),
+			      atoi(g_hash_table_lookup(argumentos, "orden_inferior_verde")),
+			      atoi(g_hash_table_lookup(argumentos, "orden_superior_azul")),
+			      atoi(g_hash_table_lookup(argumentos, "orden_inferior_azul")),
+			      atoi(g_hash_table_lookup(argumentos, "param_superior_rojo")),
+			      atoi(g_hash_table_lookup(argumentos, "param_inferior_rojo")),
+			      atoi(g_hash_table_lookup(argumentos, "param_superior_verde")),
+			      atoi(g_hash_table_lookup(argumentos, "param_inferior_verde")),
+			      atoi(g_hash_table_lookup(argumentos, "param_superior_azul")),
+			      atoi(g_hash_table_lookup(argumentos, "param_inferior_azul")));
     return "iniciado";
 }
 static char *filtro_cerrar(modulo_t *modulo)

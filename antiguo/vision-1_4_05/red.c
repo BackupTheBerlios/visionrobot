@@ -33,20 +33,18 @@ static char *red_ciclo(modulo_t *modulo, const pipeline_dato_t *in, pipeline_dat
     }
     return buffer_error;
 }
-static char *red_iniciar(modulo_t *modulo, int argc, const char **argv)
+static char *red_iniciar(modulo_t *modulo, GHashTable *argumentos)
 {
-    if (argc < 2) {
+    if (g_hash_table_size(argumentos) < 1) {
 	return "falta el nombre de archivo para cargar";
     }
-    if (!strcmp(argv[0], "archivo")) {
-	modulo->m_dato = red_neuronal_abrir(argv[1]);
-    }
+    modulo->m_dato = red_neuronal_abrir(g_hash_table_lookup(argumentos, "archivo"));
     red_neuronal_t *red = (red_neuronal_t *)modulo->m_dato;
     if (!red) {
       return "no se ha cargado el archivo";
     }    
     else {
-	sprintf(buffer_error, "Se ha cargado %s", argv[1]);
+	sprintf(buffer_error, "Se ha cargado %s", g_hash_table_lookup(argumentos, "archivo"));
 	return buffer_error;
     }    
 }

@@ -38,58 +38,34 @@
 #ifdef __cplusplus
 extern "C"  {
     
-#endif	/*  */
-    
-#ifdef WIN32
-#include <windows.h>
-    typedef HMODULE tipo_handler_t;
-    
-#define pipeline_free_library(x) FreeLibrary((x))
-#define pipeline_load_library(x) LoadLibrary((x))
-#define pipeline_get_symbol(x, y) GetProcAddress((x), TEXT((y)))
-#define pipeline_error() 0
-#else	/*  */
-#include <dlfcn.h>
-    typedef void *tipo_handler_t;
-    
-#define pipeline_free_library(x) dlclose((x))
-#define pipeline_load_library(x) dlopen((x), RTLD_LAZY)
-#define pipeline_get_symbol(x, y) dlsym((x),(y))
-#define pipeline_error() dlerror()
-#endif	/*  */
-    
+#endif
+
 #include "pipeline_sdk.h"
-  typedef modulo_t *(*funcion_get_modulo) ();
-     struct elemento_s  {
-	tipo_handler_t m_handler;	/*!< El interfaz con la biblioteca dinámica */
-	char **m_argumentos;	/*!< Una lista de cadenas, que representan argumentos */
-	 int m_numero_argumentos;
-	 modulo_t * m_modulo;
-	 char *m_ruta;		/*!< Una cadena que indica la ruta de la biblioteca */
-	 struct elemento_s **m_destino;	/*!< Una lista de punteros a otros elementos, para la conexión */
-	struct elemento_s *m_padre;
-	int m_numero_conexiones;	/*!< El número de conexiones actuales */
-    };
-     
-/*! \brief Declaración del tipo de los elementos para su uso */ 
-    typedef struct elemento_s elemento_t;
-  elemento_t * pipeline_nuevo(elemento_t * padre, const char *ruta);
-  int  pipeline_cerrar_biblioteca(elemento_t * elemento);
-  int  pipeline_cerrar_todo(elemento_t * elemento);
+  
+#include <gmodule.h>
+  
+  
+  typedef void (*funcion_error_t)(const char *nombre, const char *texto);
+  
+  typedef struct {
+    GModule * m_handler;
+    modulo_t * m_modulo;
+    funcion_error_t m_funcion_error;
+    GHashTable *m_argumentos;
+  } dato_elemento_t;
+
+  typedef GNode elemento_t;
+
+  elemento_t * pipeline_annadir(elemento_t * padre, const char *ruta, funcion_error_t funcion_error, GHashTable *argumentos);
+  int  pipeline_cerrar(elemento_t * elemento);
   int  pipeline_borrar(elemento_t * elemento);
   int  pipeline_guardar(const elemento_t * elemento, const char *ruta);
-  elemento_t * pipeline_cargar(const char *ruta);
+  elemento_t * pipeline_cargar(const char *ruta, funcion_error_t funcion_error);
   int  pipeline_ciclo(const elemento_t * elemento, const pipeline_dato_t *dato);
   int  pipeline_iniciar(const elemento_t * elemento);
-  int  pipeline_iniciar_todo(const elemento_t * elemento);
-  void  pipeline_borrar_argumentos(elemento_t * elemento);
-  void 
-  pipeline_set_argumentos(elemento_t * elemento, 
-				const char **argumentos,
-				int numero_argumentos);
-    int  pipeline_set_ruta(elemento_t * elemento, const char *ruta);
-    
+
+  
 #ifdef __cplusplus
 } 
-#endif	/*  */
-#endif	/*  */
+#endif
+#endif

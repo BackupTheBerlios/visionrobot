@@ -5,26 +5,32 @@
 */  
     
 #include "pipeline_sdk.h"
-#include <stdio.h>
-#include <string.h>
+#include <glade/glade.h>
+#include <gtk/gtk.h>
 
+static GladeXML* xml = 0;
+
+
+static void salida_imprimir(gpointer key, gpointer value, gpointer user_data) {
+  char *valor = (char *)value;
+  GtkWidget* texto =  glade_xml_get_widget(xml, "txt_salida");
+  GtkTextIter iter;
+  GtkTextBuffer * buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(texto));
+  gtk_text_buffer_get_iter_at_offset(buffer, &iter, -1);
+  gtk_text_buffer_insert(buffer, &iter, valor, -1);
+}
 
 static char *salida_ciclo(modulo_t *modulo, const pipeline_dato_t *in, pipeline_dato_t *out)
 {
-  if (in->m_dato) {
-    printf("%s\n", (char *) in->m_dato);
-  }
-  fflush(stdout);
+  salida_imprimir(0, (gpointer)in, 0);
   return 0;
 }
-static char *salida_iniciar(modulo_t *modulo, int argc, const char **argv)
-{
-  int i;
-  for (i = 0; i < argc; i += 2) {
-    if (!strcmp("texto", argv[i])) {
-      printf("%s\n", argv[i + 1]);
-    }
-  }
+
+
+static char *salida_iniciar(modulo_t *modulo, GHashTable *argumentos) {
+  xml = glade_xml_new("ventana_salida.glade", NULL, NULL);
+  glade_xml_signal_autoconnect(xml);
+  g_hash_table_foreach(argumentos, salida_imprimir, 0);
   return "iniciado";
 }
 static char *salida_cerrar(modulo_t *modulo)

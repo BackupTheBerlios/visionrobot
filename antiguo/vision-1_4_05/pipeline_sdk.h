@@ -5,6 +5,8 @@
 extern "C"  {
 #endif
 
+#include <glib.h>
+
   typedef struct {
     char m_tipo;
     void *m_dato;
@@ -13,7 +15,7 @@ extern "C"  {
   typedef struct modulo_s{
     char *m_nombre;
     void *m_dato;
-    char *(*m_iniciar) (struct modulo_s* modulo, int argc, const char **argv);
+    char *(*m_iniciar) (struct modulo_s* modulo, GHashTable *argumentos);
     char *(*m_ciclo) (struct modulo_s* modulo, const pipeline_dato_t *in, pipeline_dato_t *out);
     char *(*m_cerrar) (struct modulo_s* modulo);
   } modulo_t;  
