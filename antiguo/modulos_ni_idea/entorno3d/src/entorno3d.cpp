@@ -11,7 +11,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 }
 
 
-extern "C" __declspec(dllexport) int iniciar()
+extern "C" __declspec(dllexport) int iniciar(const char **argumentos)
 {
 
     ventana=new VentanaPrincipal();
