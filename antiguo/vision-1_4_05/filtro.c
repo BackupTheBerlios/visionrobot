@@ -37,6 +37,11 @@ void call_va (lua_State * L, const char *func, const char *sig, ...) {
     case 's': 
       lua_pushstring(L, va_arg(vl, char *));
       break;
+
+    case 'p': 
+      lua_pushlightuserdata(L, va_arg(vl, void *));
+      break;
+
     
     case '>':
       goto endwhile;
@@ -66,6 +71,10 @@ void call_va (lua_State * L, const char *func, const char *sig, ...) {
 	lua_isstring(L, nres);
 	*va_arg(vl, const char **) = lua_tostring(L, nres);
 	break;
+      case 'p':
+	lua_islightuserdata(L, nres);
+	*va_arg(vl, const void **) = lua_topointer(L, nres);
+	break;
       }
       nres++;
     }
@@ -83,11 +92,11 @@ static imagen_t* filtro_gestos_crear_array(lua_State *l, color_t *imagen, int an
 }
 
 
-static imagen_t* filtro_gestos_crear_array_nombre(lua_State *l, const char *nombre, color_t *imagen, int ancho, int alto, int bytes) {
+/*static imagen_t* filtro_gestos_crear_array_nombre(lua_State *l, const char *nombre, color_t *imagen, int ancho, int alto, int bytes) {
   imagen_t *i = filtro_gestos_crear_array(l, imagen, ancho, alto, bytes);
   lua_setglobal(l, nombre);
   return i;
-}
+  }*/
 
 static int filtro_gestos_new(lua_State *l) {  
   int alto = lua_tonumber(l, 2);
@@ -119,11 +128,13 @@ static int filtro_gestos_getsize (lua_State *L) {
   return 1;
 }
 
-filtro_t * filtro_gestos_crear(const char *ruta)
+filtro_t * filtro_gestos_crear(const char *ruta, const char *iniciar, const char *filtrar)
 {
   filtro_t * filtro = (filtro_t *) malloc(sizeof(filtro_t));
   filtro->m_iniciado = 0;
   filtro->m_lua = lua_open();
+  filtro->m_iniciar = iniciar;
+  filtro->m_filtrar = filtrar;
   luaopen_base(filtro->m_lua);
   luaopen_table(filtro->m_lua);
   luaopen_io(filtro->m_lua);
@@ -175,90 +186,20 @@ void filtro_gestos_borrar(filtro_t ** filtro)
   }
 }
 
-
-static int filtro_gestos_lua_get(lua_State *l) {
-  color_t * imagen = (color_t*)lua_touserdata(l, 1);
-  int x = lua_tonumber(l, 2);
-  lua_pushnumber(l, imagen[x]);
-  return 1;
-}
-
-static int filtro_gestos_lua_set(lua_State *l) {
-  color_t * imagen = (color_t*)lua_touserdata(l, 1);
-  if(imagen) {
-    int x = lua_tonumber(l, 2);
-    int valor = lua_tonumber(l, 3);
-    imagen[x] = valor;
-  }
-  return 0;
-}
-
-/*
-int filtro_gestos_lua_registrar(lua_State *l) {
-  const struct luaL_reg libreria [] = {
-    {"get", filtro_gestos_lua_get},
-    {"set", filtro_gestos_lua_set},
-    {NULL, NULL}  
-  };
-
-  luaL_openlib(l, "filtro", libreria, 0);
-  return 1;
-}
-*/
-static void filtro_gestos_mete_int(lua_State *l, const char *nombre, int valor) {
-  lua_pushstring(l, nombre);
-  lua_pushnumber(l, valor);
-  lua_rawset(l, -3);
-}
-
-static void filtro_gestos_mete_color(lua_State *l, const char *nombre, color_t valor) {
-  lua_pushstring(l, nombre);
-  lua_pushnumber(l, (int)valor);
-  lua_rawset(l, -3);
-}
-
-static void filtro_gestos_mete_light(lua_State *l, const char *nombre, void * valor) {
-  lua_pushstring(l, nombre);
-  lua_pushlightuserdata(l, valor);
-  lua_rawset(l, -3);
-}
-
 red_neuronal_in_t *filtro_gestos_script(filtro_t * filtro) {  
-  call_va(filtro->m_lua, "filtrar", "");
-  //int i, j;
-  //i = 5;
-  //
-  //lua_call(filtro->m_lua, 0, 0);
-  //  int i = 42;
-  //  call_va(filtro->m_lua, filtro->m_funcion_filtro, "i", i);
-  //  filtro->m_funcion_filtro(filtro->m_lua);
-  /*   lua_State *l = filtro->m_lua; */
-/*     luaL_loadfile(l, filtro->m_ruta); */
-/*   lua_newtable(l); */
-/*   filtro_gestos_mete_int(l, "alto", filtro->m_buffer->m_alto); */
-/*   filtro_gestos_mete_int(l, "ancho", filtro->m_buffer->m_ancho); */
-/*   filtro_gestos_mete_int(l, "bytes", filtro->m_buffer->m_bytes); */
-/*   filtro_gestos_mete_color(l, "rojo_inf_orden", filtro->m_orden.m_inferior.m_r); */
-/*   filtro_gestos_mete_color(l, "rojo_sup_orden", filtro->m_orden.m_superior.m_r); */
-/*   filtro_gestos_mete_color(l, "verde_inf_orden", filtro->m_orden.m_inferior.m_v); */
-/*   filtro_gestos_mete_color(l, "verde_sup_orden", filtro->m_orden.m_superior.m_v); */
-/*   filtro_gestos_mete_color(l, "azul_inf_orden", filtro->m_orden.m_inferior.m_a); */
-/*   filtro_gestos_mete_color(l, "azul_sup_orden", filtro->m_orden.m_superior.m_a); */
-/*   filtro_gestos_mete_color(l, "rojo_inf_param", filtro->m_parametro.m_inferior.m_r); */
-/*   filtro_gestos_mete_color(l, "rojo_sup_param", filtro->m_parametro.m_superior.m_r); */
-/*   filtro_gestos_mete_color(l, "verde_inf_param", filtro->m_parametro.m_inferior.m_v); */
-/*   filtro_gestos_mete_color(l, "verde_sup_param", filtro->m_parametro.m_superior.m_v); */
-/*   filtro_gestos_mete_color(l, "azul_inf_param", filtro->m_parametro.m_inferior.m_a); */
-/*   filtro_gestos_mete_color(l, "azul_sup_param",  filtro->m_parametro.m_superior.m_a); */
-/*   filtro_gestos_mete_light(l, "imagen",  filtro->m_buffer->m_imagen); */
-/*   filtro_gestos_mete_light(l, "tipo_orden", filtro->m_tipo_orden); */
-/*   filtro_gestos_mete_light(l, "orden_param", filtro->m_orden_param); */
-/*   filtro_gestos_mete_int(l, "n", 18); */
-/*   lua_setglobal(l, "imagen"); */
-  
-  //lua_pcall(filtro->m_lua, 0, 0, 0); 
-
-     
+  call_va(filtro->m_lua, filtro->m_filtrar, "iiiiiiiiiiii",
+	  filtro->m_orden.m_inferior.m_r,
+	  filtro->m_orden.m_superior.m_r,
+	  filtro->m_orden.m_inferior.m_v,
+	  filtro->m_orden.m_superior.m_v,
+	  filtro->m_orden.m_inferior.m_a,
+	  filtro->m_orden.m_superior.m_a,
+	  filtro->m_parametro.m_inferior.m_r,
+	  filtro->m_parametro.m_superior.m_r,
+	  filtro->m_parametro.m_inferior.m_v,
+	  filtro->m_parametro.m_superior.m_v,
+	  filtro->m_parametro.m_inferior.m_a,
+	  filtro->m_parametro.m_superior.m_a);
   return &filtro->m_salida;
 }
 
@@ -283,17 +224,13 @@ red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro)
       filtro->m_salida.m_ancho = filtro->m_buffer->m_ancho;
       filtro->m_salida.m_alto = filtro->m_buffer->m_alto;
       filtro->m_salida.m_bytes = filtro->m_buffer->m_bytes;      
-      //      color_t imagen[] = {1,2,3,6,3,87,3,2,45};
-      lua_State *l = filtro->m_lua;
-      filtro_gestos_crear_array_nombre(l, IMAGEN_CAPTURA, filtro->m_buffer->m_imagen, 3, 3, 1);
-      filtro_gestos_crear_array_nombre(l, IMAGEN_TIPO_ORDEN, filtro->m_tipo_orden, 3, 3, 1);
-      filtro_gestos_crear_array_nombre(l, IMAGEN_ORDEN_PARAM, filtro->m_orden_param, 3, 3, 1);
+      call_va(filtro->m_lua, filtro->m_iniciar, "pppiii", filtro->m_buffer->m_imagen,
+	      filtro->m_tipo_orden,
+	      filtro->m_orden_param, w, h, bytes);
     }
 
     return filtro_gestos_script(filtro);
-
     
-         
 /*         color_t m_rojoInf_orden = filtro->m_orden.m_inferior.m_r; */
 /*     color_t m_rojoSup_orden = filtro->m_orden.m_superior.m_r; */
 /*     color_t m_verdeInf_orden = filtro->m_orden.m_inferior.m_v; */

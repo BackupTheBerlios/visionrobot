@@ -21,21 +21,19 @@ typedef struct {
   color_t * m_orden_param;
   char m_iniciado;
   rango_t m_orden;
+  const char *m_iniciar;
+  const char *m_filtrar;
   rango_t m_parametro;
   lua_State *m_lua;
 } filtro_t;
 
-#define FUNCION_FILTRO "filtrar"
-#define IMAGEN_CAPTURA "captura"
-#define IMAGEN_TIPO_ORDEN "tipo_orden"
-#define IMAGEN_ORDEN_PARAM "orden_param"
-filtro_t * filtro_gestos_crear(const char *ruta);
+filtro_t * filtro_gestos_crear(const char *ruta, const char *iniciar, const char *filtrar);
 void filtro_gestos_borrar(filtro_t ** filtro);
 red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro);
 void filtro_gestos_set_color(filtro_t * filtro, color_t rs, color_t ri, color_t vs,
-			      color_t vi, color_t as, color_t ai, color_t rs2, color_t ri2,
+			     color_t vi, color_t as, color_t ai, color_t rs2, color_t ri2,
 			     color_t vs2, color_t vi2, color_t as2, color_t ai2);
 char *filtro_gestos_centrar(filtro_t * filtro, char *dibujo, int difY,
 			    int difX);
 
-#endif				//_FILTRO_H_
+#endif	

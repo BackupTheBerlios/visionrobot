@@ -30,9 +30,7 @@ static char *filtro_ciclo(modulo_t *modulo, const char *puerto, const void *valu
     if(!strcmp(puerto, PUERTO_IMAGEN)) {
       filtro->m_buffer = (filtro_gestos_in_imagen_t *) value;
       if(filtro->m_buffer) {
-	/*		int difuminado = dato->m_difuminado;
-			int reduccion = dato->m_reduccion;*/
-	filtro_gestos_filtrar(filtro);//, difuminado, reduccion);	
+	filtro_gestos_filtrar(filtro);
 	dato->m_imagen_orden.m_imagen =  filtro->m_salida.m_tipo_orden;
 	dato->m_imagen_orden.m_alto =  filtro->m_salida.m_alto;
 	dato->m_imagen_orden.m_ancho =  filtro->m_salida.m_ancho;
@@ -90,18 +88,10 @@ static char *filtro_ciclo(modulo_t *modulo, const char *puerto, const void *valu
 static char *filtro_iniciar(modulo_t *modulo, GHashTable *argumentos)
 {
   dato_filtro_t * dato = (dato_filtro_t *)modulo->m_dato;
-/*   dato->m_difuminado = 2; */
-/*   dato->m_reduccion = 10; */
-/*   char * difu = g_hash_table_lookup(argumentos, "difuminado"); */
-/*   if(difu) { */
-/* 	dato->m_difuminado = atoi(difu); */
-/*   } */
-/*   char * redu = g_hash_table_lookup(argumentos, "reduccion"); */
-/*   if(redu) { */
-/* 	dato->m_reduccion = atoi(redu); */
-/*   } */
   dato->m_error = 0;
-  dato->m_filtro = filtro_gestos_crear(g_hash_table_lookup(argumentos, "guion"));
+  dato->m_filtro = filtro_gestos_crear(g_hash_table_lookup(argumentos, "guion"),
+				       g_hash_table_lookup(argumentos, "iniciar"),
+				       g_hash_table_lookup(argumentos, "filtrar"));
   filtro_t *filtro = dato->m_filtro;
   GHashTable *tabla = modulo->m_tabla;
   dato->m_imagen_orden.m_imagen = 0;
