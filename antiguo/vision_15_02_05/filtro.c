@@ -4,9 +4,7 @@
 #include <math.h>
 
 
-////**/
-#include <stdio.h>
- filtro_t * filtro_gestos_crear()
+filtro_t * filtro_gestos_crear()
 {
     filtro_t * filtro = (filtro_t *) malloc(sizeof(filtro_t));
     filtro->m_salida =
@@ -98,6 +96,14 @@ red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro)
 	      verde--;
 	    while (azul % 10 && azul > 1)
 	      azul--;
+
+	    /* Código de prueba, para depurar, no tiene validez
+	       no borrar porque es útil tenerlo
+	       Carlos */
+	    /*rojo = buffer[y * w * bytes + x];
+	    verde = buffer[y * w * bytes + x + 1];
+	    azul = buffer[y * w * bytes + x + 2];*/
+	    /* Hasta aquí */
 	     
 	    posY = y * w * bytes;
 	    /* Atención: los colores rojo y azul están cambiados,
@@ -149,7 +155,7 @@ red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro)
 	    x += bytes - 1;
 	}
     }
-    /*    if (cont != 0) {
+    if (cont != 0) {
       int difY = ((int) floor(h / 2 - floor(acY / cont)));
       int difX =
 	((int) floor(w / 2 - ((int) floor(acX / (bytes * cont)))));
@@ -161,7 +167,7 @@ red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro)
       int difX2 =
 	((int) floor(w / 2 - ((int) floor(acX2 / (bytes * cont2)))));
       orden = filtro_gestos_centrar(filtro, orden, difY2, difX2);	
-      }*/
+      }
     filtro->m_salida->m_tipo_orden = tipo_orden;
     filtro->m_salida->m_orden = orden;
     filtro->m_salida->m_ancho = w;
@@ -245,7 +251,12 @@ char *filtro_gestos_centrar(filtro_t * filtro, char *dibujo, int difY,
       }
     }
   }
-  if (difX > 0) {
+  /* He cambiado esto porque si no viola el segmento.
+     Antes:
+     if(difX > 0) {
+     Carlos
+  */
+  if (difX > 1) {
     int y;
     for (y = 0; y < h - 1; y++) {
       int x;
@@ -257,6 +268,7 @@ char *filtro_gestos_centrar(filtro_t * filtro, char *dibujo, int difY,
 	  dibujo[(y * w * bytes) + (x - (difX * bytes) - 1)];
 	dibujo[(y * w * bytes) + x - 2] =
 	  dibujo[(y * w * bytes) + (x - (difX * bytes) - 2)];
+
 	x -= bytes - 1;
       }
       while (x >= 0) {

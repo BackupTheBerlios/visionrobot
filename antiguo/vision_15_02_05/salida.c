@@ -22,6 +22,7 @@ static void salida_imprimir(const char *value) {
   gtk_text_buffer_get_iter_at_offset(buffer, &iter, -1);
   gtk_text_buffer_insert(buffer, &iter, valor->str, -1);
   g_string_free(valor, TRUE);
+  gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(texto), &iter, 0.0, FALSE, 1.0, 1.0);
 }
 
 

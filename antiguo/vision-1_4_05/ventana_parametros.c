@@ -32,50 +32,42 @@ static gdouble ventana_parametros_get_valor(GtkWidget *w, const char *nombre) {
 }
 
 guint16 ventana_parametros_char_to_int(color_t color) {
-  float f = ((float)color) * ((float)MAX_GUINT) / ((float)MAX_CHAR);
-  return (guint16)floor(f);
+  return (guint16)floor(((float)color) * ((float)MAX_GUINT) / ((float)MAX_CHAR));
 }
 
 color_t ventana_parametros_int_to_char(guint16 color) {
-  float f = ((float)color) * ((float)MAX_CHAR) / ((float)MAX_GUINT);
-  return (color_t)floor(f);
-
+  return (color_t)floor(((float)color) * ((float)MAX_CHAR) / ((float)MAX_GUINT));
 }
 
-static int ventana_parametros_incremento(int valor, double porcentaje) {
- return floor(((float)valor) * porcentaje / 100.0f);
+static guint16 ventana_parametros_incremento(double numero, double valor, double porcentaje) {
+  double total = numero * porcentaje / 100.0;
+  total = total + valor;
+  if(total <= 0.0) total = 0.0;
+  if(total >= numero) total = numero;
+  return (guint16)floor(total);
 }
 
-static void ventana_parametros_get_colores(GdkColor *color, gdouble tolerancia,
-					   guint16 *inc_rojo, guint16 *inc_verde,
-					   guint16 *inc_azul) {
-  *inc_rojo = ventana_parametros_incremento(color->red, tolerancia);
-  *inc_verde = ventana_parametros_incremento(color->green, tolerancia);
-  *inc_azul = ventana_parametros_incremento(color->blue, tolerancia);  
+color_t ventana_parametros_suma(guint16 color, gdouble porcentaje) {
+  return ventana_parametros_int_to_char(ventana_parametros_incremento((double)MAX_GUINT, (double)color, porcentaje));
 }
-
-static void ventana_parametros_calcular_orden(filtro_gestos_in_parametros_t * parametros, GdkColor* color, gdouble valor) {
+static void ventana_parametros_calcular_orden(filtro_gestos_in_parametros_t * parametros, GdkColor* color, gdouble porcentaje) {
   parametros->m_cambio = 1;
-  guint16 inc_rojo, inc_verde, inc_azul;
-  ventana_parametros_get_colores(color, valor, &inc_rojo, &inc_verde, &inc_azul);
-  parametros->m_rojo_sup_orden = ventana_parametros_int_to_char(color->red + inc_rojo);
-  parametros->m_verde_sup_orden = ventana_parametros_int_to_char(color->green + inc_verde);
-  parametros->m_azul_sup_orden = ventana_parametros_int_to_char(color->blue + inc_azul);
-  parametros->m_rojo_inf_orden = ventana_parametros_int_to_char(color->red - inc_rojo);
-  parametros->m_verde_inf_orden = ventana_parametros_int_to_char(color->green - inc_verde);
-  parametros->m_azul_inf_orden = ventana_parametros_int_to_char(color->blue - inc_azul);
+  parametros->m_rojo_sup_orden = ventana_parametros_suma(color->red, porcentaje);
+  parametros->m_verde_sup_orden = ventana_parametros_suma(color->green, porcentaje);
+  parametros->m_azul_sup_orden = ventana_parametros_suma(color->blue, porcentaje);
+  parametros->m_rojo_inf_orden = ventana_parametros_suma(color->red, -porcentaje);
+  parametros->m_verde_inf_orden = ventana_parametros_suma(color->green, -porcentaje);
+  parametros->m_azul_inf_orden = ventana_parametros_suma(color->blue, -porcentaje);
 }
 
-static void ventana_parametros_calcular_param(filtro_gestos_in_parametros_t * parametros, GdkColor* color, gdouble valor) {
+static void ventana_parametros_calcular_param(filtro_gestos_in_parametros_t * parametros, GdkColor* color, gdouble porcentaje) {
   parametros->m_cambio = 1;
-  guint16 inc_rojo, inc_verde, inc_azul;
-  ventana_parametros_get_colores(color, valor, &inc_rojo, &inc_verde, &inc_azul);
-  parametros->m_rojo_sup_param = ventana_parametros_int_to_char(color->red + inc_rojo);
-  parametros->m_verde_sup_param = ventana_parametros_int_to_char(color->green + inc_verde);
-  parametros->m_azul_sup_param = ventana_parametros_int_to_char(color->blue + inc_azul);
-  parametros->m_rojo_inf_param = ventana_parametros_int_to_char(color->red - inc_rojo);
-  parametros->m_verde_inf_param = ventana_parametros_int_to_char(color->green - inc_verde);
-  parametros->m_azul_inf_param = ventana_parametros_int_to_char(color->blue - inc_azul);
+  parametros->m_rojo_sup_param = ventana_parametros_suma(color->red, porcentaje);
+  parametros->m_verde_sup_param = ventana_parametros_suma(color->green, porcentaje);
+  parametros->m_azul_sup_param = ventana_parametros_suma(color->blue, porcentaje);
+  parametros->m_rojo_inf_param = ventana_parametros_suma(color->red, -porcentaje);
+  parametros->m_verde_inf_param = ventana_parametros_suma(color->green, -porcentaje);
+  parametros->m_azul_inf_param = ventana_parametros_suma(color->blue, -porcentaje);
 }
 
 static void ventana_parametros_color_ordenes(GtkWidget *w) {

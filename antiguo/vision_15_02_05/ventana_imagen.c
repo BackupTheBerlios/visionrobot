@@ -64,6 +64,16 @@ gboolean ventana_foto(GtkWidget *w, GdkEventKey *event, gpointer data) {
   return FALSE;
 }
 
+static void ventana_ajustar_tamanno(modulo_t * modulo) {
+  datos_ventana_t * datos = (datos_ventana_t *)modulo->m_dato;
+  GtkWindow *ventana = GTK_WINDOW(datos->ventana);
+  ventana_imagen_in_t *imagen = datos->m_imagen;
+  gint ancho, alto;
+  gtk_window_get_size(ventana, &ancho, &alto);
+  if(ancho != imagen->m_ancho || alto != imagen->m_alto) {
+    gtk_window_resize(ventana, imagen->m_ancho, imagen->m_alto);
+  }
+}
 
 static void ventana_pintar(modulo_t * modulo) {
 
@@ -86,6 +96,7 @@ static void ventana_ciclo_aux(gpointer key, gpointer value, gpointer user_data) 
     ventana_imagen_in_t * imagen = (ventana_imagen_in_t *)value;
     datos_ventana_t * datos = (datos_ventana_t *)modulo->m_dato;
     datos->m_imagen = imagen;
+    ventana_ajustar_tamanno(modulo);
     ventana_pintar(modulo);
   }
 }

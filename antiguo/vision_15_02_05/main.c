@@ -7,6 +7,14 @@
 #include <string.h>
 
 static GladeXML* xml = 0;
+static guint timer = 500;
+static GOptionEntry entries[] = 
+{
+  { "timer", 't', 0, G_OPTION_ARG_INT, &timer, "Establece el intervalo del temporizador generador de ciclos, en milisegundos", "T" },
+  { NULL }
+};
+
+
 
 void funcion_error(const char *nombre, const char *textos) {
   if(xml && nombre && textos) {
@@ -18,6 +26,7 @@ void funcion_error(const char *nombre, const char *textos) {
     gtk_text_buffer_get_iter_at_offset(buffer, &iter, -1);
     gtk_text_buffer_insert(buffer, &iter, valor->str, -1);
     g_string_free(valor, TRUE);
+    gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(texto), &iter, 0.0, FALSE, 1.0, 1.0);
   }
 }
 
@@ -30,8 +39,16 @@ gboolean tick(gpointer data)
 
 int main(int argc, char **argv)
 {
+  int valor;
+
+  GOptionContext* contexto = g_option_context_new (" <pipeline> - ejecuta un pipeline definido en un XML válido");
+  g_option_context_add_main_entries (contexto, entries, 0);
+  g_option_context_add_group (contexto, gtk_get_option_group (TRUE));
+  g_option_context_parse (contexto, &argc, &argv, 0);
+  g_option_context_set_help_enabled (contexto, TRUE);
+
   if (argc < 2) {
-    printf("Faltan argumentos. Uso: %s <nombre_de_archivo>.\n", argv[0]);
+    printf("Faltan argumentos. Uso: %s <pipeline>.\n", argv[0]);
     return -1;
   }  
   else {
@@ -40,13 +57,22 @@ int main(int argc, char **argv)
     xml = glade_xml_new("ventana_pipeline.glade", NULL, NULL);
     glade_xml_signal_autoconnect(xml);
     pipeline_t * p = pipeline_cargar(argv[1], funcion_error, g_get_current_dir());
-    g_timeout_add(300, tick, p);
-    pipeline_iniciar(p);	
-    gtk_main();
-    pipeline_cerrar(p);
-    pipeline_borrar(p);
-    return 0;
+    if(p) {
+      g_timeout_add(timer, tick, p);
+      pipeline_iniciar(p);	
+      gtk_main();
+      pipeline_cerrar(p);
+      pipeline_borrar(p);
+      valor = 0;
+    }
+    else {
+      valor = -1;
+    }
   }
+
+  g_option_context_free(contexto);
+
+  return valor;
 }
 
 

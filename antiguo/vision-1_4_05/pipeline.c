@@ -179,6 +179,15 @@ pipeline_t * pipeline_cargar(const char *ruta, funcion_error_t funcion_error, co
     if (doc == NULL) {
 	return 0;
     }
+
+    xmlValidCtxt cvp;
+    
+    cvp.userData = (void *) stderr;
+    cvp.error    = (xmlValidityErrorFunc) fprintf;
+    cvp.warning  = (xmlValidityWarningFunc) fprintf;
+    if (!xmlValidateDocument(&cvp, doc)) {
+      return 0;
+    }
     cur = xmlDocGetRootElement(doc);
     if (cur == NULL) {
 	xmlFreeDoc(doc);
