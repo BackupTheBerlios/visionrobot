@@ -706,6 +706,8 @@ GtkWidget *create_propiedades_modulo(void)
     gtk_widget_set_name(button6, "button6");
     gtk_widget_show(button6);
     gtk_box_pack_start(GTK_BOX(hbox2), button6, FALSE, FALSE, 0);
+    g_signal_connect((gpointer) button6, "clicked",
+		     G_CALLBACK(on_button6_activate), propiedades_modulo);
 
     dialog_action_area4 = GTK_DIALOG(propiedades_modulo)->action_area;
     gtk_widget_set_name(dialog_action_area4, "dialog_action_area4");
@@ -726,9 +728,6 @@ GtkWidget *create_propiedades_modulo(void)
     gtk_dialog_add_action_widget(GTK_DIALOG(propiedades_modulo), okbutton2,
 				 GTK_RESPONSE_OK);
     GTK_WIDGET_SET_FLAGS(okbutton2, GTK_CAN_DEFAULT);
-
-    g_signal_connect((gpointer) button6, "activate",
-		     G_CALLBACK(on_button6_activate), NULL);
 
     gtk_label_set_mnemonic_widget(GTK_LABEL(label4), entry2);
     gtk_label_set_mnemonic_widget(GTK_LABEL(label6), entry3);

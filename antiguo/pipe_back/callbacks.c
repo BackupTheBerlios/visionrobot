@@ -215,20 +215,21 @@ void
 on___ndice_de_la_ayuda1_activate(GtkMenuItem * menuitem,
 				 gpointer user_data)
 {
-  int i;
-  for (i = 0; i < pipeline->m_numero; ++i) {
-    if (gtk_toggle_button_get_active
-	(GTK_TOGGLE_BUTTON(pipeline->m_elemento[i].m_widget))) {
-      if (pipeline->m_elemento[i].m_funcion_ciclo) {
-	pipeline->m_elemento[i].m_funcion_ciclo();
-      }
+    int i;
+    for (i = 0; i < pipeline->m_numero; ++i) {
+	if (gtk_toggle_button_get_active
+	    (GTK_TOGGLE_BUTTON(pipeline->m_elemento[i].m_widget))) {
+	    if (pipeline->m_elemento[i].m_funcion_ciclo) {
+		pipeline->m_elemento[i].m_funcion_ciclo();
+	    }
+	}
     }
-  }
 }
 
 void on_button6_activate(GtkButton * button, gpointer user_data)
-{  
-  gchar* file = abrir_ventana(window1);
-  /*GtkWidget *modulo = lookup_widget(dialog, "entry5");
-    gtk_entry_set_text(GTK_ENTRY(modulo), file); */
+{
+    GtkWidget *dialog = GTK_WIDGET(user_data);
+    gchar *file = abrir_ventana(dialog);
+    GtkWidget *modulo = lookup_widget(dialog, "entry5");
+    gtk_entry_set_text(GTK_ENTRY(modulo), file);
 }
