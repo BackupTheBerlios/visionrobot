@@ -4,8 +4,13 @@
 #ifndef FiltroH
 #define FiltroH
 //#include <Graphics.hpp>
+//#include <windows.h>
+#include <math.h>
+
+#ifdef WIN32
 #include <windows.h>
-#include <Math.h>
+#else
+typedef unsigned char BYTE;
 #endif
 
 //---------------------------------------------------------------------------
@@ -36,3 +41,4 @@ class Filtro{
 
 //---------------------------------------------------------------------------
 
+#endif

@@ -58,17 +58,28 @@ elemento_t *pipeline_nuevo(pipeline_t * pipeline, const char *nombre,
     pipeline->m_elemento[pipeline->m_numero].m_nombre = strdup(nombre);*/
     strcpy(pipeline->m_elemento[pipeline->m_numero].m_ruta, ruta);
     strcpy(pipeline->m_elemento[pipeline->m_numero].m_nombre, nombre);
-    pipeline->m_elemento[pipeline->m_numero].m_handler = 0;
+    /*pipeline->m_elemento[pipeline->m_numero].m_handler = 0;
     pipeline->m_elemento[pipeline->m_numero].m_funcion_ciclo =  0;
   	pipeline->m_elemento[pipeline->m_numero].m_funcion_iniciar =  0;
 	  pipeline->m_elemento[pipeline->m_numero].m_funcion_propiedades = 0;
   	pipeline->m_elemento[pipeline->m_numero].m_funcion_cerrar = 0;
   	pipeline->m_elemento[pipeline->m_numero].m_funcion_get_datos = 0;
     pipeline->m_elemento[pipeline->m_numero].m_funcion_set_datos = 0;
-	  pipeline->m_elemento[pipeline->m_numero].m_funcion_error = 0;
+	  pipeline->m_elemento[pipeline->m_numero].m_funcion_error = 0;*/
     pipeline_cambiar_biblioteca(&pipeline->m_elemento[pipeline->m_numero]);
     pipeline->m_numero++;
     return &pipeline->m_elemento[pipeline->m_numero - 1];
+}
+
+int pipeline_poner_a_cero(elemento_t * elemento) {
+  elemento->m_handler = 0;
+  	elemento->m_funcion_ciclo = 0;
+	elemento->m_funcion_iniciar = 0;
+	elemento->m_funcion_propiedades = 0;
+	elemento->m_funcion_cerrar = 0;
+	elemento->m_funcion_get_datos = 0;
+	elemento->m_funcion_set_datos = 0;
+	elemento->m_funcion_error = 0;
 }
 
 int pipeline_cerrar_biblioteca(elemento_t * elemento)
@@ -77,7 +88,7 @@ int pipeline_cerrar_biblioteca(elemento_t * elemento)
 	elemento->m_funcion_cerrar();
     }
     pipeline_free_library(elemento->m_handler);
-
+    pipeline_poner_a_cero(elemento);
     return 0;
 }
 
@@ -116,7 +127,7 @@ int pipeline_borrar(pipeline_t * pipeline, int id)
     }
     return --pipeline->m_numero;
 }
-int pipeline_guardar(pipeline_t * pipeline, const char *ruta)
+int pipeline_guardar(const pipeline_t * pipeline, const char *ruta)
 {
     xmlNodePtr pipe;
     xmlNodePtr modulo;
@@ -183,7 +194,7 @@ int pipeline_guardar(pipeline_t * pipeline, const char *ruta)
 
 typedef int  lista_objetivo_t[MAX_CONEXIONES][MAX_CONEXIONES];
 
-int parseModulo(xmlDocPtr doc, xmlNodePtr cur, pipeline_t * pipeline,
+int pipeline_parse_modulo(xmlDocPtr doc, xmlNodePtr cur, pipeline_t * pipeline,
 		lista_objetivo_t lista_objetivo, int i)
 {
     xmlChar *nombre = 0;
@@ -290,7 +301,7 @@ pipeline_t *pipeline_cargar(const char *ruta)
     while (cur != NULL) {
 	if ((!xmlStrcmp(cur->name, (const xmlChar *) "modulo"))) {
 	    num_conexiones[i] =
-		parseModulo(doc, cur, pipe, lista_objetivo, i);
+		pipeline_parse_modulo(doc, cur, pipe, lista_objetivo, i);
 	    i++;
 	}
 	cur = cur->next;
@@ -359,17 +370,11 @@ void pipeline_cambiar_biblioteca(elemento_t * elemento)
 	    (funcion_4) pipeline_get_function(elemento->m_handler,
 					      F_ERROR);
     } else {
-	elemento->m_funcion_ciclo = 0;
-	elemento->m_funcion_iniciar = 0;
-	elemento->m_funcion_propiedades = 0;
-	elemento->m_funcion_cerrar = 0;
-	elemento->m_funcion_get_datos = 0;
-	elemento->m_funcion_set_datos = 0;
-	elemento->m_funcion_error = 0;
+pipeline_poner_a_cero(elemento);
     }
 }
 
-int pipeline_error(pipeline_t * pipeline, const char *error)
+int pipeline_error(const pipeline_t * pipeline, const char *error)
 {
     if (error && pipeline->m_error != -1) {
 	if (pipeline->m_elemento[pipeline->m_error].m_funcion_set_datos) {
@@ -380,7 +385,7 @@ int pipeline_error(pipeline_t * pipeline, const char *error)
     return 0;
 }
 
-int pipeline_ciclo(pipeline_t * pipeline)
+int pipeline_ciclo(const pipeline_t * pipeline)
 {
     int i;
     int j;
@@ -416,7 +421,7 @@ int pipeline_ciclo(pipeline_t * pipeline)
     return 0;
 }
 
-int pipeline_iniciar(pipeline_t * pipeline, elemento_t * elemento)
+int pipeline_iniciar(const pipeline_t * pipeline, elemento_t * elemento)
 {
     elemento->m_iniciado = 1;
     if (elemento->m_funcion_iniciar) {
@@ -427,7 +432,7 @@ int pipeline_iniciar(pipeline_t * pipeline, elemento_t * elemento)
     return -1;
 }
 
-int pipeline_parar(pipeline_t * pipeline, elemento_t * elemento)
+int pipeline_parar(const pipeline_t * pipeline, elemento_t * elemento)
 {
     elemento->m_iniciado = 0;
     if (elemento->m_funcion_cerrar) {
@@ -437,3 +442,15 @@ int pipeline_parar(pipeline_t * pipeline, elemento_t * elemento)
     }
     return -1;
 }
+
+int pipeline_abrir_propiedades(const pipeline_t * pipeline, const elemento_t * elemento) {
+     if (elemento->m_funcion_propiedades) {
+		    elemento->m_funcion_propiedades();
+			  pipeline_enviar_error(pipeline, elemento);
+			  return 0;
+		}
+		else {
+      return -1;
+    }
+}
+

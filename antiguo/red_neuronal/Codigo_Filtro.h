@@ -4,8 +4,8 @@
 #ifndef FiltroH
 #define FiltroH
 //#include <Graphics.hpp>
-#include <Math.h>
-#endif
+#include <math.h>
+
 
 //---------------------------------------------------------------------------
 
@@ -37,3 +37,4 @@ class Filtro{
 
 //---------------------------------------------------------------------------
 
+#endif

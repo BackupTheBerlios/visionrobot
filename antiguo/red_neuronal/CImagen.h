@@ -3,7 +3,12 @@
 #ifndef CImagenH
 #define CImagenH
 #include <math.h>
+
+#ifdef WIN32
 #include <windows.h>
+#else
+typedef unsigned char BYTE;
+#endif
 //#include <Graphics.hpp>
 
 //---------------------------------------------------------------------------

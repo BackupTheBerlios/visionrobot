@@ -4,7 +4,9 @@
     \version 0.1
 */
 
+#ifdef WIN32
 #include "dll_pipeline.h"
+#endif
 #include "Codigo_Filtro.h"
 #include "preferencias.h"
 #include <stdio.h>
@@ -19,6 +21,7 @@ respuesta_t opciones;
 char cadena_error[64];
 char hay_error = 0;
 
+#ifdef WIN32
 BOOL APIENTRY DllMain( HANDLE hModule, 
                        DWORD  ul_reason_for_call, 
                        LPVOID lpReserved
@@ -35,6 +38,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
     return TRUE;
 }
 
+#endif
 
 int ciclo (){
 	//buffer_out= filtro->Filtrar(buffer_in->m_imagen, buffer_in->m_alto ,buffer_in->m_ancho);

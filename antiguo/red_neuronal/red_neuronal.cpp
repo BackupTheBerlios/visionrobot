@@ -4,7 +4,9 @@
     \version 0.2
 */
 
+#ifdef WIN32
 #include "dll_pipeline.h"
+#endif
 #include "Principal.h"
 #include "propiedades_red.h"
 #include "Codigo_Filtro.h"
@@ -19,6 +21,7 @@ int ancho,alto;
 tipoFoto tipofoto=ORDEN;
 red_t opciones;
 
+#ifdef WIN32
 BOOL APIENTRY DllMain( HANDLE hModule, 
                        DWORD  ul_reason_for_call, 
                        LPVOID lpReserved
@@ -34,7 +37,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
     }
     return TRUE;
 }
-
+#endif
 //Incluir tipoFoto y data_in por punto h
 //cambiar el data_in tiene q incluir ancho y alto
 

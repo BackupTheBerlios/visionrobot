@@ -129,7 +129,7 @@ extern "C" {
     \param archivo La ruta en la que se guarda
     \return Devuelve 0
 */
-    int pipeline_guardar(pipeline_t * pipeline, const char *archivo);
+    int pipeline_guardar(const pipeline_t * pipeline, const char *archivo);
     /*! \brief Carga un pipeline
        \param ruta La ruta del archivo XML    
        \return El nuevo pipeline
@@ -161,24 +161,30 @@ extern "C" {
       \param error Una cadena de error, se supone que el módulo sabrá tratarla
       \return -1 en caso de error, 0 si todo va bien
   */
-    int pipeline_error(pipeline_t * pipeline, const char *error);
+    int pipeline_error(const pipeline_t * pipeline, const char *error);
   /*! \brief Un ciclo del pipe
       \param pipeline El pipe
       \return -1 en caso de error, 0 si todo va bien
   */
-    int pipeline_ciclo(pipeline_t * pipeline);
+    int pipeline_ciclo(const pipeline_t * pipeline);
   /*! \brief Inicia un módulo del pipe
       \param pipeline El pipe en el que trabajamos
       \param elemento El elemento que iniciamos
       \return -1 en caso de error, 0 si todo va bien
   */
-    int pipeline_iniciar(pipeline_t * pipeline, elemento_t * elemento);
+    int pipeline_iniciar(const pipeline_t * pipeline, elemento_t * elemento);
   /*! \brief Detiene un módulo del pipe
       \param pipeline El pipe en el que trabajamos
       \param elemento El elemento que paramos
       \return -1 en caso de error, 0 si todo va bien
   */    
-  int pipeline_parar(pipeline_t * pipeline, elemento_t * elemento);
+  int pipeline_parar(const pipeline_t * pipeline, elemento_t * elemento);
+  /*! \brief Abre la ventana de propiedades
+      \param pipeline El pipe en el que trabajamos
+      \param elemento El elemento cuya ventana queremos abrir
+      \return 0 si todo va bien, -1 si algo falla
+  */
+  int pipeline_abrir_propiedades(const pipeline_t * pipeline, const elemento_t * elemento);
 
 #ifdef __cplusplus
 }

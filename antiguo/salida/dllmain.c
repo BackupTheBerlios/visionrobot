@@ -4,7 +4,9 @@
     \versión 0.1
 */
 
+#ifdef WIN32
 #include "dll_pipeline.h"
+#endif
 #include <gtk/gtk.h>
 
 GtkWidget * ventana;

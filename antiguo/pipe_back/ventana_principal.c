@@ -622,11 +622,8 @@ void on_propiedades_biblioteca_activate(GtkButton * button,
 	if (ventana_principal->pipeline->m_elemento[i].m_iniciado) {
 	    if (gtk_toggle_button_get_active
 		(get_widget(ventana_principal, i))) {
-		if (ventana_principal->pipeline->m_elemento[i].
-		    m_funcion_propiedades) {
-		    ventana_principal->pipeline->m_elemento[i].
-			m_funcion_propiedades();
-		}
+		pipeline_abrir_propiedades(ventana_principal->pipeline,
+		              ventana_principal->pipeline->m_elemento[i]);
 	    }
 	}
     }
@@ -738,8 +735,10 @@ void ventana_principal_abrir(char *file,
 			     ventana_principal_t * ventana_principal)
 {
     if (file != 0) {
+      pipeline_t * pipete = pipeline_cargar(file);
+      if(pipete) {      
 	pipeline_vaciar(ventana_principal->pipeline);
-	ventana_principal->pipeline = pipeline_cargar(file);
+	ventana_principal->pipeline = pipete;
 
 	int i;
 	for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
@@ -759,11 +758,18 @@ void ventana_principal_abrir(char *file,
 	ventana_principal_establecer(ventana_principal);
 	ventana_principal_expose_event(0, 0,
 						   ventana_principal);
+	for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
+	  ventana_principal_establecer_boton(ventana_principal, i);
+	}
+      }
+      else {
+	ventana_principal_info(ventana_principal, "El documento no contiene informaci\303\263n procesable.");
+      }
     }
-    int i;
-    for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
-      ventana_principal_establecer_boton(ventana_principal, i);
+    else {
+      ventana_principal_info(ventana_principal, "No se puede abrir el archivo.");
     }
+    
 
 }
 
