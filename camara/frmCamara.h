@@ -8,7 +8,7 @@
 #include <StdCtrls.hpp>
 #include <Forms.hpp>
 #include <ExtCtrls.hpp>
-#include "VMR_Capture.h"
+#include "Captura.h"
 #include <Dialogs.hpp>
 #include <ComCtrls.hpp>
 #include <Menus.hpp>

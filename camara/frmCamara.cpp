@@ -13,8 +13,8 @@ TForm1 *Form1;
 __fastcall TForm1::TForm1(TComponent* Owner)
         : TForm(Owner)
 {
-        c = new CVMR_Capture();
-        c->EnumDevices(ComboBox1->Handle);
+        c = new Captura();
+        c->Enumerar(ComboBox1->Handle);
         ruta = "c:\\";
         turno = 0;
         Edit1->Text = ruta;
@@ -69,12 +69,6 @@ void __fastcall TForm1::Edit1Change(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-
-
-
-
-
-
 void __fastcall TForm1::ComboBox1Change(TObject *Sender)
 {
         if(ComboBox1->ItemIndex != -1) {
@@ -85,14 +79,14 @@ void __fastcall TForm1::ComboBox1Change(TObject *Sender)
 
 void __fastcall TForm1::Button1Click(TObject *Sender)
 {
-        c->Init(ComboBox1->ItemIndex, Panel1->Handle, 320, 240);
+        c->Iniciar(ComboBox1->ItemIndex, Panel1->Handle, 320, 240);
         Button1->Enabled = false;
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::Button3Click(TObject *Sender)
 {
-        c->Pause();
+        c->Pausa();
 }
 //---------------------------------------------------------------------------
 
@@ -110,7 +104,7 @@ void __fastcall TForm1::Button5Click(TObject *Sender)
 {
 SaveDialog1->Filter =  "Imagen plana (*.raw)|*.raw|Todos los archivos (*.*)|*.*";
         if(SaveDialog1->Execute()) {
-                c->ImageCapture(SaveDialog1->FileName.c_str());
+                c->GuardarImagen(SaveDialog1->FileName.c_str());
 
         }
 }
