@@ -1,34 +1,34 @@
 <?xml version="1.0"?>
 <!DOCTYPE pipeline SYSTEM "pipeline.dtd">
 <pipeline>
-  <modulo ruta="/home/carlos/vision/ventana_parametros.so" nombre="parametros">
+  <modulo ruta="ventana_parametros" nombre="parametros">
     <argumento tipo="orden_rojo">155</argumento>
     <argumento tipo="orden_verde">140</argumento>
     <argumento tipo="orden_azul">135</argumento>
     <argumento tipo="param_rojo">20</argumento>
     <argumento tipo="param_verde">4</argumento>
     <argumento tipo="param_azul">5</argumento>
-    <argumento tipo="orden_tolerancia">53.2f</argumento>
-    <argumento tipo="param_tolerancia">12.1f</argumento>
+    <argumento tipo="orden_tolerancia">0</argumento>
+    <argumento tipo="param_tolerancia">0</argumento>
   </modulo>
-  <modulo ruta="/home/carlos/vision/imagenes.so" nombre="imagenes">
+  <modulo ruta="imagenes" nombre="imagenes">
     <argumento tipo="rojo">32</argumento>
     <argumento tipo="verde">45</argumento>
-<!--    <argumento tipo="azul">123</argumento>-->
+    <argumento tipo="azul">123</argumento>
     <argumento tipo="ancho">320</argumento>
     <argumento tipo="alto">240</argumento>
     <argumento tipo="bytes">3</argumento>
   </modulo>
-  <modulo ruta="/home/carlos/vision/ventana_imagen.so" nombre="ventana_imagenes">
+  <modulo ruta="ventana_imagen" nombre="ventana_imagenes">
     <argumento tipo="nombre_foto">imagenes.png</argumento>
     <argumento tipo="extension">png</argumento>
   </modulo>
-  <modulo ruta="/home/carlos/vision/filtro_gestos.so" nombre="filtro_gestos" />
-  <modulo ruta="/home/carlos/vision/ventana_imagen.so" nombre="ventana_filtro">
+  <modulo ruta="filtro_gestos" nombre="filtro_gestos"></modulo>
+  <modulo ruta="ventana_imagen" nombre="ventana_filtro">
     <argumento tipo="nombre_foto">filtro.png</argumento>
     <argumento tipo="extension">png</argumento>
   </modulo>
-<!--  <conexion origen="imagenes" destino="ventana_imagenes"/> -->
+  <conexion origen="imagenes" destino="ventana_imagenes"/>
   <conexion origen="pipeline" destino="imagenes"/>
   <conexion origen="pipeline" destino="parametros"/>
   <conexion origen="parametros" destino="filtro_gestos"/>

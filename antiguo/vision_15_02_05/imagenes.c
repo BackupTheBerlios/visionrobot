@@ -49,7 +49,7 @@ static void imagenes_generar_imagen(modulo_t *modulo) {
 static char *imagenes_ciclo(modulo_t* modulo, char tipo, GHashTable *lista)
 {
   imagenes_generar_imagen(modulo);
-  return "saco imagen";
+  return 0;//"saco imagen";
 }
 
 static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)

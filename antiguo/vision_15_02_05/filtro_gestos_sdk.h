@@ -16,6 +16,7 @@ typedef struct {
 } filtro_gestos_in_imagen_t;
 
 typedef struct {
+  char m_cambio;
   color_t m_rojo_sup_orden;
   color_t m_rojo_inf_orden;
   color_t m_verde_sup_orden;

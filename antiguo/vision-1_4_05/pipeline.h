@@ -48,7 +48,7 @@ extern "C"  {
 
   int  pipeline_cerrar(pipeline_t * p) ;
   int  pipeline_borrar(pipeline_t * p) ;
-  pipeline_t * pipeline_cargar(const char *ruta, funcion_error_t funcion_error) ;
+  pipeline_t * pipeline_cargar(const char *ruta, funcion_error_t funcion_error, const char *dir) ;
   int pipeline_ciclo(const pipeline_t * p);
   int  pipeline_iniciar(const pipeline_t * p);
   

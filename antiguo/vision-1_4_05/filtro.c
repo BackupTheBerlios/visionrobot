@@ -2,6 +2,10 @@
 #include "red_neuronal_sdk.h"
 #include <stdlib.h>
 #include <math.h>
+
+
+////**/
+#include <stdio.h>
  filtro_t * filtro_gestos_crear()
 {
     filtro_t * filtro = (filtro_t *) malloc(sizeof(filtro_t));
@@ -17,7 +21,6 @@ void filtro_gestos_borrar(filtro_t ** filtro)
 {
   filtro_t *p_filtro = *filtro;
   if (filtro && p_filtro) {
-    free(p_filtro);
     free(p_filtro->m_salida);
     if(p_filtro->m_orden_param) {
       free(p_filtro->m_orden_param);
@@ -25,6 +28,7 @@ void filtro_gestos_borrar(filtro_t ** filtro)
     if(p_filtro->m_tipo_orden) {
       free(p_filtro->m_tipo_orden);
     }
+    free(p_filtro);
     *filtro = 0;
   }
 }
@@ -53,21 +57,6 @@ red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro)
     color_t m_azulSup_param = filtro->m_parametro.m_superior.m_a;
     int bytes = filtro->m_buffer->m_dato.imagen.m_bytes;
     color_t *buffer = filtro->m_buffer->m_dato.imagen.m_imagen;
-    //DELETEME
-    //    printf("FILTRO termina valiendo %p.\n", filtro);
-
-    //if(filtro->m_salida->m_orden) {
-      //free(filtro->m_salida->m_orden);
-    //}
-    //DELETEME
-    //printf("FILTRO tras borrar orden: %p.\n", filtro);
-
-    //    if(filtro->m_salida->m_tipo_orden) {
-      //free(filtro->m_salida->m_tipo_orden);
-    //}
-    //DELETEME
-    //printf("FILTRO tras borrar tipo orden: %p.\n", filtro);
-
 
     if(!filtro->m_tipo_orden) {
       filtro->m_tipo_orden = (color_t *) malloc(sizeof(color_t) * h * w * bytes);
@@ -75,14 +64,13 @@ red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro)
     if(!filtro->m_orden_param) {
       filtro->m_orden_param = (color_t *) malloc(sizeof(color_t) * h * w * bytes);
     }
-    color_t *tipo_orden = filtro->m_tipo_orden;//(color_t *) malloc(sizeof(color_t) * h * w * bytes);
-    color_t *orden = filtro->m_orden_param;//(color_t *) malloc(sizeof(color_t) * h * w * bytes);
+    color_t *tipo_orden = filtro->m_tipo_orden;
+    color_t *orden = filtro->m_orden_param;
     int cont, cont2, acX, acX2, acY, acY2, posY;
     cont = cont2 = acX = acX2 = acY = acY2 = 0;
-    int y, x, j, i;
-    
+    int y, x, j, i;    
     for (y = 0; y < h; y++) {
-	for (x = 0; x < w * bytes; x++) {
+      for (x = 0; x < w * bytes; x++) {
 	    int rojo = 0;
 	    int verde = 0;
 	    int azul = 0;
@@ -161,21 +149,19 @@ red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro)
 	    x += bytes - 1;
 	}
     }
-    if (cont != 0) {
+    /*    if (cont != 0) {
       int difY = ((int) floor(h / 2 - floor(acY / cont)));
       int difX =
 	((int) floor(w / 2 - ((int) floor(acX / (bytes * cont)))));
       tipo_orden =
-	filtro_gestos_centrar(filtro, tipo_orden, difY,
-			      difX
-				  );
+	filtro_gestos_centrar(filtro, tipo_orden, difY, difX);
     }
     if (cont2 != 0) {
-	int difY2 = ((int) floor(h / 2 - ((int) floor(acY2 / cont2))));
-	int difX2 =
-	    ((int) floor(w / 2 - ((int) floor(acX2 / (bytes * cont2)))));
-	orden = filtro_gestos_centrar(filtro, orden, difY2, difX2);	
-    }
+      int difY2 = ((int) floor(h / 2 - ((int) floor(acY2 / cont2))));
+      int difX2 =
+	((int) floor(w / 2 - ((int) floor(acX2 / (bytes * cont2)))));
+      orden = filtro_gestos_centrar(filtro, orden, difY2, difX2);	
+      }*/
     filtro->m_salida->m_tipo_orden = tipo_orden;
     filtro->m_salida->m_orden = orden;
     filtro->m_salida->m_ancho = w;
@@ -204,79 +190,84 @@ void filtro_gestos_set_color(filtro_t * filtro, unsigned char rs, unsigned char 
 char *filtro_gestos_centrar(filtro_t * filtro, char *dibujo, int difY,
 				int difX)
 {
-    int h = filtro->m_buffer->m_dato.imagen.m_alto;
-    int w = filtro->m_buffer->m_dato.imagen.m_ancho;
-    int bytes = filtro->m_buffer->m_dato.imagen.m_bytes;
-    
-	//char *dibujo = filtro->m_buffer->m_imagen;
-	if (difY < 0) {
-	int y, x;
-	for (y = 0; y - difY < h; y++)
-	    for (x = 0; x < w * bytes; x++)
-		dibujo[(y * w * bytes) + x] =
-		    dibujo[((y - difY) * w * bytes) + x];
-	while (y < h) {
-	    for (x = 0; x < w * bytes; x++)
-		dibujo[(y * w * bytes) + x] = 0;
-	    y++;
-	}
+  int h = filtro->m_buffer->m_dato.imagen.m_alto;
+  int w = filtro->m_buffer->m_dato.imagen.m_ancho;
+  int bytes = filtro->m_buffer->m_dato.imagen.m_bytes;
+  
+  if (difY < 0) {
+    int y, x;
+    for (y = 0; y - difY < h; y++) {
+      for (x = 0; x < w * bytes; x++) {
+	dibujo[(y * w * bytes) + x] =
+	  dibujo[((y - difY) * w * bytes) + x];
+      }
     }
-    if (difY > 0) {
-	int y, x;
-	for (y = h - 1; y - difY >= 0; y--)
-	    for (x = 0; x < w * bytes; x++)
-		dibujo[(y * w * bytes) + x] =
-		    dibujo[((y - difY) * w * bytes) + x];
-	while (y >= 0) {
-	    for (x = 0; x < w * bytes; x++)
-		dibujo[(y * w * bytes) + x] = 0;
-	    y--;
-	}
+    while (y < h) {
+      for (x = 0; x < w * bytes; x++) {
+	dibujo[(y * w * bytes) + x] = 0;
+      }
+      y++;
     }
-    if (difX < 0) {
-	int y;
-	for (y = 0; y < h; y++) {
-	    int x;
-	    for (x = 0; x - (difX * bytes) + bytes - 1 < w * bytes; x++) {
-		dibujo[(y * w * bytes) + x] =
-		    dibujo[(y * w * bytes) + (x - (difX * bytes))];
-		dibujo[(y * w * bytes) + x + 1] =
-		    dibujo[(y * w * bytes) + (x - (difX * bytes) + 1)];
-		dibujo[(y * w * bytes) + x + 2] =
-		    dibujo[(y * w * bytes) + (x - (difX * bytes) + 2)];
-		x += bytes - 1;
-	    }
-	    while (x + 2 < w * bytes) {
-		dibujo[(y * w * bytes) + x] = 0;
-		dibujo[(y * w * bytes) + x + 1] = 0;
-		dibujo[(y * w * bytes) + x + 2] = 0;
-		x += bytes - 1;
-	    }
-	}
+  }
+  if (difY > 0) {
+    int y, x;
+    for (y = h - 1; y - difY >= 0; y--) {
+      for (x = 0; x < w * bytes; x++) {
+	dibujo[(y * w * bytes) + x] =
+	  dibujo[((y - difY) * w * bytes) + x];
+      }
     }
-    if (difX > 0) {
-	int y;
-	for (y = 0; y < h - 1; y++) {
-	    int x;
-	    for (x = (w * bytes) - 2; x - (difX * bytes) + bytes - 1 >= 0;
-		  x--) {
-		dibujo[(y * w * bytes) + x] =
-		    dibujo[(y * w * bytes) + (x - (difX * bytes))];
-		dibujo[(y * w * bytes) + x - 1] =
-		    dibujo[(y * w * bytes) + (x - (difX * bytes) - 1)];
-		dibujo[(y * w * bytes) + x - 2] =
-		    dibujo[(y * w * bytes) + (x - (difX * bytes) - 2)];
-		x -= bytes - 1;
-	    }
-	    while (x >= 0) {
-		dibujo[(y * w * bytes) + x] = 0;
-		dibujo[(y * w * bytes) + x - 1] = 0;
-		dibujo[(y * w * bytes) + x - 2] = 0;
-		x -= bytes - 1;
-	    }
-	}
+    while (y >= 0) {
+      for (x = 0; x < w * bytes; x++) {
+	dibujo[(y * w * bytes) + x] = 0;
+      }
+      y--;
     }
-    return dibujo;
+  }
+  if (difX < 0) {
+    int y;
+    for (y = 0; y < h; y++) {
+      int x;
+      for (x = 0; x - (difX * bytes) + bytes - 1 < w * bytes; x++) {
+	dibujo[(y * w * bytes) + x] =
+	  dibujo[(y * w * bytes) + (x - (difX * bytes))];
+	dibujo[(y * w * bytes) + x + 1] =
+	  dibujo[(y * w * bytes) + (x - (difX * bytes) + 1)];
+	dibujo[(y * w * bytes) + x + 2] =
+	  dibujo[(y * w * bytes) + (x - (difX * bytes) + 2)];
+	x += bytes - 1;
+      }
+      while (x + 2 < w * bytes) {
+	dibujo[(y * w * bytes) + x] = 0;
+	dibujo[(y * w * bytes) + x + 1] = 0;
+	dibujo[(y * w * bytes) + x + 2] = 0;
+	x += bytes - 1;
+      }
+    }
+  }
+  if (difX > 0) {
+    int y;
+    for (y = 0; y < h - 1; y++) {
+      int x;
+      for (x = (w * bytes) - 2; x - (difX * bytes) + bytes - 1 >= 0;
+	   x--) {
+	dibujo[(y * w * bytes) + x] =
+	  dibujo[(y * w * bytes) + (x - (difX * bytes))];
+	dibujo[(y * w * bytes) + x - 1] =
+	  dibujo[(y * w * bytes) + (x - (difX * bytes) - 1)];
+	dibujo[(y * w * bytes) + x - 2] =
+	  dibujo[(y * w * bytes) + (x - (difX * bytes) - 2)];
+	x -= bytes - 1;
+      }
+      while (x >= 0) {
+	dibujo[(y * w * bytes) + x] = 0;
+	dibujo[(y * w * bytes) + x - 1] = 0;
+	dibujo[(y * w * bytes) + x - 2] = 0;
+	x -= bytes - 1;
+      }
+    }
+  }
+  return dibujo;
 }
 
 

@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include <math.h>
 
+#define MAX_GUINT 65535
+#define MAX_CHAR 255
+
 typedef struct {
   GladeXML* m_xml;
   filtro_gestos_in_t m_filtro;
@@ -29,25 +32,31 @@ static gdouble ventana_parametros_get_valor(GtkWidget *w, const char *nombre) {
 }
 
 guint16 ventana_parametros_char_to_int(color_t color) {
-  return color * 65535 / 255;
+  float f = ((float)color) * ((float)MAX_GUINT) / ((float)MAX_CHAR);
+  return (guint16)floor(f);
 }
 
 color_t ventana_parametros_int_to_char(guint16 color) {
-  return color * 255 / 65535;
+  float f = ((float)color) * ((float)MAX_CHAR) / ((float)MAX_GUINT);
+  return (color_t)floor(f);
+
 }
 
 static int ventana_parametros_incremento(int valor, double porcentaje) {
  return floor(((float)valor) * porcentaje / 100.0f);
 }
 
-static void ventana_parametros_get_colores(GdkColor *color, gdouble tolerancia, int *inc_rojo, int *inc_verde, int *inc_azul) {
+static void ventana_parametros_get_colores(GdkColor *color, gdouble tolerancia,
+					   guint16 *inc_rojo, guint16 *inc_verde,
+					   guint16 *inc_azul) {
   *inc_rojo = ventana_parametros_incremento(color->red, tolerancia);
   *inc_verde = ventana_parametros_incremento(color->green, tolerancia);
   *inc_azul = ventana_parametros_incremento(color->blue, tolerancia);  
 }
 
 static void ventana_parametros_calcular_orden(filtro_gestos_in_parametros_t * parametros, GdkColor* color, gdouble valor) {
-  int inc_rojo, inc_verde, inc_azul;
+  parametros->m_cambio = 1;
+  guint16 inc_rojo, inc_verde, inc_azul;
   ventana_parametros_get_colores(color, valor, &inc_rojo, &inc_verde, &inc_azul);
   parametros->m_rojo_sup_orden = ventana_parametros_int_to_char(color->red + inc_rojo);
   parametros->m_verde_sup_orden = ventana_parametros_int_to_char(color->green + inc_verde);
@@ -58,7 +67,8 @@ static void ventana_parametros_calcular_orden(filtro_gestos_in_parametros_t * pa
 }
 
 static void ventana_parametros_calcular_param(filtro_gestos_in_parametros_t * parametros, GdkColor* color, gdouble valor) {
-  int inc_rojo, inc_verde, inc_azul;
+  parametros->m_cambio = 1;
+  guint16 inc_rojo, inc_verde, inc_azul;
   ventana_parametros_get_colores(color, valor, &inc_rojo, &inc_verde, &inc_azul);
   parametros->m_rojo_sup_param = ventana_parametros_int_to_char(color->red + inc_rojo);
   parametros->m_verde_sup_param = ventana_parametros_int_to_char(color->green + inc_verde);
@@ -103,8 +113,6 @@ void on_hsc_tolerancia_parametros_value_changed(GtkRange *range, gpointer user_d
 static char *ventana_parametros_ciclo(modulo_t *modulo, char tipo, GHashTable *lista){
   return 0;
 }
-
-
 
 static char *ventana_parametros_iniciar(modulo_t *modulo, GHashTable *argumentos) {
   if (g_hash_table_size(argumentos) < 8) {

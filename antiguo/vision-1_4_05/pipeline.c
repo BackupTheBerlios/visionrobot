@@ -46,12 +46,13 @@ static void pipeline_salida_error(const elemento_t *elemento, const char *nombre
 }
 
 
-static int  pipeline_set_ruta(elemento_t * dato, const char *ruta) {
+static int  pipeline_set_ruta(elemento_t * dato, const char *ruta, const char *dir) {
   if (ruta) {
     if (dato->m_handler)      {
       g_module_close(dato->m_handler);
     }
-    dato->m_handler = g_module_open(ruta, G_MODULE_BIND_LAZY);
+    char *ruta_modulo = g_module_build_path(dir, ruta);
+    dato->m_handler = g_module_open(ruta_modulo, G_MODULE_BIND_LAZY);
     if (dato->m_handler) {
       typedef modulo_t *(*funcion_modulo_t) ();
       funcion_modulo_t f;
@@ -61,6 +62,7 @@ static int  pipeline_set_ruta(elemento_t * dato, const char *ruta) {
       else {
 	dato->m_modulo = f ? f() : 0;
 	dato->m_modulo->m_tabla = g_hash_table_new(0,0);
+	pipeline_salida_error(dato, "Bibliotecas", g_module_error());
       }
     }
     
@@ -74,7 +76,7 @@ static int  pipeline_set_ruta(elemento_t * dato, const char *ruta) {
 
 
 static pipeline_t * pipeline_annadir(pipeline_t * p, const char *nombre, const char *ruta,
-			      funcion_error_t funcion_error, GHashTable *argumentos) {
+			      funcion_error_t funcion_error, GHashTable *argumentos, const char *dir) {
 
   elemento_t * dato = (elemento_t *)malloc(sizeof(elemento_t));
   dato->m_nombre = g_string_new(nombre);
@@ -82,7 +84,7 @@ static pipeline_t * pipeline_annadir(pipeline_t * p, const char *nombre, const c
   dato->m_modulo = 0;
   dato->m_enlaces = 0;
   dato->m_handler = 0;
-  pipeline_set_ruta(dato, ruta);
+  pipeline_set_ruta(dato, ruta, dir);
   dato->m_argumentos = argumentos;
   return g_slist_append(p, dato);
 }
@@ -154,10 +156,10 @@ int  pipeline_borrar(pipeline_t * p)
 }
 
 static pipeline_t * pipeline_leer_xml(pipeline_t * p, xmlDocPtr doc, xmlNodePtr cur,
-				      funcion_error_t funcion_error) 
+				      funcion_error_t funcion_error, const char *dir) 
 {
   GHashTable *argumentos = g_hash_table_new_full(g_str_hash, g_str_equal, pipeline_borrar_cadena, pipeline_borrar_cadena);
-  p = pipeline_annadir(p, xmlGetProp(cur, "nombre"), xmlGetProp(cur, "ruta"), funcion_error, argumentos);
+  p = pipeline_annadir(p, xmlGetProp(cur, "nombre"), xmlGetProp(cur, "ruta"), funcion_error, argumentos, dir);
   cur = cur->xmlChildrenNode;
   while (cur != NULL) {
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "argumento"))) {
@@ -169,7 +171,7 @@ static pipeline_t * pipeline_leer_xml(pipeline_t * p, xmlDocPtr doc, xmlNodePtr 
   return p;
 }
 
-pipeline_t * pipeline_cargar(const char *ruta, funcion_error_t funcion_error) 
+pipeline_t * pipeline_cargar(const char *ruta, funcion_error_t funcion_error, const char *dir) 
 {
     xmlDocPtr doc;
     xmlNodePtr cur;
@@ -186,12 +188,12 @@ pipeline_t * pipeline_cargar(const char *ruta, funcion_error_t funcion_error)
 	xmlFreeDoc(doc);
 	return 0;
     }
-    pipeline_t * p = pipeline_annadir(0, "pipeline", 0, 0, 0);
+    pipeline_t * p = pipeline_annadir(0, "pipeline", 0, 0, 0, dir);
     cur = cur->xmlChildrenNode;
     cur = cur->next;
     while (cur != NULL) {
 	if ((!xmlStrcmp(cur->name, (const xmlChar *) "modulo"))) {
-	    p = pipeline_leer_xml(p, doc, cur, funcion_error);
+	    p = pipeline_leer_xml(p, doc, cur, funcion_error, dir);
 	}
 	else if((!xmlStrcmp(cur->name, (const xmlChar *) "conexion"))) {
 	  pipeline_conectar(p, xmlGetProp(cur, "origen"), xmlGetProp(cur, "destino"));
@@ -205,7 +207,8 @@ pipeline_t * pipeline_cargar(const char *ruta, funcion_error_t funcion_error)
 static void pipeline_ciclo_recursivo(gpointer gp1, gpointer gp2) {  
   elemento_t *e = (elemento_t*)gp1;
   pipeline_dato_t *d = (pipeline_dato_t *)gp2;
-  
+  pipeline_dato_t d2;
+
   char tipo = d->m_tipo;
   GHashTable* tabla = d->m_tabla;
   if(e && e->m_modulo && e->m_modulo->m_ciclo) {
@@ -213,15 +216,14 @@ static void pipeline_ciclo_recursivo(gpointer gp1, gpointer gp2) {
 			  e->m_modulo->m_ciclo(e->m_modulo, tipo, tabla));
   }
 			
-  d->m_tipo = e->m_modulo->m_tipo;
-  d->m_tabla = e->m_modulo->m_tabla;
+  d2.m_tipo = e->m_modulo->m_tipo;
+  d2.m_tabla = e->m_modulo->m_tabla;
 
- g_slist_foreach(e->m_enlaces, pipeline_ciclo_recursivo, d);
+ g_slist_foreach(e->m_enlaces, pipeline_ciclo_recursivo, &d2);
 }
 
 int pipeline_ciclo(const pipeline_t * p)
-{
-  
+{  
   pipeline_dato_t d = {0, 0};
   g_slist_foreach(((elemento_t*)p->data)->m_enlaces, pipeline_ciclo_recursivo, &d);
   return 0;
