@@ -25,14 +25,15 @@ static void red_ciclo_aux(gpointer key, gpointer value, gpointer user_data) {
       
       strcpy(dato->m_salida, red_neuronal_reconocer(red, red_in->m_tipo_orden, red_in->m_ancho,
 						    red_in->m_alto, red_in->m_bytes, ORDEN));
-      sprintf(dato->m_buffer_error, "%s, ORDEN = [%4f, %4f, %4f, %4f]", dato->m_buffer_error, red->capaSalida[1], 
-	      red->capaSalida[2],red->capaSalida[3], red->capaSalida[4]);
+      sprintf(dato->m_buffer_error, "%s, ORDEN = [%4f, %4f, %4f, %4f]", dato->m_buffer_error,
+	      red->capaSalida[1], red->capaSalida[2],
+	      red->capaSalida[3], red->capaSalida[4]);
     }
 
   }
 }
 
-static char *red_ciclo(modulo_t *modulo, char tipo, GHashTable *lista)//, const pipeline_dato_t *in, pipeline_dato_t *out)
+static char *red_ciclo(modulo_t *modulo, char tipo, GHashTable *lista)
 {
   red_dato_t * dato = (red_dato_t*)modulo->m_dato;
   g_hash_table_foreach(lista, red_ciclo_aux, modulo);      

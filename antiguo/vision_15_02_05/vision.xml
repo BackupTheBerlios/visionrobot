@@ -18,7 +18,7 @@
     <argumento tipo="camara">0</argumento>
   </modulo> -->
   <modulo ruta="imagenes" nombre="imagenes">
-    <argumento tipo="archivo">no_gesto_112.xpm</argumento>
+    <argumento tipo="archivo">_orden_avanza_35.xpm</argumento>
     <argumento tipo="rojo">32</argumento>
     <argumento tipo="verde">45</argumento>
     <argumento tipo="azul">123</argumento>

@@ -1,4 +1,4 @@
-OPTS=-Wall -g
+OPTS=-Wall #-g
 
 all: etags libsalida.so libfiltro_gestos.so libred_neuronal.so libimagenes.so libventana_imagen.so libventana_parametros.so pipeline
 
