@@ -9,10 +9,10 @@
 
 /* Pines del puerto paralelo */
 /* TODO: poner los que sean */
-#define AVANZAR LP_PIN01
-#define RETROCEDER LP_PIN02 
-#define GIRAR_IZQUIERDA LP_PIN03
-#define GIRAR_DERECHA LP_PIN04
+#define AVANZAR LP_PIN05
+#define RETROCEDER LP_PIN06
+#define GIRAR_IZQUIERDA LP_PIN07
+#define GIRAR_DERECHA LP_PIN08
 
 /*! \brief El puerto de entrada, recibe un <code>char *</code> */
 #define PUERTO "entrada_robot"
@@ -169,6 +169,7 @@ static char *robot_iniciar(modulo_t *modulo, GHashTable *argumentos) {
       devolver = "Fallo al abrir el puerto. Debe ser root (permisos)";
     }
     else {
+      pin_output_mode(AVANZAR | GIRAR_DERECHA | GIRAR_IZQUIERDA | RETROCEDER);
     }
   }
 
@@ -185,6 +186,7 @@ static char *robot_iniciar(modulo_t *modulo, GHashTable *argumentos) {
 static char *robot_cerrar(modulo_t *modulo)
 {
   dato_robot_t *dato = (dato_robot_t *)modulo->m_dato;
+  clear_pin(AVANZAR | GIRAR_DERECHA | GIRAR_IZQUIERDA | RETROCEDER);
   free(dato->m_funcion);
   lua_close(dato->m_lua);
   free(dato);
