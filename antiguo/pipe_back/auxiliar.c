@@ -84,27 +84,28 @@ void acerca_de(GtkWidget * w)
 
 char *abrir_ventana(GtkWidget * w)
 {
+  // a ver si hay que cargarse algo
   dialogo_abrir_t * dialogo_abrir = dialogo_abrir_crear();
   GtkWidget *dialog = dialogo_abrir->filechooserdialog1;
-    char *filename = 0;
-    if (gtk_dialog_run(GTK_DIALOG(dialog)) != GTK_RESPONSE_CANCEL) {
-	filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-    }
-    //gtk_widget_destroy(dialog);
-    dialogo_abrir_cerrar(dialogo_abrir);
-    return filename;
+  char *filename = 0;
+  if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
+    filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+  }
+  //gtk_widget_destroy(dialog);
+  dialogo_abrir_cerrar(dialogo_abrir);
+  return filename;
 }
 
 char *guardar_ventana(GtkWidget * w)
 {
   dialogo_guardar_t *dialogo_guardar = dialogo_guardar_crear();
   GtkWidget *dialog = dialogo_guardar->filechooserdialog2;
-    char *filename = 0;
-    if (gtk_dialog_run(GTK_DIALOG(dialog)) != GTK_RESPONSE_CANCEL) {
-	filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-    }
-    dialogo_guardar_cerrar(dialogo_guardar);
-    return filename;
+  char *filename = 0;
+  if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
+    filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+  }
+  dialogo_guardar_cerrar(dialogo_guardar);
+  return filename;
 }
 
 /*gchar *entrada(GtkWidget * w, const gchar * pregunta)
@@ -186,7 +187,7 @@ void propiedades(gint id_elemento, GtkFixed * fixed, pipeline_t * pipeline,
 					  m_widget),
 			       pipeline->m_elemento[id_elemento].m_x,
 			       pipeline->m_elemento[id_elemento].m_y);
-		cambiar_biblioteca(pipeline, id_elemento);
+		cambiar_biblioteca(&pipeline->m_elemento[id_elemento]/*pipeline, id_elemento*/);
 	    }
 	}
     } else {
@@ -397,7 +398,7 @@ int elegir_modulo(GtkWidget * window1, pipeline_t * pipeline)
     }
 
     int respuesta =
-	gtk_dialog_run(GTK_DIALOG(dialog)) != GTK_RESPONSE_CANCEL ?
+	gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK ?
 	respuesta = gtk_combo_box_get_active(GTK_COMBO_BOX(combo)) : -1;
 
     //gtk_widget_destroy(dialog);

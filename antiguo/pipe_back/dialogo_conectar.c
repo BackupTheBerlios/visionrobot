@@ -5,7 +5,7 @@
 
 void dialogo_conectar_cerrar(dialogo_conectar_t * dialogo_conectar) {
   gtk_widget_destroy(dialogo_conectar->dialog1);
-  free(dialogo_conectar);
+  g_free(dialogo_conectar);
 }
 dialogo_conectar_t *dialogo_conectar_crear()
 {

@@ -36,6 +36,14 @@
 #define F_SET_DATOS "set_datos"
 #define F_GET_DATOS "get_datos"
 
+#define F_CICLO_ "_ciclo"
+#define F_INICIAR_ "_iniciar"
+#define F_CERRAR_ "_cerrar"
+#define F_PROPIEDADES_ "_propiedades"
+#define F_SET_DATOS_ "_set_datos"
+#define F_GET_DATOS_ "_get_datos"
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -130,7 +138,7 @@ extern "C" {
        \param pipeline El pipe sobre el que cargamos la biblioteca
        \param id El id del elemento sobre el que hacemos los cambios
      */
-    void cambiar_biblioteca(pipeline_t * pipeline, gint id);
+  void cambiar_biblioteca(elemento_t * elemento);//pipeline_t * pipeline, gint id);
 
     /*! \brief Conecta dos módulos
        \param pipeline El pipeline que contiene los módulos
@@ -139,6 +147,9 @@ extern "C" {
        \return 0 si todo va bien, -1 en casa
      */
     int conectar(pipeline_t * pipeline, gint origen, gint destino);
+
+  int cerrar_biblioteca(elemento_t * elemento);
+  int cerrar_todas_bibliotecas(pipeline_t * pipeline);
 
 #ifdef __cplusplus
 }

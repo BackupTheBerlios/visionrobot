@@ -4,7 +4,7 @@
 
 void dialogo_abrir_cerrar(dialogo_abrir_t * dialogo_abrir) {
   gtk_widget_destroy(dialogo_abrir->filechooserdialog1);
-  free(dialogo_abrir);
+  g_free(dialogo_abrir);
 }
 
 dialogo_abrir_t *dialogo_abrir_crear()

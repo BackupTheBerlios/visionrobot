@@ -4,7 +4,7 @@
 
 void dialogo_guardar_cerrar(dialogo_guardar_t * dialogo_guardar){
   gtk_widget_destroy(dialogo_guardar->filechooserdialog2);
-  free(dialogo_guardar);
+  g_free(dialogo_guardar);
 }
 
 

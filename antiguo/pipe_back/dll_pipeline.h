@@ -7,6 +7,9 @@
 #ifndef _DLL_PIPELINE_H_INCLUIDO_
 #define _DLL_PIPELINE_H_INCLUIDO_
 
+#include <windows.h>
+
+/*! Si da algún fallo, comentar lo de extern "C" y dejar el resto */
 #define DLLEXPORT extern "C" __declspec (dllexport)
 
 /*! \brief Realiza un ciclo, es llamado por el pipeline varias veces por segundo

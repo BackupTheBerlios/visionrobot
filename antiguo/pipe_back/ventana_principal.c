@@ -35,10 +35,6 @@ void on_ayuda1_activate(GtkMenuItem * menuitem, gpointer user_data);
 void on_acerca_de1_activate(GtkMenuItem * menuitem, gpointer user_data);
 
 gboolean
-on_window1_destroy_event(GtkWidget * widget,
-			 GdkEvent * event, gpointer user_data);
-
-gboolean
 on_window1_delete_event(GtkWidget * widget,
 			GdkEvent * event, gpointer user_data);
 
@@ -88,7 +84,7 @@ void on_cerrar_todas_biblioteca_activate(GtkButton * button,
 
 void ventana_principal_borrar(ventana_principal_t * ventana_principal) {
   gtk_widget_destroy(ventana_principal->window1);
-  free(ventana_principal);
+  g_free(ventana_principal);
 }
 
 ventana_principal_t * ventana_principal_crear()
@@ -590,23 +586,21 @@ ventana_principal_t * ventana_principal = (ventana_principal_t *)user_data;
 
 void abre(char *file, ventana_principal_t * ventana_principal)
 {
-  //ventana_principal_t * ventana_principal = (ventana_principal_t *)user_data;
     if (file != 0) {
 	vaciar_pipeline(ventana_principal->pipeline);
 	ventana_principal->pipeline = cargar(file);
 	strcpy(ventana_principal->archivo, file);
 	ventana_principal->modificado = FALSE;
 	mostrar(GTK_STATUSBAR(ventana_principal->statusbar1), ventana_principal->archivo, &ventana_principal->id);
-	//free(file);
-	GtkWidget *fixed = ventana_principal->fixed1;//lookup_widget(window1, "fixed1");
+	GtkWidget *fixed = ventana_principal->fixed1;
 	insertar(GTK_FIXED(fixed), ventana_principal->pipeline);
-	gtk_widget_set_sensitive(/*lookup_widget(window1, "nuevo2")*/ventana_principal->nuevo2, TRUE);
-	gtk_widget_set_sensitive(/*lookup_widget(window1, "guardar_como2")*/ventana_principal->guardar_como2,
+	gtk_widget_set_sensitive(ventana_principal->nuevo2, TRUE);
+	gtk_widget_set_sensitive(ventana_principal->guardar_como2,
 				 TRUE);
 	int i;
 	for (i = 0; i < ventana_principal->pipeline->m_numero; ++i) {
 	    g_signal_connect((gpointer) ventana_principal->pipeline->m_elemento[i].m_widget,
-			     "toggled", G_CALLBACK(pinchado), 0);
+			     "toggled", G_CALLBACK(pinchado), ventana_principal);
 	}
 	establecer(ventana_principal->pipeline, ventana_principal);
     }
@@ -615,21 +609,26 @@ void abre(char *file, ventana_principal_t * ventana_principal)
 
 
 void on_abrir2_activate(GtkMenuItem * menuitem, gpointer user_data)
-{
-ventana_principal_t * ventana_principal = (ventana_principal_t *)user_data;
+{  
+  ventana_principal_t * ventana_principal = (ventana_principal_t *)user_data;
   gchar * file = abrir_ventana(ventana_principal->window1);
-  abre(file, ventana_principal);
-  g_free(file);
+  if(file) {
+    abre(file, ventana_principal);
+    g_free(file);
+  }
 }
 
 
 void on_guardar_como2_activate(GtkMenuItem * menuitem, gpointer user_data)
 {
-ventana_principal_t * ventana_principal = (ventana_principal_t *)user_data;
-    gchar *file = guardar_ventana(ventana_principal->window1);
+  ventana_principal_t * ventana_principal = (ventana_principal_t *)user_data;
+  cerrar_todas_bibliotecas(ventana_principal->pipeline);
+  gchar *file = guardar_ventana(ventana_principal->window1);
+  if(file) {
     guardar_como_aux(ventana_principal->pipeline,
 		     file, ventana_principal->window1, ventana_principal->statusbar1, ventana_principal->archivo, &ventana_principal->id, &ventana_principal->modificado, ventana_principal);
     g_free(file);
+  }
 }
 
 
@@ -647,7 +646,7 @@ ventana_principal_t * ventana_principal = (ventana_principal_t *)user_data;
 		     ventana_principal->window1, ventana_principal->statusbar1, ventana_principal->archivo, &ventana_principal->id, &ventana_principal->modificado, ventana_principal);
 
     if (buffer != ventana_principal->archivo) {
-	free(buffer);
+	g_free(buffer);
     }
 }
 
@@ -684,7 +683,7 @@ ventana_principal_t * ventana_principal = (ventana_principal_t *)user_data;
 				 TRUE);
 	g_signal_connect((gpointer) ventana_principal->pipeline->
 			 m_elemento[ventana_principal->pipeline->m_numero - 1].m_widget,
-			 "toggled", G_CALLBACK(pinchado), 0);
+			 "toggled", G_CALLBACK(pinchado), ventana_principal);
 	establecer(ventana_principal->pipeline, ventana_principal);
     }
 }

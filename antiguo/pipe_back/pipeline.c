@@ -47,9 +47,32 @@ elemento_t *nuevo(pipeline_t * pipeline, const char *nombre, gint x,
     strcpy(pipeline->m_elemento[pipeline->m_numero].m_ruta, ruta);
     strcpy(pipeline->m_elemento[pipeline->m_numero].m_nombre, nombre);
     pipeline->m_elemento[pipeline->m_numero].m_handler = 0;
-    cambiar_biblioteca(pipeline, pipeline->m_numero);
+    cambiar_biblioteca(&pipeline->m_elemento[pipeline->m_numero]);
     pipeline->m_numero++;
     return &pipeline->m_elemento[pipeline->m_numero - 1];
+}
+
+int cerrar_biblioteca(elemento_t * elemento) {
+  if(elemento->m_funcion_cerrar) {
+    elemento->m_funcion_cerrar();
+  }
+#ifdef WIN32
+  FreeLibrary(elemento->m_handler);
+#else
+  dlclose(elemento->m_handler);
+#endif
+  
+  return 0;
+}
+
+int cerrar_todas_bibliotecas(pipeline_t * pipeline) {
+  int id;
+  for (id = 0; id < pipeline->m_numero; ++id) {
+    if (pipeline->m_elemento[id].m_handler != NULL) {
+      cerrar_biblioteca(&pipeline->m_elemento[id]);
+    }
+  }
+  return 0;
 }
 
 int vaciar_pipeline(pipeline_t * pipeline)
@@ -57,11 +80,7 @@ int vaciar_pipeline(pipeline_t * pipeline)
     int id;
     for (id = 0; id < pipeline->m_numero; ++id) {
 	if (pipeline->m_elemento[id].m_handler != NULL) {
-#ifdef WIN32
-	    FreeLibrary(pipeline->m_elemento[id].m_handler);
-#else
-	    dlclose(pipeline->m_elemento[id].m_handler);
-#endif
+	  cerrar_biblioteca(&pipeline->m_elemento[id]);
 	}
 	gtk_widget_destroy(GTK_WIDGET(pipeline->m_elemento[id].m_widget));
     }
@@ -74,11 +93,7 @@ int borrar(pipeline_t * pipeline, gint id)
     int i;
     gtk_widget_destroy(GTK_WIDGET(pipeline->m_elemento[id].m_widget));
     if (pipeline->m_elemento[id].m_handler) {
-#ifdef WIN32
-	FreeLibrary(pipeline->m_elemento[id].m_handler);
-#else
-	dlclose(pipeline->m_elemento[id].m_handler);
-#endif
+      cerrar_biblioteca(&pipeline->m_elemento[id]);
     }
     for (i = id; i < pipeline->m_numero; ++i) {
 	pipeline->m_elemento[i] = pipeline->m_elemento[i + 1];
@@ -207,63 +222,6 @@ pipeline_t *cargar(const char *ruta)
     return pipe;
 }
 
-void cambiar_biblioteca(pipeline_t * pipeline, gint id)
-{
-#ifdef WIN32
-    if (pipeline->m_elemento[id].m_handler) {
-	FreeLibrary(pipeline->m_elemento[id].m_handler);
-    }
-    pipeline->m_elemento[id].m_handler =
-	LoadLibrary(pipeline->m_elemento[id].m_ruta);
-    if (pipeline->m_elemento[id].m_handler) {
-	pipeline->m_elemento[id].m_funcion_ciclo =
-	    (funcion_1) GetProcAddress(pipeline->m_elemento[id].m_handler,
-				       TEXT(F_CICLO));
-	pipeline->m_elemento[id].m_funcion_iniciar =
-	    (funcion_1) GetProcAddress(pipeline->m_elemento[id].m_handler,
-				       TEXT(F_INICIAR));
-
-	pipeline->m_elemento[id].m_funcion_propiedades =
-	    (funcion_1) GetProcAddress(pipeline->m_elemento[id].m_handler,
-				       TEXT(F_PROPIEDADES));
-	pipeline->m_elemento[id].m_funcion_cerrar =
-	    (funcion_1) GetProcAddress(pipeline->m_elemento[id].m_handler,
-				       TEXT(F_CERRAR));
-	pipeline->m_elemento[id].m_funcion_get_datos =
-	    (funcion_2) GetProcAddress(pipeline->m_elemento[id].m_handler,
-				       TEXT(F_GET_DATOS));
-	pipeline->m_elemento[id].m_funcion_set_datos =
-	    (funcion_3) GetProcAddress(pipeline->m_elemento[id].m_handler,
-				       TEXT(F_SET_DATOS));
-    }
-#else
-    if (pipeline->m_elemento[id].m_handler) {
-	dlclose(pipeline->m_elemento[id].m_handler);
-    }
-    pipeline->m_elemento[id].m_handler =
-	dlopen(pipeline->m_elemento[id].m_ruta, RTLD_LAZY);
-    if (pipeline->m_elemento[id].m_handler) {
-	pipeline->m_elemento[id].m_funcion_ciclo =
-	    (funcion_1) dlsym(pipeline->m_elemento[id].m_handler, F_CICLO);
-	pipeline->m_elemento[id].m_funcion_iniciar =
-	    (funcion_1) dlsym(pipeline->m_elemento[id].m_handler,
-			      F_INICIAR);
-	pipeline->m_elemento[id].m_funcion_propiedades =
-	    (funcion_1) dlsym(pipeline->m_elemento[id].m_handler,
-			      F_PROPIEDADES);
-	pipeline->m_elemento[id].m_funcion_cerrar =
-	    (funcion_1) dlsym(pipeline->m_elemento[id].m_handler,
-			      F_CERRAR);
-	pipeline->m_elemento[id].m_funcion_get_datos =
-	    (funcion_2) dlsym(pipeline->m_elemento[id].m_handler,
-			      F_GET_DATOS);
-	pipeline->m_elemento[id].m_funcion_set_datos =
-	    (funcion_3) dlsym(pipeline->m_elemento[id].m_handler,
-			      F_SET_DATOS);
-    }
-#endif
-}
-
 int conectar(pipeline_t * pipeline, gint origen, gint destino)
 {
     if (pipeline && origen < pipeline->m_numero
@@ -278,3 +236,102 @@ int conectar(pipeline_t * pipeline, gint origen, gint destino)
 	return -1;
     }
 }
+
+
+void cambiar_biblioteca(elemento_t * elemento) //pipeline_t * pipeline, gint id)
+{
+#ifdef WIN32
+  if (elemento->m_handler) {
+    FreeLibrary(elemento->m_handler);
+  }
+    elemento->m_handler =
+	LoadLibrary(elemento->m_ruta);
+    if (elemento->m_handler) {
+	elemento->m_funcion_ciclo =
+	    (funcion_1) GetProcAddress(elemento->m_handler,
+				       TEXT(F_CICLO));
+	if(!elemento->m_funcion_ciclo)
+	  elemento->m_funcion_ciclo =
+	    (funcion_1) GetProcAddress(elemento->m_handler,
+				       TEXT(F_CICLO_));
+	
+	elemento->m_funcion_iniciar =
+	  (funcion_1) GetProcAddress(elemento->m_handler,
+				     TEXT(F_INICIAR));
+	if(!elemento->m_funcion_iniciar)
+	  elemento->m_funcion_iniciar =
+	    (funcion_1) GetProcAddress(elemento->m_handler,
+				       TEXT(F_INICIAR_));
+	
+	elemento->m_funcion_propiedades =
+	  (funcion_1) GetProcAddress(elemento->m_handler,
+				     TEXT(F_PROPIEDADES));
+	if(!elemento->m_funcion_propiedades)
+	  elemento->m_funcion_propiedades =
+	    (funcion_1) GetProcAddress(elemento->m_handler,
+				       TEXT(F_PROPIEDADES_));
+	
+	
+	elemento->m_funcion_cerrar =
+	  (funcion_1) GetProcAddress(elemento->m_handler,
+				     TEXT(F_CERRAR));
+	if(!elemento->m_funcion_cerrar)
+	  elemento->m_funcion_cerrar =
+	    (funcion_1) GetProcAddress(elemento->m_handler,
+				       TEXT(F_CERRAR_));
+	
+	
+	elemento->m_funcion_get_datos =
+	  (funcion_2) GetProcAddress(elemento->m_handler,
+				     TEXT(F_GET_DATOS));
+	if(!elemento->m_funcion_get_datos)
+	  elemento->m_funcion_get_datos =
+	    (funcion_2) GetProcAddress(elemento->m_handler,
+				       TEXT(F_GET_DATOS_));
+	
+	
+	elemento->m_funcion_set_datos =
+	  (funcion_3) GetProcAddress(elemento->m_handler,
+				     TEXT(F_SET_DATOS));
+	if(!elemento->m_funcion_set_datos)
+	  elemento->m_funcion_set_datos =
+	    (funcion_3) GetProcAddress(elemento->m_handler,
+				       TEXT(F_SET_DATOS_));
+
+    }
+#else
+    if (elemento->m_handler) {
+	dlclose(elemento->m_handler);
+    }
+    elemento->m_handler =
+	dlopen(elemento->m_ruta, RTLD_LAZY);
+    if (elemento->m_handler) {
+	elemento->m_funcion_ciclo =
+	    (funcion_1) dlsym(elemento->m_handler, F_CICLO);
+	elemento->m_funcion_iniciar =
+	    (funcion_1) dlsym(elemento->m_handler,
+			      F_INICIAR);
+	elemento->m_funcion_propiedades =
+	    (funcion_1) dlsym(elemento->m_handler,
+			      F_PROPIEDADES);
+	elemento->m_funcion_cerrar =
+	    (funcion_1) dlsym(elemento->m_handler,
+			      F_CERRAR);
+	elemento->m_funcion_get_datos =
+	    (funcion_2) dlsym(elemento->m_handler,
+			      F_GET_DATOS);
+	elemento->m_funcion_set_datos =
+	    (funcion_3) dlsym(elemento->m_handler,
+			      F_SET_DATOS);
+    }    
+#endif
+    else {
+      elemento->m_funcion_ciclo = 0;
+      elemento->m_funcion_iniciar = 0;
+      elemento->m_funcion_propiedades = 0;
+      elemento->m_funcion_cerrar = 0;
+      elemento->m_funcion_get_datos = 0;
+      elemento->m_funcion_set_datos = 0;
+    }
+}
+

@@ -5,7 +5,7 @@
 
 void propiedades_modulo_cerrar(propiedades_modulo_t * propiedades_modulo_) {
   gtk_widget_destroy(propiedades_modulo_->propiedades_modulo);
-  free(propiedades_modulo_);
+  g_free(propiedades_modulo_);
 }
 
 void on_button6_activate(GtkButton * button, gpointer user_data)
@@ -13,9 +13,11 @@ void on_button6_activate(GtkButton * button, gpointer user_data)
   propiedades_modulo_t * propiedades_modulo_ = (propiedades_modulo_t *)user_data;
   GtkWidget *dialog = propiedades_modulo_->propiedades_modulo;
   gchar *file = abrir_ventana(dialog);
-  GtkWidget *modulo = propiedades_modulo_->entry5;
-  gtk_entry_set_text(GTK_ENTRY(modulo), file);
-  g_free(file);
+  if(file) {
+    GtkWidget *modulo = propiedades_modulo_->entry5;
+    gtk_entry_set_text(GTK_ENTRY(modulo), file);
+    g_free(file);
+  }
 }
 
 
