@@ -12,7 +12,7 @@ ResourceIncludes=
 MakeIncludes=
 Compiler=-DBUILDING_DLL=1_@@_
 CppCompiler=-DBUILDING_DLL=1_@@_
-Linker=--no-export-all-symbols --add-stdcall-alias_@@_../../Dev-Cpp/lib/libgtk-win32-2.0.dll.a_@@_../../Dev-Cpp/lib/libgobject-2.0.dll.a_@@_
+Linker=--no-export-all-symbols --add-stdcall-alias_@@_c:/Dev-Cpp/lib/libgtk-win32-2.0.dll.a_@@_c:/Dev-Cpp/lib/libgobject-2.0.dll.a_@@_
 IsCpp=0
 Icon=
 ExeOutput=

@@ -9,6 +9,14 @@
 
 GtkWidget * ventana;
 GtkWidget * texto;
+GtkWidget * scroll;
+
+gboolean
+cerrar_ventana(GtkWidget * widget,
+			GdkEvent * event, gpointer user_data) {
+      gtk_widget_hide(ventana);
+			  return TRUE;
+}  
 
 int ciclo () {
   return 0;
@@ -34,11 +42,17 @@ void * get_datos() {
 
 int iniciar() {
   ventana = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  scroll = gtk_scrolled_window_new(NULL, NULL);
+  gtk_widget_show(scroll);
   gtk_window_set_title(GTK_WINDOW(ventana),
 		       "Salida del pipeline");
   gtk_window_set_default_size(GTK_WINDOW(ventana), 300, 200);
   texto = gtk_text_view_new();
-  gtk_container_add(GTK_CONTAINER(ventana), texto);
+  gtk_container_add(GTK_CONTAINER(scroll), texto);
+  gtk_container_add(GTK_CONTAINER(ventana), scroll);
+  gtk_widget_show(texto);
+  g_signal_connect((gpointer) ventana, "delete_event",
+		     G_CALLBACK(cerrar_ventana), 0);
   return 0;
 }
 
