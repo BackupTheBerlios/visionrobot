@@ -33,14 +33,14 @@ static char *filtro_ciclo(modulo_t *modulo, const char *puerto, const void *valu
 	/*		int difuminado = dato->m_difuminado;
 			int reduccion = dato->m_reduccion;*/
 	filtro_gestos_filtrar(filtro);//, difuminado, reduccion);	
-	dato->m_imagen_orden.m_imagen =  filtro->m_salida->m_tipo_orden;
-	dato->m_imagen_orden.m_alto =  filtro->m_salida->m_alto;
-	dato->m_imagen_orden.m_ancho =  filtro->m_salida->m_ancho;
-	dato->m_imagen_orden.m_bytes =  filtro->m_salida->m_bytes;
-	dato->m_imagen_param.m_imagen =  filtro->m_salida->m_orden;
-	dato->m_imagen_param.m_alto =  filtro->m_salida->m_alto;
-	dato->m_imagen_param.m_ancho =  filtro->m_salida->m_ancho;
-	dato->m_imagen_param.m_bytes =  filtro->m_salida->m_bytes;
+	dato->m_imagen_orden.m_imagen =  filtro->m_salida.m_tipo_orden;
+	dato->m_imagen_orden.m_alto =  filtro->m_salida.m_alto;
+	dato->m_imagen_orden.m_ancho =  filtro->m_salida.m_ancho;
+	dato->m_imagen_orden.m_bytes =  filtro->m_salida.m_bytes;
+	dato->m_imagen_param.m_imagen =  filtro->m_salida.m_orden;
+	dato->m_imagen_param.m_alto =  filtro->m_salida.m_alto;
+	dato->m_imagen_param.m_ancho =  filtro->m_salida.m_ancho;
+	dato->m_imagen_param.m_bytes =  filtro->m_salida.m_bytes;
 	dato->m_error = 0;
       }
     }
@@ -106,7 +106,7 @@ static char *filtro_iniciar(modulo_t *modulo, GHashTable *argumentos)
   GHashTable *tabla = modulo->m_tabla;
   dato->m_imagen_orden.m_imagen = 0;
   dato->m_imagen_param.m_imagen = 0;
-  g_hash_table_insert(tabla, PUERTO_RED, filtro->m_salida);
+  g_hash_table_insert(tabla, PUERTO_RED, &filtro->m_salida);
   g_hash_table_insert(tabla, PUERTO_VENTANA_ORDEN, &dato->m_imagen_orden);
   g_hash_table_insert(tabla, PUERTO_VENTANA_PARAM, &dato->m_imagen_param);
 

@@ -15,22 +15,26 @@ typedef struct {
 } rango_t;
 
 typedef struct {
-  red_neuronal_in_t * m_salida;
+  red_neuronal_in_t m_salida;
   filtro_gestos_in_imagen_t * m_buffer;
   color_t * m_tipo_orden;
   color_t * m_orden_param;
+  char m_iniciado;
   rango_t m_orden;
   rango_t m_parametro;
-  char *m_ruta;
   lua_State *m_lua;
 } filtro_t;
 
+#define FUNCION_FILTRO "filtrar"
+#define IMAGEN_CAPTURA "captura"
+#define IMAGEN_TIPO_ORDEN "tipo_orden"
+#define IMAGEN_ORDEN_PARAM "orden_param"
 filtro_t * filtro_gestos_crear(const char *ruta);
 void filtro_gestos_borrar(filtro_t ** filtro);
-red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro);//, int difuminado, int reduccion);
-void filtro_gestos_set_color(filtro_t * filtro, unsigned char rs, unsigned char ri, unsigned char vs,
-			      unsigned char vi, unsigned char as, unsigned char ai, unsigned char rs2, unsigned char ri2,
-			     unsigned char vs2, unsigned char vi2, unsigned char as2, unsigned char ai2);
+red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro);
+void filtro_gestos_set_color(filtro_t * filtro, color_t rs, color_t ri, color_t vs,
+			      color_t vi, color_t as, color_t ai, color_t rs2, color_t ri2,
+			     color_t vs2, color_t vi2, color_t as2, color_t ai2);
 char *filtro_gestos_centrar(filtro_t * filtro, char *dibujo, int difY,
 			    int difX);
 

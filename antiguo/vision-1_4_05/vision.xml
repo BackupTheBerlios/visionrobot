@@ -27,9 +27,9 @@
     <conexion puerto="salida_imagen_param">
       <destino puerto="entrada_imagen">ventana_filtro_param</destino>
     </conexion>	   
-    <conexion puerto="salida_red">
+<!--    <conexion puerto="salida_red">
       <destino puerto="entrada_imagen">red</destino>
-    </conexion>
+    </conexion> -->
   </modulo>
 
 
@@ -47,7 +47,7 @@
   </modulo>
   
   <modulo ruta="imagenes" nombre="imagenes" inicio="1">
-    <argumento nombre="camara">1</argumento>
+<!--    <argumento nombre="camara">1</argumento> -->
     <argumento nombre="archivo">foto.xpm</argumento>
     <argumento nombre="rojo">32</argumento>
     <argumento nombre="verde">45</argumento>
@@ -69,7 +69,7 @@
     <argumento nombre="extension">png</argumento>
   </modulo>
   
-  <modulo ruta="red_neuronal" nombre="red">
+<!--  <modulo ruta="red_neuronal" nombre="red">
     <argumento nombre="archivo_ordenes">orden_net</argumento> 
     <argumento nombre="archivo_parametros">param_net</argumento> 
     <conexion puerto="salida_texto">
@@ -79,6 +79,6 @@
   
   <modulo ruta="salida" nombre="salida">
     <argumento nombre="texto">Vision por computador</argumento>
-  </modulo>
+  </modulo> -->
 
 </pipeline>

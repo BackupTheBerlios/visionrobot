@@ -1,6 +1,6 @@
 OPTS=-Wall -g
 
-all: etags libsalida.so libfiltro_gestos.so libred_neuronal.so libimagenes.so libventana_imagen.so libventana_parametros.so pipeline
+all: etags libsalida.so libfiltro_gestos.so libred_neuronal.so libimagenes.so libventana_imagen.so libventana_parametros.so pipeline libfiltro_lua.so
 
 etags:	
 	etags *.c
@@ -11,12 +11,14 @@ libventana_imagen.so: ventana_imagen.c
 libventana_parametros.so: ventana_parametros.c
 	gcc $(OPTS) -shared -o libventana_parametros.so ventana_parametros.c `pkg-config --cflags gtk+-2.0` `pkg-config --libs gtk+-2.0`  `pkg-config libglade-2.0 --cflags --libs`
 
-
 libsalida.so: salida.c
 	gcc $(OPTS) -shared -o libsalida.so salida.c `pkg-config glib-2.0 --cflags --libs` `pkg-config libglade-2.0 --cflags --libs`
 
 libfiltro_gestos.so: filtro_gestos.c filtro.c
-	gcc $(OPTS) -shared -o libfiltro_gestos.so filtro.c filtro_gestos.c -llua -llualib `pkg-config glib-2.0 --cflags --libs` 
+	gcc $(OPTS) -I../include -shared -o libfiltro_gestos.so filtro.c filtro_gestos.c -L../lib -llua -llualib `pkg-config glib-2.0 --cflags --libs` 
+
+#libfiltro_lua.so: filtro_lua.c
+#	gcc $(OPTS) -I../include -shared -o libfiltro_lua.so filtro_lua.c -L../lib -llua
 
 libred_neuronal.so: red.c red_neuronal.c
 	gcc $(OPTS) -shared -o libred_neuronal.so red.c red_neuronal.c `pkg-config glib-2.0 --cflags --libs`

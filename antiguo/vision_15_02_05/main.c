@@ -7,13 +7,18 @@
 #include <string.h>
 
 static GladeXML* xml = 0;
-static guint timer = 500;
+static guint timer = 1000;
 
+#ifdef GTK
+#define OPCIONES_LINEA
+#endif
+
+#ifdef OPCIONES_LINEA
 static GOptionEntry entries[] = {
   { "timer", 't', 0, G_OPTION_ARG_INT, &timer, "Establece el intervalo del temporizador generador de ciclos, en milisegundos", "T" },
   { NULL }
 };
-
+#endif
 
 
 void funcion_error(const char *nombre, const char *textos) {
@@ -42,11 +47,13 @@ int main(int argc, char **argv)
 {
   int valor;
 
+#ifdef OPCIONES_LINEA
   GOptionContext* contexto = g_option_context_new (" <pipeline> - ejecuta un pipeline definido en un XML válido");
   g_option_context_add_main_entries (contexto, entries, 0);
   g_option_context_add_group (contexto, gtk_get_option_group (TRUE));
   g_option_context_parse (contexto, &argc, &argv, 0);
   g_option_context_set_help_enabled (contexto, TRUE);
+#endif
 
   if (argc < 2) {
     printf("Faltan argumentos. Uso: %s <pipeline>.\n", argv[0]);
@@ -70,7 +77,9 @@ int main(int argc, char **argv)
     }
   }
 
+#ifdef OPCIONES_LINEA
   g_option_context_free(contexto);
+#endif 
 
   return valor;
 }
