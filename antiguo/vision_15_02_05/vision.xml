@@ -15,7 +15,7 @@
   </modulo>
 
   <!-- Ventana de parametros de los parametros -->
-<!--  <modulo ruta="ventana_parametros" nombre="parametros_param" inicio="1">
+  <modulo ruta="ventana_parametros" nombre="parametros_param" inicio="1">
     <argumento nombre="rojo">32</argumento>
     <argumento nombre="verde">45</argumento>
     <argumento nombre="azul">123</argumento>
@@ -23,7 +23,7 @@
     <conexion puerto="salida_filtro">
       <destino puerto="entrada_parametros">filtro_gestos_param</destino>
     </conexion>
-  </modulo> -->
+  </modulo>
 
   <!-- Filtro de gestos de las ordenes -->
   <modulo ruta="filtro_gestos" nombre="filtro_gestos_orden">
@@ -34,12 +34,12 @@
     <argumento nombre="parametros">parametros</argumento>
     <conexion puerto="salida_imagen">
       <destino puerto="entrada_imagen">ventana_filtro_orden</destino>
-   <!--   <destino puerto="entrada_imagen">red_orden</destino> -->
+      <destino puerto="entrada_imagen">red_orden</destino>
     </conexion>	   
   </modulo>
 
   <!-- Filtro de gestos de los parametros -->
-<!--  <modulo ruta="filtro_gestos" nombre="filtro_gestos_param">
+  <modulo ruta="filtro_gestos" nombre="filtro_gestos_param">
     <argumento nombre="guion">filtro.lua</argumento>
     <argumento nombre="iniciar">iniciar</argumento>
     <argumento nombre="filtrar">filtrar</argumento>
@@ -49,14 +49,14 @@
       <destino puerto="entrada_imagen">ventana_filtro_param</destino>
       <destino puerto="entrada_imagen">red_param</destino>
     </conexion>	   
-  </modulo> -->
+  </modulo>
 
   <!-- Ventana para el filtro de los parametros -->
-<!--  <modulo ruta="ventana_imagen" nombre="ventana_filtro_param">
+  <modulo ruta="ventana_imagen" nombre="ventana_filtro_param">
     <argumento nombre="titulo">Parametros</argumento>
     <argumento nombre="nombre_foto">filtro_param.png</argumento>
     <argumento nombre="extension">png</argumento>
-  </modulo> -->
+  </modulo>
   
   <!-- Ventana de imagen de las ordenes -->
   <modulo ruta="ventana_imagen" nombre="ventana_filtro_orden">
@@ -80,7 +80,7 @@
     <argumento nombre="bytes">3</argumento>
     <conexion puerto="salida_imagen">
       <destino puerto="entrada_imagen">filtro_gestos_orden</destino>
-<!--      <destino puerto="entrada_imagen">filtro_gestos_param</destino> -->
+      <destino puerto="entrada_imagen">filtro_gestos_param</destino>
       <destino puerto="entrada_imagen">ventana_imagenes</destino>
     </conexion>
   </modulo>
@@ -93,7 +93,7 @@
   </modulo>
   
   <!-- Red neuronal de las ordenes -->
-<!--  <modulo ruta="red_neuronal" nombre="red_orden">
+  <modulo ruta="red_neuronal" nombre="red_orden">
     <argumento nombre="archivo">orden_net</argumento> 
     <argumento nombre="salida1">parar</argumento>
     <argumento nombre="salida2">girar</argumento>
@@ -102,10 +102,10 @@
     <conexion puerto="salida_texto">
       <destino puerto="entrada_texto">salida</destino>
     </conexion> 
-  </modulo>  -->
-
+  </modulo>
+  
   <!-- Red neuronal de los parametros -->
-<!--  <modulo ruta="red_neuronal" nombre="red_param">
+  <modulo ruta="red_neuronal" nombre="red_param">
     <argumento nombre="archivo">param_net</argumento> 
     <argumento nombre="salida1">nula</argumento>
     <argumento nombre="salida2">baja</argumento>
@@ -114,11 +114,11 @@
     <conexion puerto="salida_texto">
       <destino puerto="entrada_texto">salida</destino>
     </conexion> 
-  </modulo> -->
+  </modulo>
   
   <!-- Modulo de salida -->
- <!--  <modulo ruta="salida" nombre="salida">
+  <modulo ruta="salida" nombre="salida">
     <argumento nombre="texto">Vision por computador</argumento>
-  </modulo> -->
+  </modulo>
 
 </pipeline>
