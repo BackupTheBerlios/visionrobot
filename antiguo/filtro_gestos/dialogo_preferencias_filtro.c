@@ -1,7 +1,9 @@
 #include "dialogo_preferencias_filtro.h"
 
+#include <stdlib.h>
+
 void dialogo_preferencias_filtro_cerrar(dialogo_preferencias_filtro_t * dialogo) {
-  gtk_widget_destroy(dialogo_abrir->dlg_preferencias_filtro);
+  gtk_widget_destroy(dialogo->dlg_preferencias_filtro);
   g_free(dialogo);
 }
 
@@ -87,10 +89,10 @@ dialogo_preferencias_filtro_t * dialogo_preferencias_filtro_crear() {
   gtk_widget_show (dialogo_preferencias_filtro->dialog_action_area1);
   gtk_button_box_set_layout (GTK_BUTTON_BOX (dialogo_preferencias_filtro->dialog_action_area1), GTK_BUTTONBOX_END);
 
-  cancelbutton1 = gtk_button_new_from_stock ("gtk-cancel");
-  gtk_widget_show (cancelbutton1);
-  gtk_dialog_add_action_widget (GTK_DIALOG (dlg_preferencias_filtro), cancelbutton1, GTK_RESPONSE_CANCEL);
-  GTK_WIDGET_SET_FLAGS (cancelbutton1, GTK_CAN_DEFAULT);
+  dialogo_preferencias_filtro->cancelbutton1 = gtk_button_new_from_stock ("gtk-cancel");
+  gtk_widget_show (dialogo_preferencias_filtro->cancelbutton1);
+  gtk_dialog_add_action_widget (GTK_DIALOG (dialogo_preferencias_filtro->dlg_preferencias_filtro), dialogo_preferencias_filtro->cancelbutton1, GTK_RESPONSE_CANCEL);
+  GTK_WIDGET_SET_FLAGS (dialogo_preferencias_filtro->cancelbutton1, GTK_CAN_DEFAULT);
 
   dialogo_preferencias_filtro->okbutton1 = gtk_button_new_from_stock ("gtk-ok");
   gtk_widget_show (dialogo_preferencias_filtro->okbutton1);

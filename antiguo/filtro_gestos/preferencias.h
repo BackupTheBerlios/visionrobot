@@ -10,6 +10,8 @@
 extern "C" {
 #endif
 
+#include <gtk/gtk.h>
+
 /*! \brief Define la estructura de datos de una orden */
 typedef struct {
   GdkColor color;

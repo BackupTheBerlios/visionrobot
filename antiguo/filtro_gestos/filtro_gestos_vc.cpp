@@ -1,5 +1,8 @@
-// filtro_gestos_vc.cpp : Defines the entry point for the DLL application.
-//
+/*! \file filtro_gestos_vc.h
+    \brief CPP de la DLL del filtro de gestos
+    \author Diego y Carlos
+    \version 0.1
+*/
 
 #include "dll_pipeline.h"
 #include "Codigo_Filtro.h"
@@ -44,7 +47,7 @@ int iniciar() {
 int propiedades(){
   // Carlos -->
   if(abrir_preferencias(&opciones)) {
-    // AÃ±adir el cÃ³digo que hay que realizar con esas opciones
+    // Añadir el código que hay que realizar con esas opciones
   }
   // <--
 }

@@ -7,8 +7,8 @@
 
 salida* Filtro(BYTE* buffer, int h, int w)
 {
-   BYTE* tipo_orden= new BYTE[floor(h/4)*floor(w/4)*3];
-   BYTE* orden= new BYTE[floor(h/4)*floor(w/4)*3];
+   BYTE* tipo_orden= new BYTE[((int)floor(h/4))*((int)floor(w/4)*3)];
+   BYTE* orden= new BYTE[((int)floor(h/4))*((int)floor(w/4)*3)];
    int cont=0; int acX=0; int acY=0;
    int cont2=0; int acX2=0; int acY2=0;
 
@@ -24,17 +24,17 @@ salida* Filtro(BYTE* buffer, int h, int w)
                 rojo+=buffer[(i*w*3)+j]; verde+=buffer[(i*w*3)+j+1]; azul+=buffer[(i*w*3)+j+2];
                 j+=2;
               }              
-        rojo= floor(rojo/25);
-        verde= floor(verde/25);
-        azul= floor(azul/25);
+        rojo= ((int)floor(rojo/25));
+        verde= ((int)floor(verde/25));
+        azul= ((int)floor(azul/25));
         while(rojo%10 && rojo>5) rojo--;
         while(verde%10 && verde>5) verde--;
         while(azul%10 && azul>5) azul--;
         if(rojo<=5)rojo=0;
         if(verde<=5)verde=0;
         if(azul<=5)azul=0;
-        int pos= floor(x/4);
-        int posY=(floor(y/4)*floor(w/4)*3);
+        int pos= ((int)floor(x/4));
+        int posY=(((int)floor(y/4))*((int)floor(w/4)*3));
         //if(!((azul>=200 && azul<=240) && (verde>=0 && verde<=70) && (rojo>=0 || rojo<=80))){
         if(!(verde>=200)){
           tipo_orden[posY+pos]=0;
@@ -45,7 +45,7 @@ salida* Filtro(BYTE* buffer, int h, int w)
           tipo_orden[posY+pos]=255;
           tipo_orden[posY+pos+1]=255;
           tipo_orden[posY+pos+2]=255;
-          cont++; acX+=pos; acY+=floor(y/4);
+          cont++; acX+=pos; acY+=((int)floor(y/4));
         }
         //Cambiar parametros para verde
         if(!((azul>=100 && azul<=240) && (verde>=0 && verde<=170) && (rojo>=0 || rojo<=80))){
@@ -57,7 +57,7 @@ salida* Filtro(BYTE* buffer, int h, int w)
           orden[posY+pos]=255;
           orden[posY+pos+1]=255;
           orden[posY+pos+2]=255;
-          cont2++; acX2+=pos; acY2+=floor(y/4);
+          cont2++; acX2+=pos; acY2+=((int)floor(y/4));
         }
         x+=2;
       }
@@ -65,14 +65,14 @@ salida* Filtro(BYTE* buffer, int h, int w)
     }
    }
   if(cont!=0){
-     int difY= floor(h/8 - floor(acY/cont));
-     int difX= floor(w/8 - floor(acX/(3*cont)));
-     tipo_orden= Centrar(tipo_orden,difY,difX,floor(h/4),floor(w/4));
+     int difY= ((int)floor(h/8 - ((int)floor(acY/cont))));
+     int difX= ((int)floor(w/8 - ((int)floor(acX/(3*cont)))));
+     tipo_orden= Centrar(tipo_orden,difY,difX,((int)floor(h/4)),((int)floor(w/4)));
    }
    if(cont2!=0){
-     int difY2= floor(h/8 - floor(acY2/cont2));
-     int difX2= floor(w/8 - floor(acX2/(3*cont2)));
-     orden= Centrar(orden,difY2,difX2,floor(h/4),floor(w/4));
+     int difY2= ((int)floor(h/8 - floor(acY2/cont2)));
+     int difX2= ((int)floor(w/8 - floor(acX2/(3*cont2))));
+     orden= Centrar(orden,difY2,difX2,((int)floor(h/4)),((int)floor(w/4)));
    }
    salida* exit;
    exit->tipo_orden=tipo_orden;
