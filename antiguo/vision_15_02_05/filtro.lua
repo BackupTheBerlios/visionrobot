@@ -13,8 +13,11 @@ end
 -- Funcion de filtrado
 function filtrar()
    local cont, ac_x, ac_y = captura:difuminar(salida, 2, 10, ir, sr, iv, sv, ia, sa)   
-   salida:centrar(cont, ac_x, ac_y)
-   return cont > 0, 0, salida
+   local valido = cont > 0
+   if valido then
+      salida:centrar(cont, ac_x, ac_y)
+   end
+   return valido, nil, salida
 end
 
 -- Funcion de cambio de parametros
