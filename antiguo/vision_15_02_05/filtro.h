@@ -15,7 +15,7 @@ typedef struct {
 
 typedef struct {
   red_neuronal_in_t * m_salida;
-  filtro_gestos_in_t * m_buffer;
+  filtro_gestos_in_imagen_t * m_buffer;
   color_t * m_tipo_orden;
   color_t * m_orden_param;
   rango_t m_orden;

@@ -27,26 +27,31 @@
 #include <gmodule.h>
 
 typedef struct {
-  GString * m_nombre;
+  gboolean m_inicio;
   GModule * m_handler;
   modulo_t * m_modulo;
-  funcion_error_t m_funcion_error;
   GHashTable *m_argumentos;
-  GSList *m_enlaces;
+  GHashTable *m_enlaces;
 } elemento_t;
 
 typedef struct {
-  char m_tipo;
-  GHashTable *m_tabla;
-} pipeline_dato_t; 
-  
+  char *m_destino;
+  char *m_puerto;
+} conexion_t;
 
-static void pipeline_salida_error(const elemento_t *elemento, const char *nombre, const char *texto) {
-  elemento->m_funcion_error(nombre, texto);
+typedef struct {
+  pipeline_t *m_pipeline;
+  elemento_t *m_elemento;
+} pipeline_dato_t; 
+
+
+static void pipeline_salida_error(const pipeline_t *pipeline, const char *nombre, const char *texto) {
+    pipeline->m_funcion_error(nombre, texto);
 }
 
 
-static int  pipeline_set_ruta(elemento_t * dato, const char *ruta, const char *dir) {
+static int  pipeline_set_ruta(pipeline_t* p, const char * elemento, const char *ruta, const char *dir) {
+  elemento_t *dato = g_hash_table_lookup(p->m_modulos, elemento);
   if (ruta) {
     if (dato->m_handler)      {
       g_module_close(dato->m_handler);
@@ -58,71 +63,37 @@ static int  pipeline_set_ruta(elemento_t * dato, const char *ruta, const char *d
       typedef modulo_t *(*funcion_modulo_t) ();
       funcion_modulo_t f;
       if(g_module_symbol(dato->m_handler, "get_modulo", (gpointer *)&f) != TRUE) {
-	pipeline_salida_error(dato, "Bibliotecas", g_module_error());
+	pipeline_salida_error(p, "Bibliotecas", g_module_error());
       }
       else {
 	dato->m_modulo = f ? f() : 0;
-	dato->m_modulo->m_tabla = g_hash_table_new(0,0);
-	pipeline_salida_error(dato, "Bibliotecas", g_module_error());
+	dato->m_modulo->m_tabla = g_hash_table_new(g_str_hash, g_str_equal);
+	pipeline_salida_error(p, "Bibliotecas", g_module_error());
       }
     }
     
     else {
-      pipeline_salida_error(dato, "Bibliotecas", g_module_error());
+      pipeline_salida_error(p, "Bibliotecas", g_module_error());
     }
   }
   return 0;
 }
 
-
-
-static pipeline_t * pipeline_annadir(pipeline_t * p, const char *nombre, const char *ruta,
-			      funcion_error_t funcion_error, GHashTable *argumentos, const char *dir) {
-
-  elemento_t * dato = (elemento_t *)malloc(sizeof(elemento_t));
-  dato->m_nombre = g_string_new(nombre);
-  dato->m_funcion_error = funcion_error;
-  dato->m_modulo = 0;
-  dato->m_enlaces = 0;
-  dato->m_handler = 0;
-  pipeline_set_ruta(dato, ruta, dir);
-  dato->m_argumentos = argumentos;
-  return g_slist_append(p, dato);
+static void pipeline_borrar_conexion(gpointer a) {
+  conexion_t *c = (conexion_t*)a;
+  free(c->m_destino);
+  free(c->m_puerto);
+  free(c);
 }
-
-static elemento_t *pipeline_get_elemento(pipeline_t *p, const char *e) {
-  pipeline_t *aux;
-  for(aux = (pipeline_t*)p; aux; aux = g_slist_next(aux)) {
-    char * c = ((elemento_t*)aux->data)->m_nombre->str;
-    if(!strcmp(c, e)) {
-      return (elemento_t*)aux->data;
-    }
-  }
-  return 0;
-}
-
-static void pipeline_conectar(pipeline_t * p, const char *origen, const char *destino) {
-  elemento_t *des = pipeline_get_elemento(p, destino);
-  elemento_t *or = pipeline_get_elemento(p, origen);
-  or->m_enlaces = g_slist_append(or->m_enlaces, des);
-}
-
-
 static void pipeline_borrar_cadena(gpointer a) {
   char *c = (char *)a;
   g_free(c);
 }
 
-static void pipeline_cerrar_elemento(gpointer lista, gpointer data) 
+static void pipeline_cerrar_elemento(elemento_t *dato)
 {
-  elemento_t *dato = (elemento_t*)lista;
   if (dato->m_modulo && dato->m_modulo->m_cerrar)   {
     g_hash_table_destroy(dato->m_modulo->m_tabla);
-    char *nombre = strdup(dato->m_modulo->m_nombre);
-    char *mensaje = strdup(dato->m_modulo->m_cerrar(dato->m_modulo));
-    pipeline_salida_error(dato, nombre, mensaje);			  
-    free(nombre);
-    free(mensaje);
   }
   if(dato->m_handler) {
     g_module_close(dato->m_handler);
@@ -131,48 +102,66 @@ static void pipeline_cerrar_elemento(gpointer lista, gpointer data)
   dato->m_handler = 0;
 }
 
-int  pipeline_cerrar(pipeline_t * p) 
-{
-  g_slist_foreach(p, pipeline_cerrar_elemento, 0);
-  return 0;
+static void pipeline_borrar_elemento(gpointer a) {
+  elemento_t*dato = (elemento_t*)a;
+  pipeline_cerrar_elemento(dato);
+  if(dato->m_argumentos) g_hash_table_destroy(dato->m_argumentos);
+  if(dato->m_enlaces) g_hash_table_destroy(dato->m_enlaces);
+  free(dato);
 }
 
-static void pipeline_borrar_elemento(gpointer e, gpointer data) {
-  elemento_t *dato = (elemento_t*)e;
-  if(dato->m_argumentos) {
-    g_hash_table_destroy(dato->m_argumentos);
-  }
-  g_string_free(dato->m_nombre, TRUE);
-  g_slist_free(dato->m_enlaces);
-  free(dato);  
-  pipeline_t *p = (pipeline_t *)data;
-  g_slist_remove(p, dato);
+static pipeline_t * pipeline_annadir(pipeline_t * p, const char *nombre, const char *ruta,
+				     GHashTable *argumentos, const char *dir, const char * inicio) {
+  elemento_t * dato = (elemento_t *)malloc(sizeof(elemento_t));
+  dato->m_inicio = !strcmp(inicio, "1") ? TRUE : FALSE;
+  dato->m_modulo = 0;
+  dato->m_enlaces = g_hash_table_new_full(g_str_hash, g_str_equal, pipeline_borrar_cadena, pipeline_borrar_conexion);
+  dato->m_handler = 0;
+  pipeline_set_ruta(p, nombre, ruta, dir);
+  dato->m_argumentos = argumentos;
+  g_hash_table_insert(p->m_modulos, (gpointer)nombre, (gpointer)dato);//g_slist_append(p, dato);
+  return p;
+}
+
+static void pipeline_conectar(const pipeline_t * p, const char *origen, const char *salida,
+			      const char *destino, const char *puerto) {
+  elemento_t *des = g_hash_table_lookup(p->m_modulos, destino);
+  elemento_t *or = g_hash_table_lookup(p->m_modulos, origen);
+  conexion_t *conexion = (conexion_t*)malloc(sizeof(conexion_t));
+  conexion->m_destino = strdup(destino);
+  conexion->m_puerto = strdup(puerto);
+  g_hash_table_insert(or->m_enlaces, (gpointer)strdup(salida), (gpointer)des);
 }
 
 int  pipeline_borrar(pipeline_t * p) 
 {
-  g_slist_foreach(p, pipeline_borrar_elemento, p);
-  g_slist_free(p);
+  g_hash_table_destroy(p->m_modulos);
+  free(p);
   return 0;
 }
 
 static pipeline_t * pipeline_leer_xml(pipeline_t * p, xmlDocPtr doc, xmlNodePtr cur,
-				      funcion_error_t funcion_error, const char *dir) 
+				      const char *dir) 
 {
   GHashTable *argumentos = g_hash_table_new_full(g_str_hash, g_str_equal, pipeline_borrar_cadena, pipeline_borrar_cadena);
-  p = pipeline_annadir(p, xmlGetProp(cur, "nombre"), xmlGetProp(cur, "ruta"), funcion_error, argumentos, dir);
+  char *nombre = xmlGetProp(cur, "nombre");
+  p = pipeline_annadir(p, nombre, xmlGetProp(cur, "ruta"), argumentos, dir, xmlGetProp(cur, "inicio"));
   cur = cur->xmlChildrenNode;
   while (cur != NULL) {
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "argumento"))) {
-      g_hash_table_insert(argumentos, xmlGetProp(cur, "tipo"), xmlNodeListGetString(doc, cur->xmlChildrenNode, 1));
+      g_hash_table_insert(argumentos, xmlGetProp(cur, "nombre"), xmlNodeListGetString(doc, cur->xmlChildrenNode, 1));
     }    
+    else if ((!xmlStrcmp(cur->name, (const xmlChar *) "conexion"))) {
+      pipeline_conectar(p, nombre, xmlGetProp(cur, "puerto_salida"), xmlGetProp(cur, "destino"),
+			xmlGetProp(cur, "puerto_entrada"));
+    }  
     cur = cur->next;
   } 
   
   return p;
 }
 
-pipeline_t * pipeline_cargar(const char *ruta, funcion_error_t funcion_error, const char *dir) 
+pipeline_t * pipeline_cargar(const char *ruta, const char *dir, funcion_error_t funcion_error) 
 {
     xmlDocPtr doc;
     xmlNodePtr cur;
@@ -198,57 +187,63 @@ pipeline_t * pipeline_cargar(const char *ruta, funcion_error_t funcion_error, co
 	xmlFreeDoc(doc);
 	return 0;
     }
-    pipeline_t * p = pipeline_annadir(0, "pipeline", 0, 0, 0, dir);
+    pipeline_t *p = (pipeline_t*)malloc(sizeof(pipeline_t));
+    p->m_modulos = g_hash_table_new_full(g_str_hash, g_str_equal, pipeline_borrar_cadena, pipeline_borrar_elemento);
+    p->m_funcion_error = funcion_error;
+
     cur = cur->xmlChildrenNode;
     cur = cur->next;
     while (cur != NULL) {
 	if ((!xmlStrcmp(cur->name, (const xmlChar *) "modulo"))) {
-	    p = pipeline_leer_xml(p, doc, cur, funcion_error, dir);
-	}
-	else if((!xmlStrcmp(cur->name, (const xmlChar *) "conexion"))) {
-	  pipeline_conectar(p, xmlGetProp(cur, "origen"), xmlGetProp(cur, "destino"));
+	    p = pipeline_leer_xml(p, doc, cur, dir);
 	}
 	cur = cur->next;
     }
     xmlFreeDoc(doc);
     return p;
 }
+static void pipeline_ciclo_recursivo(pipeline_t *p, elemento_t *e, const char *puerto_entrada, const void *dato_entrada);
 
-static void pipeline_ciclo_recursivo(gpointer gp1, gpointer gp2) {  
-  elemento_t *e = (elemento_t*)gp1;
-  pipeline_dato_t *d = (pipeline_dato_t *)gp2;
-  pipeline_dato_t d2;
-
-  char tipo = d->m_tipo;
-  GHashTable* tabla = d->m_tabla;
+static void pipeline_enviar(gpointer key, gpointer value, gpointer user_data) {
+  char *salida = (char*)key;
+  conexion_t *conexion = (conexion_t*)value;
+  pipeline_dato_t *d = (pipeline_dato_t*)user_data;
+  void *dato = g_hash_table_lookup(d->m_elemento->m_modulo->m_tabla, salida);
+  elemento_t *destino = g_hash_table_lookup(d->m_pipeline->m_modulos, conexion->m_destino);
+  pipeline_ciclo_recursivo(d->m_pipeline, destino, conexion->m_puerto, dato);
+}
+static void pipeline_ciclo_recursivo(pipeline_t *p, elemento_t *e, const char *puerto_entrada, const void *dato_entrada)
+{
   if(e && e->m_modulo && e->m_modulo->m_ciclo) {
-    pipeline_salida_error(e, e->m_modulo->m_nombre,
-			  e->m_modulo->m_ciclo(e->m_modulo, tipo, tabla));
+    pipeline_salida_error(p, e->m_modulo->m_nombre,
+			  e->m_modulo->m_ciclo(e->m_modulo, puerto_entrada, dato_entrada));
   }
-			
-  d2.m_tipo = e->m_modulo->m_tipo;
-  d2.m_tabla = e->m_modulo->m_tabla;
-
- g_slist_foreach(e->m_enlaces, pipeline_ciclo_recursivo, &d2);
+  pipeline_dato_t d = {p, e};
+  g_hash_table_foreach(e->m_enlaces, pipeline_enviar, &d);
+}
+static void pipeline_ciclo_pre(gpointer key, gpointer value, gpointer user_data) {
+  elemento_t*e = (elemento_t*)value;
+  if(e->m_inicio) {
+    pipeline_ciclo_recursivo((pipeline_t*)user_data, e, 0, 0);
+  }
 }
 
 int pipeline_ciclo(const pipeline_t * p)
 {  
-  pipeline_dato_t d = {0, 0};
-  g_slist_foreach(((elemento_t*)p->data)->m_enlaces, pipeline_ciclo_recursivo, &d);
+  g_hash_table_foreach(p->m_modulos, pipeline_ciclo_pre, (gpointer)p);
   return 0;
 }
-static void pipeline_iniciar_elemento(gpointer el, gpointer data) 
+static void pipeline_iniciar_elemento(gpointer key, gpointer value, gpointer user_data) 
 {
-  elemento_t *dato = (elemento_t*)el;
+  elemento_t *dato = (elemento_t*)value;
   if (dato->m_modulo && dato->m_modulo->m_iniciar) {
-    pipeline_salida_error(dato, dato->m_modulo->m_nombre,
+    pipeline_salida_error((pipeline_t*)user_data, dato->m_modulo->m_nombre,
 			  dato->m_modulo->m_iniciar(dato->m_modulo, dato->m_argumentos));
   }
 }
 
 int  pipeline_iniciar(const pipeline_t * p) 
 {
-  g_slist_foreach((pipeline_t*)p, pipeline_iniciar_elemento, 0);
+  g_hash_table_foreach(p->m_modulos, pipeline_iniciar_elemento, (gpointer)p);
   return 0;
 }

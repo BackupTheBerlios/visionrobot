@@ -1,4 +1,3 @@
-#include "ventana_parametros_sdk.h"
 #include "pipeline_sdk.h"
 #include "filtro_gestos_sdk.h"
 #include <glade/glade.h>
@@ -9,9 +8,11 @@
 #define MAX_GUINT 65535
 #define MAX_CHAR 255
 
+#define PUERTO_FILTRO "salida_filtro"
+
 typedef struct {
   GladeXML* m_xml;
-  filtro_gestos_in_t m_filtro;
+  filtro_gestos_in_parametros_t m_filtro;
 } ventana_parametros_dato_t;
 
 static GtkWidget *ventana_parametros_get_widget(GtkWidget *w, const char *nombre) {
@@ -75,7 +76,7 @@ static void ventana_parametros_color_ordenes(GtkWidget *w) {
   gtk_color_button_get_color(GTK_COLOR_BUTTON(ventana_parametros_get_widget(w, "bot_color_ordenes")), &color);
   ventana_parametros_dato_t *dato = ventana_parametros_get_dato(w);
   gdouble valor = ventana_parametros_get_valor(w, "hsc_tolerancia_ordenes");
-  ventana_parametros_calcular_orden(&dato->m_filtro.m_dato.parametros, &color, valor);
+  ventana_parametros_calcular_orden(&dato->m_filtro, &color, valor);
 }
 
 static void ventana_parametros_color_parametros(GtkWidget *w) {
@@ -83,7 +84,7 @@ static void ventana_parametros_color_parametros(GtkWidget *w) {
   gtk_color_button_get_color(GTK_COLOR_BUTTON(ventana_parametros_get_widget(w, "bot_color_parametros")), &color);
   ventana_parametros_dato_t *dato = ventana_parametros_get_dato(w);
   gdouble valor = ventana_parametros_get_valor(w, "hsc_tolerancia_parametros");
-  ventana_parametros_calcular_param(&dato->m_filtro.m_dato.parametros, &color, valor);
+  ventana_parametros_calcular_param(&dato->m_filtro, &color, valor);
 }
 
 void on_bot_color_ordenes_color_set(GtkColorButton *widget, gpointer user_data){
@@ -102,7 +103,7 @@ void on_hsc_tolerancia_parametros_value_changed(GtkRange *range, gpointer user_d
   ventana_parametros_color_parametros(GTK_WIDGET(range));
 }
 
-static char *ventana_parametros_ciclo(modulo_t *modulo, char tipo, GHashTable *lista){
+static char *ventana_parametros_ciclo(modulo_t *modulo, const char *puerto, const void *value){
   return 0;
 }
 
@@ -119,8 +120,7 @@ static char *ventana_parametros_iniciar(modulo_t *modulo, GHashTable *argumentos
   GtkWidget *tolerancia_parametros = glade_xml_get_widget(dato->m_xml, "hsc_tolerancia_parametros");
   g_object_set_data(G_OBJECT(ventana), "modulo", (gpointer)modulo);
   glade_xml_signal_autoconnect(dato->m_xml);
-  dato->m_filtro.m_tipo = PIPELINE_FILTRO_GESTOS_PARAMETROS;
-  g_hash_table_insert(modulo->m_tabla, GINT_TO_POINTER(PIPELINE_FILTRO_GESTOS), &dato->m_filtro);
+  g_hash_table_insert(modulo->m_tabla, PUERTO_FILTRO, &dato->m_filtro);
 
   GdkColor color;
   double tolerancia;
@@ -131,7 +131,7 @@ static char *ventana_parametros_iniciar(modulo_t *modulo, GHashTable *argumentos
   gtk_color_button_set_color(GTK_COLOR_BUTTON(color_ordenes), &color);
   gtk_range_set_value(GTK_RANGE(tolerancia_ordenes), (gdouble)tolerancia);
 
-  ventana_parametros_calcular_orden(&dato->m_filtro.m_dato.parametros, &color, tolerancia);
+  ventana_parametros_calcular_orden(&dato->m_filtro, &color, tolerancia);
 
   color.red = ventana_parametros_char_to_int((color_t)atoi(g_hash_table_lookup(argumentos, "param_rojo")));
   color.green = ventana_parametros_char_to_int((color_t)atoi(g_hash_table_lookup(argumentos, "param_verde")));
@@ -140,7 +140,7 @@ static char *ventana_parametros_iniciar(modulo_t *modulo, GHashTable *argumentos
   gtk_color_button_set_color(GTK_COLOR_BUTTON(color_parametros), &color);
   gtk_range_set_value(GTK_RANGE(tolerancia_parametros), (gdouble)tolerancia);
 
-  ventana_parametros_calcular_param(&dato->m_filtro.m_dato.parametros, &color, tolerancia);
+  ventana_parametros_calcular_param(&dato->m_filtro, &color, tolerancia);
 
   return "iniciado";
 }
@@ -156,7 +156,6 @@ static char *ventana_parametros_cerrar(modulo_t *modulo)
 modulo_t * get_modulo()
 {
   modulo_t *modulo = (modulo_t*)malloc(sizeof(modulo_t));
-  modulo->m_tipo = PIPELINE_VENTANA_PARAMETROS;
   modulo->m_nombre = "Parametros";
   modulo->m_iniciar = ventana_parametros_iniciar;
   modulo->m_cerrar = ventana_parametros_cerrar;

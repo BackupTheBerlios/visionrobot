@@ -15,7 +15,7 @@ libred_neuronal.dll: red.c red_neuronal.c
 	gcc $(OPTS) -shared -o libred_neuronal.dll red.c red_neuronal.c `pkg-config glib-2.0 --cflags --libs --define-variable=prefix=/c/MinGW`
 
 libimagenes.dll: imagenes.c
-	gcc $(OPTS) -shared -o libimagenes.dll imagenes.c `pkg-config glib-2.0 --cflags --libs --define-variable=prefix=/c/MinGW`
+	gcc $(OPTS) -shared -o libimagenes.dll imagenes.c `pkg-config glib-2.0 --cflags --libs --define-variable=prefix=/c/MinGW` `pkg-config --cflags gtk+-2.0 --define-variable=prefix=/c/MinGW` `pkg-config --libs gtk+-2.0 --define-variable=prefix=/c/MinGW`
 
 libcamara.dll: camara.cpp Captura.cpp
 	g++ $(OPTS) -shared -o libcamara.dll camara.cpp Captura.cpp -lstrmiids -luuid -loleaut32 -lole32 -lquartz `pkg-config glib-2.0 --cflags --libs --define-variable=prefix=/c/MinGW`

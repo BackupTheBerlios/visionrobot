@@ -42,13 +42,19 @@ extern "C"  {
 
 #include "pipeline_sdk.h"
 
-  typedef GSList pipeline_t;
+typedef void (*funcion_error_t)(const char *nombre, const char *texto);
+  //  typedef struct pipeline_t;
+typedef struct {
+  GHashTable *m_modulos;
+  funcion_error_t m_funcion_error;
+} pipeline_t;
 
-  typedef void (*funcion_error_t)(const char *nombre, const char *texto);
 
-  int  pipeline_cerrar(pipeline_t * p) ;
+  
+
+  //  int  pipeline_cerrar(pipeline_t * p) ;
   int  pipeline_borrar(pipeline_t * p) ;
-  pipeline_t * pipeline_cargar(const char *ruta, funcion_error_t funcion_error, const char *dir) ;
+  pipeline_t * pipeline_cargar(const char *ruta, const char *dir, funcion_error_t funcion_error) ;
   int pipeline_ciclo(const pipeline_t * p);
   int  pipeline_iniciar(const pipeline_t * p);
   

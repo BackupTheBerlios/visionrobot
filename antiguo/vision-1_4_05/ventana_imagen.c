@@ -5,7 +5,6 @@
 */  
     
 #include "pipeline_sdk.h"
-#include "imagenes_sdk.h"
 #include "filtro_gestos_sdk.h"
 #include "red_neuronal_sdk.h"
 #include "ventana_imagen_sdk.h"
@@ -24,6 +23,7 @@ typedef struct {
   ventana_imagen_in_t *m_imagen;
 } datos_ventana_t;
 
+#define PUERTO_IMAGEN "entrada_imagen"
 
 static GdkPixbuf *ventana_get_pixbuf(modulo_t * modulo) {  
   datos_ventana_t * datos = (datos_ventana_t *)modulo->m_dato;
@@ -91,7 +91,7 @@ static void ventana_pintar(modulo_t * modulo) {
     gdk_pixbuf_unref(pixbuf);
     }
 }
-
+/*
 static void ventana_ciclo_aux(gpointer key, gpointer value, gpointer user_data) {
   if(GPOINTER_TO_INT(key) == PIPELINE_VENTANA_IMAGEN) {
     modulo_t *modulo = (modulo_t *)user_data;
@@ -102,9 +102,16 @@ static void ventana_ciclo_aux(gpointer key, gpointer value, gpointer user_data) 
     ventana_pintar(modulo);
   }
 }
-
-static char *ventana_ciclo(modulo_t *modulo, char tipo, GHashTable *lista){
-  g_hash_table_foreach(lista, ventana_ciclo_aux, modulo);
+*/
+static char *ventana_ciclo(modulo_t *modulo, const char *puerto, const void *value){//, char tipo, GHashTable *lista){
+  //g_hash_table_foreach(lista, ventana_ciclo_aux, modulo);
+  if(!strcmp(puerto, PUERTO_IMAGEN)) {
+    ventana_imagen_in_t * imagen = (ventana_imagen_in_t *)value;
+    datos_ventana_t * datos = (datos_ventana_t *)modulo->m_dato;
+    datos->m_imagen = imagen;
+    ventana_ajustar_tamanno(modulo);
+    ventana_pintar(modulo);
+  }
   return 0;
 }
 
@@ -141,7 +148,6 @@ static char *ventana_cerrar(modulo_t *modulo)
 modulo_t * get_modulo()
 {
   modulo_t *modulo = (modulo_t*)malloc(sizeof(modulo_t));
-  modulo->m_tipo = PIPELINE_VENTANA_IMAGEN;
   modulo->m_nombre = "Ventana de imagen";
   modulo->m_iniciar = ventana_iniciar;
   modulo->m_cerrar = ventana_cerrar;

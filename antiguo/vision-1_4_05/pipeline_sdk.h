@@ -4,16 +4,15 @@
 #ifdef __cplusplus
 extern "C"  {
 #endif
-  
+
 #include <glib.h>
   
   typedef struct modulo_s{
     char *m_nombre;
     void *m_dato;
-    char m_tipo;
     GHashTable *m_tabla;
     char *(*m_iniciar) (struct modulo_s* modulo, GHashTable *argumentos);
-    char *(*m_ciclo) (struct modulo_s* modulo, char tipo, GHashTable *lista);
+    char *(*m_ciclo) (struct modulo_s* modulo, const char *puerto, const void *dato);
     char *(*m_cerrar) (struct modulo_s* modulo);
   } modulo_t;  
   

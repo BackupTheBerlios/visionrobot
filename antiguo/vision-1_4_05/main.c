@@ -56,12 +56,11 @@ int main(int argc, char **argv)
     glade_init();
     xml = glade_xml_new("ventana_pipeline.glade", NULL, NULL);
     glade_xml_signal_autoconnect(xml);
-    pipeline_t * p = pipeline_cargar(argv[1], funcion_error, g_get_current_dir());
+    pipeline_t * p = pipeline_cargar(argv[1], g_get_current_dir(), funcion_error);
     if(p) {
       g_timeout_add(timer, tick, p);
       pipeline_iniciar(p);	
       gtk_main();
-      pipeline_cerrar(p);
       pipeline_borrar(p);
       valor = 0;
     }

@@ -5,15 +5,17 @@
 */  
     
 #include "pipeline_sdk.h"
-#include "salida_sdk.h"
+//#include "salida_sdk.h"
 #include <glade/glade.h>
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <glib.h>
+#include <string.h>
+//static GladeXML* xml = 0;
 
-static GladeXML* xml = 0;
+#define PUERTO "entrada_texto"
 
-static void salida_imprimir(const char *value) {
+static void salida_imprimir(const char *value, GladeXML *xml) {
   GString *valor = g_string_new("");
   g_string_sprintf(valor, "%s\n", (char *)value);
   GtkWidget* texto =  glade_xml_get_widget(xml, "txt_salida");
@@ -27,25 +29,25 @@ static void salida_imprimir(const char *value) {
 
 
 static void salida_iniciar_aux(gpointer key, gpointer value, gpointer user_data) {
-  salida_imprimir((char *)value);
-}
-
-static void salida_ciclo_aux(gpointer key, gpointer value, gpointer user_data) {
-  if(key == PIPELINE_SALIDA) {
-    salida_imprimir((const char*) value);
+  if(!strcmp(key, "texto")) {
+    salida_imprimir((char *)value, (GladeXML *)user_data);
   }
 }
-
-static char *salida_ciclo(modulo_t *modulo, char tipo, GHashTable *lista)//, const pipeline_dato_t *in, pipeline_dato_t *out)
+static char *salida_ciclo(modulo_t *modulo, const char *puerto, const void *dato)
 {
-  g_hash_table_foreach(lista, salida_ciclo_aux, 0);
+  GladeXML *xml = (GladeXML *)modulo->m_dato;
+  if(!strcmp(PUERTO, puerto)) {
+    salida_imprimir((char*)dato, xml);
+  }
+
   return 0;
 }
 
 static char *salida_iniciar(modulo_t *modulo, GHashTable *argumentos) {
-  xml = glade_xml_new("ventana_salida.glade", NULL, NULL);
+  GladeXML *xml = glade_xml_new("ventana_salida.glade", NULL, NULL);
+  modulo->m_dato = xml;
   glade_xml_signal_autoconnect(xml);
-  g_hash_table_foreach(argumentos, salida_iniciar_aux, 0);
+  g_hash_table_foreach(argumentos, salida_iniciar_aux, xml);
   return "iniciado";
 }
 static char *salida_cerrar(modulo_t *modulo)
@@ -57,7 +59,6 @@ static char *salida_cerrar(modulo_t *modulo)
 modulo_t * get_modulo()
 {
   modulo_t *modulo = (modulo_t*)malloc(sizeof(modulo_t));
-  modulo->m_tipo = PIPELINE_SALIDA;
   modulo->m_nombre = "Salida";
   modulo->m_iniciar = salida_iniciar;
   modulo->m_cerrar = salida_cerrar;

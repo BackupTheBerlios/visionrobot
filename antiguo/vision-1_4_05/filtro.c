@@ -39,8 +39,8 @@ red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro)
 	filtro->m_salida->m_orden = 0;
 	return filtro->m_salida;
     }
-    int h = filtro->m_buffer->m_dato.imagen.m_alto;
-    int w = filtro->m_buffer->m_dato.imagen.m_ancho;
+    int h = filtro->m_buffer->m_alto;
+    int w = filtro->m_buffer->m_ancho;
     color_t m_rojoInf_orden = filtro->m_orden.m_inferior.m_r;
     color_t m_rojoSup_orden = filtro->m_orden.m_superior.m_r;
     color_t m_verdeInf_orden = filtro->m_orden.m_inferior.m_v;
@@ -53,8 +53,8 @@ red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro)
     color_t m_verdeSup_param = filtro->m_parametro.m_superior.m_v;
     color_t m_azulInf_param = filtro->m_parametro.m_inferior.m_a;
     color_t m_azulSup_param = filtro->m_parametro.m_superior.m_a;
-    int bytes = filtro->m_buffer->m_dato.imagen.m_bytes;
-    color_t *buffer = filtro->m_buffer->m_dato.imagen.m_imagen;
+    int bytes = filtro->m_buffer->m_bytes;
+    color_t *buffer = filtro->m_buffer->m_imagen;
 
     if(!filtro->m_tipo_orden) {
       filtro->m_tipo_orden = (color_t *) malloc(sizeof(color_t) * h * w * bytes);
@@ -198,9 +198,9 @@ void filtro_gestos_set_color(filtro_t * filtro, unsigned char rs, unsigned char 
 char *filtro_gestos_centrar(filtro_t * filtro, char *dibujo, int difY,
 				int difX)
 {
-  int h = filtro->m_buffer->m_dato.imagen.m_alto;
-  int w = filtro->m_buffer->m_dato.imagen.m_ancho;
-  int bytes = filtro->m_buffer->m_dato.imagen.m_bytes;
+  int h = filtro->m_buffer->m_alto;
+  int w = filtro->m_buffer->m_ancho;
+  int bytes = filtro->m_buffer->m_bytes;
   
   if (difY < 0) {
     int y, x;
