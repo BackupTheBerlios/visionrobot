@@ -16,6 +16,9 @@ extern "C"  {
     char *(*m_cerrar) (struct modulo_s* modulo);
   } modulo_t;  
   
+  /*! \brief Devuelve un puntero a un nuevo módulo creado. Cada módulo que implemente esta función debe crear el módulo, establecer el nombre, el dato y los punteros a función (la tabla es gestionada por el pipeline)
+      \return Un nuevo módulo ya creado y listo para llamar a <em>iniciar</em>
+  */
   modulo_t * get_modulo();
 
   

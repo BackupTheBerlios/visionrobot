@@ -1,7 +1,35 @@
 /*! \file imagenes.c
-    \brief Genera imÃ¡genes que sustituyen a las capturas de cÃ¡mara
-    \author Carlos LeÃ³n
-    \version 0.1
+    \brief Genera imágenes para el filtro del pipeline.
+    
+           \section modulo Descripción del módulo
+           Este módulo puede generar imágenes de varios tipos:
+	   <ul>
+	      <li>Imágenes aleatorias, creando puntos diseminados de diferentes colores por la imagen
+	      <li>Una imagen plana de un color fijo
+	      <li>Cargar un archivo de imagen
+	   </ul>
+
+	   \section puertos Puertos
+	   El módulo no tiene puertos de entrada y disponde de dos puertos de salida:
+	   <ul>
+	      <li><em>salida_filtro</em>: Una estructura de tipo <code>filtro_gestos_in_imagen_t</code>, para llevarla directamente al filtro.
+	      <li><em>salida_ventana</em>: Una estructura <code>filtro_gestos_in_parametros_t</code>, para llevarla a una ventana de imágenes y mostrarla directamente.
+	   </ul>
+	   Estas estructuras las crea el módulo de imágenes directamente, y también se encarga de destruirlas.
+
+	   \section argumentos Argumentos
+	   Los argumentos que soporta el módulo son:
+	   <ul>
+	     <li><em>alto</em>: El alto de la imagen, obligatorio
+	     <li><em>ancho</em>: El ancho de la imagen, obligatorio
+	     <li><em>bytes</em>: El número de bytes por punto, obligatorio
+	     <li><em>archivo</em>: El archivo que se carga. Si no se especifica, se supone que se quiere generar una imagen de un color.
+	     <li><em>rojo</em>: La componente roja de la imagen generada.
+	     <li><em>verde</em>: La componente verde de la imagen generada. 
+	     <li><em>azul</em>: La componente azul de la imagen generada. Si alguno de los tres colores anteriores no se especifica, se supone que se quiere generar una imagen de colores aleatorios.
+	   </ul>
+    \author Carlos León
+    \version 1.0
 */  
     
 #include "pipeline_sdk.h"
@@ -9,8 +37,10 @@
 #include "ventana_imagen_sdk.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
+/*! \brief La estructura de datos que tiene cada módulo */
 typedef struct {
   filtro_gestos_in_imagen_t m_filtro;
   ventana_imagen_in_t m_imagen;
@@ -22,7 +52,9 @@ typedef struct {
   enum {IMAGEN, ALEATORIO, COLOR} m_tipo;
 } dato_imagenes_t;
 
+/*! \brief El nombre del puerto de salida para el filtro de gestos */
 #define PUERTO_FILTRO "salida_filtro"
+/*! \brief El nombre del puerto de salida para la ventana de imágenes */
 #define PUERTO_VENTANA "salida_ventana"
 
 
@@ -68,7 +100,7 @@ static void imagenes_generar_imagen(modulo_t *modulo) {
 
 static char *imagenes_ciclo(modulo_t* modulo, const char *puerto, const void *value){
   imagenes_generar_imagen(modulo);
-  return 0;//"saco imagen";
+  return 0;
 }
 
 static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
@@ -84,7 +116,12 @@ static char *imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
   if(archivo_imagen) {
     dato->m_tipo = IMAGEN;
     dato->m_imagen_archivo = gdk_pixbuf_new_from_file(archivo_imagen, 0);    
-    sprintf(dato->m_buffer_error, "Cargado %s", archivo_imagen);
+    if(dato->m_imagen_archivo) {
+      sprintf(dato->m_buffer_error, "Cargado %s", archivo_imagen);
+    }
+    else {
+      sprintf(dato->m_buffer_error, "No se pudo cargar %s", archivo_imagen);
+    }
     devolver = dato->m_buffer_error;
   }
   if(!dato->m_imagen_archivo) {

@@ -7,10 +7,10 @@ DTD para los archivos descriptores de un pipeline
 <!ELEMENT pipeline (modulo*)>
 <!ELEMENT modulo (argumento*, conexion*)>
 <!ELEMENT argumento (#PCDATA)>
-<!ELEMENT conexion EMPTY>
-<!ATTLIST conexion puerto_salida CDATA #REQUIRED
-                   puerto_entrada CDATA #REQUIRED
-                   destino IDREF #REQUIRED>
+<!ELEMENT conexion (destino+)>
+<!ELEMENT destino (#PCDATA)>
+<!ATTLIST conexion puerto CDATA #REQUIRED>
+<!ATTLIST destino puerto CDATA #REQUIRED>                 
 <!ATTLIST modulo inicio CDATA "0"
                  ruta CDATA #REQUIRED
                  nombre ID #REQUIRED>

@@ -1,7 +1,7 @@
 /*! \file pipeline.c
-    \brief ImplementaciÃ³n del pipeline
-    \author Carlos LeÃ³n
-    \version 0.1
+    \brief Implementación del pipeline
+    \author Carlos León
+    \version 1.0
  */  
     
 /*
@@ -20,6 +20,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */ 
 #include "pipeline.h"
+#include "pipeline_sdk.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -38,6 +39,11 @@ typedef struct {
   char *m_destino;
   char *m_puerto;
 } conexion_t;
+
+struct pipeline_s {
+  GHashTable *m_modulos;
+  funcion_error_t m_funcion_error;
+};
 
 typedef struct {
   pipeline_t *m_pipeline;
@@ -116,28 +122,32 @@ static pipeline_t * pipeline_annadir(pipeline_t * p, const char *nombre, const c
   dato->m_inicio = !strcmp(inicio, "1") ? TRUE : FALSE;
   dato->m_modulo = 0;
   dato->m_enlaces = g_hash_table_new_full(g_str_hash, g_str_equal, pipeline_borrar_cadena, pipeline_borrar_conexion);
-  dato->m_handler = 0;
-  pipeline_set_ruta(p, nombre, ruta, dir);
+  dato->m_handler = 0;  
   dato->m_argumentos = argumentos;
   g_hash_table_insert(p->m_modulos, (gpointer)nombre, (gpointer)dato);//g_slist_append(p, dato);
+  pipeline_set_ruta(p, nombre, ruta, dir);
   return p;
 }
 
 static void pipeline_conectar(const pipeline_t * p, const char *origen, const char *salida,
 			      const char *destino, const char *puerto) {
-  elemento_t *des = g_hash_table_lookup(p->m_modulos, destino);
   elemento_t *or = g_hash_table_lookup(p->m_modulos, origen);
   conexion_t *conexion = (conexion_t*)malloc(sizeof(conexion_t));
   conexion->m_destino = strdup(destino);
   conexion->m_puerto = strdup(puerto);
-  g_hash_table_insert(or->m_enlaces, (gpointer)strdup(salida), (gpointer)des);
+  g_hash_table_insert(or->m_enlaces, (gpointer)strdup(salida), (gpointer)conexion);
 }
 
 int  pipeline_borrar(pipeline_t * p) 
 {
-  g_hash_table_destroy(p->m_modulos);
-  free(p);
-  return 0;
+  if(p) {
+    g_hash_table_destroy(p->m_modulos);
+    free(p);
+    return 0;
+  }
+  else {
+    return -1;
+  }
 }
 
 static pipeline_t * pipeline_leer_xml(pipeline_t * p, xmlDocPtr doc, xmlNodePtr cur,
@@ -152,8 +162,16 @@ static pipeline_t * pipeline_leer_xml(pipeline_t * p, xmlDocPtr doc, xmlNodePtr 
       g_hash_table_insert(argumentos, xmlGetProp(cur, "nombre"), xmlNodeListGetString(doc, cur->xmlChildrenNode, 1));
     }    
     else if ((!xmlStrcmp(cur->name, (const xmlChar *) "conexion"))) {
-      pipeline_conectar(p, nombre, xmlGetProp(cur, "puerto_salida"), xmlGetProp(cur, "destino"),
-			xmlGetProp(cur, "puerto_entrada"));
+      char *puerto_origen = xmlGetProp(cur, "puerto");
+      xmlNodePtr cur2 = cur->xmlChildrenNode;
+      while(cur2 != NULL){
+	if((!xmlStrcmp(cur2->name, (const xmlChar *) "destino"))) {
+	  char *destino = xmlNodeListGetString(doc, cur2->xmlChildrenNode, 1);
+	  pipeline_conectar(p, nombre, puerto_origen, destino,
+			    xmlGetProp(cur2, "puerto"));
+	}
+	cur2 = cur2->next;
+      }      
     }  
     cur = cur->next;
   } 
