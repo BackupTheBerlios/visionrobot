@@ -1,0 +1,31 @@
+\chapter{Módulo de generación de imágenes}
+
+\section{Introducción}
+Este módulo tiene como objetivo la creación y modificación de un búfer de colores (una imagen en formato plano) para la alimentación de la tubería de visión. Obtiene, de diferentes fuentes, imagenes codificadas de diferentes maneras, y genera, en un formato unificado, una imagen sin comprimir.
+
+\section {Imágenes generadas}
+% Hablar de los formatos
+
+\section {Arquitectura y funcionamiento del módulo}
+El módulo sigue las interfaces de comunicación con el {\em pipeline}, de modo que crea los búferes en la función de iniciar, a la vez que, según se haya instanciado a través de la configuración del XML que define el proyecto, abre la comunicación con las bibliotecas pertinentes, en función de los argumentos.
+
+En el ciclo de imágenes se procede según sea el funcionamiento. En el caso de que las imágenes cambien cada ciclo (no pasa cuando son imágenes de un color fijo o cargadas de archivo), se obtiene del recurso indicado el búfer en el formato que ofrezca la biblioteca, y se transforma al formato de salida común, como se ha comentado en la sección anterior. Una vez que se ha hecho esto, se ``deposita'' en el puerto de salida la imagen resultante, habiendo ya dado uniformidad a las diferentes entradas, haciendo que el {\em pipeline} no dependa de las fuentes generadores de imágenes a más bajo nivel.
+
+En la función de cerrar simplemente libera los recursos.
+
+\section {Bibliotecas}
+Para la generación resultados desde diferentes fuentes, el módulo hace uso de una serie de librerías; son las siguientes:
+
+\begin {itemize}
+\item {\bf SANE}: Sane (Scanner Access Now Easy) es una biblioteca originariamente para interfaces con escáneres, pero ampliada para cualquier dispositivo de imágenes. A través de esta biblioteca accedemos a la cámara.
+\item {\bf Xine}: Xine-lib tiene como objetivo la reproducción de archivos de vídeo en varios formatos (los más usuales, también puede aceptar formatos nuevos a través de {\em plugins}). A través de Xine cargamos un vídeo en el módulo de imágenes y lo reproducimos.
+\item {\bf Gdk}: Usamos Gdk para cargar fácilmente archivos de imágenes, y usarlos así como fuentes sencillas de imágnenes cuyo resultado se conoce.
+\item {\bf Código propio}: También hemos implementado, para pruebas principalmente, las siguientes funcionalidades del módulo:
+  \begin {itemize}
+  \item {\bf Generación de colores planos}: Pintamos todo el búfer de un color. Es muy útil para comprobar el funcionamiento de los filtros.
+  \item {\bf Generación de imágenes aleatorias}: Rellena la matriz de colores con colores al azar, de esta manera vemos cómo los filtros aceptan o dejan de aceptar los valores.
+  \end {itemize}
+\end {itemize}
+
+\section {Código}
+Ver anexo: documentación del módulo de imágenes.x
