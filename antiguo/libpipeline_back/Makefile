@@ -4,13 +4,13 @@ RES  =
 OBJ  = pipeline.o $(RES)
 LINKOBJ  = pipeline.o $(RES)
 LIBS =  -L"/usr/lib" -g3
-INCS =  -I"/usr/include" -I"/usr/include/libxml2"
+INCS =  -I"/usr/include" -I"/usr/include/gnome-xml"
 BIN  = libpipeline.a
 CFLAGS = $(INCS)   -g3
 
 .PHONY: all all-before all-after clean clean-custom
 
-all: all-before libpipeline.a all-after
+all: all-before libpipeline.a all-after 
 
 
 clean: clean-custom

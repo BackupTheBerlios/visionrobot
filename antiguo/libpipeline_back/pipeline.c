@@ -134,7 +134,7 @@ int pipeline_guardar(pipeline_t * pipeline, const char *ruta)
     sprintf(buffer, "%i", pipeline->m_error);
     error_pipe = xmlNewNode(NULL, BAD_CAST "error_pipe");
     xmlAddChild(pipe, error_pipe);
-    xmlNodeSetContent(error_pipe, BAD_CAST buffer);
+    xmlNodeSetName(error_pipe, BAD_CAST buffer);
 
     int i, j;
     for (i = 0; i < pipeline->m_numero; ++i) {
@@ -153,14 +153,14 @@ int pipeline_guardar(pipeline_t * pipeline, const char *ruta)
 	xmlAddChild(modulo, y);*/
 
 	sprintf(buffer, "%i", pipeline->m_elemento[i].m_id);
-	xmlNodeSetContent(id, BAD_CAST buffer);
-	xmlNodeSetContent(nombre,
+	xmlNodeSetName(id, BAD_CAST buffer);
+	xmlNodeSetName(nombre,
 			  BAD_CAST pipeline->m_elemento[i].m_nombre);
-	xmlNodeSetContent(r, BAD_CAST pipeline->m_elemento[i].m_ruta);
+	xmlNodeSetName(r, BAD_CAST pipeline->m_elemento[i].m_ruta);
 /*	sprintf(buffer, "%i", pipeline->m_elemento[i].m_x);
-	xmlNodeSetContent(x, BAD_CAST buffer);
+	xmlNodeSetName(x, BAD_CAST buffer);
 	sprintf(buffer, "%i", pipeline->m_elemento[i].m_y);
-	xmlNodeSetContent(y, BAD_CAST buffer);*/
+	xmlNodeSetName(y, BAD_CAST buffer);*/
 
 	c = (xmlNodePtr *) malloc(sizeof(xmlNodePtr) *
 				  pipeline->m_elemento[i].
@@ -170,7 +170,7 @@ int pipeline_guardar(pipeline_t * pipeline, const char *ruta)
 	    xmlAddChild(modulo, c[j]);
 	    sprintf(buffer, "%i",
 		    pipeline->m_elemento[i].m_destino[j]->m_id);
-	    xmlNodeSetContent(c[j], BAD_CAST buffer);
+	    xmlNodeSetName(c[j], BAD_CAST buffer);
 	}
 	free(c);
     }
@@ -181,13 +181,15 @@ int pipeline_guardar(pipeline_t * pipeline, const char *ruta)
     return 0;
 }
 
+typedef int  lista_objetivo_t[MAX_CONEXIONES][MAX_CONEXIONES];
+
 int parseModulo(xmlDocPtr doc, xmlNodePtr cur, pipeline_t * pipeline,
-		int **lista_objetivo, int i)
+		lista_objetivo_t lista_objetivo, int i)
 {
     xmlChar *nombre = 0;
     xmlChar *ruta = 0;
     xmlChar *key;
-    int x, y;
+    //int x, y;
     int j = 0;
     cur = cur->xmlChildrenNode;
     while (cur != NULL) {
@@ -199,7 +201,7 @@ int parseModulo(xmlDocPtr doc, xmlNodePtr cur, pipeline_t * pipeline,
 		nombre = strdup("");
 	    }
 	}
-	if ((!xmlStrcmp(cur->name, (const xmlChar *) "x"))) {
+	/*if ((!xmlStrcmp(cur->name, (const xmlChar *) "x"))) {
 	    key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 	    if (!key) {
 		key = strdup("");
@@ -214,7 +216,7 @@ int parseModulo(xmlDocPtr doc, xmlNodePtr cur, pipeline_t * pipeline,
 	    }
 	    y = atoi(key);
 	    free(key);
-	}
+	    }*/
 	if ((!xmlStrcmp(cur->name, (const xmlChar *) "ruta"))) {
 	    if (ruta)
 		free(ruta);
@@ -245,21 +247,22 @@ pipeline_t *pipeline_cargar(const char *ruta)
     xmlDocPtr doc;
     xmlNodePtr cur;
     int num_conexiones[MAX_CONEXIONES];
-    int **lista_objetivo;
-    lista_objetivo = (int **) malloc(sizeof(int) *
+    //int **lista_objetivo;
+    lista_objetivo_t lista_objetivo;
+    /*    lista_objetivo = (int **) malloc(sizeof(int) *
 						 MAX_CONEXIONES);
     int i;
     for (i = 0; i < MAX_CONEXIONES; ++i) {
 	lista_objetivo[i] =
 	    (int *) malloc(sizeof(int) *
 				       MAX_CONEXIONES);
-    }
+				       }*/
     doc = xmlParseFile(ruta);
     if (doc == NULL) {
 	return 0;
     }
     cur = xmlDocGetRootElement(doc);
-    if (cur == NULL) {
+    if (cur == NULL) { 
 	xmlFreeDoc(doc);
 	return 0;
     }
@@ -267,7 +270,7 @@ pipeline_t *pipeline_cargar(const char *ruta)
 	xmlFreeDoc(doc);
 	return 0;
     }
-    i = 0;
+    int i = 0;
     pipeline_t *pipe = pipeline_crear();
     cur = cur->xmlChildrenNode;
 
@@ -301,10 +304,10 @@ pipeline_t *pipeline_cargar(const char *ruta)
 	}
     }
 
-    for (i = 0; i < MAX_CONEXIONES; ++i) {
+    /*for (i = 0; i < MAX_CONEXIONES; ++i) {
 	free(lista_objetivo[i]);
     }
-    free(lista_objetivo);
+    free(lista_objetivo);*/
     return pipe;
 }
 
