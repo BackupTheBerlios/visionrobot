@@ -42,6 +42,7 @@ static int  pipeline_cerrar_elemento(elemento_t * elemento)
 {
   dato_elemento_t *dato = elemento->data;
   if (dato->m_modulo && dato->m_modulo->m_cerrar)   {
+    g_hash_table_destroy(dato->m_modulo->m_tabla);
     char *nombre = strdup(dato->m_modulo->m_nombre);
     char *mensaje = strdup(dato->m_modulo->m_cerrar(dato->m_modulo));
     pipeline_salida_error(elemento, nombre, mensaje);			  
@@ -163,20 +164,29 @@ elemento_t * pipeline_cargar(const char *ruta, funcion_error_t funcion_error)
 }
 
 static void pipeline_ciclo_recursivo(elemento_t *elemento, gpointer data) {
+  typedef struct {
+    char m_tipo;
+    GHashTable *m_tabla;
+  } pipeline_dato_t;  
+  
   pipeline_dato_t *dato_ciclo = (pipeline_dato_t *)data;
   dato_elemento_t *dato = elemento->data;
-  pipeline_dato_t arg = {0, 0};
-  int i;
+  //GHashTable *tabla = g_hash_table_new(0,0);//(g_int_hash, g_int_equal);
+  //  pipeline_dato_t arg = {dato_ciclo, 0};
   if (dato->m_modulo && dato->m_modulo->m_ciclo) {
-    char *error = dato->m_modulo->m_ciclo(dato->m_modulo, dato_ciclo, &arg);
+    char tipo = dato_ciclo ? dato_ciclo->m_tipo : 0;
+    GHashTable* tabla = dato_ciclo ? dato_ciclo->m_tabla : 0;
+    char *error = dato->m_modulo->m_ciclo(dato->m_modulo, tipo, tabla);//dato_ciclo, &arg);
     pipeline_salida_error(elemento, dato->m_modulo->m_nombre, error);
+    pipeline_dato_t arg = {dato->m_modulo->m_tipo, dato->m_modulo->m_tabla};
     g_node_children_foreach(elemento, G_TRAVERSE_ALL, pipeline_ciclo_recursivo, &arg);
   }
+  //  g_hash_table_destroy(tabla);
 }
 
-int pipeline_ciclo(const elemento_t * elemento, const pipeline_dato_t *dato) 
+int pipeline_ciclo(const elemento_t * elemento)//, const pipeline_dato_t *dato) 
 {
-  pipeline_ciclo_recursivo((GNode*)elemento, (gpointer)dato);
+  pipeline_ciclo_recursivo((GNode*)elemento, /*(gpointer)dato*/0);
   return 0;
 }
 static int pipeline_iniciar_elemento(const elemento_t * elemento) 
@@ -219,6 +229,7 @@ static int  pipeline_set_ruta(elemento_t * elemento, const char *ruta) {
       }
       else {
 	dato->m_modulo = f ? f() : 0;
+	dato->m_modulo->m_tabla = g_hash_table_new(0,0);//(g_int_hash, g_int_equal);
       }
     }
     

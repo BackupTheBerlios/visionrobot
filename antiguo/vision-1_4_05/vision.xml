@@ -1,4 +1,5 @@
-<?xml version="1.0"?><!DOCTYPE pipeline SYSTEM "pipeline.dtd">
+<?xml version="1.0"?>
+<!DOCTYPE pipeline SYSTEM "pipeline.dtd">
 <pipeline>
   <modulo ruta="/home/carlos/vision/imagenes.so">
     <argumento tipo="ancho">320</argumento>

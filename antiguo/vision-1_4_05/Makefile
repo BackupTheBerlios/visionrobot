@@ -1,4 +1,4 @@
-OPTS=-g
+OPTS=-g -Wall
 
 all: etags salida.so filtro_gestos.so red_neuronal.so imagenes.so ventana_imagen.so pipeline
 

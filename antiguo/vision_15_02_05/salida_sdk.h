@@ -3,6 +3,6 @@
 
 #define PIPELINE_SALIDA 0x0
 
-typedef char* salida_in_t;
+typedef char salida_in_t;
 
 #endif			

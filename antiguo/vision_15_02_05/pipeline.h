@@ -61,7 +61,7 @@ extern "C"  {
   int  pipeline_borrar(elemento_t * elemento);
   int  pipeline_guardar(const elemento_t * elemento, const char *ruta);
   elemento_t * pipeline_cargar(const char *ruta, funcion_error_t funcion_error);
-  int  pipeline_ciclo(const elemento_t * elemento, const pipeline_dato_t *dato);
+  int  pipeline_ciclo(const elemento_t * elemento);//, const pipeline_dato_t *dato);
   int  pipeline_iniciar(const elemento_t * elemento);
 
   

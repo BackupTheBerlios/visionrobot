@@ -34,9 +34,9 @@ red_neuronal_t * red_neuronal_crear(int en, int oc, int sa)
     red->numEntrada = en;
     red->numOculta = oc;
     red->numSalida = sa;
-    red->capaEntrada = (double *) malloc(sizeof(double) * red->numEntrada + 1);
-    red->capaOculta = (double *) malloc(sizeof(double) * red->numOculta + 1);
-    red->capaSalida = (double *) malloc(sizeof(double) * red->numSalida + 1);
+    red->capaEntrada = (double *) malloc(sizeof(double) * (red->numEntrada + 1));
+    red->capaOculta = (double *) malloc(sizeof(double) * (red->numOculta + 1));
+    red->capaSalida = (double *) malloc(sizeof(double) * (red->numSalida + 1));
     red->pesosEntrada = (double *) malloc(sizeof(double) * ((red->numEntrada + 1) * (red->numOculta + 1)));
     red->pesosOculta = (double *) malloc(sizeof(double) * ((red->numOculta + 1) * (red->numSalida + 1)));
     return red;
@@ -53,6 +53,7 @@ void red_neuronal_borrar(red_neuronal_t ** red)
 	free((*red)->capaSalida);
 	free((*red)->pesosEntrada);
 	free((*red)->pesosOculta);
+	free(*red);
 	*red = 0;
     }
 }
@@ -149,48 +150,47 @@ void red_neuronal_cargar_input_imagen(red_neuronal_t * red, char *dibujo,
 /*Propaga la informacion desde la entrada hasta la salida de la red
 y genera un salida dependiendo de lo qua ha reconocido*/
 char *red_neuronal_reconocer(red_neuronal_t * red, char *dibujo,
-					int ancho, int alto, int bytes,
-					tipo_foto_t tipo)
-{
-    if(!red)
-	return "red no cargada";
-    if (!dibujo)
-	return "no hay dibujo";
-    red_neuronal_cargar_input_imagen(red, dibujo, ancho, alto, bytes);
-    red_neuronal_computar_capas(red);
-    switch (tipo) {
-    case ORDEN:
-	if (red->capaSalida[1] > 0.5)
-	    return "Parar";
-	
-	else if (red->capaSalida[2] > 0.5)
-	    return "Girar";
-	
-	else if (red->capaSalida[3] > 0.5)
-	    return "GirarNeg";
-	
-	else if (red->capaSalida[4] > 0.5)
-	    return "Avanzar";
-	
-	else
-	    return "No_Gesto";
-    case PARAM:
-	if (red->capaSalida[1] > 0.5)
-	    return "Nula";
-	
-	else if (red->capaSalida[2] > 0.5)
-	    return "Baja";
-	
-	else if (red->capaSalida[3] > 0.5)
-	    return "Media";
-	
-	else if (red->capaSalida[4] > 0.5)
-	    return "Alta";
-	
-	else
-	    return "Maxima";
-    }
-    return "";
+			     int ancho, int alto, int bytes,
+			     tipo_foto_t tipo) {
+  if(!red)
+    return "red no cargada";
+  if (!dibujo)
+    return "no hay dibujo";
+  red_neuronal_cargar_input_imagen(red, dibujo, ancho, alto, bytes);
+  red_neuronal_computar_capas(red);
+  switch (tipo) {
+  case ORDEN:
+    if (red->capaSalida[1] > 0.5)
+      return "parar";
+    
+    else if (red->capaSalida[2] > 0.5)
+      return "girar";
+    
+    else if (red->capaSalida[3] > 0.5)
+      return "girar_negativo";
+    
+    else if (red->capaSalida[4] > 0.5)
+      return "avanzar";
+    
+    else
+      return "no_gesto";
+  case PARAM:
+    if (red->capaSalida[1] > 0.5)
+      return "nula";
+    
+    else if (red->capaSalida[2] > 0.5)
+      return "baja";
+    
+    else if (red->capaSalida[3] > 0.5)
+      return "media";
+    
+    else if (red->capaSalida[4] > 0.5)
+      return "alta";
+    
+    else
+      return "maxima";
+  }
+  return "";
 }
 
 //---------------------------------------------------------------------------

@@ -7,6 +7,8 @@
     filtro_t * filtro = (filtro_t *) malloc(sizeof(filtro_t));
     filtro->m_salida =
 	(red_neuronal_in_t *) malloc(sizeof(red_neuronal_in_t));
+    filtro->m_salida->m_orden = 0;
+    filtro->m_salida->m_tipo_orden = 0;
     return filtro;
 }
 void filtro_gestos_borrar(filtro_t ** filtro)
@@ -20,6 +22,7 @@ void filtro_gestos_borrar(filtro_t ** filtro)
 
 red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro)
 {
+
     if (!filtro || !filtro->m_buffer) {
 	filtro->m_salida->m_tipo_orden = 0;
 	filtro->m_salida->m_orden = 0;
@@ -41,6 +44,22 @@ red_neuronal_in_t * filtro_gestos_filtrar(filtro_t * filtro)
     int m_azulSup_param = filtro->m_parametro.m_superior.m_a;
     int bytes = filtro->m_buffer->m_bytes;
     char *buffer = filtro->m_buffer->m_imagen;
+    //DELETEME
+    //    printf("FILTRO termina valiendo %p.\n", filtro);
+
+    if(filtro->m_salida->m_orden) {
+      //free(filtro->m_salida->m_orden);
+    }
+    //DELETEME
+    //printf("FILTRO tras borrar orden: %p.\n", filtro);
+
+    if(filtro->m_salida->m_tipo_orden) {
+      //      free(filtro->m_salida->m_tipo_orden);
+    }
+    //DELETEME
+    //printf("FILTRO tras borrar tipo orden: %p.\n", filtro);
+
+
     char *tipo_orden = (char *) malloc(sizeof(char) * h * w * bytes);	//new BYTE[h*w*bytes];
     char *orden = (char *) malloc(sizeof(char) * h * w * bytes);	//new BYTE[h*w*bytes];
     int cont, cont2, acX, acX2, acY, acY2, posY;
@@ -151,7 +170,9 @@ void filtro_gestos_set_color(filtro_t * filtro, int rs, int ri, int vs,
     filtro->m_parametro.m_inferior.m_v = vi2;
     filtro->m_parametro.m_superior.m_a = as2;
     filtro->m_parametro.m_inferior.m_a = ai2;
-} char *filtro_gestos_centrar(filtro_t * filtro, char *dibujo, int difY,
+} 
+
+char *filtro_gestos_centrar(filtro_t * filtro, char *dibujo, int difY,
 				int difX)
 {
     int h = filtro->m_buffer->m_alto;
