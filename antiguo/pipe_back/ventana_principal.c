@@ -553,9 +553,11 @@ void abre(char *file, ventana_principal_t * ventana_principal)
     if (file != 0) {
 	vaciar_pipeline(ventana_principal->pipeline);
 	ventana_principal->pipeline = cargar(file);
-	char buf[23];
+	if(!ventana_principal->pipeline)
+	    ventana_principal->pipeline = crear_pipeline();                            
+/*	char buf[23];
 	sprintf(buf,"ventana_principal->pipeline->m_error = %i",ventana_principal->pipeline->m_error); 
-	MessageBox(0, buf, "info", 0);
+	MessageBox(0, buf, "info", 0);*/
 	strcpy(ventana_principal->archivo, file);
 	ventana_principal->modificado = FALSE;
 	mostrar(GTK_STATUSBAR(ventana_principal->statusbar1), ventana_principal->archivo, &ventana_principal->id);

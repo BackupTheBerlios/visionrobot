@@ -31,6 +31,7 @@ pipeline_t *crear_pipeline()
     pipeline_t *p = (pipeline_t *) malloc(sizeof(pipeline_t));
     p->m_numero = 0;
     p->m_corriendo = 0;
+    p->m_error = -1;
     return p;
 }
 
@@ -39,8 +40,7 @@ elemento_t *nuevo(pipeline_t * pipeline, const char *nombre, gint x,
 {
     pipeline->m_elemento[pipeline->m_numero].m_widget =
 	gtk_toggle_button_new_with_label(nombre);
-    gtk_widget_show(pipeline->m_elemento[pipeline->m_numero].m_widget);
-    pipeline->m_error = -1;
+    gtk_widget_show(pipeline->m_elemento[pipeline->m_numero].m_widget);    
     pipeline->m_elemento[pipeline->m_numero].m_x = x;
     pipeline->m_elemento[pipeline->m_numero].m_id = pipeline->m_numero;
     pipeline->m_elemento[pipeline->m_numero].m_numero_conexiones = 0;

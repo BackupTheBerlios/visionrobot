@@ -25,14 +25,14 @@ int ciclo () {
 int set_datos(const void * datos) {
   const gchar * valor = (const gchar *)datos;
   if(valor) {
-    GtkTextIter * iter;
+    GtkTextIter iter;
     GtkTextBuffer * buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(texto));
      gtk_text_buffer_get_iter_at_offset
                                             (buffer,
-                                             iter,
+                                             &iter,
                                              -1);
     gtk_text_buffer_insert(buffer,
-				   iter,
+				   &iter,
 				   valor,
 				   -1);
  }
