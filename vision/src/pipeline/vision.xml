@@ -5,9 +5,9 @@
 
   <!-- Ventana de parametros de las ordenes -->
   <modulo ruta="ventana_parametros" nombre="parametros_orden" inicio="1">
-    <argumento nombre="rojo">255</argumento>
-    <argumento nombre="verde">255</argumento>
-    <argumento nombre="azul">255</argumento>
+    <argumento nombre="rojo">190</argumento>
+    <argumento nombre="verde">130</argumento>
+    <argumento nombre="azul">120</argumento>
     <argumento nombre="tolerancia_rojo">10</argumento>
     <argumento nombre="tolerancia_verde">10</argumento>
     <argumento nombre="tolerancia_azul">10</argumento>
@@ -103,8 +103,8 @@
   <!-- Generador de imagenes -->
   <modulo ruta="imagenes" nombre="imagenes" inicio="1">
 <!--     <argumento nombre="video">share/vision/robot.mpg</argumento> -->
-<!--    <argumento nombre="camara">1</argumento> -->
-     <argumento nombre="archivo">share/vision/avanzar.xpm</argumento>
+    <argumento nombre="camara">1</argumento>
+<!--      <argumento nombre="archivo">share/vision/foto.xpm</argumento> -->
     <argumento nombre="ancho">320</argumento>
     <argumento nombre="alto">240</argumento>
     <argumento nombre="bytes">3</argumento>
@@ -156,7 +156,9 @@
   <!-- Modulo del robot -->
   <modulo ruta="robot" nombre="robot">
     <argumento nombre="guion">share/vision/robot.lua</argumento>
-    <argumento nombre="funcion">ciclo</argumento>
+    <argumento nombre="funcion_ciclo">ciclo</argumento>
+    <argumento nombre="funcion_fin">fin</argumento>
+    <argumento nombre="funcion_iniciar">iniciar</argumento>
     <argumento nombre="puerto">1</argumento>
   </modulo>
 </pipeline>

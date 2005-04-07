@@ -795,8 +795,8 @@ static int filtro_gestos_difuminar (lua_State *L) {
 
       /* Atención: los colores rojo y azul están cambiados,
 	 nosotro usamos el orden RGB */
-      color_t azul_comparar = (color_t)rojo;
-      color_t rojo_comparar = (color_t)azul;
+      color_t azul_comparar = (color_t)azul;
+      color_t rojo_comparar = (color_t)rojo;
       color_t verde_comparar = (color_t)verde;
       color_t valor = 0;
       if ((rojo_comparar >= m_rojoInf && rojo_comparar <= m_rojoSup)

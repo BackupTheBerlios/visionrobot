@@ -9,9 +9,9 @@
 
   <!-- Generador de imagenes -->
   <modulo ruta="imagenes" nombre="imagenes" inicio="1">
-    <argumento nombre="video">share/vision/robot.mpg</argumento> 
+<!--     <argumento nombre="video">share/vision/robot.mpg</argumento>  -->
 <!--    <argumento nombre="archivo">share/vision/avanzar.xpm</argumento> -->
-<!-- <argumento nombre="camara">1</argumento> -->
+<argumento nombre="camara">1</argumento>
     <argumento nombre="ancho">320</argumento>
     <argumento nombre="alto">240</argumento>
     <argumento nombre="bytes">3</argumento>

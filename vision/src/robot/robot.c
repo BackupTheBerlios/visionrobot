@@ -7,13 +7,6 @@
 #include <parapin.h>
 #include "robot_sdk.h"
 
-/* Pines del puerto paralelo */
-/* TODO: poner los que sean */
-#define AVANZAR LP_PIN05
-#define RETROCEDER LP_PIN06
-#define GIRAR_IZQUIERDA LP_PIN07
-#define GIRAR_DERECHA LP_PIN08
-
 /*! \brief El puerto de entrada, recibe un <code>char *</code> */
 #define PUERTO "entrada_robot"
 
@@ -22,8 +15,91 @@
 typedef struct {
   char m_error[128];		/*!< El búfer con los datos de salida e información. */
   lua_State *m_lua;		/*!< El entorno de Lua, para los guiones de comportamiento del robot. */
-  char *m_funcion;		/*!< El nombre de la función a la que se debe llamar en el guión. */
+  char *m_funcion_ciclo;	/*!< El nombre de la función a la que se debe llamar en el guión. */
+  char *m_funcion_fin;
+  char *m_funcion_iniciar;
+  //guint m_tiempo;
 } dato_robot_t;
+
+
+typedef struct {
+  lua_State *l;
+  char *f;
+} arg_timer_t;
+
+
+
+/*! \brief Llama a una función de Lua al estilo <code>printf</code>
+  
+\author Variación de Carlos León del libro "Programming in Lua" de Roberto Ierusalimschy
+\param L El lua_State en el que está la función
+\param func El nombre de la función que llamamos
+\param sig Una cadena que define los parámetros, según la forma:
+           <ul>
+	     <li>i: entero.
+	     <li>d: coma flotante.
+	     <li>s: cadena (char *).
+	     <li>p: puntero.
+	     <li>b: booleano.
+	   </ul>
+	   Los parámetros de entrada están separados de los de salida por ">".
+*/
+static void robot_llamar_funcion (lua_State * L, const char *func, const char *sig, ...) {
+  va_list vl;
+  int narg, nres;     
+  va_start(vl, sig);
+  lua_getglobal(L, func);
+  narg = 0;
+  while (*sig) {
+    switch (*sig++) {    
+    case 'd': 
+      lua_pushnumber(L, va_arg(vl, double));
+      break;    
+    case 'i': 
+      lua_pushnumber(L, va_arg(vl, int));
+      break;    
+    case 's': 
+      lua_pushstring(L, va_arg(vl, char *));
+      break;
+    case 'p': 
+      lua_pushlightuserdata(L, va_arg(vl, void *));
+      break;    
+    case 'b':
+      lua_pushboolean(L, va_arg(vl, int));
+      break;    
+    case '>':
+      goto endwhile;
+    }
+    narg++;
+    luaL_checkstack(L, 1, "too many arguments");
+  } endwhile:    
+    nres = strlen(sig);
+    lua_pcall(L, narg, nres, 0);
+    nres = -nres; 
+    while (*sig) {
+      switch (*sig++) {    
+      case 'd':
+	*va_arg(vl, double *) = lua_tonumber(L, nres);
+	break;    
+      case 'i':
+	*va_arg(vl, int *) = (int)lua_tonumber(L, nres);
+	break;    
+      case 's':
+	*va_arg(vl, const char **) = lua_tostring(L, nres);
+	break;
+      case 'p':	
+	*va_arg(vl, const void **) = lua_topointer(L, nres);
+	break;
+      case 'b':	
+	*va_arg(vl, int*) = lua_toboolean(L, nres);
+	break;
+      }
+      nres++;
+    }
+    va_end(vl);
+}
+
+
 
 //! Realiza un ciclo en el módulo.
 /*! En el ciclo recibe la señal del módulo de gestión de resultados del pipeline, y llama al script con los datos.
@@ -40,11 +116,10 @@ static char *robot_ciclo(modulo_t *modulo, const char *puerto, const void *dato)
   robot_in_t *entrada = (robot_in_t*)dato;
   if(!strcmp(PUERTO, puerto) && entrada) {
     lua_State *L = dato_robot->m_lua;
-    lua_getglobal(L, dato_robot->m_funcion);
-    lua_pushstring(L, (const char *)entrada->m_orden);
-    lua_pushstring(L, (const char *)entrada->m_parametro);
-    lua_pcall(L, 2, 1, 0);
-    strcpy(dato_robot->m_error, (char *)lua_tostring(L, -1));
+    char *aux;
+    robot_llamar_funcion(L, dato_robot->m_funcion_ciclo, "ss>s",
+			 entrada->m_orden, entrada->m_parametro, &aux);
+    strcpy(dato_robot->m_error, aux);
     return dato_robot->m_error;
   }
   else {
@@ -52,76 +127,40 @@ static char *robot_ciclo(modulo_t *modulo, const char *puerto, const void *dato)
   }
 }
 
-//! Función Lua para el avance.
-/*! Establece correctamente los pines del puerto paralelo.
-  
-\param L El entorno de Lua.
-
-\return El número de argumentos que se devuelven.
-*/
-static int robot_avanzar (lua_State *L) {
-  char param = (char)luaL_checkint(L, 1);
-  clear_pin(RETROCEDER | GIRAR_DERECHA | GIRAR_IZQUIERDA);
-  set_pin(AVANZAR);
+static int robot_alta(lua_State *L) {
+  int index = luaL_checkint(L, 1);
+  set_pin(LP_PIN[index]);
   return 0;
 }
 
-//! Función Lua para el retroceso.
-/*! Establece correctamente los pines del puerto paralelo.
-  
-\param L El entorno de Lua.
-
-\return El número de argumentos que se devuelven.
-*/
-
-static int robot_retroceder (lua_State *L) {
-  char param = (char)luaL_checkint(L, 1);
-  clear_pin(AVANZAR | GIRAR_DERECHA | GIRAR_IZQUIERDA);
-  set_pin(RETROCEDER);
+static int robot_baja(lua_State *L) {
+  int index = luaL_checkint(L, 1);
+  clear_pin(LP_PIN[index]);
   return 0;
 }
 
-//! Función Lua para el giro a la izquierda.
-/*! Establece correctamente los pines del puerto paralelo.
-  
-\param L El entorno de Lua.
+gboolean robot_on_time(gpointer data) {
+  arg_timer_t * a = (arg_timer_t *)data;
+  robot_llamar_funcion(a->l, a->f, "");
+  free(a->f);
+  free(a);
+  return FALSE;
+}
 
-\return El número de argumentos que se devuelven.
-*/
-
-static int robot_girar_izquierda (lua_State *L) {
-  char param = (char)luaL_checkint(L, 1);
-  clear_pin(RETROCEDER | GIRAR_DERECHA | AVANZAR);
-  set_pin(GIRAR_IZQUIERDA);
+static int robot_timer(lua_State *L) {
+  arg_timer_t *a = (arg_timer_t*)malloc(sizeof(arg_timer_t));
+  int ms = luaL_checkint(L, 1);
+  const char *funcion_parada = lua_tostring(L, 2);
+  a->l = L;
+  a->f = strdup(funcion_parada);
+  lua_pop(L, 1);
+  g_timeout_add(ms, robot_on_time, a);
   return 0;
 }
 
-//! Función Lua para el giro a la derecha.
-/*! Establece correctamente los pines del puerto paralelo.
-  
-\param L El entorno de Lua.
-
-\return El número de argumentos que se devuelven.
-*/
-
-static int robot_girar_derecha (lua_State *L) {
-  char param = (char)luaL_checkint(L, 1);
-  clear_pin(RETROCEDER | AVANZAR | GIRAR_IZQUIERDA);
-  set_pin(GIRAR_DERECHA);
-  return 0;
-}
-
-
-//! Función Lua para la parada.
-/*! Establece correctamente los pines del puerto paralelo.
-  
-\param L El entorno de Lua.
-
-\return El número de argumentos que se devuelven.
-*/
-
-static int robot_parar (lua_State *L) {
-  clear_pin(RETROCEDER | AVANZAR | GIRAR_IZQUIERDA | GIRAR_DERECHA);
+static int robot_salida(lua_State *L) {
+  int index = luaL_checkint(L, 1);
+  pin_output_mode(LP_PIN[index]);
   return 0;
 }
 
@@ -136,15 +175,16 @@ static int robot_parar (lua_State *L) {
 static char *robot_iniciar(modulo_t *modulo, GHashTable *argumentos) {
   char *devolver = "iniciado";
   dato_robot_t *dato = (dato_robot_t *)modulo->m_dato;
-  dato->m_funcion = strdup(g_hash_table_lookup(argumentos, "funcion"));
+  dato->m_funcion_ciclo = strdup(g_hash_table_lookup(argumentos, "funcion_ciclo"));
+  dato->m_funcion_fin = strdup(g_hash_table_lookup(argumentos, "funcion_fin"));
+  dato->m_funcion_iniciar = strdup(g_hash_table_lookup(argumentos, "funcion_iniciar"));
   dato->m_lua = lua_open();
   lua_State *l = dato->m_lua;
   static const struct luaL_reg robot [] = {
-    {"avanzar", robot_avanzar},
-    {"retroceder", robot_retroceder},
-    {"girar_derecha", robot_girar_derecha},
-    {"girar_izquierda", robot_girar_izquierda},
-    {"parar", robot_parar},
+    {"alta", robot_alta},
+    {"baja", robot_baja},
+    {"salida",robot_salida},
+    {"timer", robot_timer},
     {NULL, NULL}
   };
   luaL_openlib(l, "robot", robot, 0);
@@ -169,7 +209,7 @@ static char *robot_iniciar(modulo_t *modulo, GHashTable *argumentos) {
       devolver = "Fallo al abrir el puerto. Debe ser root (permisos)";
     }
     else {
-      pin_output_mode(AVANZAR | GIRAR_DERECHA | GIRAR_IZQUIERDA | RETROCEDER);
+      robot_llamar_funcion(l, dato->m_funcion_iniciar, "");
     }
   }
 
@@ -186,8 +226,10 @@ static char *robot_iniciar(modulo_t *modulo, GHashTable *argumentos) {
 static char *robot_cerrar(modulo_t *modulo)
 {
   dato_robot_t *dato = (dato_robot_t *)modulo->m_dato;
-  clear_pin(AVANZAR | GIRAR_DERECHA | GIRAR_IZQUIERDA | RETROCEDER);
-  free(dato->m_funcion);
+  robot_llamar_funcion(dato->m_lua, dato->m_funcion_fin, "");
+  free(dato->m_funcion_ciclo);
+  free(dato->m_funcion_iniciar);
+  free(dato->m_funcion_fin);
   lua_close(dato->m_lua);
   free(dato);
   free(modulo);
