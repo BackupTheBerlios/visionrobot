@@ -252,7 +252,6 @@ int main(int argc, char **argv)
   glade_init();
   GString *buffer = g_string_new(DATADIR);
   g_string_append_printf(buffer, "/%s/%s", PACKAGE, "ventana_pipeline.glade");
-  printf("el buffer es: %s\n", buffer->str);
   GladeXML *xml = glade_xml_new(buffer->str, NULL, NULL);
   glade_xml_signal_autoconnect(xml);
   GtkWidget *ventana = glade_xml_get_widget(xml, "win_pipeline");
