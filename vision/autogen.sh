@@ -2,6 +2,6 @@
 
 aclocal \
 && autoheader \
-&& libtoolize --force
+&& libtoolize --force \
 && automake --add-missing --gnu \
 && autoconf
