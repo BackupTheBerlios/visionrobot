@@ -21,7 +21,7 @@
 #else
 #define LIBDIR g_get_current_dir()
 #define DATADIR g_get_current_dir()
-#define PACKAGE
+#define PACKAGE ""
 #endif
 
 #include "pipeline.xpm"
@@ -252,6 +252,7 @@ int main(int argc, char **argv)
   glade_init();
   GString *buffer = g_string_new(DATADIR);
   g_string_append_printf(buffer, "/%s/%s", PACKAGE, "ventana_pipeline.glade");
+  printf("el buffer es: %s\n", buffer->str);
   GladeXML *xml = glade_xml_new(buffer->str, NULL, NULL);
   glade_xml_signal_autoconnect(xml);
   GtkWidget *ventana = glade_xml_get_widget(xml, "win_pipeline");
