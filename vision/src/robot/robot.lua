@@ -90,7 +90,7 @@ function ciclo(orden, parametro)
 
 end
 
--- Bajamos los valores del puerto paralelo
+-- Ponemos a baja los valores del puerto paralelo
 function fin() 
    robot.baja(REFERENCIA)
    robot.baja(AVANZAR)
