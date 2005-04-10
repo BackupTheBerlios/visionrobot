@@ -99,6 +99,24 @@
       <destino puerto="entrada_texto">salida_pipeline</destino>
     </conexion>
   </modulo>
+
+  <!--   Filtro de gestos del ocr -->
+  <modulo ruta="filtro_gestos" nombre="filtro_gestos_ocr">
+    <argumento nombre="guion">share/vision/filtro.lua</argumento>
+    <argumento nombre="filtrar">filtrar_letras</argumento>
+    <conexion puerto="salida_imagen">
+      <destino puerto="entrada_imagen">ventana_filtro_ocr</destino>
+      <destino puerto="entrada_imagen">ocr</destino>
+    </conexion>
+  </modulo>
+
+  <!-- Ventana de imagen del ocr -->
+  <modulo ruta="ventana_imagen" nombre="ventana_filtro_ocr">
+    <argumento nombre="titulo">Ventana OCR</argumento>
+    <argumento nombre="nombre_foto">filtro_ocr.png</argumento>
+    <argumento nombre="extension">png</argumento>
+  </modulo>
+
   
   <!-- Generador de imagenes -->
   <modulo ruta="imagenes" nombre="imagenes" inicio="1">
@@ -111,6 +129,7 @@
     <conexion puerto="salida_imagen">
       <destino puerto="entrada_imagen">filtro_gestos_orden</destino>
       <destino puerto="entrada_imagen">filtro_gestos_param</destino>
+      <destino puerto="entrada_imagen">filtro_gestos_ocr</destino>
       <destino puerto="entrada_imagen">ventana_imagenes</destino>
     </conexion>
   </modulo>
@@ -160,6 +179,13 @@
     <argumento nombre="funcion_fin">fin</argumento>
     <argumento nombre="funcion_iniciar">iniciar</argumento>
     <argumento nombre="puerto">1</argumento>
+  </modulo>
+
+  <modulo ruta="ocr" nombre="ocr">
+    <argumento nombre="archivo">share/vision/base_datos</argumento>
+    <conexion puerto="salida_texto">
+      <destino puerto="entrada_texto">salida_pipeline</destino>
+    </conexion>
   </modulo>
 
 </pipeline>

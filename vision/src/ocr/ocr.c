@@ -39,7 +39,7 @@ typedef struct {
 
 static char *ocr_ciclo(modulo_t *modulo, const char *puerto, const void *value)
 {
-  if(!strcmp(puerto, PUERTO_IMAGEN)) {
+  if(value && !strcmp(puerto, PUERTO_IMAGEN)) {
     ocr_dato_t *dato = (ocr_dato_t*)modulo->m_dato;
     pack_init_t *pack_init = dato->m_pack_init;
     filtro_gestos_in_imagen_t *ocr_in = (filtro_gestos_in_imagen_t *)value;

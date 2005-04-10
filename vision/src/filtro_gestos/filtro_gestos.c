@@ -255,8 +255,9 @@ static int filtro_gestos_buscar_limites(lua_State *L)
  int grados1= abs(out->grados);
  int grados2= abs((angulo2*180)/M_PI);
  lua_pushlightuserdata(L, out);
- if((grados1+grados2>80 && grados1+grados2<100) || !op)return 1;
- else return 0;
+ /*if((*/grados1+grados2>80 && grados1+grados2<100;/*) || !op)*/
+return 1;
+// else return 0;
 }
 
 //Cambio********************
@@ -768,8 +769,8 @@ static int filtro_gestos_difuminar (lua_State *L) {
 
       int param_bytes = parametro_difuminado * bytes;
       int param_bytes2 = (parametro_difuminado * bytes) + (bytes - 1);
-      if (y - parametro_difuminado >= 0 && y + parametro_difuminado <= alto) {
-	if (x - param_bytes >= 0 && x + param_bytes2 <= tam) {
+      if (y - parametro_difuminado >= 0 && y + parametro_difuminado < alto) {
+	if (x - param_bytes >= 0 && x + param_bytes2 < tam) {
 	  for (i = y - parametro_difuminado; i <= y + parametro_difuminado; i++) {	  
 	    for (j = x - param_bytes; j <= x + param_bytes2; j+=bytes) {
 	      pos = i * tam + j;
