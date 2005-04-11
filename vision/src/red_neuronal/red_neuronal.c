@@ -37,8 +37,8 @@ red_neuronal_t * red_neuronal_crear(int en, int oc, int sa, const char *salida[]
     red->capaEntrada = (double *) malloc(sizeof(double) * (red->numEntrada + 1));
     red->capaOculta = (double *) malloc(sizeof(double) * (red->numOculta + 1));
     red->capaSalida = (double *) malloc(sizeof(double) * (red->numSalida + 1));
-    red->pesosEntrada = (double *) malloc(sizeof(double) * ((red->numEntrada + 1) * (red->numOculta + 1)));
-    red->pesosOculta = (double *) malloc(sizeof(double) * ((red->numOculta + 1) * (red->numSalida + 1)));
+    /*    red->pesosEntrada = (double *) malloc(sizeof(double) * ((red->numEntrada + 1) * (red->numOculta + 1)));
+	  red->pesosOculta = (double *) malloc(sizeof(double) * ((red->numOculta + 1) * (red->numSalida + 1)));*/
     red->m_salida[0] = salida[0];
     red->m_salida[1] = salida[1];
     red->m_salida[2] = salida[2];

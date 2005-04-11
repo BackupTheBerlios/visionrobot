@@ -39,14 +39,20 @@ typedef struct {
 
 static char *ocr_ciclo(modulo_t *modulo, const char *puerto, const void *value)
 {
-  if(value && !strcmp(puerto, PUERTO_IMAGEN)) {
+  if(!strcmp(puerto, PUERTO_IMAGEN)) {
     ocr_dato_t *dato = (ocr_dato_t*)modulo->m_dato;
     pack_init_t *pack_init = dato->m_pack_init;
     filtro_gestos_in_imagen_t *ocr_in = (filtro_gestos_in_imagen_t *)value;
 
     if(pack_init && ocr_in) {
-      sprintf(dato->m_out, "%s", ocr_semantic_match(ocr_in, pack_init));
-      g_hash_table_insert(modulo->m_tabla, PUERTO_TEXTO, &dato->m_out);
+      const char *respuesta = ocr_semantic_match(ocr_in, pack_init);
+      if(respuesta) {
+	sprintf(dato->m_out, "%s", respuesta);
+	g_hash_table_insert(modulo->m_tabla, PUERTO_TEXTO, &dato->m_out);
+      }
+      else {
+	g_hash_table_insert(modulo->m_tabla, PUERTO_TEXTO, 0);
+      }
     }
     else {
       g_hash_table_insert(modulo->m_tabla, PUERTO_TEXTO, 0);

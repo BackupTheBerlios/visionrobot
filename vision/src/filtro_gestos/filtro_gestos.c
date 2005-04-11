@@ -325,7 +325,7 @@ static int filtro_gestos_rotar(lua_State *L)
       }
     }
     free(in);
-    free(bounds);
+    //free(bounds);
     lua_pushlightuserdata(L,salida);
     return 1;
 }
@@ -538,16 +538,17 @@ static char *filtro_ciclo(modulo_t *modulo, const char *puerto, const void *valu
 	// 0 si todo es negro
 	// 1 si no todo es negro
 	int color;
-	filtro_llamar_funcion(dato->m_lua, dato->m_filtrar, "ppp>bs",
+	filtro_gestos_in_imagen_t* imagen_auxiliar;
+	filtro_llamar_funcion(dato->m_lua, dato->m_filtrar, "ppp>bsp",
 			      dato->m_captura,
 			      &dato->m_salida,
 			      &dato->m_parametros_filtro,
-			      &color, &aux);	
+			      &color, &aux, &imagen_auxiliar);	
 	if(!color) {
 	  g_hash_table_insert(tabla, PUERTO_SALIDA, 0);
 	}
 	else {
-	  g_hash_table_insert(tabla, PUERTO_SALIDA, &dato->m_salida);
+	  g_hash_table_insert(tabla, PUERTO_SALIDA, /*&dato->m_salida*/imagen_auxiliar);
 	}
 	if(aux) {
 	  strcpy(dato->m_buffer_error, aux);
@@ -617,6 +618,28 @@ static int filtro_gestos_copiar (lua_State *L) {
   }
 
   lua_pushboolean(L, 1);
+  return 1;
+}
+
+static int filtro_gestos_crear_copia (lua_State *L) {
+  filtro_gestos_in_imagen_t *a = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
+  filtro_gestos_in_imagen_t *b = (filtro_gestos_in_imagen_t *)malloc(sizeof(filtro_gestos_in_imagen_t));
+  int ancho = a->m_ancho;
+  int alto = a->m_alto;
+  int bytes = a->m_bytes;
+  int tam = ancho * bytes * alto;
+  b->m_ancho = ancho;
+  b->m_alto = alto;
+  b->m_bytes = bytes;
+  b->m_imagen = (color_t*)malloc(sizeof(color_t) * tam);
+  color_t *aux_a = a->m_imagen;
+  color_t *aux_b = b->m_imagen;
+  color_t *fin = &b->m_imagen[tam];
+  while(aux_b != fin) {
+    *aux_b++ = *aux_a++;
+  }
+
+  lua_pushlightuserdata(L, b);
   return 1;
 }
 
@@ -832,6 +855,7 @@ static lua_State *filtro_abrir_lua(modulo_t *modulo, const char *ruta) {
     {"get", filtro_gestos_getarray},
     {"size", filtro_gestos_getsize},
     {"copiar", filtro_gestos_copiar},
+    {"crear_copia", filtro_gestos_crear_copia},
     {"difuminar", filtro_gestos_difuminar},
     {"centrar", filtro_gestos_centrar},
     {"rotar", filtro_gestos_rotar},

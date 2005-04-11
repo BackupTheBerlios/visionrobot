@@ -160,21 +160,26 @@ fields_t* limits(filtro_gestos_in_imagen_t* image)
  free(caracXfila);
 
  //Saca espacios
- fields->espacios= (int*)malloc(sizeof(int)*fields->cimaCI-1);
- for(i=0; i<fields->cimaCI-1; i++)fields->espacios[i]=0;
- for(i=0; i<fields->cimaCI-1; i++){
-   dif= fields->ptosSI[i+1]->m_x-fields->ptosID[i]->m_x;
-   if(dif<0){fields->espacios[i]=1;jumps++;}else media+=dif;
- }
- if(fields->cimaCI-jumps>0) {
-   media/=fields->cimaCI-jumps;
+ if(fields->cimaCI > 0) {
+   fields->espacios= (int*)malloc(sizeof(int)*fields->cimaCI-1);
+   for(i=0; i<fields->cimaCI-1; i++)fields->espacios[i]=0;
+   for(i=0; i<fields->cimaCI-1; i++){
+     dif= fields->ptosSI[i+1]->m_x-fields->ptosID[i]->m_x;
+     if(dif<0){fields->espacios[i]=1;jumps++;}else media+=dif;
+   }
+   if(fields->cimaCI-jumps>0) {
+     media/=fields->cimaCI-jumps;
+   }
+   else {
+     media=0;
+   }
+   for(i=0; i<fields->cimaCI-1; i++){
+     dif= fields->ptosSI[i+1]->m_x-fields->ptosID[i]->m_x;
+     if(dif>media*FACTOR)fields->espacios[i]=1;
+   }
  }
  else {
-   media=0;
- }
- for(i=0; i<fields->cimaCI-1; i++){
-   dif= fields->ptosSI[i+1]->m_x-fields->ptosID[i]->m_x;
-   if(dif>media*FACTOR)fields->espacios[i]=1;
+   fields->espacios = 0;
  }
 
  //Ajustar
@@ -365,7 +370,7 @@ const char* ocr_semantic_match(filtro_gestos_in_imagen_t* dibujo, pack_init_t* p
     }
     buffer[size]='\0';
     freeFields(fields);
-    text= strdup(buffer);
+    text= /*strdup(*/buffer/*)*/;
     if(strcmp(text,"")){
       char total[128]="";
       int cont,k,a,i;

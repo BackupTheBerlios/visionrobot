@@ -77,7 +77,7 @@ static char *post_gestion_cerrar(modulo_t *modulo)
 modulo_t * get_modulo()
 {
   modulo_t *modulo = (modulo_t*)malloc(sizeof(modulo_t));
-  modulo->m_nombre = "Post_Gestion";
+  modulo->m_nombre = "Post gestion";
   modulo->m_iniciar = post_gestion_iniciar;
   modulo->m_cerrar = post_gestion_cerrar;
   modulo->m_ciclo = post_gestion_ciclo;
