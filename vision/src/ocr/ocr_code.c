@@ -356,6 +356,7 @@ int freeConstellation(constellation_t* constellation)
 
 const char* ocr_semantic_match(filtro_gestos_in_imagen_t* dibujo, pack_init_t* packInit)
 {
+  char *devolver = 0;
   int size,i;
   char buffer[128];
   char* text;
@@ -386,16 +387,20 @@ const char* ocr_semantic_match(filtro_gestos_in_imagen_t* dibujo, pack_init_t* p
         }
         else {word[cont]=text[i]; a++; cont++;}
       }
-      free(dibujo->m_imagen);
-      free(dibujo);
-      freeConstellation(constelacion);
-      return strdup(total);
+      //free(dibujo->m_imagen);
+      //free(dibujo);
+      //freeConstellation(constelacion);
+      //return strdup(total);
+      devolver = strdup(total);
     }
     free(dibujo->m_imagen);
     free(dibujo);
     freeConstellation(constelacion);
   }
-  return 0;
+  /*  free(dibujo->m_imagen);
+  free(dibujo);
+  freeConstellation(constelacion);*/
+  return devolver;
 }
 
 

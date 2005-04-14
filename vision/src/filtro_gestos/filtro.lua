@@ -14,11 +14,19 @@ end
 --   - La luz es mejor que sea difusa.
 function filtrar_letras(captura, salida, param)
    local imagen_devuelta1 = imagen.crear_copia(captura)
-   --imagen.copiar(captura, salida)
-   imagen.centrar2(imagen_devuelta1, param)
-   local bounds = imagen.buscar_limites(imagen_devuelta1, 1, param)
-   local imagen_devuelta2 = imagen.rotar(imagen_devuelta1, bounds)
-   imagen.clean(imagen_devuelta2, bounds)
-   imagen.make_up(imagen_devuelta2)
-   return true, nil, imagen_devuelta2
+   local valido = imagen.centrar2(imagen_devuelta1, param)
+   local imagen_devuelta2
+
+   if valido then
+      local bounds = imagen.buscar_limites(imagen_devuelta1,1, param)
+      imagen_devuelta2 = imagen.rotar(imagen_devuelta1, bounds)
+      imagen.borrar_bounds(bounds);
+      bounds = imagen.buscar_limites(imagen_devuelta2,1, param)
+      imagen.clean(imagen_devuelta2, bounds)
+      imagen.borrar_bounds(bounds);
+      imagen.make_up(imagen_devuelta2)
+      imagen.centrar2(imagen_devuelta2, nil)
+   end
+
+   return valido, nil, imagen_devuelta2
 end

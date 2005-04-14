@@ -85,15 +85,19 @@ int inRange(unsigned char valor, unsigned char sup, unsigned char inf)
 int isColour(dato_t* in, int h, int w, special_colour_t* sc)
 {
   int pos= (h*in->m_ancho*in->m_bytes)+(w*in->m_bytes);
-  return (inRange(in->m_imagen[pos], sc->m_azul_sup, sc->m_azul_inf)&&
+  return (inRange(in->m_imagen[pos], sc->m_rojo_sup, sc->m_rojo_inf)&&
           inRange(in->m_imagen[pos+1], sc->m_verde_sup, sc->m_verde_inf) &&
-          inRange(in->m_imagen[pos+2], sc->m_rojo_sup, sc->m_rojo_inf));
+          inRange(in->m_imagen[pos+2], sc->m_azul_sup, sc->m_azul_inf));
 }
 
 static int filtro_gestos_centrar2(lua_State *L)
 {
   dato_t *in = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
-  special_colour_t *sc = (special_colour_t *)lua_touserdata(L, 2);
+  special_colour_t *sc = (special_colour_t *)lua_touserdata(L, 2);  
+  if(!sc) {
+    special_colour_t aux = {0, 0, 0, 0, 0, 0};
+    sc = &aux;
+  }
   int i,j,cont,difY,difX;
   float acX,acY;
   acX=acY=cont=0;
@@ -150,9 +154,13 @@ static int filtro_gestos_centrar2(lua_State *L)
         }
       }
     }
-    return 1;
+    lua_pushboolean(L, 1);
   }
-  else return 0;            //Cambio**************
+  else {
+    lua_pushboolean(L, 0);
+    //    return 0;            //Cambio**************
+  }
+  return 1;
 }
 
 coord_t Corner1(dato_t* in, special_colour_t* sc)
@@ -254,9 +262,11 @@ static int filtro_gestos_buscar_limites(lua_State *L)
  out->grados= (angulo*180)/M_PI;
  int grados1= abs(out->grados);
  int grados2= abs((angulo2*180)/M_PI);
+ /* lua_pushlightuserdata(L, grados1+grados2>80 && grados1+grados2<100 ? 
+    out : 0);*/
  lua_pushlightuserdata(L, out);
- /*if((*/grados1+grados2>80 && grados1+grados2<100;/*) || !op)*/
-return 1;
+ ///*if((*/grados1+grados2>80 && grados1+grados2<100;/*) || !op)*/
+ return 1;
 // else return 0;
 }
 
@@ -324,6 +334,7 @@ static int filtro_gestos_rotar(lua_State *L)
          k++;
       }
     }
+    free(in->m_imagen);
     free(in);
     //free(bounds);
     lua_pushlightuserdata(L,salida);
@@ -364,7 +375,7 @@ static int filtro_gestos_clean(lua_State *L)
    else
      CleanLine(in,i,bounds->ii.x,bounds->id.x,0);
  }
- free(bounds);
+ // free(bounds);
  return 0;
 }
 
@@ -761,6 +772,12 @@ static int filtro_gestos_get_colores(lua_State *L) {
   return 6;
 }
 
+static int filtro_gestos_borrar_bounds (lua_State *L) {
+  bounds_t *a = (bounds_t *)lua_touserdata(L, 1);
+  free(a);
+  return 0;
+}
+
 static int filtro_gestos_difuminar (lua_State *L) {
   filtro_gestos_in_imagen_t *a = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
   filtro_gestos_in_imagen_t *b = (filtro_gestos_in_imagen_t*)lua_touserdata(L, 2);
@@ -864,6 +881,7 @@ static lua_State *filtro_abrir_lua(modulo_t *modulo, const char *ruta) {
     {"clean", filtro_gestos_clean},
     {"make_up", filtro_gestos_make_up},
     {"on_border", filtro_gestos_on_border},
+    {"borrar_bounds", filtro_gestos_borrar_bounds},
     {NULL, NULL}
   };
 
