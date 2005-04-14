@@ -262,8 +262,8 @@ static int filtro_gestos_buscar_limites(lua_State *L)
  out->grados= (angulo*180)/M_PI;
  int grados1= abs(out->grados);
  int grados2= abs((angulo2*180)/M_PI);
- /* lua_pushlightuserdata(L, grados1+grados2>80 && grados1+grados2<100 ? 
-    out : 0);*/
+ /*lua_pushlightuserdata(L, grados1+grados2>80 && grados1+grados2<100 ? 
+   out : 0);*/
  lua_pushlightuserdata(L, out);
  ///*if((*/grados1+grados2>80 && grados1+grados2<100;/*) || !op)*/
  return 1;
@@ -275,21 +275,25 @@ static int filtro_gestos_on_border(lua_State *L)
 {
  dato_t *in = (filtro_gestos_in_imagen_t *)lua_touserdata(L, 1);
  special_colour_t *sc = (special_colour_t *)lua_touserdata(L, 2);
- bounds_t* out = (bounds_t*)malloc(sizeof(bounds_t));
+ //bounds_t* out = (bounds_t*)malloc(sizeof(bounds_t));
+ bounds_t out;
  coord_t c1= Corner1(in,sc);
  coord_t c2= Corner2(in,sc);
  coord_t c3= Corner3(in,sc);
  coord_t c4= Corner4(in,sc);
- Identify2(out,c1,c2,c3,c4);
- if(out->ii.y>in->m_alto-BORDER || out->si.y<BORDER ||
-    out->ii.x<BORDER || out->id.x>in->m_ancho-BORDER){
-   free(out);
-   return 1;
+ Identify2(&out,c1,c2,c3,c4);
+ if(out.ii.y>in->m_alto-BORDER || out.si.y<BORDER ||
+    out.ii.x<BORDER || out.id.x>in->m_ancho-BORDER){
+   //free(out);   
+   //   return 1;
+   lua_pushboolean(L, 1);
  }
  else{
-   free(out);
-   return 0;
+   //free(out);
+   //return 0;
+   lua_pushboolean(L, 0);
  }
+ return 1;
 }
 
 static int filtro_gestos_rotar(lua_State *L)

@@ -32,11 +32,11 @@ end
 function establecer_argumento_giro(argumento)
    local ms
    if argumento == "baja" then
-      ms = 300
+      ms = 1000
    elseif argumento == "media" then
-      ms = 600
+      ms = 2000
    else 
-      ms = 900
+      ms = 3000
    end
    robot.timer(ms, "parar_giro")
 end

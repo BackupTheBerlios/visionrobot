@@ -4,101 +4,101 @@
 <pipeline>
 
   <!-- Ventana de parametros de las ordenes -->
-<!--   <modulo ruta="ventana_parametros" nombre="parametros_orden" inicio="1"> -->
-<!--     <argumento nombre="rojo">190</argumento> -->
-<!--     <argumento nombre="verde">130</argumento> -->
-<!--     <argumento nombre="azul">120</argumento> -->
-<!--     <argumento nombre="tolerancia_rojo">10</argumento> -->
-<!--     <argumento nombre="tolerancia_verde">10</argumento> -->
-<!--     <argumento nombre="tolerancia_azul">10</argumento> -->
-<!--     <argumento nombre="titulo">Orden</argumento> -->
-<!--     <conexion puerto="salida_filtro"> -->
-<!--       <destino puerto="entrada_parametros">filtro_gestos_orden</destino> -->
-<!--     </conexion> -->
-<!--   </modulo> -->
+  <modulo ruta="ventana_parametros" nombre="parametros_orden" inicio="1">
+    <argumento nombre="rojo">190</argumento>
+    <argumento nombre="verde">130</argumento>
+    <argumento nombre="azul">120</argumento>
+    <argumento nombre="tolerancia_rojo">10</argumento>
+    <argumento nombre="tolerancia_verde">10</argumento>
+    <argumento nombre="tolerancia_azul">10</argumento>
+    <argumento nombre="titulo">Orden</argumento>
+    <conexion puerto="salida_filtro">
+      <destino puerto="entrada_parametros">filtro_gestos_orden</destino>
+    </conexion>
+  </modulo>
 
   <!-- Ventana de parametros de los parametros -->
-<!--   <modulo ruta="ventana_parametros" nombre="parametros_param" inicio="1"> -->
-<!--     <argumento nombre="rojo">32</argumento> -->
-<!--     <argumento nombre="verde">45</argumento> -->
-<!--     <argumento nombre="azul">123</argumento> -->
-<!--     <argumento nombre="tolerancia_rojo">4</argumento> -->
-<!--     <argumento nombre="tolerancia_verde">6</argumento> -->
-<!--     <argumento nombre="tolerancia_azul">8</argumento> -->
-<!--     <argumento nombre="titulo">Parametro</argumento> -->
-<!--     <conexion puerto="salida_filtro"> -->
-<!--       <destino puerto="entrada_parametros">filtro_gestos_param</destino> -->
-<!--     </conexion> -->
-<!--   </modulo> -->
+  <modulo ruta="ventana_parametros" nombre="parametros_param" inicio="1">
+    <argumento nombre="rojo">32</argumento>
+    <argumento nombre="verde">45</argumento>
+    <argumento nombre="azul">123</argumento>
+    <argumento nombre="tolerancia_rojo">4</argumento>
+    <argumento nombre="tolerancia_verde">6</argumento>
+    <argumento nombre="tolerancia_azul">8</argumento>
+    <argumento nombre="titulo">Parametro</argumento>
+    <conexion puerto="salida_filtro">
+      <destino puerto="entrada_parametros">filtro_gestos_param</destino>
+    </conexion>
+  </modulo>
 
 <!--   Filtro de gestos de las ordenes -->
-<!--   <modulo ruta="filtro_gestos" nombre="filtro_gestos_orden"> -->
-<!--     <argumento nombre="guion">share/vision/filtro.lua</argumento> -->
-<!--     <argumento nombre="filtrar">filtrar</argumento> -->
-<!--     <conexion puerto="salida_imagen"> -->
-<!--       <destino puerto="entrada_imagen">ventana_filtro_orden</destino> -->
-<!--       <destino puerto="entrada_imagen">red_orden</destino> -->
-<!--     </conexion> -->
-<!--   </modulo> -->
+  <modulo ruta="filtro_gestos" nombre="filtro_gestos_orden">
+    <argumento nombre="guion">share/vision/filtro.lua</argumento>
+    <argumento nombre="filtrar">filtrar</argumento>
+    <conexion puerto="salida_imagen">
+      <destino puerto="entrada_imagen">ventana_filtro_orden</destino>
+      <destino puerto="entrada_imagen">red_orden</destino>
+    </conexion>
+  </modulo>
 
   <!-- Filtro de gestos de los parametros -->
-<!--   <modulo ruta="filtro_gestos" nombre="filtro_gestos_param"> -->
-<!--     <argumento nombre="guion">share/vision/filtro.lua</argumento> -->
-<!--     <argumento nombre="filtrar">filtrar</argumento> -->
-<!--     <conexion puerto="salida_imagen"> -->
-<!--       <destino puerto="entrada_imagen">ventana_filtro_param</destino> -->
-<!--       <destino puerto="entrada_imagen">red_param</destino> -->
-<!--     </conexion> -->
-<!--   </modulo> -->
+  <modulo ruta="filtro_gestos" nombre="filtro_gestos_param">
+    <argumento nombre="guion">share/vision/filtro.lua</argumento>
+    <argumento nombre="filtrar">filtrar</argumento>
+    <conexion puerto="salida_imagen">
+      <destino puerto="entrada_imagen">ventana_filtro_param</destino>
+      <destino puerto="entrada_imagen">red_param</destino>
+    </conexion>
+  </modulo>
 
   <!-- Ventana para el filtro de los parametros -->
-<!--   <modulo ruta="ventana_imagen" nombre="ventana_filtro_param"> -->
-<!--     <argumento nombre="titulo">Ventana parametros</argumento> -->
-<!--     <argumento nombre="nombre_foto">filtro_param.png</argumento> -->
-<!--     <argumento nombre="extension">png</argumento> -->
-<!--   </modulo> -->
+  <modulo ruta="ventana_imagen" nombre="ventana_filtro_param">
+    <argumento nombre="titulo">Ventana parametros</argumento>
+    <argumento nombre="nombre_foto">filtro_param.png</argumento>
+    <argumento nombre="extension">png</argumento>
+  </modulo>
   
   <!-- Ventana de imagen de las ordenes -->
-<!--   <modulo ruta="ventana_imagen" nombre="ventana_filtro_orden"> -->
-<!--     <argumento nombre="titulo">Ventana ordenes</argumento> -->
-<!--     <argumento nombre="nombre_foto">filtro_orden.png</argumento> -->
-<!--     <argumento nombre="extension">png</argumento> -->
-<!--   </modulo> -->
+  <modulo ruta="ventana_imagen" nombre="ventana_filtro_orden">
+    <argumento nombre="titulo">Ventana ordenes</argumento>
+    <argumento nombre="nombre_foto">filtro_orden.png</argumento>
+    <argumento nombre="extension">png</argumento>
+  </modulo>
 
   <!-- Modulo de Prolog (DCG's) -->
 <!--  <modulo ruta="prolog" nombre="prolog" inicio="1"/> -->
 
   <!-- Modulo de control de mensajes de la red de ordenes -->
-<!--  <modulo ruta="gestion" nombre="gestion_orden"> -->
-<!--     <argumento nombre="maximo">7</argumento> -->
-<!--     <argumento nombre="tolerancia">4</argumento> -->
-<!--     <argumento nombre="neutro">no_gesto</argumento> -->
-<!--    <conexion puerto="salida_texto"> -->
-<!--       <destino puerto="entrada_orden">post_gestion</destino> -->
-<!--     </conexion> -->
-<!--   </modulo> -->
+ <modulo ruta="gestion" nombre="gestion_orden">
+    <argumento nombre="maximo">3</argumento>
+    <argumento nombre="tolerancia">2</argumento>
+    <argumento nombre="neutro">no_gesto</argumento>
+   <conexion puerto="salida_texto">
+      <destino puerto="entrada_orden">post_gestion</destino>
+    </conexion>
+  </modulo>
 
   <!-- Modulo de control de mensajes de la red de parametros -->
-<!--   <modulo ruta="gestion" nombre="gestion_param"> -->
-<!--     <argumento nombre="maximo">7</argumento> -->
-<!--     <argumento nombre="tolerancia">3</argumento> -->
-<!--     <argumento nombre="neutro">no_gesto</argumento> -->
-<!--    <conexion puerto="salida_texto"> -->
-<!--       <destino puerto="entrada_param">post_gestion</destino> -->
-<!--     </conexion> -->
-<!--   </modulo> -->
+  <modulo ruta="gestion" nombre="gestion_param">
+    <argumento nombre="maximo">7</argumento>
+    <argumento nombre="tolerancia">3</argumento>
+    <argumento nombre="neutro">no_gesto</argumento>
+   <conexion puerto="salida_texto">
+      <destino puerto="entrada_param">post_gestion</destino>
+    </conexion>
+  </modulo>
 
   <!-- Modulo de post-gestion, se encarga de unir las ordenes con los parametros -->
-<!--  <modulo ruta="post_gestion" nombre="post_gestion"> -->
-<!--     <argumento nombre="orden_defecto">parar</argumento> -->
-<!--     <argumento nombre="param_defecto">nula</argumento> -->
-<!--     <conexion puerto="salida_robot"> -->
-<!--       <destino puerto="entrada_robot">robot</destino> -->
-<!--     </conexion> -->
-<!--     <conexion puerto="salida_texto"> -->
-<!--       <destino puerto="entrada_texto">salida_pipeline</destino> -->
-<!--     </conexion> -->
-<!--   </modulo> -->
+ <modulo ruta="post_gestion" nombre="post_gestion">
+    <argumento nombre="orden_defecto">parar</argumento>
+    <argumento nombre="param_defecto">nula</argumento>
+    <conexion puerto="salida_robot">
+      <destino puerto="entrada_robot">robot</destino>
+    </conexion>
+    <conexion puerto="salida_texto">
+      <destino puerto="entrada_texto">salida_pipeline</destino>
+    </conexion>
+  </modulo>
 
   <!--   Filtro de gestos del ocr -->
   <modulo ruta="filtro_gestos" nombre="filtro_gestos_ocr">
@@ -112,9 +112,9 @@
 
   <!-- Ventana de parametros del OCR -->
   <modulo ruta="ventana_parametros" nombre="parametros_ocr" inicio="1">
-    <argumento nombre="rojo">227</argumento>
-    <argumento nombre="verde">220</argumento>
-    <argumento nombre="azul">164</argumento>
+    <argumento nombre="rojo">127</argumento>
+    <argumento nombre="verde">20</argumento>
+    <argumento nombre="azul">64</argumento>
 <!--     <argumento nombre="rojo">0</argumento> -->
 <!--     <argumento nombre="verde">0</argumento> -->
 <!--     <argumento nombre="azul">0</argumento> -->
@@ -139,14 +139,14 @@
   <!-- Generador de imagenes -->
   <modulo ruta="imagenes" nombre="imagenes" inicio="1">
 <!--     <argumento nombre="video">share/vision/robot.mpg</argumento> -->
-<!--     <argumento nombre="camara">1</argumento> -->
-     <argumento nombre="archivo">share/vision/hola.bmp</argumento>
-    <argumento nombre="ancho">512</argumento>
-    <argumento nombre="alto">384</argumento>
+    <argumento nombre="camara">1</argumento>
+<!--      <argumento nombre="archivo">share/vision/hola.bmp</argumento> -->
+    <argumento nombre="ancho">320</argumento>
+    <argumento nombre="alto">240</argumento>
     <argumento nombre="bytes">3</argumento>
     <conexion puerto="salida_imagen">
-<!--       <destino puerto="entrada_imagen">filtro_gestos_orden</destino> -->
-<!--       <destino puerto="entrada_imagen">filtro_gestos_param</destino> -->
+      <destino puerto="entrada_imagen">filtro_gestos_orden</destino>
+      <destino puerto="entrada_imagen">filtro_gestos_param</destino>
       <destino puerto="entrada_imagen">filtro_gestos_ocr</destino>
       <destino puerto="entrada_imagen">ventana_imagenes</destino>
     </conexion>
@@ -160,30 +160,30 @@
   </modulo>
   
   <!-- Red neuronal de las ordenes -->
-<!--   <modulo ruta="red_neuronal" nombre="red_orden"> -->
-<!--     <argumento nombre="archivo">share/vision/orden_net</argumento> -->
-<!--     <argumento nombre="salida1">parar</argumento> -->
-<!--     <argumento nombre="salida2">girar</argumento> -->
-<!--     <argumento nombre="salida3">girar_negativo</argumento> -->
-<!--     <argumento nombre="salida4">avanzar</argumento> -->
-<!--     <argumento nombre="no_gesto">no_gesto</argumento> -->
-<!--     <conexion puerto="salida_texto"> -->
-<!--       <destino puerto="entrada_red">gestion_orden</destino> -->
-<!--     </conexion> -->
-<!--   </modulo> -->
+  <modulo ruta="red_neuronal" nombre="red_orden">
+    <argumento nombre="archivo">share/vision/orden_net</argumento>
+    <argumento nombre="salida1">parar</argumento>
+    <argumento nombre="salida2">girar</argumento>
+    <argumento nombre="salida3">girar_negativo</argumento>
+    <argumento nombre="salida4">avanzar</argumento>
+    <argumento nombre="no_gesto">no_gesto</argumento>
+    <conexion puerto="salida_texto">
+      <destino puerto="entrada_red">gestion_orden</destino>
+    </conexion>
+  </modulo>
   
   <!-- Red neuronal de los parametros -->
-<!--   <modulo ruta="red_neuronal" nombre="red_param"> -->
-<!--     <argumento nombre="archivo">share/vision/param_net</argumento> -->
-<!--     <argumento nombre="salida1">nula</argumento> -->
-<!--     <argumento nombre="salida2">baja</argumento> -->
-<!--     <argumento nombre="salida3">media</argumento> -->
-<!--     <argumento nombre="salida4">alta</argumento> -->
-<!--     <argumento nombre="no_gesto">no_gesto</argumento> -->
-<!--    <conexion puerto="salida_texto"> -->
-<!--         <destino puerto="entrada_red">gestion_param</destino> -->
-<!--     </conexion> -->
-<!--   </modulo> -->
+  <modulo ruta="red_neuronal" nombre="red_param">
+    <argumento nombre="archivo">share/vision/param_net</argumento>
+    <argumento nombre="salida1">nula</argumento>
+    <argumento nombre="salida2">baja</argumento>
+    <argumento nombre="salida3">media</argumento>
+    <argumento nombre="salida4">alta</argumento>
+    <argumento nombre="no_gesto">no_gesto</argumento>
+   <conexion puerto="salida_texto">
+        <destino puerto="entrada_red">gestion_param</destino>
+    </conexion>
+  </modulo>
   
   <!-- Modulo de salida -->
   <modulo ruta="salida" nombre="salida_pipeline">
@@ -191,13 +191,13 @@
   </modulo>
 
   <!-- Modulo del robot -->
-<!--   <modulo ruta="robot" nombre="robot"> -->
-<!--     <argumento nombre="guion">share/vision/robot.lua</argumento> -->
-<!--     <argumento nombre="funcion_ciclo">ciclo</argumento> -->
-<!--     <argumento nombre="funcion_fin">fin</argumento> -->
-<!--     <argumento nombre="funcion_iniciar">iniciar</argumento> -->
-<!--     <argumento nombre="puerto">1</argumento> -->
-<!--   </modulo> -->
+  <modulo ruta="robot" nombre="robot">
+    <argumento nombre="guion">share/vision/robot.lua</argumento>
+    <argumento nombre="funcion_ciclo">ciclo</argumento>
+    <argumento nombre="funcion_fin">fin</argumento>
+    <argumento nombre="funcion_iniciar">iniciar</argumento>
+    <argumento nombre="puerto">1</argumento>
+  </modulo>
 
   <!-- Modulo de reconocimiento de texto (OCR) -->
   <modulo ruta="ocr" nombre="ocr">
