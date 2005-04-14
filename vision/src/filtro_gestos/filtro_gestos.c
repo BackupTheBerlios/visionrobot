@@ -583,6 +583,7 @@ static char *filtro_ciclo(modulo_t *modulo, const char *puerto, const void *valu
 	      parametros->m_azul_inf,
 	      parametros->m_azul_sup);
       devolver = dato->m_buffer_error;
+      g_hash_table_insert(tabla, PUERTO_SALIDA, 0);
     }
   }
   else {

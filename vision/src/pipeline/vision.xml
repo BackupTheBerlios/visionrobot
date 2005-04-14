@@ -203,6 +203,16 @@
   <modulo ruta="ocr" nombre="ocr">
     <argumento nombre="archivo">share/vision/base_datos</argumento>
     <conexion puerto="salida_texto">
+      <destino puerto="entrada_red">gestion_ocr</destino>
+    </conexion>
+  </modulo>
+
+ <!-- Modulo de control de mensajes de la red de ordenes -->
+ <modulo ruta="gestion" nombre="gestion_ocr">
+    <argumento nombre="maximo">4</argumento>
+    <argumento nombre="tolerancia">3</argumento>
+    <argumento nombre="neutro">no_gesto</argumento>
+   <conexion puerto="salida_texto">
       <destino puerto="entrada_texto">salida_pipeline</destino>
     </conexion>
   </modulo>
