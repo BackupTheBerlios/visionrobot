@@ -52,4 +52,4 @@ AM_PROG_LIBTOOL
 AC_ARG_VAR([DOXYGEN], [Doxygen documentation generator])
 AC_PATH_PROG([DOXYGEN], [doxygen])
 
-AC_OUTPUT(Makefile src/Makefile src/libpipeline/Makefile src/pipeline/Makefile src/gestion/Makefile src/imagenes/Makefile src/ventana_imagen/Makefile src/filtro_gestos/Makefile src/ocr/Makefile src/prolog/Makefile src/red_neuronal/Makefile src/robot/Makefile src/salida/Makefile src/ventana_parametros/Makefile src/post_gestion/Makefile src/entorno_3d/Makefile src/gestion_ocr/Makefile doc/Makefile)
+AC_OUTPUT(Makefile src/Makefile src/libpipeline/Makefile src/pipeline/Makefile src/gestion/Makefile src/imagenes/Makefile src/ventana_imagen/Makefile src/filtro_gestos/Makefile src/ocr/Makefile src/prolog/Makefile src/red_neuronal/Makefile src/robot/Makefile src/salida/Makefile src/ventana_parametros/Makefile src/post_gestion/Makefile src/entorno_3d/Makefile doc/Makefile)
