@@ -4,8 +4,45 @@
 #include <string.h>
 #include <lualib.h>
 #include <lauxlib.h>
-#include <parapin.h>
 #include "robot_sdk.h"
+
+#ifdef WIN32
+#define LPT1 1
+#define LPT2 2
+#else
+#include <parapin.h>
+#endif
+
+static void sube_pin(int index) {
+#ifdef WIN32
+#else
+  set_pin(LP_PIN[index]);
+#endif
+}
+
+static void baja_pin(int index) {
+#ifdef WIN32
+#else
+  clear_pin(LP_PIN[index]);
+#endif
+}
+
+static int iniciar_paralelo(int puerto) {
+  return
+#ifdef WIN32
+    0;
+#else
+  pin_init_user(puerto);
+#endif
+}
+
+static void pin_salida(int index) {
+#ifdef WIN32
+#else
+  pin_output_mode(LP_PIN[index]);
+#endif
+}
+
 
 /*! \brief El puerto de entrada, recibe un <code>char *</code> */
 #define PUERTO "entrada_robot"
@@ -129,13 +166,13 @@ static char *robot_ciclo(modulo_t *modulo, const char *puerto, const void *dato)
 
 static int robot_alta(lua_State *L) {
   int index = luaL_checkint(L, 1);
-  set_pin(LP_PIN[index]);
+  sube_pin(index);
   return 0;
 }
 
 static int robot_baja(lua_State *L) {
   int index = luaL_checkint(L, 1);
-  clear_pin(LP_PIN[index]);
+  baja_pin(index);
   return 0;
 }
 
@@ -160,7 +197,7 @@ static int robot_timer(lua_State *L) {
 
 static int robot_salida(lua_State *L) {
   int index = luaL_checkint(L, 1);
-  pin_output_mode(LP_PIN[index]);
+  pin_salida(index);
   return 0;
 }
 
@@ -205,7 +242,7 @@ static char *robot_iniciar(modulo_t *modulo, GHashTable *argumentos) {
   }
   else {
     int p = atoi(puerto);
-    if(pin_init_user(p == 1 ? LPT1 : LPT2)) {
+    if(iniciar_paralelo(p == 1 ? LPT1 : LPT2)) {
       devolver = "Fallo al abrir el puerto. Debe ser root (permisos)";
     }
     else {
