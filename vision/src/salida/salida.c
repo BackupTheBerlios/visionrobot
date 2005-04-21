@@ -29,7 +29,7 @@
 #include "config.h"
 #else
 #define DATADIR g_get_current_dir()
-#define PACKAGE
+#define PACKAGE ""
 #endif
 
 /*! \brief El puerto de entrada, recibe un <code>char *</code> */

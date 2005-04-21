@@ -1,7 +1,6 @@
 #include "pipeline_sdk.h"
 #include "Captura.h"
 #include "filtro_gestos_sdk.h"
-#include "ventana_imagen_sdk.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>

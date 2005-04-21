@@ -20,7 +20,7 @@
 #include "config.h"
 #else
 #define DATADIR g_get_current_dir()
-#define PACKAGE
+#define PACKAGE ""
 #endif
 
 

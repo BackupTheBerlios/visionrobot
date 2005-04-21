@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <glib.h>
 #include <string.h>
+#include <stdio.h>
 #include <robot_sdk.h>
 
 /*! \brief El puerto de entrada de la orden, recibe un <code>char *</code> */

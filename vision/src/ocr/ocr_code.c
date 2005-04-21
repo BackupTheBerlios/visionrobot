@@ -40,6 +40,10 @@ const double FACTOR= 1.9;
 #define FIELDS 30
 const int NUMWORDS=22;
 
+#ifndef MAXFLOAT
+#define MAXFLOAT 999999999999.9f
+#endif
+
 typedef struct {
         int m_x;
         int m_y;
