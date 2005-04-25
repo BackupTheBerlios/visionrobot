@@ -27,6 +27,8 @@
 #include <libxml/parser.h>
 #include <gmodule.h>
 
+#include <unistd.h>
+
 typedef struct {
   pipeline_t *m_pipeline;
   gboolean m_inicio;
@@ -235,6 +237,8 @@ pipeline_t * pipeline_cargar(const char *ruta, const char *dir, funcion_error_t 
 	xmlFreeDoc(doc);
 	return 0;
     }
+
+    chdir(g_path_get_dirname(ruta));
     pipeline_t *p = (pipeline_t*)malloc(sizeof(pipeline_t));
     p->m_modulos = g_hash_table_new_full(g_str_hash, g_str_equal, pipeline_borrar_cadena, pipeline_borrar_elemento);
     p->m_funcion_error = funcion_error;

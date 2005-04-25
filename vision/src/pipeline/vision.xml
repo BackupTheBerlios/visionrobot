@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE pipeline SYSTEM "pipeline.dtd">
+<!-- /home/carlos/vision/share/vision/ -->
 
 <pipeline>
 
@@ -33,7 +34,7 @@
 
 <!--   Filtro de gestos de las ordenes -->
   <modulo ruta="filtro_gestos" nombre="filtro_gestos_orden">
-    <argumento nombre="guion">/home/carlos/vision/share/vision/filtro.lua</argumento>
+    <argumento nombre="guion">filtro.lua</argumento>
     <argumento nombre="filtrar">filtrar</argumento>
     <conexion puerto="salida_imagen">
       <destino puerto="entrada_imagen">ventana_filtro_orden</destino>
@@ -43,7 +44,7 @@
 
   <!-- Filtro de gestos de los parametros -->
   <modulo ruta="filtro_gestos" nombre="filtro_gestos_param">
-    <argumento nombre="guion">/home/carlos/vision/share/vision/filtro.lua</argumento>
+    <argumento nombre="guion">filtro.lua</argumento>
     <argumento nombre="filtrar">filtrar</argumento>
     <conexion puerto="salida_imagen">
       <destino puerto="entrada_imagen">ventana_filtro_param</destino>
@@ -102,7 +103,7 @@
 
   <!--   Filtro de gestos del ocr -->
   <modulo ruta="filtro_gestos" nombre="filtro_gestos_ocr">
-    <argumento nombre="guion">/home/carlos/vision/share/vision/filtro.lua</argumento>
+    <argumento nombre="guion">filtro.lua</argumento>
     <argumento nombre="filtrar">filtrar_letras</argumento>
     <conexion puerto="salida_imagen">
       <destino puerto="entrada_imagen">ventana_filtro_ocr</destino>
@@ -138,9 +139,9 @@
   
   <!-- Generador de imagenes -->
   <modulo ruta="imagenes" nombre="imagenes" inicio="1">
-<!--     <argumento nombre="video">/home/carlos/vision/share/vision/robot.mpg</argumento> -->
+<!--     <argumento nombre="video">robot.mpg</argumento> -->
     <argumento nombre="camara">1</argumento>
-<!--      <argumento nombre="archivo">/home/carlos/vision/share/vision/hola.bmp</argumento> -->
+<!--      <argumento nombre="archivo">hola.bmp</argumento> -->
     <argumento nombre="ancho">320</argumento>
     <argumento nombre="alto">240</argumento>
     <argumento nombre="bytes">3</argumento>
@@ -161,7 +162,7 @@
   
   <!-- Red neuronal de las ordenes -->
   <modulo ruta="red_neuronal" nombre="red_orden">
-    <argumento nombre="archivo">/home/carlos/vision/share/vision/orden_net</argumento>
+    <argumento nombre="archivo">orden_net</argumento>
     <argumento nombre="salida1">parar</argumento>
     <argumento nombre="salida2">girar</argumento>
     <argumento nombre="salida3">girar_negativo</argumento>
@@ -174,7 +175,7 @@
   
   <!-- Red neuronal de los parametros -->
   <modulo ruta="red_neuronal" nombre="red_param">
-    <argumento nombre="archivo">/home/carlos/vision/share/vision/orden_net</argumento>
+    <argumento nombre="archivo">orden_net</argumento>
     <argumento nombre="salida1">nula</argumento>
     <argumento nombre="salida2">baja</argumento>
     <argumento nombre="salida3">media</argumento>
@@ -192,7 +193,7 @@
 
   <!-- Modulo del robot -->
   <modulo ruta="robot" nombre="robot">
-    <argumento nombre="guion">/home/carlos/vision/share/vision/robot.lua</argumento>
+    <argumento nombre="guion">robot.lua</argumento>
     <argumento nombre="funcion_ciclo">ciclo</argumento>
     <argumento nombre="funcion_fin">fin</argumento>
     <argumento nombre="funcion_iniciar">iniciar</argumento>
@@ -201,7 +202,7 @@
 
   <!-- Modulo de reconocimiento de texto (OCR) -->
   <modulo ruta="ocr" nombre="ocr">
-    <argumento nombre="archivo">/home/carlos/vision/share/vision/base_datos</argumento>
+    <argumento nombre="archivo">base_datos</argumento>
     <conexion puerto="salida_texto">
       <destino puerto="entrada_red">gestion_ocr</destino>
     </conexion>
