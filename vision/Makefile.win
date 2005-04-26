@@ -61,7 +61,7 @@ src/camara/libcamara.dll: src/camara/camara.cpp src/camara/Captura.cpp
 	g++ $(OPTS) -shared -o src/camara/libcamara.dll src/camara/camara.cpp src/camara/Captura.cpp -lstrmiids -luuid -loleaut32 -lole32 -lquartz `pkg-config glib-2.0 --cflags --libs --define-variable=prefix=/c/MinGW/` -I src/libpipeline -I src/filtro_gestos
 
 src/pipeline/pipeline.exe: src/pipeline/main.c src/libpipeline/libpipeline.a
-	gcc $(OPTS) src/pipeline/main.c -o src/pipeline/pipeline.exe -L src/libpipeline -lpipeline `pkg-config libxml-2.0 --libs --define-variable=prefix=/c/MinGW/` `pkg-config --cflags gtk+-2.0 --define-variable=prefix=/c/MinGW/` `pkg-config --libs gtk+-2.0 --define-variable=prefix=/c/MinGW/` `pkg-config libglade-2.0 --cflags --libs --define-variable=prefix=/c/MinGW/`  -mms-bitfields -I src/libpipeline
+	gcc $(OPTS)  src/pipeline/main.c -o src/pipeline/pipeline.exe -L src/libpipeline -lpipeline `pkg-config libxml-2.0 --libs --define-variable=prefix=/c/MinGW/` `pkg-config libglade-2.0 --cflags --libs --define-variable=prefix=/c/MinGW/`  -mms-bitfields -I src/libpipeline
 
 src/ventana_parametros/libventana_parametros.dll: src/ventana_parametros/ventana_parametros.c
 	gcc $(OPTS) -shared -o src/ventana_parametros/libventana_parametros.dll src/ventana_parametros/ventana_parametros.c `pkg-config --cflags gtk+-2.0 --define-variable=prefix=/c/MinGW/` `pkg-config --libs gtk+-2.0 --define-variable=prefix=/c/MinGW/`  `pkg-config libglade-2.0 --cflags --libs --define-variable=prefix=/c/MinGW/` -I src/libpipeline -I src/filtro_gestos

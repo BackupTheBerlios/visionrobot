@@ -27,8 +27,6 @@
 #include <libxml/parser.h>
 #include <gmodule.h>
 
-#include <unistd.h>
-
 typedef struct {
   pipeline_t *m_pipeline;
   gboolean m_inicio;
@@ -61,10 +59,11 @@ static int  pipeline_set_ruta(pipeline_t* p, const char * elemento, const char *
   elemento_t *dato = g_hash_table_lookup(p->m_modulos, elemento);
   int dev = 0;
   if (ruta) {
-    if (dato->m_handler)      {
+    if (dato->m_handler){
       g_module_close(dato->m_handler);
     }
     char *ruta_modulo = g_module_build_path(dir, ruta);
+    
     dato->m_handler = g_module_open(ruta_modulo, G_MODULE_BIND_LAZY);
 
     if (dato->m_handler) {
