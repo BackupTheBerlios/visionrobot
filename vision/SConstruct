@@ -1,0 +1,101 @@
+#
+# Script de construccion (SCons)
+#
+
+platform = ARGUMENTS.get('OS', Platform())
+env = Environment(PLATFORM = platform)
+
+print "-- Compilando para", platform, "--"
+
+debug = env.Copy(CCFLAGS='-g')
+
+optimo = env.Copy(CCFLAGS='-O2')
+
+if ARGUMENTS.get('release', 0):
+    print ('-- Release --')
+    actual = optimo
+else:
+    print ('-- Debug --')
+    actual = debug
+
+print '-- Compilando proyecto --'
+base = actual.Copy(CCFLAGS='-I src/libpipeline ')
+
+glib = base.Copy()
+glib.Append(CCFLAGS = '`pkg-config glib-2.0 --cflags`')
+
+glade = base.Copy()
+glade.Append(CCFLAGS= '`pkg-config libglade-2.0 --cflags`')
+
+gtk = base.Copy()
+gtk.Append(CCFLAGS= '`pkg-config gtk+-2.0 --cflags`')
+         
+
+# Libpipeline
+Library('lib/pipeline', 'src/libpipeline/pipeline.c', CCFLAGS = '`pkg-config gtk+-2.0 --cflags` `pkg-config libxml-2.0 --cflags`')
+env.Install('bin', ['src/libpipeline/pipeline.dtd'])
+
+# Gestion
+glib.SharedLibrary('bin/gestion', 'src/gestion/gestion.c')
+
+# Filtro gestos
+glib.SharedLibrary('bin/filtro_gestos', 'src/filtro_gestos/filtro_gestos.c')
+env.Install('bin', ['src/filtro_gestos/filtro.lua'])
+
+# Salida
+glade.SharedLibrary('bin/salida', 'src/salida/salida.c')
+env.Install('bin', ['src/salida/ventana_salida.glade'])
+
+# La ventana de imagenes
+ventana = glade.Copy()
+ventana.Append(CCFLAGS = '-I src/red_neuronal -I src/filtro_gestos')
+ventana.SharedLibrary('bin/ventana_imagen', 'src/ventana_imagen/ventana_imagen.c')
+env.Install('bin', ['src/ventana_imagen/ventana_imagen.glade'])
+
+# El ejecutable
+glade.Program('bin/pipeline', 'src/pipeline/main.c', LINKFLAGS='`pkg-config libglade-2.0 --libs`', LIBPATH= 'lib', LIBS=['glade-2.0', 'pipeline'])
+env.Install('bin', ['src/pipeline/ventana_pipeline.glade'])
+env.Install('bin', ['src/pipeline/vision.xml'])
+
+# Imagenes o camara, segun sea Linux o Windows
+#if platform == Platform('posix'):
+imagenes = gtk.Copy()
+imagenes.Append(CCFLAGS = '-I src/ventana_imagen -I src/filtro_gestos')
+imagenes.SharedLibrary('bin/imagenes', 'src/imagenes/imagenes.c')
+#else:
+#    print 'mierda, pues si'
+#    glib.SharedLibrary('bin/camara', ['src/camara/camara.cpp', 'src/camara/Captura.cpp'])
+
+
+# Ocr
+ocr = glib.Copy()
+ocr.Append(CCFLAGS = ' -I src/filtro_gestos')
+ocr.SharedLibrary('bin/ocr', ['src/ocr/ocr.c', 'src/ocr/ocr_code.c'])
+
+# Post gestion
+pg = glib.Copy()
+pg.Append(CCFLAGS = ' -I src/robot')
+pg.SharedLibrary('bin/post_gestion', 'src/post_gestion/post_gestion.c')
+
+# Red neuronal
+red = glib.Copy()
+red.Append(CCFLAGS = ' -I src/filtro_gestos')
+red.SharedLibrary('bin/red_neuronal', ['src/red_neuronal/red.c', 'src/red_neuronal/red_neuronal.c'])
+
+# Robot
+glib.SharedLibrary('bin/robot', 'src/robot/robot.c', LIBS=['lua', 'lualib', 'parapin'])
+env.Install('bin', ['src/robot/robot.lua'])
+
+# Ventana parametros
+vp = glade.Copy()
+vp.Append(CCFLAGS = ' -I src/filtro_gestos')
+vp.SharedLibrary('bin/ventana_parametros', 'src/ventana_parametros/ventana_parametros.c')
+env.Install('bin', ['src/ventana_parametros/ventana_parametros.glade'])
+
+# Documentacion
+print '-- Compilando documentacion --'
+post = env.Copy()
+#env.Append()
+post.PostScript('bin/vision', 'doc/vision.tex')
+
+print '-- Fin de la compilacion --'
