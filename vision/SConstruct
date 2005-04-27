@@ -7,7 +7,7 @@ plataforma = ARGUMENTS.get('OS', Platform())
 env = Environment(CPPPATH = ['src/robot', 'src/red_neuronal', 'src/libpipeline', 'src/filtro_gestos', 'src/ventana_imagen'], ENV = os.environ, platform = plataforma, PLATFORM=plataforma, LIBPATH='lib')
 
 if str(plataforma) == str('win32'):
-    env.Append(CC='gcc -mms-bitfields', tools=['mingw'], LINKFLAGS='--export-dynamic')
+    env = env.Copy(CCFLAGS='-g', CXXFLAGS='-g', CC='gcc -mms-bitfields', tools=['mingw'], LINKFLAGS='--export-dynamic')
 
 env.ParseConfig('pkg-config glib-2.0 --cflags --libs')
 env.ParseConfig('pkg-config libglade-2.0 --cflags --libs')
@@ -48,10 +48,10 @@ env.Install('bin', ['src/ventana_imagen/ventana_imagen.glade'])
 # El ejecutable
 pip = env.Copy()
 pip.Prepend(LIBS=['pipeline'])
-#pip.Append(LINKFLAGS='-mms-bitfields')
 pip.Program('bin/pipeline', 'src/pipeline/main.c')
 env.Install('bin', ['src/pipeline/ventana_pipeline.glade'])
 env.Install('bin', ['src/pipeline/vision.xml'])
+env.Install('bin', ['src/pipeline/nulo.xml'])
 
 # Imagenes o camara, segun sea Linux o Windows
 if str(plataforma) == str('posix'):

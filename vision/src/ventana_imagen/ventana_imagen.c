@@ -102,8 +102,10 @@ static char *ventana_ciclo(modulo_t *modulo, const char *puerto, const void *val
     ventana_imagen_in_t * imagen = (ventana_imagen_in_t *)value;
     datos_ventana_t * datos = (datos_ventana_t *)modulo->m_dato;
     datos->m_imagen = imagen;
-    ventana_ajustar_tamanno(modulo);
-    ventana_pintar(modulo);
+    if(imagen) {
+      ventana_ajustar_tamanno(modulo);
+      ventana_pintar(modulo);
+    }
   }
   return 0;
 }

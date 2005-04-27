@@ -161,7 +161,7 @@ void abrir_pipe(const char *ruta, GladeXML *xml) {
 \param button El botón que lo lanza.
 \param user_data El dato que recibe (0 actualmente).
 */
-void on_bot_abrir_clicked(GtkButton *button, gpointer user_data) {
+G_MODULE_EXPORT void on_bot_abrir_clicked(GtkButton *button, gpointer user_data) {
   GladeXML *xml = glade_get_widget_tree(GTK_WIDGET(button));
   GtkWidget *ventana = glade_xml_get_widget(xml, "win_pipeline");
   GtkWidget*  dialogo = gtk_file_chooser_dialog_new("Abrir pipeline...",
@@ -188,7 +188,7 @@ void on_bot_abrir_clicked(GtkButton *button, gpointer user_data) {
 \param togglebutton El botón que llama.
 \param user_data El argumento de usuario, le pasamos cero en esta implementación.
 */
-void on_tbn_pausa_activate(GtkToggleButton *togglebutton,
+G_MODULE_EXPORT void on_tbn_pausa_activate(GtkToggleButton *togglebutton,
 			   gpointer user_data){
   GladeXML *xml = glade_get_widget_tree(GTK_WIDGET(togglebutton));
   GtkWidget *ventana = glade_xml_get_widget(xml, "win_pipeline");
@@ -209,7 +209,7 @@ void on_tbn_pausa_activate(GtkToggleButton *togglebutton,
 \param range En GtkRange que llama.
 \param user_data Puntero de información, ahora 0.
 */
-void on_hsc_temporizador_value_changed(GtkRange *range, gpointer user_data){
+G_MODULE_EXPORT void on_hsc_temporizador_value_changed(GtkRange *range, gpointer user_data){
   GladeXML *xml = glade_get_widget_tree(GTK_WIDGET(range));
   GtkWidget *ventana = glade_xml_get_widget(xml, "win_pipeline");
   GtkWidget *pausa = glade_xml_get_widget(xml, "tbn_pausa");
@@ -292,7 +292,6 @@ int main(int argc, char **argv)
   gtk_range_set_value(GTK_RANGE(hsc_timer), (gdouble)dato_timer.m_timer);
   if(argc >= 2) {
     abrir_pipe(argv[1], xml);
-
   }
   gtk_main();
   pipeline_t *p = (pipeline_t *)g_object_get_data(G_OBJECT(ventana), "pipeline");
