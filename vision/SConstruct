@@ -4,7 +4,10 @@
 import os
 
 plataforma = ARGUMENTS.get('OS', Platform())
-env = Environment(CC='gcc -mms-bitfields', CPPPATH = ['src/robot', 'src/red_neuronal', 'src/libpipeline', 'src/filtro_gestos', 'src/ventana_imagen'], ENV = os.environ, platform = plataforma, PLATFORM=plataforma, LIBPATH='lib', tools=['mingw'], LINKFLAGS='--export-dynamic')
+env = Environment(CPPPATH = ['src/robot', 'src/red_neuronal', 'src/libpipeline', 'src/filtro_gestos', 'src/ventana_imagen'], ENV = os.environ, platform = plataforma, PLATFORM=plataforma, LIBPATH='lib')
+
+if str(plataforma) == str('win32'):
+    env.Append(CC='gcc -mms-bitfields', tools=['mingw'], LINKFLAGS='--export-dynamic')
 
 env.ParseConfig('pkg-config glib-2.0 --cflags --libs')
 env.ParseConfig('pkg-config libglade-2.0 --cflags --libs')
@@ -36,7 +39,10 @@ env.SharedLibrary('bin/salida', 'src/salida/salida.c')
 env.Install('bin', ['src/salida/ventana_salida.glade'])
 
 # La ventana de imagenes
-env.SharedLibrary('bin/ventana_imagen', 'src/ventana_imagen/ventana_imagen.c')
+img = env.Copy()
+img.Append(LIBS=['sane'])
+img.ParseConfig('pkg-config libxine --cflags --libs')
+img.SharedLibrary('bin/ventana_imagen', 'src/ventana_imagen/ventana_imagen.c')
 env.Install('bin', ['src/ventana_imagen/ventana_imagen.glade'])
 
 # El ejecutable
@@ -48,7 +54,7 @@ env.Install('bin', ['src/pipeline/ventana_pipeline.glade'])
 env.Install('bin', ['src/pipeline/vision.xml'])
 
 # Imagenes o camara, segun sea Linux o Windows
-if plataforma == 'posix':
+if str(plataforma) == str('posix'):
     env.SharedLibrary('bin/imagenes', 'src/imagenes/imagenes.c')
 else:
     cam = env.Copy()
@@ -69,18 +75,18 @@ env.Install('bin', ['src/red_neuronal/orden_net'])
 
 # Robot
 rob = env.Copy()
-if plataforma == 'posix':
+if str(plataforma) == str('posix'):
     rob.Append(LIBS=['lua', 'lualib', 'parapin'])
 else:
     rob.Append(LIBS=['lua', 'lualib'])
-    rob.SharedLibrary('bin/robot', 'src/robot/robot.c')
-    env.Install('bin', ['src/robot/robot.lua'])
+    
+rob.SharedLibrary('bin/robot', 'src/robot/robot.c')
+env.Install('bin', ['src/robot/robot.lua'])
 
 # Ventana parametros
 env.SharedLibrary('bin/ventana_parametros', 'src/ventana_parametros/ventana_parametros.c')
 env.Install('bin', ['src/ventana_parametros/ventana_parametros.glade'])
 
 # Documentacion
-if plataforma == 'posix':
+if str(plataforma) == str('posix'):
     env.PostScript('bin/vision', 'doc/vision.tex')
-
