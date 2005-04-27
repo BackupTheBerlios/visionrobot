@@ -70,15 +70,15 @@ y esta sobre una imagen sin guante:
 
 Los filtros aplicados para esta simplificación son:
 \begin{itemize}
-\item Suavizado. Por promediado del entorno. \ref {Suavizado}
+\item Suavizado. Por promediado del entorno. \ref {Suavizado de la imagen}
 \item Extracción de regiones por el color. \ref {Extracción de regiones de color}
 \item Centrado de imagen. \ref {Centrado de la imagen}
 \end{itemize} 
 
-\section{Suavizado}
+\section{Suavizado de la imagen}
 Difumina la imagen. Cuando no se aplica, la extracción de regiones posterior no es muy fiable, ya que a causa de la iluminación o de la textura del material utilizado en el color especial, hay zonas del objeto de interés que no tienen el mismo color pudiendo pasar por ejemplo de ser un rojo casi blanco a un rojo casi negro, esta amplitud de color es inadmisible para la extracción de colores, ya que esos píxeles serían considerados fuera de rango y por tanto como elementos del entorno y no como elementos de interés. Esto repercutiría en la red neuronal posterior, la cual tiene que asignar pesos según el valor de los píxeles de entrada, si no podemos determinar unos valores fiables en las imágenes de entrada no se podrá entrenar de forma fiable la red ni poder asegurar un comportamiento seguro en el futuro.
 El suavizado es una transformación de vecindad, donde el valor del nuevo píxel depende de los valores de los píxeles que le rodean. Nuestro método de filtro es un suavizado por el promediado del entorno de vecindad.
-Para saber más sobre este filtro: pincha aquí.
+Para saber más sobre este filtro:  \ref {Suavizado} (página \pageref{Suavizado}).
 Gracias a esto, los píxeles dentro de la región de color de interés que sean ruidos generados por reflejos de luz o fallos de iluminación, quedaran mas atenuados y todos los píxeles dentro de la región tendrán mas posibilidades de estar dentro del rango de color especial buscado.
 \begin{center}
 \includegraphics[scale=1]{suavizado.png} 
@@ -88,7 +88,7 @@ Gracias a esto, los píxeles dentro de la región de color de interés que sean rui
 Como hemos dicho los objetos de interés son las puntas de los dedos, así que tenemos que aislarlas del resto de la fotografía. La forma es delimitar estas regiones y darlas toda la importancia respecto al resto de la imagen.
 Queremos que el filtro convierta una imagen capturada por la webcam en una imagen blanca y negra, donde las puntas de los guantes quedaran en blanco y el resto de la imagen en negro. Así la red solamente será entrenada para recibir imágenes con regiones blancas y negras, si hay una sola región de un cierto tamaño implicaría que solo hemos enseñado un dedo del guante, lo que se correspondería con el gesto de avanzar. 
 Esto es a lo que llamamos segmentación, ya que estamos localizando los objetos de interés.
-Para saber mas sobre la extracción: pincha aquí.
+Para saber mas sobre la extracción:  \ref {Extracción de regiones} (página \pageref{Extracción de regiones}).
 \begin{center}
 \includegraphics[scale=1]{regiones.png} 
 \end{center}  
@@ -97,7 +97,7 @@ Para saber mas sobre la extracción: pincha aquí.
 Los gestos realizados con los guantes nunca son capturados por la webcam en la misma posición. Nunca estarán totalmente centrados, si no ligeramente o totalmente desplazados mas a la derecho o mas a la izquierda, arriba o abajo. Esto es de vital importancia para la red, ya que entrena y reconoce en relación a los valores de los píxeles de la imagen, si aprende que el símbolo de avanzar es una región blanca sobre un fondo negro situada siempre en el centro de la imagen, cuando este en fase de reconocimiento y la webcam capture un gesto desplazado, la red lo considerara como gesto no reconocido.
 Otra opción podría ser entrenar la red para que reconociese el mismo gesto en cualquier posición, pero eso no podría nunca servir en el entrenamiento, y que los pesos no terminarían nunca de fijarse, ya que el píxel (x,y) si esta blanco para unas imágenes se considerara como ejemplo de entrenamiento positivo, para otras se considerara negativo y los pesos no podrán ajustarse. Por tanto hay que intentar conseguir que las regiones de interés extraídas estén siempre situadas mas o menos en la misma zona de la imagen. Para eso decidimos que la mejor forma de hacer esto era centrar la imagen según el centro de masas del conjunto de píxeles de interés.
 Así siempre las regiones blancas que representan los gestos aparecen centrados en la imagen sobre un fondo negros, totalmente preparados para ser pasados a la entrada de la red neuronal.
-Para saber mas sobre el centrado: pincha aquí.
+Para saber mas sobre el centrado: \ref {Centrado} (página \pageref{Centrado}).
 \begin{center}
 \includegraphics[scale=1]{filtrado.png} 
 \end{center} 

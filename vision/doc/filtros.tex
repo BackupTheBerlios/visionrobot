@@ -1,0 +1,43 @@
+\chapter{Filtros}
+
+\hline
+
+La visión artificial es el proceso sensorial más complejo de todos.
+Las tareas en visón por computador se pueden enumerar en:
+\begin{enumerate}
+\item Visión de bajo nivel. (Tareas automáticas)
+  \begin{itemize}
+  \item Captación. Obtención de la imagen.
+  \item Preprocesamiento. Incluye técnicas como reducción de ruido y realce de detalles.
+  \end{itemize} 
+\item Visión de nivel medio. (Etiquetar objetos)
+  \begin{itemize}
+  \item  Segmentación. Localización de los objetos de interés.
+  \item Descripción. Obtención de características: tamaño, formas, etc.
+  \end{itemize} 
+\item Visión de alto nivel. (Emular inteligencia)
+  \begin{itemize}
+  \item Reconocimiento. Identificación de objetos: tornillos, puertas, etc.
+  \item Interpretación. Significado de un conjunto de objetos.
+  \end{itemize} 
+\end{enumerate} 
+
+El objetivo de los filtros utilizados en nuestro proyecto entra en el ámbito del preprocesamiento y segmentación de imágenes.
+Ejemplos de la fase de preprocesamiento son el suavizado, el realce, detección de bordes, detección de umbral, etc.
+El procesamiento de una imagen puede ser visto como una transformación de una imagen en otra imagen, es decir, a partir de una imagen, se obtiene otra imagen modificada. Desde el punto de vista de visión artificial, el único propósito del procesamiento de imágenes es conseguir mas adelante un análisis de estas mas simple y mas fiable. Por consiguiente, el procesamiento de imágenes debe facilitar la extracción de información para un posterior análisis, de manera que la escena pueda ser interpretada de alguna manera.
+
+Por este motivo aplicamos a la imagen capturada por la webcam una serie de filtros, para simplificar la imagen, hasta el punto de eliminar la información que no nos interesa y realzar la información importante para el análisis posterior de la imagen, en este caso el reconocimiento de gestos y carteles.
+
+Para saber mas sobre imágenes digitales: \ref {Imagen Digital} (página \pageref{Imagen Digital}).
+
+La capacidad visual del robot, dependerá de los módulos de visión que estén activos. De momento solo hay módulos implementados y activos que permiten al robot recibir ordenes con gestos hechos con unos guantes o también recibir información procedente de carteles. Los carteles no solo pueden darle ordenes, si no hacerle una pregunta de la cual tenga conocimiento o hacerle realizar una operación aritmético-lógica.
+
+Por tanto los únicos medios para comunicarse con el robot son guantes y carteles especiales, de momento.
+
+Son especiales por su color. La razón de utilizar colores especiales ha sido crear en las imágenes capturadas, regiones de color con unos rangos de intensidades en los tres colores, mas separadas del resto de intensidades del histograma de la imagen. Así podremos aislar esta región, la del color especial. En el caso de los guantes, es la posición de los dedos la que indica la orden, es en los dedos donde esta el color especial, así que si solo nos quedamos con las regiones de este color y el resto lo despreciamos, estaremos simplificando muchísimo la imagen para un posterior análisis de esta. Lo mismo pasaría con los carteles, desechamos toda la imagen que no forme parte del cartel y dentro del cartel nos quedamos solo con la frase.
+
+Filtro de guantes. \ref {Filtro de Gestos} (página \pageref{Filtro de Gestos}).
+Filtro de carteles. \ref {Filtro de Carteles} (página \pageref{Filtro de Carteles}).
+
+Los módulos posteriores a los filtros son módulos de análisis que deben de recibir la información lo mas clara posible, en el caso de los gestos se utiliza una red neuronal, la cual tiene que ser entrenada con imágenes muy simplificadas para que el entrenamiento tenga efecto y que las imágenes que reciba una vez entrenada, sean filtradas de la misma manera, para generar imágenes iguales que con las que fue entrenada, para poder reconocerlas. Respecto a los carteles el siguiente modulo es un OCR, muy sensible a ruidos, por tanto hay que asegurar que el filtro es efectivo, para que la salida de este no sea incoherente.
+
