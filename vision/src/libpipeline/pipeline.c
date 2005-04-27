@@ -58,15 +58,24 @@ static void pipeline_salida_error(const pipeline_t *pipeline, const char *nombre
 static int  pipeline_set_ruta(pipeline_t* p, const char * elemento, const char *ruta/*, const char *dir*/) {
   elemento_t *dato = g_hash_table_lookup(p->m_modulos, elemento);
   //const char * ruta_modulo;
+  char *ruta_modulo;
   int dev = 0;
   if (ruta) {
     if (dato->m_handler){
       g_module_close(dato->m_handler);
     }
+    ruta_modulo = (char *)malloc(sizeof(char) * strlen(ruta)
+#ifdef G_OS_WIN32
+     );
+    strcpy(ruta_modulo, ruta);
+#else
+    + 3);
+  sprintf(ruta_modulo, "lib%s", ruta);
+#endif
     //ruta_modulo = g_module_build_path(dir, ruta);
     //    printf("A ver, dir: %s, ruta: %s, ruta_modulo: s.\n", /*dir, ruta/*, ruta_modulo*/);
     //ruta_modulo = ruta;
-    dato->m_handler = g_module_open(ruta/*_modulo*/, G_MODULE_BIND_LAZY);
+    dato->m_handler = g_module_open(ruta_modulo, G_MODULE_BIND_LAZY);
 
     if (dato->m_handler) {
       typedef modulo_t *(*funcion_modulo_t) ();

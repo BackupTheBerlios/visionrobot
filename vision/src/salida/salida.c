@@ -70,8 +70,9 @@ static char *salida_ciclo(modulo_t *modulo, const char *puerto, const void *dato
 static char *salida_iniciar(modulo_t *modulo, GHashTable *argumentos) {
 
   GString *buffer = g_string_new(DATADIR);
-  GladeXML *xml = glade_xml_new(buffer->str, NULL, NULL);
+  GladeXML *xml;
   g_string_append_printf(buffer, "/%s/ventana_salida.glade", PACKAGE);
+  xml = glade_xml_new(buffer->str, NULL, NULL);
   g_string_free(buffer, TRUE);
   modulo->m_dato = xml;
   glade_xml_signal_autoconnect(xml);

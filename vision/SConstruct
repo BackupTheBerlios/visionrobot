@@ -48,7 +48,7 @@ if str(plataforma) == str('posix'):
     img = env.Copy()
     img.ParseConfig('pkg-config libxine --cflags --libs')
     img.Append(LIBS=['sane'])
-    env.SharedLibrary('bin/imagenes', 'src/imagenes/imagenes.c')
+    img.SharedLibrary('bin/imagenes', 'src/imagenes/imagenes.c')
 else:
     cam = env.Copy()
     cam.Append(LIBS=['strmiids', 'uuid', 'oleaut32', 'ole32', 'quartz', 'user32'])
