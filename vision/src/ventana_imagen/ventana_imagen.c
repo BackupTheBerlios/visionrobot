@@ -129,8 +129,8 @@ static void ventana_crear_ventana(modulo_t *modulo, const char *titulo) {
 }
 static char *ventana_iniciar(modulo_t *modulo, GHashTable *argumentos)
 {
-  if(g_hash_table_size(argumentos) < 1) {return "faltan argumentos";}
   char *titulo = (char *)g_hash_table_lookup(argumentos, "titulo");
+  if(g_hash_table_size(argumentos) < 1) {return "faltan argumentos";}
   ((datos_ventana_t*)modulo->m_dato)->nombre_foto = strdup(g_hash_table_lookup(argumentos, "nombre_foto"));
   ((datos_ventana_t*)modulo->m_dato)->extension = strdup(g_hash_table_lookup(argumentos, "extension"));
   ventana_crear_ventana(modulo, titulo);

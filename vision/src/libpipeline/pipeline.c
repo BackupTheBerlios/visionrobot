@@ -55,16 +55,18 @@ static void pipeline_salida_error(const pipeline_t *pipeline, const char *nombre
 }
 
 
-static int  pipeline_set_ruta(pipeline_t* p, const char * elemento, const char *ruta, const char *dir) {
+static int  pipeline_set_ruta(pipeline_t* p, const char * elemento, const char *ruta/*, const char *dir*/) {
   elemento_t *dato = g_hash_table_lookup(p->m_modulos, elemento);
+  //const char * ruta_modulo;
   int dev = 0;
   if (ruta) {
     if (dato->m_handler){
       g_module_close(dato->m_handler);
     }
-    char *ruta_modulo = g_module_build_path(dir, ruta);
-    
-    dato->m_handler = g_module_open(ruta_modulo, G_MODULE_BIND_LAZY);
+    //ruta_modulo = g_module_build_path(dir, ruta);
+    //    printf("A ver, dir: %s, ruta: %s, ruta_modulo: s.\n", /*dir, ruta/*, ruta_modulo*/);
+    //ruta_modulo = ruta;
+    dato->m_handler = g_module_open(ruta/*_modulo*/, G_MODULE_BIND_LAZY);
 
     if (dato->m_handler) {
       typedef modulo_t *(*funcion_modulo_t) ();
@@ -81,6 +83,9 @@ static int  pipeline_set_ruta(pipeline_t* p, const char * elemento, const char *
       dev = -1;
     }
     pipeline_salida_error(p, "Pipeline", "Bibliotecas", g_module_error());
+    /*if(ruta_modulo) {
+      g_free(ruta_modulo);
+      }*/
   }
   else {
     dev = -1;
@@ -109,8 +114,9 @@ static void pipeline_cerrar_elemento(elemento_t *dato)
 {
   if (dato->m_modulo && dato->m_modulo->m_cerrar)   {
     char *nombre = strdup(dato->m_modulo->m_nombre);
+    char *cadena;
     g_hash_table_destroy(dato->m_modulo->m_tabla);
-    char *cadena = strdup(dato->m_modulo->m_cerrar(dato->m_modulo));    
+    cadena = strdup(dato->m_modulo->m_cerrar(dato->m_modulo));    
     pipeline_salida_error(dato->m_pipeline, dato->m_nombre, nombre,
 			  cadena);
     free(cadena);
@@ -142,7 +148,7 @@ char pipeline_get_activo(const pipeline_t *p, const char *e) {
 }
 
 static pipeline_t * pipeline_annadir(pipeline_t * p, const char *nombre, const char *ruta,
-				     GHashTable *argumentos, const char *dir, const char * inicio) {
+				     GHashTable *argumentos/*, const char *dir*/, const char * inicio) {
   elemento_t * dato = (elemento_t *)malloc(sizeof(elemento_t));
   dato->m_inicio = !strcmp(inicio, "1") ? TRUE : FALSE;
   dato->m_modulo = 0;
@@ -154,7 +160,9 @@ static pipeline_t * pipeline_annadir(pipeline_t * p, const char *nombre, const c
   dato->m_pipeline = p;
   dato->m_argumentos = argumentos;
   g_hash_table_insert(p->m_modulos, (gpointer)strdup(nombre), (gpointer)dato);
-  pipeline_set_ruta(p, nombre, ruta, dir);
+  if(-1 == pipeline_set_ruta(p, nombre, ruta/*, dir*/)) {
+    return 0;
+  }
   dato->m_enlaces = g_hash_table_new_full(g_str_hash, g_str_equal, pipeline_borrar_cadena, pipeline_borrar_conexion);
   return p;
 }
@@ -181,12 +189,15 @@ int pipeline_borrar(pipeline_t * p)
   }
 }
 
-static pipeline_t * pipeline_leer_xml(pipeline_t * p, xmlDocPtr doc, xmlNodePtr cur,
-				      const char *dir) 
+static pipeline_t * pipeline_leer_xml(pipeline_t * p, xmlDocPtr doc, xmlNodePtr cur//,
+				      /*const char *dir*/) 
 {
   GHashTable *argumentos = g_hash_table_new_full(g_str_hash, g_str_equal, pipeline_borrar_cadena, pipeline_borrar_cadena);
   char *nombre = xmlGetProp(cur, "nombre");
-  p = pipeline_annadir(p, nombre, xmlGetProp(cur, "ruta"), argumentos, dir, xmlGetProp(cur, "inicio"));
+  p = pipeline_annadir(p, nombre, xmlGetProp(cur, "ruta"), argumentos,/* dir,*/ xmlGetProp(cur, "inicio"));
+  if(p == 0) {
+    return 0;
+  }
   cur = cur->xmlChildrenNode;
   while (cur != NULL) {
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "argumento"))) {
@@ -210,16 +221,21 @@ static pipeline_t * pipeline_leer_xml(pipeline_t * p, xmlDocPtr doc, xmlNodePtr 
   return p;
 }
 
-pipeline_t * pipeline_cargar(const char *ruta, const char *dir, funcion_error_t funcion_error, const void *dato) 
+pipeline_t * pipeline_cargar(const char *ruta/*, const char *dir*/, funcion_error_t funcion_error, const void *dato) 
 {
     xmlDocPtr doc;
     xmlNodePtr cur;
+    xmlValidCtxt cvp;
+    pipeline_t *p;
+
+    if(!g_module_supported()) {
+      return 0;
+    }
+    
     doc = xmlParseFile(ruta);
     if (doc == NULL) {
 	return 0;
     }
-
-    xmlValidCtxt cvp;
     
     cvp.userData = (void *) stderr;
     cvp.error    = (xmlValidityErrorFunc) fprintf;
@@ -238,7 +254,7 @@ pipeline_t * pipeline_cargar(const char *ruta, const char *dir, funcion_error_t 
     }
 
     chdir(g_path_get_dirname(ruta));
-    pipeline_t *p = (pipeline_t*)malloc(sizeof(pipeline_t));
+    p = (pipeline_t*)malloc(sizeof(pipeline_t));
     p->m_modulos = g_hash_table_new_full(g_str_hash, g_str_equal, pipeline_borrar_cadena, pipeline_borrar_elemento);
     p->m_funcion_error = funcion_error;
     p->m_dato_funcion_error = (gpointer)dato;
@@ -247,7 +263,12 @@ pipeline_t * pipeline_cargar(const char *ruta, const char *dir, funcion_error_t 
     cur = cur->next;
     while (cur != NULL) {
 	if ((!xmlStrcmp(cur->name, (const xmlChar *) "modulo"))) {
-	    p = pipeline_leer_xml(p, doc, cur, dir);
+	  p = pipeline_leer_xml(p, doc, cur/*, dir*/);
+	    if(p == 0) {
+	      xmlFreeDoc(doc);
+	      pipeline_borrar(p);
+	      return 0;
+	    }
 	}
 	cur = cur->next;
     }

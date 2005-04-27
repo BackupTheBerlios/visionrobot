@@ -351,6 +351,38 @@ DWORD Captura::CogerFrame()
 bool Captura::ConvertirImagen24(BYTE *p32Img, BYTE *p24Img,DWORD dwSize32)
 {
 
+	if(p32Img != NULL && p24Img != NULL && dwSize32>0)
+	{
+
+		DWORD dwSize24;
+
+		dwSize24=(dwSize32 * 3)/4;
+
+		BYTE *pTemp,*ptr;
+		pTemp=p32Img;
+
+		ptr=p24Img + dwSize24-1 ;
+
+		//int ival=0;
+		for (DWORD index = 0; index < dwSize32/4 ; index++)
+		{									
+			unsigned char r = *(pTemp++);
+			unsigned char g = *(pTemp++);
+			unsigned char b = *(pTemp++);
+			(pTemp++);
+						
+			*(ptr--) = b;
+			*(ptr--) = g;
+			*(ptr--) = r;			
+
+		}	
+	}
+	else
+	{
+		return false;
+	}
+
+return true;/*
   if(p32Img != NULL && p24Img != NULL && dwSize32>0)
     {
 
@@ -382,7 +414,7 @@ bool Captura::ConvertirImagen24(BYTE *p32Img, BYTE *p24Img,DWORD dwSize32)
       return false;
     }
 
-  return true;
+    return true;*/
 }
 
 BOOL Captura::Pausa()

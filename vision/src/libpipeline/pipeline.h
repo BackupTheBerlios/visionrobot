@@ -71,7 +71,7 @@ extern "C"  {
                            del pipeline
       \param dato El dato auxiliar que se le pasa a la función de error. Puede ser una estructura de cualquier tipo.
   */
-  pipeline_t * pipeline_cargar(const char *ruta, const char *dir, funcion_error_t funcion_error, const void *dato) ;
+  pipeline_t * pipeline_cargar(const char *ruta/*, const char *dir*/, funcion_error_t funcion_error, const void *dato) ;
 
   /*! \brief Realiza un ciclo completo en el pipeline. Esto corresponde a llamar al ciclo de las funciones
             marcadas como <em>iniciales</em> (incio="1" en el XML), y llamar al ciclo de todos los módulos

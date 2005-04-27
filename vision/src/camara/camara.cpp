@@ -18,7 +18,6 @@ static char* camara_ciclo (modulo_t *modulo, const char *puerto, const void *val
   dato->c->CogerFrame();
   int tam = dato->c->GetFrame((BYTE**)&dato->imagen.m_imagen);
   dato->imagen.m_bytes = (tam / dato->imagen.m_alto) / dato->imagen.m_ancho;
-  g_hash_table_insert(modulo->m_tabla, (char*)PUERTO, &dato->imagen);
   return 0;
 }
 
@@ -28,7 +27,7 @@ static char* camara_iniciar(modulo_t *modulo, GHashTable *argumentos) {
   dato->imagen.m_ancho = atoi((const char *)g_hash_table_lookup(argumentos,"ancho"));
   dato->imagen.m_alto = atoi((const char *)g_hash_table_lookup(argumentos,"alto"));
   dato->imagen.m_imagen = 0;
-  g_hash_table_insert(modulo->m_tabla, (char*)PUERTO, 0);
+  g_hash_table_insert(modulo->m_tabla, (void *)PUERTO, &dato->imagen);
   int cam = atoi((const char *)g_hash_table_lookup(argumentos, "camara"));
   dato->c = new Captura(); 
   dato->c->Iniciar(cam,

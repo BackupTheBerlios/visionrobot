@@ -43,21 +43,23 @@ static char *red_ciclo(modulo_t *modulo, const char *puerto, const void *value)
   return 0;
 }
 static char *red_iniciar(modulo_t *modulo, GHashTable *argumentos)
-{
-    if (g_hash_table_size(argumentos) < 2) {
-	return "falta algun nombre de archivo para cargar";
-    }
-    red_dato_t * dato = (red_dato_t*)modulo->m_dato;
-    char *archivo = g_hash_table_lookup(argumentos, "archivo");
-    const char *salida[4];
-    salida[0] = g_hash_table_lookup(argumentos, "salida1");
-    salida[1] = g_hash_table_lookup(argumentos, "salida2");
-    salida[2] = g_hash_table_lookup(argumentos, "salida3");
-    salida[3] = g_hash_table_lookup(argumentos, "salida4");
-    const char *no_gesto = g_hash_table_lookup(argumentos, "no_gesto");
-    dato->m_red = red_neuronal_abrir(archivo, salida, no_gesto);
-    g_hash_table_insert(modulo->m_tabla, PUERTO_TEXTO, 0);
-    red_neuronal_t *red = dato->m_red;
+{  
+  red_neuronal_t *red; 
+  const char *no_gesto; 
+  red_dato_t * dato = (red_dato_t*)modulo->m_dato;
+  char *archivo = g_hash_table_lookup(argumentos, "archivo");
+  const char *salida[4];
+  if (g_hash_table_size(argumentos) < 2) {
+    return "falta algun nombre de archivo para cargar";
+  }
+  salida[0] = g_hash_table_lookup(argumentos, "salida1");
+  salida[1] = g_hash_table_lookup(argumentos, "salida2");
+  salida[2] = g_hash_table_lookup(argumentos, "salida3");
+  salida[3] = g_hash_table_lookup(argumentos, "salida4");
+  no_gesto = g_hash_table_lookup(argumentos, "no_gesto");
+  dato->m_red = red_neuronal_abrir(archivo, salida, no_gesto);
+  g_hash_table_insert(modulo->m_tabla, PUERTO_TEXTO, 0);
+  red = dato->m_red;
     if (!red) {
       return "no se ha cargado el archivo";
     }    

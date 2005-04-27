@@ -62,11 +62,12 @@ static char *ocr_ciclo(modulo_t *modulo, const char *puerto, const void *value)
 }
 static char *ocr_iniciar(modulo_t *modulo, GHashTable *argumentos)
 {
+  pack_init_t *init_pack;
     ocr_dato_t * dato = (ocr_dato_t*)modulo->m_dato;
     char *archivo = g_hash_table_lookup(argumentos, "archivo");
     dato->m_pack_init =  ocr_init(archivo);
     g_hash_table_insert(modulo->m_tabla, PUERTO_TEXTO, 0);
-    pack_init_t *init_pack = dato->m_pack_init;
+    init_pack = dato->m_pack_init;
     if (!init_pack) {
       return "No se ha cargado el archivo.";
     }    

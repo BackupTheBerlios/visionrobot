@@ -19,7 +19,7 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #else
-#define LIBDIR g_get_current_dir()
+//#define LIBDIR g_get_current_dir()
 #define DATADIR g_get_current_dir()
 #define PACKAGE ""
 #endif
@@ -52,21 +52,23 @@ enum {
 \param dato Un puntero a la información que nos es útil. En este caso, el GladeXML de la ventana principal.
 */
 void funcion_error(const char *nombre, const char *modulo, const char *textos, void *dato) {
-  GladeXML  *xml = (GladeXML *)dato;
+   GladeXML  *xml = (GladeXML *)dato;
   if(xml && nombre && textos && modulo) {
+    GtkWidget* texto;
+    GtkTextIter iter;
+    GtkTextBuffer * buffer;
     GString *valor = g_string_new("");
     g_string_sprintf(valor, "%s [%s]: %s\n", nombre, modulo, textos);
     // Sacar la salida por pantalla hace fácil redirigir el resultado de depuración
     // a un archivo de texto: pipeline --timer=500 vision.xml > vision.log
     printf("%s", valor->str);
-    GtkWidget* texto =  glade_xml_get_widget(xml, "txt_error");
-    GtkTextIter iter;
-    GtkTextBuffer * buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(texto));
+    texto =  glade_xml_get_widget(xml, "txt_error");    
+    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(texto));
     gtk_text_buffer_get_iter_at_offset(buffer, &iter, -1);
     gtk_text_buffer_insert(buffer, &iter, valor->str, -1);
     g_string_free(valor, TRUE);
     gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(texto), &iter, 0.0, FALSE, 1.0, 1.0);
-  }
+    }
 }
 
 //! Función de retrollamada para el temporizador.
@@ -125,33 +127,43 @@ void cell_toggled_callback (GtkCellRendererToggle *cell,
 \param xml El GladeXML, ya creado y listo.
 */
 void abrir_pipe(const char *ruta, GladeXML *xml) {
+  //GString *dir;
+  GtkWidget *pausa;
+  GtkListStore *store;
+  GtkTreeView *arbol;
+  GtkTreeIter iter;
+  char **nombres;
   GtkWidget *ventana = glade_xml_get_widget(xml, "win_pipeline");
   pipeline_t *p = (pipeline_t *)g_object_get_data(G_OBJECT(ventana), "pipeline");
   dato_timer_t *t = (dato_timer_t *)g_object_get_data(G_OBJECT(ventana), "timer");
   pipeline_borrar(p);  
-  GString *dir = g_string_new(LIBDIR);
-  g_string_append_printf(dir, "/%s", PACKAGE);
-  p = pipeline_cargar(ruta, dir->str, funcion_error, xml);
-  g_string_free(dir, TRUE);
-  g_object_set_data(G_OBJECT(ventana), "pipeline", p);
-  pipeline_iniciar(p);
-  GtkWidget *pausa = glade_xml_get_widget(xml, "tbn_pausa");
-  if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(pausa)) &&
-     !t->m_iniciado) {
-    t->m_timer_id = g_timeout_add(t->m_timer, tick, ventana);
-    t->m_iniciado = TRUE;
+  //dir = g_string_new(LIBDIR);
+  //g_string_append_printf(dir, "%s", PACKAGE);
+  p = pipeline_cargar(ruta, /*dir->str, */funcion_error, xml);
+  if(p) {
+    //    g_string_free(dir, TRUE);
+    g_object_set_data(G_OBJECT(ventana), "pipeline", p);
+    pipeline_iniciar(p);
+    pausa = glade_xml_get_widget(xml, "tbn_pausa");
+    if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(pausa)) &&
+       !t->m_iniciado) {
+      t->m_timer_id = g_timeout_add(t->m_timer, tick, ventana);
+      t->m_iniciado = TRUE;
+    }
+    nombres = pipeline_nombres(p);  
+    arbol = (GtkTreeView *)glade_xml_get_widget(xml, "tree_elementos");
+    store = (GtkListStore*)gtk_tree_view_get_model(arbol);
+    while(*nombres) {
+      gtk_list_store_append (store, &iter);
+      gtk_list_store_set (store, &iter,
+			  ACTIVO, (gboolean)pipeline_get_activo(p, *nombres),
+			  NOMBRE, *nombres,			
+			  -1);
+      nombres++;
+    }
   }
-  char **nombres = pipeline_nombres(p);  
-  GtkTreeView *arbol = (GtkTreeView *)glade_xml_get_widget(xml, "tree_elementos");
-  GtkListStore *store = (GtkListStore*)gtk_tree_view_get_model(arbol);
-  GtkTreeIter iter;
-  while(*nombres) {
-    gtk_list_store_append (store, &iter);
-    gtk_list_store_set (store, &iter,
-			ACTIVO, (gboolean)pipeline_get_activo(p, *nombres),
-			NOMBRE, *nombres,			
-			-1);
-    nombres++;
+  else {
+    funcion_error("Error", "Pipeline", "No se ha podido abrir el archivo", xml);
   }
 }
 
@@ -235,6 +247,16 @@ G_MODULE_EXPORT void on_hsc_temporizador_value_changed(GtkRange *range, gpointer
 */
 int main(int argc, char **argv)
 {
+  GString *buffer;
+  GladeXML *xml;
+  GdkPixbuf * pixbuf;
+  pipeline_t *p;
+  GtkWidget *ventana;
+  GtkListStore *store;
+  GtkTreeView *arbol;
+  GtkWidget *hsc_timer;
+  GtkCellRenderer *renderer;
+  GtkCellRenderer *renderer_toggle;
   dato_timer_t dato_timer = {1000, 0, FALSE};
 #if OPCIONES_LINEA
   const GOptionEntry entries[] = {
@@ -250,23 +272,23 @@ int main(int argc, char **argv)
 
   gtk_init(&argc, &argv);
   glade_init();
-  GString *buffer = g_string_new(DATADIR);
+  buffer = g_string_new(DATADIR);
   g_string_append_printf(buffer, "/%s/ventana_pipeline.glade", PACKAGE);
-  GladeXML *xml = glade_xml_new(buffer->str, NULL, NULL);
+  xml = glade_xml_new(buffer->str, NULL, NULL);
   glade_xml_signal_autoconnect(xml);
-  GtkWidget *ventana = glade_xml_get_widget(xml, "win_pipeline");
+  ventana = glade_xml_get_widget(xml, "win_pipeline");
   g_string_free(buffer, TRUE);
 
-  GdkPixbuf * pixbuf = gdk_pixbuf_new_from_xpm_data((const char **)pipeline_xpm);
+  pixbuf = gdk_pixbuf_new_from_xpm_data((const char **)pipeline_xpm);
   gtk_window_set_icon(GTK_WINDOW(ventana), pixbuf);
 
-  GtkTreeView *arbol = (GtkTreeView *)glade_xml_get_widget(xml, "tree_elementos");
+  arbol = (GtkTreeView *)glade_xml_get_widget(xml, "tree_elementos");
 
-  GtkListStore *store = gtk_list_store_new (NUMERO, G_TYPE_BOOLEAN, G_TYPE_STRING);
+  store = gtk_list_store_new (NUMERO, G_TYPE_BOOLEAN, G_TYPE_STRING);
   gtk_tree_view_set_model (arbol, GTK_TREE_MODEL(store));
   g_object_unref (GTK_TREE_MODEL(store));
 
-  GtkCellRenderer *renderer_toggle = gtk_cell_renderer_toggle_new ();
+  renderer_toggle = gtk_cell_renderer_toggle_new ();
   gtk_tree_view_insert_column_with_attributes (arbol,
 					       -1,  
 					       "Activo",  					       
@@ -277,7 +299,7 @@ int main(int argc, char **argv)
 
   g_signal_connect(renderer_toggle, "toggled", (GCallback) cell_toggled_callback, xml);
 
-  GtkCellRenderer *renderer = gtk_cell_renderer_text_new ();
+  renderer = gtk_cell_renderer_text_new ();
   gtk_tree_view_insert_column_with_attributes (arbol,
 					       -1,      
 					       "Nombre",  
@@ -288,13 +310,13 @@ int main(int argc, char **argv)
   g_object_set_data(G_OBJECT(ventana), "timer", &dato_timer);
   g_object_set_data(G_OBJECT(ventana), "pipeline", 0);
   g_object_set_data(G_OBJECT(ventana), "renderer_toggle", renderer_toggle);
-  GtkWidget *hsc_timer = glade_xml_get_widget(xml, "hsc_temporizador");
+  hsc_timer = glade_xml_get_widget(xml, "hsc_temporizador");
   gtk_range_set_value(GTK_RANGE(hsc_timer), (gdouble)dato_timer.m_timer);
   if(argc >= 2) {
     abrir_pipe(argv[1], xml);
   }
   gtk_main();
-  pipeline_t *p = (pipeline_t *)g_object_get_data(G_OBJECT(ventana), "pipeline");
+  p = (pipeline_t *)g_object_get_data(G_OBJECT(ventana), "pipeline");
   pipeline_borrar(p);
   
 #if OPCIONES_LINEA

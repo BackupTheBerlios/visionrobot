@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <values.h>
+//#include <values.h>
 #include <string.h>
 
 
@@ -114,9 +114,11 @@ int whiteRow(int x,int left, int right, filtro_gestos_in_imagen_t* image)
 
 fields_t* limits(filtro_gestos_in_imagen_t* image)
 {
- fields_t* fields= (fields_t*)malloc(sizeof(fields_t));
- fields->cimaCI=fields->cimaCD=fields->cimaFT=fields->cimaFD=0;
+  int left,right,up,down;
  int arriba,izq,i,l,cont,punt,posi,media,dif,jumps;
+ fields_t* fields= (fields_t*)malloc(sizeof(fields_t));
+ int* caracXfila;
+ fields->cimaCI=fields->cimaCD=fields->cimaFT=fields->cimaFD=0;
  arriba=izq=cont=punt=posi=media=jumps=0;
  for(i=1; i<image->m_alto-1; i++)
      if(whiteRow(i,0,image->m_ancho*image->m_bytes,image)){
@@ -127,7 +129,7 @@ fields_t* limits(filtro_gestos_in_imagen_t* image)
          fields->filasTop[fields->cimaFT]=i; fields->cimaFT++; arriba=1;
        }
    }
- int* caracXfila= (int*)malloc(sizeof(int)*fields->cimaFT);
+ caracXfila= (int*)malloc(sizeof(int)*fields->cimaFT);
 
  for(l=0; l<fields->cimaFT; l++){
    for(i=image->m_bytes; i<(image->m_ancho-1)*image->m_bytes; i+=image->m_bytes){
@@ -187,11 +189,11 @@ fields_t* limits(filtro_gestos_in_imagen_t* image)
  }
 
  //Ajustar
-  int left,right,up,down;
+  
   for(i=0; i<fields->cimaCI; i++){
-    left=fields->ptosSI[i]->m_x; right=fields->ptosID[i]->m_x;
-    down=fields->ptosID[i]->m_y; up=fields->ptosSI[i]->m_y;
     int upi,downi,lefti,righti;
+    left=fields->ptosSI[i]->m_x; right=fields->ptosID[i]->m_x;
+    down=fields->ptosID[i]->m_y; up=fields->ptosSI[i]->m_y;   
     upi=downi=lefti=righti=0;
     while(!upi)(!whiteRow(up,left,right,image)) ? upi=1: up++;
     while(!downi)(!whiteRow(down,left,right,image)) ? downi=1: down--;
@@ -240,10 +242,11 @@ int makeHexadecagonAux(coord_t* si, coord_t* id, hexadecagon_t* hexa, filtro_ges
 int makeHexadecagon(coord_t* si, coord_t* id, hexadecagon_t* hexa, filtro_gestos_in_imagen_t* image)
 {
   int up,down,left,right,upi,downi,lefti,righti,anch,alt,negroUL,negroDL,negroUR,negroDR,h;
+  double diagonal;
   makeHexadecagonAux(si,id,hexa,image,0);
   makeHexadecagonAux(si,id,hexa,image,4);
   makeHexadecagonAux(si,id,hexa,image,8);
-  double diagonal= modulo(si->m_x,si->m_y,id->m_x,id->m_y);
+  diagonal= modulo(si->m_x,si->m_y,id->m_x,id->m_y);
   negroUL=negroDL=negroUR=negroDR=0;
   up= si->m_y; left= si->m_x;
   down= id->m_y; right= id->m_x;

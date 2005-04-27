@@ -70,8 +70,11 @@ static char *gestion_ciclo(modulo_t *modulo, const char *puerto, const void *ent
   const char *cadena = (const char *)entrada;
   gestion_dato_t *dato = (gestion_dato_t *)modulo->m_dato;
   if(cadena && !strcmp(PUERTO_ENTRADA, puerto)) {
+    argumento_t argumento;
     int maximo_valor = dato->m_maximo_valor;
     estado_t * estado = g_hash_table_lookup(dato->m_historial, entrada);
+    estado_t *buscar;
+    char *resultado;
     // Si esa orden ya existe, actualizamos su estado, si no, la metemos en la tabla;
     // así es más genérico, y vale para cualquier orden  
     if(!estado){      
@@ -80,11 +83,16 @@ static char *gestion_ciclo(modulo_t *modulo, const char *puerto, const void *ent
       g_hash_table_insert(dato->m_historial, strdup(cadena), estado);
     }
     dato->m_buffer_error [0] = '\0';
-    argumento_t argumento = {estado, 0, 0, maximo_valor, dato->m_buffer_error};
+    //    argumento = {estado, 0, 0, maximo_valor, dato->m_buffer_error};
+    argumento.m_estado = estado;
+    argumento.m_maximo = 0;
+    argumento.m_valor = 0;
+    argumento.m_maximo_valor = maximo_valor;
+    argumento.m_error = dato->m_buffer_error;
     g_hash_table_foreach(dato->m_historial, gestion_sumar, &argumento);
     
-    estado_t *buscar = (estado_t *)g_hash_table_lookup(dato->m_historial, argumento.m_maximo);
-    char *resultado = 0;    
+    buscar = (estado_t *)g_hash_table_lookup(dato->m_historial, argumento.m_maximo);
+    resultado = 0;    
     if(buscar->m_valor >= dato->m_tolerancia &&
        argumento.m_maximo != dato->m_anterior) {  
       if(strcmp(argumento.m_maximo, dato->m_neutro)){

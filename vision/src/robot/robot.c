@@ -6,7 +6,7 @@
 #include <lauxlib.h>
 #include "robot_sdk.h"
 
-#ifdef WIN32
+#ifdef G_OS_WIN32
 #define LPT1 1
 #define LPT2 2
 #else
@@ -14,14 +14,14 @@
 #endif
 
 static void sube_pin(int index) {
-#ifdef WIN32
+#ifdef G_OS_WIN32
 #else
   set_pin(LP_PIN[index]);
 #endif
 }
 
 static void baja_pin(int index) {
-#ifdef WIN32
+#ifdef G_OS_WIN32
 #else
   clear_pin(LP_PIN[index]);
 #endif
@@ -29,7 +29,7 @@ static void baja_pin(int index) {
 
 static int iniciar_paralelo(int puerto) {
   return
-#ifdef WIN32
+#ifdef G_OS_WIN32
     0;
 #else
   pin_init_user(puerto);
@@ -37,7 +37,7 @@ static int iniciar_paralelo(int puerto) {
 }
 
 static void pin_salida(int index) {
-#ifdef WIN32
+#ifdef G_OS_WIN32
 #else
   pin_output_mode(LP_PIN[index]);
 #endif
@@ -212,11 +212,7 @@ static int robot_salida(lua_State *L) {
 static char *robot_iniciar(modulo_t *modulo, GHashTable *argumentos) {
   char *devolver = "iniciado";
   dato_robot_t *dato = (dato_robot_t *)modulo->m_dato;
-  dato->m_funcion_ciclo = strdup(g_hash_table_lookup(argumentos, "funcion_ciclo"));
-  dato->m_funcion_fin = strdup(g_hash_table_lookup(argumentos, "funcion_fin"));
-  dato->m_funcion_iniciar = strdup(g_hash_table_lookup(argumentos, "funcion_iniciar"));
-  dato->m_lua = lua_open();
-  lua_State *l = dato->m_lua;
+  lua_State *l;
   static const struct luaL_reg robot [] = {
     {"alta", robot_alta},
     {"baja", robot_baja},
@@ -224,6 +220,14 @@ static char *robot_iniciar(modulo_t *modulo, GHashTable *argumentos) {
     {"timer", robot_timer},
     {NULL, NULL}
   };
+  const char *ruta;
+  char * puerto;
+  dato->m_funcion_ciclo = strdup(g_hash_table_lookup(argumentos, "funcion_ciclo"));
+  dato->m_funcion_fin = strdup(g_hash_table_lookup(argumentos, "funcion_fin"));
+  dato->m_funcion_iniciar = strdup(g_hash_table_lookup(argumentos, "funcion_iniciar"));
+  dato->m_lua = lua_open();
+  l = dato->m_lua;
+  
   luaL_openlib(l, "robot", robot, 0);
   luaopen_base(l);
   luaopen_table(l);
@@ -231,12 +235,12 @@ static char *robot_iniciar(modulo_t *modulo, GHashTable *argumentos) {
   luaopen_string(l);
   luaopen_math(l);
   luaopen_loadlib(l); 
-  const char *ruta = g_hash_table_lookup(argumentos, "guion");
+  ruta = g_hash_table_lookup(argumentos, "guion");
   luaL_loadfile(l, ruta);
   lua_pcall(l, 0, 0, 0);
   
 
-  char * puerto = g_hash_table_lookup(argumentos, "puerto");
+  puerto = g_hash_table_lookup(argumentos, "puerto");
   if(!puerto) {
     devolver = "Error, no se ha especificado puerto";
   }
