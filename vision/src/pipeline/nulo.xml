@@ -12,7 +12,6 @@
     <argumento nombre="camara">0</argumento>
     <argumento nombre="ancho">320</argumento>
     <argumento nombre="alto">240</argumento>
-    <argumento nombre="bytes">3</argumento>
     <conexion puerto="salida_imagen">
       <destino puerto="entrada_imagen">ventana</destino>
     </conexion>
@@ -23,5 +22,5 @@
     <argumento nombre="titulo">Ventana</argumento>
     <argumento nombre="nombre_foto">ventana.png</argumento>
     <argumento nombre="extension">png</argumento>
-  </modulo>
+  </modulo>  
 </pipeline>

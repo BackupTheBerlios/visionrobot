@@ -107,17 +107,17 @@ static void ventana_parametros_color_ordenes(GtkWidget *w) {
   dato->m_cambio = 1;
   ventana_parametros_calcular_orden(&dato->m_filtro, &color, valor_rojo, valor_verde, valor_azul);
 }
-void on_bot_color_ordenes_color_set(GtkColorButton *widget, gpointer user_data){
+G_MODULE_EXPORT void on_bot_color_ordenes_color_set(GtkColorButton *widget, gpointer user_data){
   ventana_parametros_color_ordenes(GTK_WIDGET(widget));
 }
 
-void on_hsc_tolerancia_rojo_value_changed(GtkRange *range, gpointer user_data){
+G_MODULE_EXPORT void on_hsc_tolerancia_rojo_value_changed(GtkRange *range, gpointer user_data){
   ventana_parametros_color_ordenes(GTK_WIDGET(range));
 }
-void on_hsc_tolerancia_verde_value_changed(GtkRange *range, gpointer user_data){
+G_MODULE_EXPORT void on_hsc_tolerancia_verde_value_changed(GtkRange *range, gpointer user_data){
   ventana_parametros_color_ordenes(GTK_WIDGET(range));
 }
-void on_hsc_tolerancia_azul_value_changed(GtkRange *range, gpointer user_data){
+G_MODULE_EXPORT void on_hsc_tolerancia_azul_value_changed(GtkRange *range, gpointer user_data){
   ventana_parametros_color_ordenes(GTK_WIDGET(range));
 }
 

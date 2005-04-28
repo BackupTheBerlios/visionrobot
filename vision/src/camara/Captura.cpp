@@ -351,70 +351,36 @@ DWORD Captura::CogerFrame()
 bool Captura::ConvertirImagen24(BYTE *p32Img, BYTE *p24Img,DWORD dwSize32)
 {
 
-	if(p32Img != NULL && p24Img != NULL && dwSize32>0)
-	{
+  if(p32Img != NULL && p24Img != NULL && dwSize32>0)  {
+    
+    DWORD dwSize24;
+    
+    dwSize24=(dwSize32 * 3)/4;
 
-		DWORD dwSize24;
+    BYTE *ptr;
+    
+    ptr=p24Img + dwSize24-1 ;
 
-		dwSize24=(dwSize32 * 3)/4;
+    int tam = m_nAncho * 4;
+    for(DWORD j = 0; j < m_nAlto; ++j) {
 
-		BYTE *pTemp,*ptr;
-		pTemp=p32Img;
-
-		ptr=p24Img + dwSize24-1 ;
-
-		//int ival=0;
-		for (DWORD index = 0; index < dwSize32/4 ; index++)
-		{									
-			unsigned char r = *(pTemp++);
-			unsigned char g = *(pTemp++);
-			unsigned char b = *(pTemp++);
-			(pTemp++);
-						
-			*(ptr--) = b;
-			*(ptr--) = g;
-			*(ptr--) = r;			
-
-		}	
-	}
-	else
-	{
-		return false;
-	}
-
-return true;/*
-  if(p32Img != NULL && p24Img != NULL && dwSize32>0)
-    {
-
-      DWORD dwSize24;
-
-      dwSize24=(dwSize32 * 3)/4;
-
-      BYTE *pTemp,*ptr;
-      pTemp=p32Img + dwSize32 - 1;
-
-      ptr=p24Img;
-
-      for (DWORD index = 0; index < dwSize32/4 ; index++)
-	{	
-	  (pTemp--);
-	  unsigned char r = *(pTemp--);
-	  unsigned char g = *(pTemp--);
-	  unsigned char b = *(pTemp--);
-			
-						
-	  *(ptr++) = r;
-	  *(ptr++) = g;
-	  *(ptr++) = b;			
-
-	}	
+      for(DWORD i = 0; i < tam; i += 4) {
+	int tam2 = ((j + 1)* tam) - (i + 1);
+	unsigned char r = p32Img[tam2 + 1];
+	unsigned char g = p32Img[tam2 + 2];
+	unsigned char b = p32Img[tam2 + 3];
+	
+	*(ptr--) = r;
+	*(ptr--) = g;
+	*(ptr--) = b;		
+      }
     }
-  else
-    {
-      return false;
-    }
+  }
+  else    {
+    return false;
+  }
 
-    return true;*/
+  return true;
 }
 
 BOOL Captura::Pausa()

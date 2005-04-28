@@ -88,6 +88,7 @@ Depends(pip.Program('bin/pipeline', 'src/pipeline/main.c'), libpipeline)
 env.Install('bin', ['src/pipeline/ventana_pipeline.glade'])
 env.Install('bin', ['src/pipeline/vision.xml'])
 env.Install('bin', ['src/pipeline/nulo.xml'])
+env.Install('bin', ['src/pipeline/camara.xml'])
 
 
 # Documentacion
