@@ -1,5 +1,4 @@
 \chapter{Red Neuronal}
-
 \hline 
 
 \section{Introducción}
@@ -20,7 +19,7 @@ En nuestro caso la entrada serán siempre imágenes del mismo tamaño 320x240 píxel
 
 La capa oculta debe tener tan pocas unidades como sea posible. Medidas experimentales demuestran que el hecho de aumentar el número de  unidades ocultas proporciona mejoras poco significativas en la precisión, pero requieren mucho mas tiempo de entrenamiento. Nosotros hemos optado por utilizar 15 unidades.
 
-Como ya sabemos al robot se le controla con 2 manos, los gestos de la mano izquierda le indican las ordenes y los de las derecha los parámetros, con el objetivo de simplificar el diseño los gestos de ordenes y de parámetros son los mismos, pero significan cosas distintas. Tanto para ordenes como para parámetros hay 5 tipos de gestos. Como recordatorio las ordenes eran: parar, avanzar, girar a la izquierda y girar a la derecha. Y los parámetros eran nula, medio baja, medio alta, alta si la orden actual es la de avanzar, donde los parámetros indican la velocidad a la que debe hacerlo o 0º, 45º, 90º, 180º si la orden actual es una de giro. La 5º gesto tanto para ordenes como para parámetros es el "gesto no reconocido". Por tanto dado que hay 5 tipos de gestos ha reconocer, la red tendrá que sacar 5 posibles salidas. Al principio optamos por una capa de salida de una sola unidad. El valor oscila entre 0 y 1 así que por ejemplo si esta unidad valía 0.2 significaba que había reconocido el 2º gesto, si valía 0.8 había reconocido el 4º gesto. Luego se cambio al diseño actual que es una capa de salida de 5 unidades, esto hace a la red mucho mas fiable, se podía decir que la salida de la red antes era analógica y ahora es digital, ya que todas las salidas tendrán valores menores de 0.5 excepto una que será mayor, solo hay que asociar la unidad de la salida que se ha puesto en alta con una cadena de texto. Esta asociación se hace mediante un script en Lua, así es más modificable ya que si se quiere cambiar el texto de salida no hay que recompilar el proyecto, solo cambiar un archivo de texto.
+Como ya sabemos al robot se le controla con 2 manos, los gestos de la mano izquierda le indican las ordenes y los de las derecha los parámetros, con el objetivo de simplificar el diseño los gestos de ordenes y de parámetros son los mismos, pero significan cosas distintas. Tanto para ordenes como para parámetros hay 5 tipos de gestos. Como recordatorio las ordenes eran: parar, avanzar, girar a la izquierda y girar a la derecha. Y los parámetros eran nula, medio baja, medio alta, alta si la orden actual es la de avanzar, donde los parámetros indican la velocidad a la que debe hacerlo o 0º, 45º, 90º, 180º si la orden actual es una de giro. La 5º gesto tanto para ordenes como para parámetros es el ``gesto no reconocido''. Por tanto dado que hay 5 tipos de gestos ha reconocer, la red tendrá que sacar 5 posibles salidas. Al principio optamos por una capa de salida de una sola unidad. El valor oscila entre 0 y 1 así que por ejemplo si esta unidad valía 0.2 significaba que había reconocido el 2º gesto, si valía 0.8 había reconocido el 4º gesto. Luego se cambio al diseño actual que es una capa de salida de 5 unidades, esto hace a la red mucho mas fiable, se podía decir que la salida de la red antes era analógica y ahora es digital, ya que todas las salidas tendrán valores menores de 0.5 excepto una que será mayor, solo hay que asociar la unidad de la salida que se ha puesto en alta con una cadena de texto. Esta asociación se hace mediante un script en Lua, así es más modificable ya que si se quiere cambiar el texto de salida no hay que recompilar el proyecto, solo cambiar un archivo de texto.
 
 La organización de red por capas es estándar, la salida de cada unidad alimenta a todas las unidades de la siguiente capa.
 La tasa de aprendizaje utilizada ha sido 0.3. La mas alta posible para reducir el tiempo de aprendizaje sin disminuir la precisión.
@@ -32,12 +31,12 @@ La mayor parte del código utilizado en la red esta dirigido al entrenamiento. Po
 
 El proceso de entrenamiento empieza con la sesión fotográfica, es necesario hacer mas de un centenar de fotos para obtener un entrenamiento medianamente fiable. Nosotros para el entrenamiento de ordenes sacamos 185 fotos, consiste en sacar fotos dándole ordenes al robot correctas, erróneas o simplemente no dándoselas. Todas estas fotos han de ser filtradas del mismo modo que lo haría el modulo de filtro del proyecto, la razón de hacer un filtrado previo es poder pasar a la red imágenes muy simples, también deben de ser tomadas en unas condiciones de iluminación similares a las que tendrá el entorno por el que circule el robot. No es lo mismo hacer aprender a la red a reconocer un gesto perdido en un mar de píxeles de miles de colores a reconocer un conjunto de píxeles blancos centrados sobre un fondo negro. Los objetivos mas perseguidos en este proyecto es la eficiencia y en este caso la fiabilidad en el reconocimiento. 
 
-Las fotos son nombradas con un formato determinado, por ejemplo, "_orden_parada_21.bmp" esto significa que la foto contiene la orden de parada y "_no_gesto_51.bmp" indica que la foto no representa ninguna orden para el robot. Este formato es utilizado en el entrenamiento para que la red sepa ir reajustando los pesos según el nombre explicativo de la foto.
+Las fotos son nombradas con un formato determinado, por ejemplo, ``\_orden\_parada\_21.bmp'' esto significa que la foto contiene la orden de parada y ``\_no\_gesto\_51.bmp'' indica que la foto no representa ninguna orden para el robot. Este formato es utilizado en el entrenamiento para que la red sepa ir reajustando los pesos según el nombre explicativo de la foto.
 
-\begin{center}
- \includegraphics[scale=1]{_no_gesto_36.png} 
-_no_gesto_36.bmp
-\end{center}
+%\begin{center}
+\includegraphics{\_no\_gesto\_36.eps} %[scale=1]
+%  \_no\_gesto\_36.bmp
+%\end{center}
 
 Todas las fotos no son utilizadas para el entrenamiento. Se hacen 3 listas de fotos que se utilizaran para el entrenamiento, la prueba y la validación. Estas 2 ultimas sirven  para comprobar el buen funcionamiento de la red entrenada.
 El objetivo del programa de entrenamiento es crear una red, entrenarla y salvar la estructura y pesos de red en un archivo. 
@@ -45,15 +44,15 @@ El entrenamiento consiste en :
 \begin{itemize}
 \item Recorrer la lista de imágenes de entrenamiento una por una.
 \item Cargar la imagen en la imagen en la capa de entrada, cada valor de píxel se asocia a una unidad de la capa.
-\item Según el nombre de la foto, ejemplo "_orden_parada_21.bmp", se cambia el objetivo, esto sirve para calcular el error cometido.
+\item Según el nombre de la foto, ejemplo ``\_orden\_parada\_21.bmp'', se cambia el objetivo, esto sirve para calcular el error cometido.
 \item Cambiado el objetivo, se calcula el valor de la capas respecto a la capa de entrada, se calcula el error cometido en las capas oculta y salida y se reajustan los pesos, para disminuir el error.
 \item Esta lista es recorrida un numero finito de iteraciones. Las condiciones de parada pueden ser varias. La nuestra es simplemente un numero concreto, en este caso fueron 30 iteraciones. Por tanto los pesos fueron ajustados 30x(numero de fotos de la lista) veces.
 \end{itemize} 	
 Ya tendríamos así unos pesos que representan una aproximación a la función buscada.
 
 \begin{center}
-\includegraphics[scale=1]{prog_train.png} 
-Captura del programa implementado para el entrenamiento de redes.
+%  \includegraphics[scale=1]{prog_train.png} 
+  Captura del programa implementado para el entrenamiento de redes.
 \end{center}
 
 Estos fueron datos de un entrenamiento de la red:
@@ -67,15 +66,15 @@ Datos salida:
 	Porcentaje de aciertos en prueba: 100 		Error medio: 0,00645778571591585
 
 \begin{center}
-\includegraphics[scale=1]{Grafica_Aciertos.png}
-Gráfica de evolución del porcentaje de aciertos respecto al numero de iteraciones. Sobre las fotos de entrenamiento.
-
-\includegraphics[scale=1]{Grafica_Errores.png} .
-Gráfica de evolución del error medio respecto al numero de iteraciones. Sobre las fotos de entrenamiento.
+%  \includegraphics[scale=1]{Grafica_Aciertos.png}
+  Gráfica de evolución del porcentaje de aciertos respecto al numero de iteraciones. Sobre las fotos de entrenamiento.
+  
+%  \includegraphics[scale=1]{Grafica_Errores.png} .
+  Gráfica de evolución del error medio respecto al numero de iteraciones. Sobre las fotos de entrenamiento.
 \end{center}
 
 \section{Red Neuronal en el proyecto}
-Como cada modulo del pipeline, el modulo de red tiene un pequeño numero de funciones fijas utilizadas para ser llamadas desde el pipeline. Tres de ellas son "red_iniciar", "red_cerrar" y "red_ciclo". Iniciar crea la red y carga el archivo creado por el programa de entrenamiento, por ejemplo el "orden_net". La función cerrar libera toda la memoria. Y la función ciclo lo único que hace es recibir un char* que representa la imagen, cargar estos valores normalizados en la capa de entrada y calcular el valor de las capas oculta y de salida según los pesos, que solamente tarda aproximadamente 0.10 segundos. Luego como ya dijimos solamente una de las cinco unidades de la capa de salida tendrá un valor superior a 0.5, esto es equivalente a que se ha puesto en ALTA y el modulo sacará como salida la cadena de texto asociada a esa unidad. Cadena modificable desde un script junto con el nombre del archivo de la red entrenada. Todo lo que sea modificable en un futuro por posibles mejoras son parámetros que van escritos en scripts. 
+Como cada modulo del pipeline, el modulo de red tiene un pequeño numero de funciones fijas utilizadas para ser llamadas desde el pipeline. Tres de ellas son ``red\_iniciar'', ``red\_cerrar'' y ``red\_ciclo''. Iniciar crea la red y carga el archivo creado por el programa de entrenamiento, por ejemplo el ``orden\_net''. La función cerrar libera toda la memoria. Y la función ciclo lo único que hace es recibir un char* que representa la imagen, cargar estos valores normalizados en la capa de entrada y calcular el valor de las capas oculta y de salida según los pesos, que solamente tarda aproximadamente 0.10 segundos. Luego como ya dijimos solamente una de las cinco unidades de la capa de salida tendrá un valor superior a 0.5, esto es equivalente a que se ha puesto en ALTA y el modulo sacará como salida la cadena de texto asociada a esa unidad. Cadena modificable desde un script junto con el nombre del archivo de la red entrenada. Todo lo que sea modificable en un futuro por posibles mejoras son parámetros que van escritos en scripts. 
 
 Documentación del código de la red: en \ref {Codig_red} (página \pageref{Codig_red}).
 
@@ -87,16 +86,16 @@ Recordatorio:
 		5 dedos--> 	Orden:  Parar			Parámetro:  Nula o 0º
 
 \begin{center}
-\includegraphics[scale=1]{_orden_parada_17.png} 
-Salida: Si red de ordenes: Parar	Si red de parámetros: Nula o 0º
-\includegraphics[scale=1]{_orden_avanza_38.png} 
-Salida: Si red de ordenes: Avanzar	Si red de parámetros: Medio baja o 45º
-\includegraphics[scale=1]{_orden_angulo_43.png} 
-Salida: Si red de ordenes: Girar derecha	Si red de parámetros: Medio alta o 90º
-\includegraphics[scale=1]{_orden_negAngulo_84.png} 
-Salida: Si red de ordenes: Girar izquierda	Si red de parámetros: Alta o 180º
-\includegraphics[scale=1]{_no_gesto_36.png} 
-Salida: Si red de ordenes y parámetros: No gesto
+ % \includegraphics[scale=1]{_orden_parada_17.png} 
+  Salida: Si red de ordenes: Parar	Si red de parámetros: Nula o 0º
+%  \includegraphics[scale=1]{_orden_avanza_38.png} 
+  Salida: Si red de ordenes: Avanzar	Si red de parámetros: Medio baja o 45º
+%  \includegraphics[scale=1]{_orden_angulo_43.png} 
+  Salida: Si red de ordenes: Girar derecha	Si red de parámetros: Medio alta o 90º
+%  \includegraphics[scale=1]{_orden_negAngulo_84.png} 
+  Salida: Si red de ordenes: Girar izquierda	Si red de parámetros: Alta o 180º
+%  \includegraphics[scale=1]{_no_gesto_36.png} 
+  Salida: Si red de ordenes y parámetros: No gesto
 \end{center}
 
 \section{Evolución}
@@ -105,4 +104,3 @@ Se fueron modificando los filtros con el objetivo de facilitar el aprendizaje a 
 La segunda elección fue utilizar el mismo numero de gestos tanto en ordenes como en parámetros así se pudo conseguir la misma implementación para ambas.
 Luego se redujo considerablemente el código, eliminando la parte de entrenamiento del proyecto. El código de entrenamiento pasaría a ser un programa a parte que generará archivos de redes entrenadas. En este punto había 2 archivos uno para cada red.
 Y por ultimo visto que los gestos de las ordenes eran reconocidos con mucha mas facilidad que los asignados a los parámetros, que fallaban constantemente, decidimos que los gestos de los parámetros fuesen iguales a los de las ordenes, solo que en vez de hacer gestos con la izquierda se hacen con la derecha. De esta manera ambas redes cargan el mismo archivo y son igual de fiables. Solo se diferencian por la cadena de texto que devuelven, pero eso va por scripts.
-
