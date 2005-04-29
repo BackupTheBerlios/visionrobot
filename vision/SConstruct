@@ -2,7 +2,8 @@
 # Script de construccion (SCons)
 #
 import os
-
+import glob
+    
 plataforma = ARGUMENTS.get('OS', Platform())
 env = Environment(CPPPATH = ['src/robot', 'src/red_neuronal', 'src/libpipeline', 'src/filtro_gestos', 'src/ventana_imagen'], ENV = os.environ, platform = plataforma, PLATFORM=plataforma, LIBPATH=['lib'])
 
@@ -20,7 +21,7 @@ if ARGUMENTS.get('release', 0):
     env.Append(DEBUG=0)
 else:
     print ('-- Debug --')
-    env.Append(DEBUG=1)
+    env.Append(CCFLAGS=' -g ', DEBUG=1)
 
 # Libpipeline
 libpipeline = env.Library('lib/pipeline', 'src/libpipeline/pipeline.c')
@@ -28,6 +29,10 @@ env.Install('bin', ['src/libpipeline/pipeline.dtd'])
 
 # Gestion
 env.SharedLibrary('bin/gestion', 'src/gestion/gestion.c')
+
+
+# Prolog
+env.SharedLibrary('bin/prolog', 'src/prolog/prolog.c')
 
 # Filtro gestos
 fil = env.Copy()
@@ -49,10 +54,14 @@ if str(plataforma) == str('posix'):
     img.ParseConfig('pkg-config libxine --cflags --libs')
     img.Append(LIBS=['sane'])
     img.SharedLibrary('bin/imagenes', 'src/imagenes/imagenes.c')
+    env.Install('bin', ['src/imagenes/letra.xpm', 'src/imagenes/avanzar.xpm', 'src/imagenes/foto.xpm'])
+    env.Install('bin', ['src/pipeline/vision.xml'])
 else:
     cam = env.Copy()
     cam.Append(LIBS=['strmiids', 'uuid', 'oleaut32', 'ole32', 'quartz', 'user32'])
     cam.SharedLibrary('bin/camara', ['src/camara/camara.cpp', 'src/camara/Captura.cpp'])
+    env.Install('bin', ['src/pipeline/camara.xml'])
+    env.Install('bin', ['src/pipeline/nulo.xml'])
 
 
 # Ocr
@@ -86,11 +95,32 @@ pip = env.Copy()
 pip.Prepend(LIBS=['pipeline'])
 Depends(pip.Program('bin/pipeline', 'src/pipeline/main.c'), libpipeline)
 env.Install('bin', ['src/pipeline/ventana_pipeline.glade'])
-env.Install('bin', ['src/pipeline/vision.xml'])
-env.Install('bin', ['src/pipeline/nulo.xml'])
-env.Install('bin', ['src/pipeline/camara.xml'])
-
 
 # Documentacion
 if str(plataforma) == str('posix'):
-    env.PostScript('bin/vision', 'doc/vision.tex')
+    def tex_action(source, target, env, for_signature):
+        prog = 'latex'
+        (dir, file) = os.path.split(str(source[0]))
+        cmd = prog + ' ' + file
+        if dir != '':
+            cmd = 'cd %s && %s' % (dir, cmd)
+            return cmd
+        
+        
+    env['BUILDERS']['DVI'] = Builder(generator = tex_action,
+                                     suffix='.dvi',
+                                     src_suffix='.tex')
+    files = glob.glob('doc/*.tex')
+    doc = env.DVI('doc/vision.dvi', 'doc/vision.tex')
+    env.PostScript('bin/vision.ps', 'doc/vision.dvi')
+    
+    diagrama = env.Execute(Action('dia doc/pipeline.dia -t eps'))
+    diagrama = env.Execute(Action('cp doc/pipeline.eps ./'))
+#    eps = File('doc/pipeline.eps')
+
+#    Depends(diagrama, 'doc/pipeline.dia')
+    
+#    Depends(eps, diagrama)
+    
+    Depends(doc, files) # + [eps]
+    

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE pipeline SYSTEM "pipeline.dtd">
-<!-- /home/carlos/vision/share/vision/ -->
 
 <pipeline>
 
@@ -67,7 +66,11 @@
   </modulo>
 
   <!-- Modulo de Prolog (DCG's) -->
-<!--  <modulo ruta="prolog" nombre="prolog" inicio="1"/> -->
+  <modulo ruta="prolog" nombre="prolog">
+     <conexion puerto="salida_texto">
+      <destino puerto="entrada_texto">salida_pipeline</destino>
+    </conexion>
+  </modulo>
 
   <!-- Modulo de control de mensajes de la red de ordenes -->
  <modulo ruta="gestion" nombre="gestion_orden">
@@ -116,10 +119,6 @@
     <argumento nombre="rojo">127</argumento>
     <argumento nombre="verde">20</argumento>
     <argumento nombre="azul">64</argumento>
-<!--     <argumento nombre="rojo">0</argumento> -->
-<!--     <argumento nombre="verde">0</argumento> -->
-<!--     <argumento nombre="azul">0</argumento> -->
-
     <argumento nombre="tolerancia_rojo">4</argumento>
     <argumento nombre="tolerancia_verde">6</argumento>
     <argumento nombre="tolerancia_azul">8</argumento>
@@ -140,8 +139,8 @@
   <!-- Generador de imagenes -->
   <modulo ruta="imagenes" nombre="imagenes" inicio="1">
 <!--     <argumento nombre="video">robot.mpg</argumento> -->
-    <argumento nombre="camara">1</argumento>
-<!--      <argumento nombre="archivo">hola.bmp</argumento> -->
+    <!-- <argumento nombre="camara">1</argumento> -->
+    <argumento nombre="archivo">letra.xpm</argumento>
     <argumento nombre="ancho">320</argumento>
     <argumento nombre="alto">240</argumento>
     <argumento nombre="bytes">3</argumento>
@@ -213,8 +212,8 @@
     <argumento nombre="maximo">4</argumento>
     <argumento nombre="tolerancia">3</argumento>
     <argumento nombre="neutro">no_gesto</argumento>
-   <conexion puerto="salida_texto">
-      <destino puerto="entrada_texto">salida_pipeline</destino>
+    <conexion puerto="salida_texto">
+      <destino puerto="entrada_texto">prolog</destino>
     </conexion>
   </modulo>
 
