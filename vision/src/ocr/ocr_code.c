@@ -1,9 +1,9 @@
 
 /*! \file ocr_code.c
-    \brief Implementación del ocr.
-    \author Diego Sánchez
-    \version 0.2
- */  
+  \brief Implementación del ocr.
+  \author Diego Sánchez
+  \version 0.2
+*/  
     
 /*
  *  This program is free software; you can redistribute it and/or modify
@@ -45,22 +45,22 @@ const int NUMWORDS=22;
 #endif
 
 typedef struct {
-        int m_x;
-        int m_y;
+  int m_x;
+  int m_y;
 }coord_t;
 
 typedef struct{
-        int columnasIzq[FIELDS];
-        int columnasDcha[FIELDS];
-        int filasTop[FIELDS];
-        int filasDown[FIELDS];
-        int cimaFT;
-        int cimaFD;
-        int cimaCD;
-        int cimaCI;
-        coord_t** ptosSI;
-        coord_t** ptosID;
-        int* espacios;
+  int columnasIzq[FIELDS];
+  int columnasDcha[FIELDS];
+  int filasTop[FIELDS];
+  int filasDown[FIELDS];
+  int cimaFT;
+  int cimaFD;
+  int cimaCD;
+  int cimaCI;
+  coord_t** ptosSI;
+  coord_t** ptosID;
+  int* espacios;
 }fields_t;
 
 
@@ -85,8 +85,8 @@ char match_constallation(constellation_t* local, hexadecagon_t* visitor)
   double smaller,dif;
   pos=0; smaller=MAXFLOAT;
   for(i=0; i<local->m_top;i++){
-     dif= match_hexadecagon(local->m_list[i],visitor);
-     if(dif<smaller){smaller=dif; pos=i;}
+    dif= match_hexadecagon(local->m_list[i],visitor);
+    if(dif<smaller){smaller=dif; pos=i;}
   }
   return local->m_list[pos]->m_id;
 }
@@ -94,102 +94,103 @@ char match_constallation(constellation_t* local, hexadecagon_t* visitor)
 
 int whiteColumn(int x, int top, int down, filtro_gestos_in_imagen_t* image)
 {
-   int i,pos;
-   pos= image->m_ancho*image->m_bytes;
-   for(i=top; i<down; i++)
-     if(!image->m_imagen[(i*pos)+x])return 0;
-   return 1;
+  int i,pos;
+  pos= image->m_ancho*image->m_bytes;
+  for(i=top; i<down; i++)
+    if(!image->m_imagen[(i*pos)+x])return 0;
+  return 1;
 }
 
 
 int whiteRow(int x,int left, int right, filtro_gestos_in_imagen_t* image)
 {
- int i,pos;
- pos= x*image->m_bytes*image->m_ancho;
- for(i=left;i<right;i+=3)
-   if(!image->m_imagen[pos+i])return 0;
- return 1;
+  int i,pos;
+  pos= x*image->m_bytes*image->m_ancho;
+  for(i=left;i<right;i+=3)
+    if(!image->m_imagen[pos+i])return 0;
+  return 1;
 }
 
 
 fields_t* limits(filtro_gestos_in_imagen_t* image)
 {
+
   int left,right,up,down;
- int arriba,izq,i,l,cont,punt,posi,media,dif,jumps;
- fields_t* fields= (fields_t*)malloc(sizeof(fields_t));
- int* caracXfila;
- fields->cimaCI=fields->cimaCD=fields->cimaFT=fields->cimaFD=0;
- arriba=izq=cont=punt=posi=media=jumps=0;
- for(i=1; i<image->m_alto-1; i++)
-     if(whiteRow(i,0,image->m_ancho*image->m_bytes,image)){
-       if(!whiteRow(i-1,0,image->m_ancho*image->m_bytes,image) && arriba){
-         fields->filasDown[fields->cimaFD]=i; fields->cimaFD++; arriba=0;
-       }
-       if(!whiteRow(i+1,0,image->m_ancho*image->m_bytes,image)){
-         fields->filasTop[fields->cimaFT]=i; fields->cimaFT++; arriba=1;
-       }
-   }
- caracXfila= (int*)malloc(sizeof(int)*fields->cimaFT);
+  int arriba,izq,i,l,cont,punt,posi,media,dif,jumps;
+  fields_t* fields= (fields_t*)malloc(sizeof(fields_t));
+  int* caracXfila;
+  fields->cimaCI=fields->cimaCD=fields->cimaFT=fields->cimaFD=0;
+  arriba=izq=cont=punt=posi=media=jumps=0;
+  for(i=1; i<image->m_alto-1; i++)
+    if(whiteRow(i,0,image->m_ancho*image->m_bytes,image)){
+      if(!whiteRow(i-1,0,image->m_ancho*image->m_bytes,image) && arriba){
+	fields->filasDown[fields->cimaFD]=i; fields->cimaFD++; arriba=0;
+      }
+      if(!whiteRow(i+1,0,image->m_ancho*image->m_bytes,image)){
+	fields->filasTop[fields->cimaFT]=i; fields->cimaFT++; arriba=1;
+      }
+    }
+  caracXfila= (int*)malloc(sizeof(int)*fields->cimaFT);
 
- for(l=0; l<fields->cimaFT; l++){
-   for(i=image->m_bytes; i<(image->m_ancho-1)*image->m_bytes; i+=image->m_bytes){
-     if(whiteColumn(i,fields->filasTop[l],fields->filasDown[l],image)){
-       if(!whiteColumn(i-image->m_bytes,fields->filasTop[l],fields->filasDown[l],image) && izq){
-         fields->columnasIzq[fields->cimaCI]=i; fields->cimaCI++; izq=0;
-       }
-       if(!whiteColumn(i+image->m_bytes,fields->filasTop[l],fields->filasDown[l],image)){
-         fields->columnasDcha[fields->cimaCD]=i; fields->cimaCD++; izq=1;
-       }
-     }
-   }
-   caracXfila[l] = (l>0) ? fields->cimaCI-caracXfila[l-1]: fields->cimaCI;
- }
+  for(l=0; l<fields->cimaFT; l++){
+    for(i=image->m_bytes; i<(image->m_ancho-1)*image->m_bytes; i+=image->m_bytes){
+      if(whiteColumn(i,fields->filasTop[l],fields->filasDown[l],image)){
+	if(!whiteColumn(i-image->m_bytes,fields->filasTop[l],fields->filasDown[l],image) && izq){
+	  fields->columnasIzq[fields->cimaCI]=i; fields->cimaCI++; izq=0;
+	}
+	if(!whiteColumn(i+image->m_bytes,fields->filasTop[l],fields->filasDown[l],image)){
+	  fields->columnasDcha[fields->cimaCD]=i; fields->cimaCD++; izq=1;
+	}
+      }
+    }
+    caracXfila[l] = (l>0) ? fields->cimaCI-caracXfila[l-1]: fields->cimaCI;
+  }
 
- fields->ptosSI= (coord_t**)malloc(sizeof(coord_t*)*fields->cimaCD);
- for(i=0; i<fields->cimaCD; i++){
-     if(punt==caracXfila[posi]){punt=0; posi++;}
-     fields->ptosSI[cont]= (coord_t*)malloc(sizeof(coord_t));
-     fields->ptosSI[cont]->m_x= fields->columnasDcha[i];
-     fields->ptosSI[cont]->m_y= fields->filasTop[posi];
-     cont++; punt++;
-   }
+  fields->ptosSI= (coord_t**)malloc(sizeof(coord_t*)*fields->cimaCD);
+  for(i=0; i<fields->cimaCD; i++){
+    if(punt==caracXfila[posi]){punt=0; posi++;}
+    fields->ptosSI[cont]= (coord_t*)malloc(sizeof(coord_t));
+    fields->ptosSI[cont]->m_x= fields->columnasDcha[i];
+    fields->ptosSI[cont]->m_y= fields->filasTop[posi];
+    cont++; punt++;
+  }
 
- fields->ptosID= (coord_t**)malloc(sizeof(coord_t*)*fields->cimaCI);
- cont=punt=posi=0;
- for(i=0; i<fields->cimaCI; i++){
-     if(punt==caracXfila[posi]){punt=0; posi++;}
-     fields->ptosID[cont]= (coord_t*)malloc(sizeof(coord_t));
-     fields->ptosID[cont]->m_x= fields->columnasIzq[i];
-     fields->ptosID[cont]->m_y= fields->filasDown[posi];
-     cont++; punt++;
-   }
- free(caracXfila);
+  fields->ptosID= (coord_t**)malloc(sizeof(coord_t*)*fields->cimaCI);
+  cont=punt=posi=0;
+  for(i=0; i<fields->cimaCI; i++){
+    if(punt==caracXfila[posi]){punt=0; posi++;}
+    fields->ptosID[cont]= (coord_t*)malloc(sizeof(coord_t));
+    fields->ptosID[cont]->m_x= fields->columnasIzq[i];
+    fields->ptosID[cont]->m_y= fields->filasDown[posi];
+    cont++; punt++;
+  }
+  free(caracXfila);
 
- //Saca espacios
- if(fields->cimaCI > 0) {
-   fields->espacios= (int*)malloc(sizeof(int)*fields->cimaCI-1);
-   for(i=0; i<fields->cimaCI-1; i++)fields->espacios[i]=0;
-   for(i=0; i<fields->cimaCI-1; i++){
-     dif= fields->ptosSI[i+1]->m_x-fields->ptosID[i]->m_x;
-     if(dif<0){fields->espacios[i]=1;jumps++;}else media+=dif;
-   }
-   if(fields->cimaCI-jumps>0) {
-     media/=fields->cimaCI-jumps;
-   }
-   else {
-     media=0;
-   }
-   for(i=0; i<fields->cimaCI-1; i++){
-     dif= fields->ptosSI[i+1]->m_x-fields->ptosID[i]->m_x;
-     if(dif>media*FACTOR)fields->espacios[i]=1;
-   }
- }
- else {
-   fields->espacios = 0;
- }
+  //Saca espacios
+  if(fields->cimaCI > 0) {
+    fields->espacios= (int*)malloc(sizeof(int)*fields->cimaCI-1);
+    for(i=0; i<fields->cimaCI-1; i++)fields->espacios[i]=0;
+    for(i=0; i<fields->cimaCI-1; i++){
+      dif= fields->ptosSI[i+1]->m_x-fields->ptosID[i]->m_x;
+      if(dif<0){fields->espacios[i]=1;jumps++;}else media+=dif;
+    }
+    if(fields->cimaCI-jumps>0) {
+      media/=fields->cimaCI-jumps;
+    }
+    else {
+      media=0;
+    }
+    for(i=0; i<fields->cimaCI-1; i++){
+      dif= fields->ptosSI[i+1]->m_x-fields->ptosID[i]->m_x;
+      if(dif>media*FACTOR)fields->espacios[i]=1;
+    }
+  }
+  else {
+    fields->espacios = 0;
+  }
 
- //Ajustar
-  
+  // Ajustar
+
   for(i=0; i<fields->cimaCI; i++){
     int upi,downi,lefti,righti;
     left=fields->ptosSI[i]->m_x; right=fields->ptosID[i]->m_x;
@@ -202,6 +203,7 @@ fields_t* limits(filtro_gestos_in_imagen_t* image)
     fields->ptosID[i]->m_x=right; fields->ptosSI[i]->m_x=left;
     fields->ptosSI[i]->m_y=up; fields->ptosID[i]->m_y=down;
   }
+
   return fields;
 }
 
@@ -224,9 +226,9 @@ int makeHexadecagonAux(coord_t* si, coord_t* id, hexadecagon_t* hexa, filtro_ges
   row= up+((down-up)*a)/b;
   upi=downi=lefti=righti=0;
   while(!negroU && upi<=alt)
-     if(!image->m_imagen[(up*image->m_bytes*image->m_ancho)+colum])negroU=1; else{up++; upi++;}
+    if(!image->m_imagen[(up*image->m_bytes*image->m_ancho)+colum])negroU=1; else{up++; upi++;}
   while(!negroD && downi<=alt)
-     if(!image->m_imagen[(down*image->m_bytes*image->m_ancho)+colum])negroD=1; else{down--; downi++;}
+    if(!image->m_imagen[(down*image->m_bytes*image->m_ancho)+colum])negroD=1; else{down--; downi++;}
   while(!negroL && lefti<=anch)
     if(!image->m_imagen[(row*image->m_bytes*image->m_ancho)+left])negroL=1; else{left++; lefti++;}
   while(!negroR && righti<=anch)
@@ -281,18 +283,18 @@ int makeHexadecagon(coord_t* si, coord_t* id, hexadecagon_t* hexa, filtro_gestos
 
 constellation_t* makeConstellation(fields_t* fields,filtro_gestos_in_imagen_t* image)
 {
- int i;
- hexadecagon_t* hexadecagon;
- constellation_t* constelacion= (constellation_t*)malloc(sizeof(constellation_t));
- constelacion->m_list= (hexadecagon_t**)malloc(sizeof(hexadecagon_t*)*fields->cimaCI);
- constelacion->m_top=0;
- for(i=0;i<fields->cimaCI;i++){
-   hexadecagon= (hexadecagon_t*)malloc(sizeof(hexadecagon_t));
-   makeHexadecagon(fields->ptosSI[i],fields->ptosID[i],hexadecagon,image);
-   constelacion->m_list[constelacion->m_top]= hexadecagon;
-   constelacion->m_top++;
- }
- return constelacion;
+  int i;
+  hexadecagon_t* hexadecagon;
+  constellation_t* constelacion= (constellation_t*)malloc(sizeof(constellation_t));
+  constelacion->m_list= (hexadecagon_t**)malloc(sizeof(hexadecagon_t*)*fields->cimaCI);
+  constelacion->m_top=0;
+  for(i=0;i<fields->cimaCI;i++){
+    hexadecagon= (hexadecagon_t*)malloc(sizeof(hexadecagon_t));
+    makeHexadecagon(fields->ptosSI[i],fields->ptosID[i],hexadecagon,image);
+    constelacion->m_list[constelacion->m_top]= hexadecagon;
+    constelacion->m_top++;
+  }
+  return constelacion;
 }
 
 
@@ -311,43 +313,43 @@ int freeFields(fields_t* fields)
 
 int numCar(char letra)
 {
- int i;
- char* FC= "abcdefghijklmnopqrstuvwxyz1234567890+-*/=%";
- for(i=0; i<LONG_CAR; i++)
-   if(FC[i]==letra)return i;
- return 0;
+  int i;
+  char* FC= "abcdefghijklmnopqrstuvwxyz1234567890+-*/=%";
+  for(i=0; i<LONG_CAR; i++)
+    if(FC[i]==letra)return i;
+  return 0;
 }
 
 
 double numHits(char* word1, int size, char* word2,int k, constellation_t* dataBase, constellation_t* constellation)
 {
- double out=0.0;
- int cont,i;
- cont=0;
- for(i=0; i<size; i++){
-   if(!(word1[i]==word2[i] || word1[i]==word2[i]+('a'-'A')))
+  double out=0.0;
+  int cont,i;
+  cont=0;
+  for(i=0; i<size; i++){
+    if(!(word1[i]==word2[i] || word1[i]==word2[i]+('a'-'A')))
       out+=match_hexadecagon(dataBase->m_list[numCar(word1[i])],constellation->m_list[k+i]);
-   if(word2[i]>='0' && word2[i+1]<='9')cont++;
- }
- if(cont==size)return -1;
- else return out;
+    if(word2[i]>='0' && word2[i+1]<='9')cont++;
+  }
+  if(cont==size)return -1;
+  else return out;
 }
 
 
 char* MatchDicc(char* text, int size, int k, pack_init_t* packInit, constellation_t* constellation)
 {
- if(size<NUMWORDS+1){
-   int num; double cota=MAXFLOAT; int pos=0;
-   //Verificar q ya existe (HashTable)
-   int i;
-   for(i=0; i<packInit->list[size-1]; i++){
-     num= numHits(packInit->blocks[size-1][i],size,text,k,packInit->dataBase,constellation);
-     if(num<0)return text;
-     if(num<cota){cota=num; pos=i; if(num==0)break;}
-   }
-   return strdup(packInit->blocks[size-1][pos]);
- }
- else return strdup(text);
+  if(size<NUMWORDS+1){
+    int num; double cota=MAXFLOAT; int pos=0;
+    //Verificar q ya existe (HashTable)
+    int i;
+    for(i=0; i<packInit->list[size-1]; i++){
+      num= numHits(packInit->blocks[size-1][i],size,text,k,packInit->dataBase,constellation);
+      if(num<0)return text;
+      if(num<cota){cota=num; pos=i; if(num==0)break;}
+    }
+    return strdup(packInit->blocks[size-1][pos]);
+  }
+  else return strdup(text);
 }
 
 
@@ -405,8 +407,9 @@ const char* ocr_semantic_match(filtro_gestos_in_imagen_t* dibujo, pack_init_t* p
     freeConstellation(constelacion);
   }
   /*  free(dibujo->m_imagen);
-  free(dibujo);
-  freeConstellation(constelacion);*/
+      free(dibujo);
+      freeConstellation(constelacion);*/
+
   return devolver;
 }
 
@@ -433,12 +436,12 @@ int ocr_save(const char* ruta, pack_init_t* packInit)
     fwrite(&vali, sizeof(int), 1, archivo);
   }
   for(i=0; i<NUMWORDS; i++){
-     for(j=0; j<packInit->list[i]; j++){
-        word= packInit->blocks[i][j];
-        for(k=0;k<i+1;k++){
-          fwrite(&word[k], sizeof(char), 1, archivo);
-        }
-     }
+    for(j=0; j<packInit->list[i]; j++){
+      word= packInit->blocks[i][j];
+      for(k=0;k<i+1;k++){
+	fwrite(&word[k], sizeof(char), 1, archivo);
+      }
+    }
   }
   fclose(archivo);
   return 0;
@@ -461,15 +464,15 @@ pack_init_t* ocr_init(const char* ruta)
   out->list= (int*)malloc(sizeof(int)*NUMWORDS);
   out->blocks= (char***)malloc(sizeof(char**)*NUMWORDS);
   for(i=0; i<num; i++){
-     hexadecagon= (hexadecagon_t*)malloc(sizeof(hexadecagon_t));
-     fread(&c, sizeof(char), 1, archivo);
-     hexadecagon->m_id=c;
-     for(j=0; j<NUMPTOS; j++){
-       fread(&d, sizeof(double), 1, archivo);
-       hexadecagon->m_list[j]= (float)d;
-     }
-     out->dataBase->m_list[out->dataBase->m_top]= hexadecagon;
-     out->dataBase->m_top++;
+    hexadecagon= (hexadecagon_t*)malloc(sizeof(hexadecagon_t));
+    fread(&c, sizeof(char), 1, archivo);
+    hexadecagon->m_id=c;
+    for(j=0; j<NUMPTOS; j++){
+      fread(&d, sizeof(double), 1, archivo);
+      hexadecagon->m_list[j]= (float)d;
+    }
+    out->dataBase->m_list[out->dataBase->m_top]= hexadecagon;
+    out->dataBase->m_top++;
   }
   for(i=0; i<NUMWORDS; i++){
     fread(&ent, sizeof(int), 1, archivo);
@@ -477,14 +480,14 @@ pack_init_t* ocr_init(const char* ruta)
     out->blocks[i]= (char**)malloc(sizeof(char*)*ent);
   }
   for(i=0; i<NUMWORDS; i++){
-     for(j=0; j<out->list[i]; j++){
-        for(k=0; k<i+1; k++){
-           fread(&c,sizeof(char),1,archivo);
-           buffer[k]=c;
-        }
-        buffer[i+1]='\0';
-        out->blocks[i][j]= strdup(buffer);
-     }
+    for(j=0; j<out->list[i]; j++){
+      for(k=0; k<i+1; k++){
+	fread(&c,sizeof(char),1,archivo);
+	buffer[k]=c;
+      }
+      buffer[i+1]='\0';
+      out->blocks[i][j]= strdup(buffer);
+    }
   }
   fclose(archivo);
   return out;

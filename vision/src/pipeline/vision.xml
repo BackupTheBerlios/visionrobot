@@ -116,9 +116,9 @@
 
   <!-- Ventana de parametros del OCR -->
   <modulo ruta="ventana_parametros" nombre="parametros_ocr" inicio="1">
-    <argumento nombre="rojo">127</argumento>
-    <argumento nombre="verde">20</argumento>
-    <argumento nombre="azul">64</argumento>
+    <argumento nombre="rojo">247</argumento>
+    <argumento nombre="verde">142</argumento>
+    <argumento nombre="azul">99</argumento>
     <argumento nombre="tolerancia_rojo">4</argumento>
     <argumento nombre="tolerancia_verde">6</argumento>
     <argumento nombre="tolerancia_azul">8</argumento>

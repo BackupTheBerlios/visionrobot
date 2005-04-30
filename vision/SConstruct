@@ -18,6 +18,7 @@ print "-- Compilando para", plataforma, "--"
 
 if ARGUMENTS.get('release', 0):
     print ('-- Release --')
+    CCFLAGS=' -O2 ', 
     env.Append(DEBUG=0)
 else:
     print ('-- Debug --')
@@ -106,21 +107,22 @@ if str(plataforma) == str('posix'):
             cmd = 'cd %s && %s' % (dir, cmd)
             return cmd
         
-        
     env['BUILDERS']['DVI'] = Builder(generator = tex_action,
                                      suffix='.dvi',
                                      src_suffix='.tex')
-    files = glob.glob('doc/*.tex')
-    doc = env.DVI('doc/vision.dvi', 'doc/vision.tex')
-    env.PostScript('bin/vision.ps', 'doc/vision.dvi')
-    
-    diagrama = env.Execute(Action('dia doc/pipeline.dia -t eps'))
-    diagrama = env.Execute(Action('cp doc/pipeline.eps ./'))
-#    eps = File('doc/pipeline.eps')
 
-#    Depends(diagrama, 'doc/pipeline.dia')
+    env.Append(BUILDERS = {'Dia' : Builder(action = 'dia $SOURCE -t eps -e $TARGET')})
     
-#    Depends(eps, diagrama)
+    files = glob.glob('doc/*.tex')
     
-    Depends(doc, files) # + [eps]
+    doc = env.DVI('doc/vision.dvi', 'doc/vision.tex')
     
+    ps = env.PostScript('bin/vision.ps', 'doc/vision.tex')
+
+    dia = env.Dia('pipeline.eps', 'doc/pipeline.dia')
+    
+    Depends(doc, files + dia)
+
+    Depends(ps, doc)
+    
+
