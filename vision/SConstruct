@@ -7,17 +7,15 @@ import glob
 plataforma = ARGUMENTS.get('OS', Platform())
 env = Environment(CPPPATH = ['src/robot', 'src/red_neuronal', 'src/libpipeline', 'src/filtro_gestos', 'src/ventana_imagen'], ENV = os.environ, platform = plataforma, PLATFORM=plataforma, LIBPATH=['lib'])
 
+
 if str(plataforma) == str('win32'):
-#    env = env.Copy(CCFLAGS='-g', CXXFLAGS='-g', CC='gcc -mms-bitfields', tools=['mingw'], LINKFLAGS='--export-dynamic') CCFLAGS=['-DWIN32=1'], 
-    env.Append(CPPPATH = ['c:\GTK\include', 'C:\GTK\include/atk-1.0/', 'c:\GTK\include\glib-2.0', 'c:\GTK\include\gtk-2.0', 'c:\GTK\lib\glib-2.0\include', 'c:\GTK\lib\gtk-2.0\include', 'c:\GTK\include\pango-1.0', 'c:\GTK\include\libglade-2.0', 'c:\GTK\include\libxml2'], LIBPATH=['lib', 'c:\GTK\lib'],LIBS=['gdk-win32-2.0', 'gdk_pixbuf-2.0', 'gmodule-2.0', 'xml2', 'glade-2.0', 'gobject-2.0', 'gtk-win32-2.0', 'glib-2.0'])
     debug=' /Od '
     optimizar= ' /O2 '
     linker=' /debug '
 else:
-    env.ParseConfig('pkg-config glib-2.0 --cflags --libs')
-    env.ParseConfig('pkg-config libglade-2.0 --cflags --libs')
-    debug=' -g '
-    optimizar = ' -O2 '
+    debug='-g'
+    optimizar = '-O2'
+    linker=''
 
 print "-- Compilando para", plataforma, "--"
 
@@ -28,34 +26,49 @@ else:
     print ('-- Debug --')
     env.Append(CCFLAGS=debug, LINKFLAGS=linker)
 
+
+if str(plataforma) == str('win32'):
+    env.Append(CPPPATH = ['c:\GTK\include', 'C:\GTK\include/atk-1.0/', 'c:\GTK\include\glib-2.0', 'c:\GTK\include\gtk-2.0', 'c:\GTK\lib\glib-2.0\include', 'c:\GTK\lib\gtk-2.0\include', 'c:\GTK\include\pango-1.0', 'c:\GTK\include\libglade-2.0', 'c:\GTK\include\libxml2'], LIBPATH=['lib', 'c:\GTK\lib'],LIBS=['gdk-win32-2.0', 'gdk_pixbuf-2.0', 'gmodule-2.0', 'xml2', 'glade-2.0', 'gobject-2.0', 'gtk-win32-2.0', 'glib-2.0'])
+    
+glib = env.Copy()
+glade = env.Copy()
+gtk = env.Copy()
+
+if str(plataforma) == str('posix'):
+    glib.ParseConfig('pkg-config glib-2.0 --cflags --libs')
+    glade.ParseConfig('pkg-config libglade-2.0 --cflags --libs')
+    gtk.ParseConfig('pkg-config gtk+-2.0 --cflags --libs')
+
 # Libpipeline
-libpipeline = env.Library('lib/pipeline', 'src/libpipeline/pipeline.c')
+libpip = glib.Copy()
+libpip.ParseConfig('pkg-config xml2 --cflags')
+libpipeline = libpip.Library('lib/pipeline', 'src/libpipeline/pipeline.c')
 env.Install('bin', ['src/libpipeline/pipeline.dtd'])
 
 # Gestion
-env.SharedLibrary('bin/gestion', 'src/gestion/gestion.c')
+glib.SharedLibrary('bin/gestion', 'src/gestion/gestion.c')
 
 
 # Prolog
-env.SharedLibrary('bin/prolog', 'src/prolog/prolog.c')
+glib.SharedLibrary('bin/prolog', 'src/prolog/prolog.c')
 
 # Filtro gestos
-fil = env.Copy()
+fil = glib.Copy()
 fil.Append(LIBS=['lua', 'lualib'])
 fil.SharedLibrary('bin/filtro_gestos', 'src/filtro_gestos/filtro_gestos.c')
 env.Install('bin', ['src/filtro_gestos/filtro.lua'])
 
 # Salida
-env.SharedLibrary('bin/salida', 'src/salida/salida.c')
+glade.SharedLibrary('bin/salida', 'src/salida/salida.c')
 env.Install('bin', ['src/salida/ventana_salida.glade'])
 
 # La ventana de imagenes
-env.SharedLibrary('bin/ventana_imagen', 'src/ventana_imagen/ventana_imagen.c')
+glade.SharedLibrary('bin/ventana_imagen', 'src/ventana_imagen/ventana_imagen.c')
 env.Install('bin', ['src/ventana_imagen/ventana_imagen.glade'])
 
 # Imagenes o camara, segun sea Linux o Windows
 if str(plataforma) == str('posix'):
-    img = env.Copy()
+    img = gtk.Copy()
     img.ParseConfig('pkg-config libxine --cflags --libs')
     img.Append(LIBS=['sane'])
     img.SharedLibrary('bin/imagenes', 'src/imagenes/imagenes.c')
@@ -70,18 +83,18 @@ else:
 
 
 # Ocr
-env.SharedLibrary('bin/ocr', ['src/ocr/ocr.c', 'src/ocr/ocr_code.c'])
+glib.SharedLibrary('bin/ocr', ['src/ocr/ocr.c', 'src/ocr/ocr_code.c'])
 env.Install('bin', ['src/ocr/base_datos'])
 
 # Post gestion
-env.SharedLibrary('bin/post_gestion', 'src/post_gestion/post_gestion.c')
+glib.SharedLibrary('bin/post_gestion', 'src/post_gestion/post_gestion.c')
 
 # Red neuronal
-env.SharedLibrary('bin/red_neuronal', ['src/red_neuronal/red.c', 'src/red_neuronal/red_neuronal.c'])
+glib.SharedLibrary('bin/red_neuronal', ['src/red_neuronal/red.c', 'src/red_neuronal/red_neuronal.c'])
 env.Install('bin', ['src/red_neuronal/orden_net'])
 
 # Robot
-rob = env.Copy()
+rob = glib.Copy()
 if str(plataforma) == str('posix'):
     rob.Append(LIBS=['lua', 'lualib', 'parapin'])
 else:
@@ -91,13 +104,14 @@ rob.SharedLibrary('bin/robot', 'src/robot/robot.c')
 env.Install('bin', ['src/robot/robot.lua'])
 
 # Ventana parametros
-env.SharedLibrary('bin/ventana_parametros', 'src/ventana_parametros/ventana_parametros.c')
+glade.SharedLibrary('bin/ventana_parametros', 'src/ventana_parametros/ventana_parametros.c')
 env.Install('bin', ['src/ventana_parametros/ventana_parametros.glade'])
 
 
 # El ejecutable
-pip = env.Copy()
+pip = glade.Copy()
 pip.Prepend(LIBS=['pipeline'])
+pip.ParseConfig('pkg-config xml2 --libs')
 Depends(pip.Program('bin/pipeline', 'src/pipeline/main.c'), libpipeline)
 env.Install('bin', ['src/pipeline/ventana_pipeline.glade'])
 
