@@ -58,25 +58,23 @@ static void pipeline_salida_error(const pipeline_t *pipeline, const char *nombre
 static int  pipeline_set_ruta(pipeline_t* p, const char * elemento, const char *ruta/*, const char *dir*/) {
   elemento_t *dato = g_hash_table_lookup(p->m_modulos, elemento);
   //const char * ruta_modulo;
-  char *ruta_modulo;
+  char ruta_modulo[128];// = 0;
   int dev = 0;
   if (ruta) {
     if (dato->m_handler){
       g_module_close(dato->m_handler);
     }
-    ruta_modulo = (char *)malloc(sizeof(char) * strlen(ruta)
+    //    ruta_modulo = 
 #ifdef G_OS_WIN32
-     );
-    strcpy(ruta_modulo, ruta);
+      //  (char *)malloc(sizeof(char) * strlen(ruta) + 4);
+    sprintf(ruta_modulo, "%s.dll", ruta);
 #else
-    + 3);
-  sprintf(ruta_modulo, "lib%s", ruta);
+    //    (char *)malloc(sizeof(char) * strlen(ruta) + 6);
+    sprintf(ruta_modulo, "lib%s.so", ruta);
 #endif
-    //ruta_modulo = g_module_build_path(dir, ruta);
-    //    printf("A ver, dir: %s, ruta: %s, ruta_modulo: s.\n", /*dir, ruta/*, ruta_modulo*/);
-    //ruta_modulo = ruta;
+    
     dato->m_handler = g_module_open(ruta_modulo, G_MODULE_BIND_LAZY);
-
+    
     if (dato->m_handler) {
       typedef modulo_t *(*funcion_modulo_t) ();
       funcion_modulo_t f;
@@ -92,7 +90,7 @@ static int  pipeline_set_ruta(pipeline_t* p, const char * elemento, const char *
       dev = -1;
     }
     pipeline_salida_error(p, "Pipeline", "Bibliotecas", g_module_error());
-    /*if(ruta_modulo) {
+    /* if(ruta_modulo) {
       g_free(ruta_modulo);
       }*/
   }
