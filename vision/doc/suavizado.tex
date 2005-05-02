@@ -1,0 +1,110 @@
+\chapter{Suavizado}
+
+\hline
+\linebreak 
+
+Existen unos tipos de operaciones sobre imágenes como el suavizado y la extracción de bordes que reciben el nombre de transformaciones de vecindad.
+
+\section{Vecindad}
+Se dice que todo píxel p, de coordenadas (x, y) tiene 4 píxeles que establecen con él una relación de vecindad horizontal y vertical que son:
+
+\begin{center}
+Horizontal: (x - 1, y),  (x + 1, y) 	
+Vertical:  (x, y - 1),  (x, y + 1)
+\end{center} 
+
+Estos cuatro píxeles definen lo que se conoce como entorno de vecindad-4.
+Por tanto vecinos de un píxel (p) de coordenadas (x, y): (excepto bordes)
+\begin{itemize}
+\item N_{4}(p) = 4-vecinos de p	{(x-1,y),(x+1,y),(x,y-1),(x,y+1)}
+\item N_{d}(p) = vecinos diagonales de p {(x+1,y+1),(x-1,y+1),(x+1,y-1),(x-1,y-1)}
+\item N_{8}(p) = 8-vecinos de p	N_{4}(p) \cup N_{d}(4)
+\end{itemize} 
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline (x-1, y-1) & (x, y-1) & (x+1, y-1) \\ 
+\hline (x-1, y) & (x, y) & (x+1, y) \\ 
+\hline (x-1, y+1) & (x, y+1) & (x+1, y+1) \\ 
+\hline 
+Entorno de vecindad del píxel (x, y)
+\end{tabular} 
+\end{center} 
+
+\section{Conectividad}
+Otra noción es la de conectividad. Conectividad para los píxeles p y q con valores en V. Siendo V =  conjunto de valores de intensidad que se permiten que estén adyacentes.
+\begin{itemize}
+\item 4-conectados		q \epsilon N_{4}(p)
+\item 8-conectados		q \epsilon N_{8}(p)
+\item m-conectados		q \epsilon N_{4}(p) o q \epsilon N_{4}(p) \cap {N_{4}(p) \cap N_{4}(q)=\phi}
+\end{itemize} 
+
+Se dice que un píxel q es contiguo a otro píxel p si están conectados.
+
+\section{Medidas}
+Sea p = (x, y), q = (s, t), existen una serie de propiedades métricas.
+\begin{itemize}
+\item D(p, q) >= 0		D(p, q) = 0  si  p = q
+\item D(p, q) = D(q, p) 
+\item D(p, z) <= D(p, q) + D(q, z)
+\end{itemize} 
+
+D_{e} Distancia euclidea	De(p, q) = $ \sqrt{(x-s)^{2} + (y-t)^{2}} $
+\begin{center}
+\includegraphics[scale=1]{distEuclidea.png} 
+\end{center} 
+ 
+D_{4} Distancia euclidea	D4(p, q) = |x-s| + |y-t|  	(Si D_{4}=1 \rightarrow 4-vecinos de p)
+\begin{center}
+\includegraphics[scale=1]{distEuclidea4.png} 
+\end{center} 
+ 
+D_{8} Distancia de ajedrez	D8(p, q) = max(|x-s| , |y-t|) 		(Si D_{8}=1 \rightarrow 8-vecinos de p)
+\begin{center}
+\includegraphics[scale=1]{distAjedrez.png} 
+\end{center} 
+
+Las técnicas mas utilizadas en el suavizado es el uso de máscaras de convolución (plantillas, ventanas o filtros). Normalmente son matrices 3x3, pero en nuestro caso hemos utilizado matrices 5x5.
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline w1(x-1, y-1) & w2(x, y-1) & w3(x+1, y-1) \\ 
+\hline w4(x-1, y) & w5(x, y) & w6(x+1, y) \\ 
+\hline w7(x-1, y+1) & w8(x, y+1) & w9(x+1, y+1) \\ 
+\hline 
+ Mascara 3x3
+\end{tabular} 
+\end{center} 
+
+\section{Tipos}
+Hay varios tipos de suavizado:
+\begin{itemize}
+\item Promedio del entorno de vecindad.
+\item Filtrado de la mediana.
+\item Promedio de la imagen.
+\item Suavizado binario de imágenes.
+\end{itemize} 
+
+\section{Promedio del entorno de vecindad}
+Es el método que hemos utilizado en el preprocesamiento de las imágenes recibidas por la cámara.
+Se utiliza para la eliminación de ruidos y otros efectos debidos a la cuantización o a perturbaciones. La razón de haber utilizado un suavizado al principio fue para crear un difuminado de la imagen y que futuros filtrados sean mas uniformes. Siempre el objetivo buscado es generar una imagen lo suficientemente simple y objetiva para ser entendida por la red neuronal.
+
+Las desventajas de este método son que desdibuja contornos y detalles de forma, pero en nuestro caso concreto esto no tiene relevancia.
+\begin{center}
+\textbf{g(x, y) = $ (\dfrac{1}{K}) * \Sigma f(n, m) $} 
+\end{center} 
+(sumatorio de 0 a K, siendo K el numero total de puntos de la vecindad)
+
+Método:
+\begin{center}
+Se utiliza una máscara de 5x5 \rightarrow  wi = 1/25
+\end{center} 
+	 
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline \includegraphics[scale=1]{arbol1.png}  & \includegraphics[scale=1]{arbolSuav.png}  \\ 
+\hline 
+\end{tabular} 
+Dos representaciones de la misma imagen. La imagen de la izquierda es la imagen original y la de la derecha es la imagen después de aplicarle el suavizado promedio del entorno de vecindad.
+\end{center} 
+
