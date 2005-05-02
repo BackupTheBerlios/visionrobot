@@ -1,0 +1,77 @@
+\chapter{Imagen Digital}
+
+Existen dos tipos de imágenes utilizadas frecuentemente en visión por computador: Imágenes de intensidad e imágenes de alcance.
+
+Las imágenes de alcance, también denominadas imágenes o mapas de profundidad, tiene su fundamento en los sensores de alcance ópticos y estiman directamente la estructura de la imagen en tres dimensiones de la escena.
+Las imágenes de intensidad miden la cantidad de luz que incide en un dispositivo fotosensible. Es este tipo de imágenes sobre las cuales hemos trabajado en nuestro proyecto.
+
+Las estructuras de datos utilizadas en la digitalización de una imagen son varias:
+\begin{itemize}
+\item Tradicionales
+\begin{enumerate}
+\item Matrices
+\item Cadenas
+\item Estructuras topológicas
+\item Estructuras relacionales
+\end{enumerate} 
+\item Jerárquicas
+\begin{enumerate}
+\item Pirámides
+\item Quadtrees
+\end{enumerate} 
+\end{itemize} 
+
+Las que nosotros hemos utilizado han sido matrices, es decir, una imagen digitalizada formaría una matriz tal que:
+\begin{center}
+f(x,y) \equiv valor proporcional a la intensidad de luz en el punto (x,y)
+
+\includegraphics[scale=1]{rob1.png} 
+\end{center} 
+	
+Cada elemento de la matriz o píxel tendrá un valor asignado que se corresponde con el nivel de luminosidad del punto correspondiente en la escena captada, dicho valor es el resultado de la cuantización de intensidad o nivel de gris.
+Se suele utilizar el termino bitmap para hacer referencia a un mapa de píxeles, aunque en algunos ambientes se preserva para aquellos mapas de píxeles en los que un píxel se representa por un simple bit.
+
+Si la imagen es en blanco y negro, se almacena solo un valor por píxel, en nuestro caso las imágenes son a color, lo que hace que los elementos de la matriz ya no tengan asociado un solo valor sino tres, correspondientes el rojo, verde y azul. 
+A este modelo se le llama modelo de color RGB.
+Cada valor de píxel es un triple ordenado (r, g, b), donde r, g, b representan las intensidades de rojo ,verde y azul respectivamente. r, g, b son cadenas de bits, en nuestro caso, son de 8 bits, esto significa que el rango de valores varía de 0 a 255, donde el 0 representa el negro absoluto y el 255 el blanco absoluto.
+
+Algunas correspondencias de colores en el modelo RGB son:
+\begin{itemize}
+\item Negro:	(0,0,0)
+\item Azul:	(0,0,255)
+\item Verde:	(0,255,0)
+\item Rojo:	(255,0,0)
+\item Amarillo:	(255,255,0)
+\item Blanco:	(255,255,255)
+\end{itemize} 
+	
+La profundidad del color se define como la suma de los bits asociados a los componentes r, g, b. Por ejemplo, si utilizamos 2 bits para el rojo, 2 para el verde y 2 para el azul, tendremos una profundidad de color de 6 bits por píxel, y una paleta de colores de 2^{6} = 64 posibles colores.
+La profundidad de color ideal es la de 24 bits por píxel, conocida como color verdadero. Por encima de esta profundidad el ojo humano es incapaz de notar la diferencia.
+
+Dos factores que afectan a la calidad de una imagen es su resolución espacial y en amplitud. Dependiendo del numero de pixels que tenga el dispositivo la imagen poseerá mas o menos resolución espacial. Y la amplitud se refiere al rango de bits destinados para representar la intensidad de cada píxel. 
+A mas resolución en ambos campos mas memoria se requiere, pero mas nítida es la imagen. Un ejemplo de un gráfico a color verdadero con una resolución de 1280 x 1024, necesita:
+
+\begin{center}
+1280 x 1024 x 24 = 31457280 bits (casi 4 Mb)
+\end{center} 
+ 	 
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline \includegraphics[scale=1]{arbol1.png}  & \includegraphics[scale=1]{arbol2.png}  \\ 
+\hline 
+\end{tabular} 
+Dos representaciones de la misma imagen con la variación del numero de pixels utilizados.
+La de la izquierda tiene una resolución de 240x160 y la de la derecha de 48x32.
+\end{center} 
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline \includegraphics[scale=1]{arbol1.png}  & \includegraphics[scale=1]{arbol3.png}  \\ 
+\hline 
+\end{tabular} 
+Dos representaciones de la misma imagen con variación en el numero de niveles de color utilizados. La de la izquierda posee 256 y la de la derecha 8.
+\end{center} 	 
+
+Resumiendo, el termino imagen se refiere a una función de intensidad bidimensional f(x,y), donde x, y son las coordenadas espaciales y el valor de f en cualquier punto (x, y) es proporcional a la intensidad de color.
+Una vez que se tiene definido el sistema de ejes cartesianos, ya es posible realizar cualquier tipo de operación. Estas operaciones serán los filtros, que aplicados sobre la imagen la modificaran. 
+
