@@ -1,0 +1,52 @@
+\chapter{Rotación}
+
+\hline
+\linebreak 
+
+A diferencia de los otros tratamientos de imágenes en los que la manipulación de esta consistía en el cambio de los valores de intensidad de los píxeles, la rotación es una manipulación de la imagen que cambia la posición de los píxeles sin modificar su valor. Esta transformación implica un cambio en la disposición y distribución de los píxeles respecto de un sistema de coordenadas.
+
+El objetivo es investigar mas específicamente un área dentro de la imagen, llamada región de interés. Para ello hay veces que es necesario realizar transformaciones geométricas para analizar con mas facilidad estas regiones, como por ejemplo realizar translaciones, rotaciones, escalados.
+
+Para estas tres transformaciones elementales, es necesario hacer una interpolación a la imagen resultante. A efectos de notación, la imagen original tendrá coordenadas (i, j) y la imagen resultante coordenadas (x, y). Estas coordenadas están asociadas a un determinado sistema de referencia, que es preciso establecer con su origen y su convenio de ejes.
+
+Vamos ha utilizar coordenadas homogéneas ya que permiten realizar la rotación mediante el uso de matrices. Para representar un punto (x, y) en coordenadas homogéneas, se considera el punto como un vector (S_{x}, S_{y}, S), donde S es un factor de escala. Por ejemplo el punto (5, 8), en un sistema de coordenadas cartesiano, podría representarse como (10, 16 , 2). Generalmente por conveniencia, las componentes del vector se normalizan dividiéndolas por el factor escala S, esto hace que el nuevo factor escala sea 1 y las demás componentes sean las mismas que las originales. Así el ejemplo anterior sería (5, 8, 1) si estuviera normalizado.
+
+La rotación es un giro de un ángulo \theta con respecto al origen de coordenadas de la imagen. Viene dada por la siguiente transformación:
+$ x = i.cos\theta - j.sen\theta $
+$ y = i.sen\theta + j.cos\theta $
+
+cuya representación matricial en coordenadas homogéneas resulta ser:
+
+\begin{center}
+\includegraphics[scale=1]{matriz_rotacion1.png} 
+\end{center} 
+
+El uso de la rotación en este caso es para afrontar situaciones de rotación de la cámara de captura de la escena o la del propio objeto en situación de movimiento.
+
+Los parámetros para llevar a cabo una rotación son el ángulo de giro y las coordenadas del centro de rotación.
+
+Ejemplo:
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline \includegraphics[scale=1]{no_rotada.png}  & \includegraphics[scale=1]{rotada.png}  \\ 
+\hline 
+\end{tabular} 
+\end{center} 
+
+Como podemos ver en el ejemplo, la imagen resultante es de distinto tamaño que la original. Este tamaño se calcula dependiendo de cuanto grados se quiera rotar y cual era su tamaño anterior. 
+
+La transformación de rotación expuesta hasta ahora consiste en que para cada píxel de la imagen original se calcula su correspondiente píxel de la imagen destino. Una vez sabemos la posición del píxel le asignamos a este la misma intensidad que el de la original. Este sistema puede producir una imagen destino rotada con muchos píxeles en blanco, es decir, píxeles que no se asocian con ninguno de la original siguiendo la matriz de transformación vista.
+La única forma de asignar un valor de intensidad a todos los píxeles de la imagen destino, es hacer la transformación inversa, donde en vez de hallar el píxel destino (x, y) a partir de un píxel (i, j), hallamos el píxel (i, j) a partir del (x, y). Ahora podemos recorrer toda la imagen destino viendo cual es el píxel origen asociado a él y asignarle así su intensidad, sin que queden píxeles sin color asignado. Ahora puede que varios píxeles destino compartan el mismo píxel origen, pero eso es menos grave que ver una imagen rotada con casi un tercio de espacios en blanco.
+La rotación en sentido opuesto viene dada por la siguiente transformación:
+$ i = x.cos\theta - y.sen\theta $
+$ j = -x.sen\theta + y.cos\theta $
+(i, j) es un píxel de la imagen origen y (x, y) uno de la imagen destino.
+
+cuya representación matricial en coordenadas homogéneas es la inversa, que en este caso coincide con la transpuesta de la matriz anterior:
+
+\begin{center}
+\includegraphics[scale=1]{matriz_rotacion2.png} 
+\end{center} 
+
+Los píxeles de la imagen resultante que tras el calculo se les asigna un píxel de la imagen original que se sale de rango, se le asigna una intensidad correspondiente con la del entorno. En el ejemplo anterior se les asigno el color negro.
+
