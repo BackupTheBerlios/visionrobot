@@ -41,7 +41,11 @@ const double FACTOR= 1.9;
 const int NUMWORDS=22;
 
 #ifndef MAXFLOAT
+// FIXME: Esto es una chapuza,
+// lo he puesto por no mirar cuál es el equivalente
+// para GCC
 #define MAXFLOAT 999999999999.9f
+// Carlos
 #endif
 
 typedef struct {
@@ -192,16 +196,44 @@ fields_t* limits(filtro_gestos_in_imagen_t* image)
   // Ajustar
 
   for(i=0; i<fields->cimaCI; i++){
+
     int upi,downi,lefti,righti;
-    left=fields->ptosSI[i]->m_x; right=fields->ptosID[i]->m_x;
-    down=fields->ptosID[i]->m_y; up=fields->ptosSI[i]->m_y;   
-    upi=downi=lefti=righti=0;
-    while(!upi)(!whiteRow(up,left,right,image)) ? upi=1: up++;
-    while(!downi)(!whiteRow(down,left,right,image)) ? downi=1: down--;
-    while(!lefti)(!whiteColumn(left,up,down,image)) ? lefti=1: left++;
-    while(!righti)(!whiteColumn(right,up,down,image)) ? righti=1: right--;
-    fields->ptosID[i]->m_x=right; fields->ptosSI[i]->m_x=left;
-    fields->ptosSI[i]->m_y=up; fields->ptosID[i]->m_y=down;
+    
+    left = fields->ptosSI[i]->m_x; 
+    right=fields->ptosID[i]->m_x;
+    down = fields->ptosID[i]->m_y;
+    up = fields->ptosSI[i]->m_y;   
+
+    upi = downi = lefti = righti = 0;
+
+    while(!upi) {
+      !whiteRow(up,left,right,image) ? upi=1: up++;
+    }
+    while(!downi) {
+      !whiteRow(down,left,right,image) ? downi=1: down--;
+    }
+    while(!lefti) {
+      // WARNING: añado esto porque
+      // si no, se queda colgado aquí
+      if(left >= image->m_ancho) {
+	break;
+      }
+      !whiteColumn(left,up,down,image) ? lefti=1: left++;
+    }
+    while(!righti) {
+      // WARNING: lo mismo aquí
+      // esto debería estar programado de otra manera
+      if(right == 0) {
+	break;
+      }
+
+      !whiteColumn(right,up,down,image) ? righti=1: right--;
+    }
+
+    fields->ptosID[i]->m_x = right;
+    fields->ptosSI[i]->m_x = left;
+    fields->ptosSI[i]->m_y = up;
+    fields->ptosID[i]->m_y = down;
   }
 
   return fields;

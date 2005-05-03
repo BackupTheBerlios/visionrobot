@@ -13,7 +13,7 @@ if str(plataforma) == str('win32'):
     optimizar= ' /O2 '
     linker=' /debug '
 else:
-    debug='-g'
+    debug='-ggdb'
     optimizar = '-O2'
     linker=''
 
@@ -142,5 +142,4 @@ if str(plataforma) == str('posix'):
     Depends(doc, files + dia)
 
     Depends(ps, doc)
-    
 

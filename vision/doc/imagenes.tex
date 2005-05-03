@@ -17,13 +17,13 @@ En la función de cerrar simplemente libera los recursos.
 Para la generación resultados desde diferentes fuentes, el módulo hace uso de una serie de librerías; son las siguientes:
 
 \begin {itemize}
-\item {\bf SANE}: Sane (Scanner Access Now Easy) es una biblioteca originariamente para interfaces con escáneres, pero ampliada para cualquier dispositivo de imágenes. A través de esta biblioteca accedemos a la cámara.
-\item {\bf Xine}: Xine-lib tiene como objetivo la reproducción de archivos de vídeo en varios formatos (los más usuales, también puede aceptar formatos nuevos a través de {\em plugins}). A través de Xine cargamos un vídeo en el módulo de imágenes y lo reproducimos.
-\item {\bf Gdk}: Usamos Gdk para cargar fácilmente archivos de imágenes, y usarlos así como fuentes sencillas de imágnenes cuyo resultado se conoce.
-\item {\bf Código propio}: También hemos implementado, para pruebas principalmente, las siguientes funcionalidades del módulo:
+\item [SANE]: Sane (Scanner Access Now Easy) es una biblioteca originariamente para interfaces con escáneres, pero ampliada para cualquier dispositivo de imágenes. A través de esta biblioteca accedemos a la cámara.
+\item [Xine]: Xine-lib tiene como objetivo la reproducción de archivos de vídeo en varios formatos (los más usuales, también puede aceptar formatos nuevos a través de {\em plugins}). A través de Xine cargamos un vídeo en el módulo de imágenes y lo reproducimos.
+\item [Gdk]: Usamos Gdk para cargar fácilmente archivos de imágenes, y usarlos así como fuentes sencillas de imágnenes cuyo resultado se conoce.
+\item [Código propio]: También hemos implementado, para pruebas principalmente, las siguientes funcionalidades del módulo:
   \begin {itemize}
-  \item {\bf Generación de colores planos}: Pintamos todo el búfer de un color. Es muy útil para comprobar el funcionamiento de los filtros.
-  \item {\bf Generación de imágenes aleatorias}: Rellena la matriz de colores con colores al azar, de esta manera vemos cómo los filtros aceptan o dejan de aceptar los valores.
+  \item [Generación de colores planos]: Pintamos todo el búfer de un color. Es muy útil para comprobar el funcionamiento de los filtros.
+  \item [Generación de imágenes aleatorias]: Rellena la matriz de colores con colores al azar, de esta manera vemos cómo los filtros aceptan o dejan de aceptar los valores.
   \end {itemize}
 \end {itemize}
 
