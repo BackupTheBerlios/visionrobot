@@ -1,7 +1,7 @@
 
 /*! \file ocr_code.c
-  \brief Implementación del ocr.
-  \author Diego Sánchez
+  \brief Implementaciï¿½n del ocr.
+  \author Diego Sï¿½nchez
   \version 0.2
 */  
     

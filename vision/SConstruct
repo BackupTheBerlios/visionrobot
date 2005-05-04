@@ -137,7 +137,7 @@ if str(plataforma) == str('posix'):
     
     ps = env.PostScript('bin/vision.ps', 'doc/vision.tex')
 
-    dia = env.Dia('pipeline.eps', 'doc/pipeline.dia')
+    dia = env.Dia('doc/pipeline.eps', 'doc/pipeline.dia')
     
     Depends(doc, files + dia)
 
