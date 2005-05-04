@@ -1,11 +1,29 @@
 \chapter {Introducción}
 
+Este primer capítulo ofrece una primera toma de contacto con el proyecto, explicando de la manera más simple y concisa posible los primeros detalles generales que hemos considerado de interés para el conocimiento de ``Visión por computador''.
+
 \section{Objetivos}
 
 El objetivo del proyecto consiste desarrollar en un motor modular de visión no dependiente del entorno y el reconocimiento de mensajes, a través de las imágenes capturadas desde una cámara, para la implantación del sistema de órdenes de un robot. Para la demostración de la funcionalidad se usarán un entorno en 3D y un robot construido desde cero.
 
-\section{Organización de la memoria}
+La idea fundamental ha sido partir desde cero y emplear una gran parte de los conocimientos adquiridos durante la carrera para desarrollar un motor de reconocimiento de visión, con unos resultados útiles, diferenciables, y, en la medida de lo posible, vistosos. Mediante la implementación, además, hemos procurado desarrollar un sistema eficiente y sólido, a la vez que dotado de gran generalidad, para que el flujo de producción de la aplicación y las posteriores modificaciones fuesen lo más cómodas y sencillas posibles.
 
+\section{Organización de la memoria}
+La memoria está organizada en tres partes. La primera, en la que nos encontramos (parte \ref{definicion}), se dedica a la explicación del proyecto como tal, con el propósito de proporcionar una visión general y directa de {\em Visión por computador}. Aquí explicamos la arquitectura de ``tubería'' de la aplicación, y el posible uso futuro del trabajo realizado, entre otras cosas. Esta primera parte es la base para adquirir una visión general y completa del trabajo, necesaria tanto para conocerlo como para usarlo o ampliarlo.
+
+Como segunda parte de la memoria hemos añadido un primer anexo (\ref {anexo1}) en el que detallamos los módulos que usamos, yendo un nivel más abajo en el detalle de explicación de los mismos. Aquí damos ya una visión menos general, pero más profunda, de las diferentes tecnologías características que hemos usado para desarrollar las diferentes partes de la aplicación. Hemos intentado que este módulo de la memoria sirva como base para el uso metódico del proyecto, y que ofrezca al lector una primera aproximación a la verdadera arquitectura e implementación del trabajo. Por tanto, es de interés para aquellos que vayan a usar el proyecto de una manera más avanzada que la de la simple prueba.
+
+Finalmente, en el Anexo II (\ref {anexo2}), detallamos toda la documentación del {\em API} de la aplicación. Decidimos adjuntarlo a la memoria principal con el objetivo de formar un solo documento de nuestro trabajo, en el que se aglutinase toda la información relevante. Así pues, para futuras modificaciones o ampliaciones del proyecto, ya sea por nuestra parte o por otros grupos (incluso personas externas al ábito de la asignatura), la inmersión el el código tendrá como guía de desarrollo esta parte de la memoria.
 
 \section{Resumen del proyecto}
 
+{\em Visión por computador} ha terminado por superar las espectativas primeras. Todos los objetivos primarios que se habían fijado se ha realizado con éxito. Hemos conseguido alcanzar todos nuestros objetivos iniciales ``oficiales'', y añadir a la aplicación más funcionalidades. A continuación ofrecemos una lista de las mismas:
+
+\begin{itemize}
+\item El control de un robot, y, al proyecto en general, la construcción total de un microrrobot, tarea que principalmente no habíamos incluido en la entrega obligatoria.
+\item Una arquitectura (``pipeline'') y la implementación de la misma muy general, estable y eficiente, no dependiente de la aplicación, y posiblemente de uso general para cualquier proyecto modular.
+\item Implementación multiplataforma del proyecto, actualmente con pruebas exitosas en GNU/Linux y Windows (kernel NT).
+\item Desarrollo de algoritmos propios de control de flujo (gestión de salida), de reconocimiento de caracteres (OCR).
+% TODO: ver si esto es verdad
+\item Desarrollo de un motor 3D propio basado en DirectX.
+\end {itemize}
