@@ -1,0 +1,73 @@
+El formato de los archivos de terreno es el siguiente:
+
+[archivo_mapa_altura] [archivo_textura] [archivo_textura_detalle] [tamaño_mapa] [escala_mapa] [suavizado_mapa]
+
+
+
+archivo_mapa_altura	:	Nombre del archivo .raw con la informacion de altura del terreno.
+				Se supone que deberá estar guardado en escala de grises y tendrá
+				una dimension de tamaño_mapa x tamaño_mapa.
+
+archivo_textura		:	Nombre del archivo que contiene la textura que se aplicará al terreno. Si en
+				este campo aparece "generar", se generará una textura procedural para este mapa.
+				
+				
+
+archivo_textura_detalle	:	Nombre del archivo con la textura que se aplica para dar mas detalle al terreno.
+
+tamaño_mapa		:	Dimensión del mapa de altura. Se supone que el mapa es cuadrado 
+				y por tanto tamaño_mapa representa la longitud de uno de los lados.
+
+escala_mapa		:	Factor que determina la distancia entre los vertices que generan la malla
+				del terreno.
+
+suavizado_mapa		:	Factor que determina lo abrupto del terreno. Un valor de 100 indica que la altura
+				de cada vertice será asignada directamente de la informacion del mapa de altura.
+				Un valor menor implica una diferencia menor entre las alturas (i.e. terreno mas suave)
+				mientras que un valor mayor que 100 hará el terreno más abrupto.
+
+Si se ha utilizado "generar" en el campo de archivo_textura, se debera especificar a continuación
+las imagenes y las regiones correspondientes para generar la textura procedural.
+
+[nº_tiles]		: Número de imágenes diferentes que se usarán para crear diferentes materiales del mapa.
+
+{para cada uno de los tiles}
+
+	[archivo_textura] [alutra_minima] [altura_optima] [altura_maxima]
+
+{fin tiles}
+
+[archivo_textura]	: Nombre del archivo con la imagen que se usará en ese tile.
+
+[altura_minima]		: Altura mínima a partir de la cual se usara esta textua para interpolar.
+
+[altura_optima]		: Altura en la cual la textura generada será igual que la del tile.
+
+[altura_maxima]		: Altura hasta la cual se usara esta textura para interpolar.
+
+			Nota: Rango de valor para las alturas [0-255] 
+	
+
+
+
+El formato de los archivos para las luces es el siguiente:
+
+[nºbillboards]
+
+{para cada uno de los billboards}
+
+	[archivo_textura] [tamaño] [color formato(RGBA)]
+
+{fin Billboards}
+
+// si el siguiente numero es 0, se entiend que esta luz no produce lens flares. En caso contario, se crearan
+// tantos reflejos secundarios como se especifique a continuación.
+
+[nº billboards2D]
+
+{para cada uno de los billboards2d}
+	
+	[archivo_textura] [ancho] [alto] [color formato(RGBA)]
+
+{fin billboards2D}
+	

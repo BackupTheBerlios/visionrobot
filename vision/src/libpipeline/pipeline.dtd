@@ -12,6 +12,7 @@ DTD para los archivos descriptores de un pipeline
 <!ATTLIST conexion puerto CDATA #REQUIRED>
 <!ATTLIST destino puerto CDATA #REQUIRED>                 
 <!ATTLIST modulo inicio CDATA "0"
+                 activado CDATA "1"
                  ruta CDATA #REQUIRED
                  nombre ID #REQUIRED>
 <!ATTLIST argumento nombre CDATA #REQUIRED>

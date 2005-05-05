@@ -67,8 +67,12 @@
   </modulo>
 
   <!-- Modulo de Prolog (DCG's) -->
-<!--  <modulo ruta="prolog" nombre="prolog" inicio="1"/> -->
-
+  <modulo ruta="prolog" nombre="prolog">
+     <conexion puerto="salida_texto">
+      <destino puerto="entrada_texto">salida_pipeline</destino>
+    </conexion>
+  </modulo>
+  
   <!-- Modulo de control de mensajes de la red de ordenes -->
  <modulo ruta="gestion" nombre="gestion_orden">
     <argumento nombre="maximo">3</argumento>
@@ -187,7 +191,18 @@
   <modulo ruta="salida" nombre="salida_pipeline">
    <argumento nombre="texto">Vision por computador</argumento>
   </modulo>
-
+  
+  <!-- Modulo del entorno 3d -->
+  <modulo ruta="entorno_3d" nombre="entorno_3d" activado="0">
+    <argumento nombre="ancho_ventana">320</argumento>  
+    <argumento nombre="alto_ventana">240</argumento>  
+    <argumento nombre="sombras">0</argumento>  
+    <argumento nombre="color_rojo">255</argumento>  
+    <argumento nombre="color_verde">255</argumento>  
+    <argumento nombre="color_azul">255</argumento>  
+    <argumento nombre="delay">3000</argumento>      
+  </modulo>
+  
   <!-- Modulo del robot -->
   <modulo ruta="robot" nombre="robot">
     <argumento nombre="guion">robot.lua</argumento>
@@ -197,22 +212,14 @@
     <argumento nombre="puerto">1</argumento>
   </modulo>
 
-  <!-- Modulo de reconocimiento de texto (OCR) -->
-  <modulo ruta="ocr" nombre="ocr">
-    <argumento nombre="archivo">base_datos</argumento>
-    <conexion puerto="salida_texto">
-      <destino puerto="entrada_red">gestion_ocr</destino>
-    </conexion>
-  </modulo>
-
  <!-- Modulo de control de mensajes de la red de ordenes -->
  <modulo ruta="gestion" nombre="gestion_ocr">
     <argumento nombre="maximo">4</argumento>
     <argumento nombre="tolerancia">3</argumento>
     <argumento nombre="neutro">no_gesto</argumento>
-   <conexion puerto="salida_texto">
-      <destino puerto="entrada_texto">salida_pipeline</destino>
+    <conexion puerto="salida_texto">
+      <destino puerto="entrada_texto">prolog</destino>
     </conexion>
   </modulo>
-
+  
 </pipeline>

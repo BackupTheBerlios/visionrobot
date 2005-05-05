@@ -155,12 +155,12 @@ char pipeline_get_activo(const pipeline_t *p, const char *e) {
 }
 
 static pipeline_t * pipeline_annadir(pipeline_t * p, const char *nombre, const char *ruta,
-				     GHashTable *argumentos/*, const char *dir*/, const char * inicio) {
+				     GHashTable *argumentos/*, const char *dir*/, const char * inicio, gboolean activado) {
   elemento_t * dato = (elemento_t *)malloc(sizeof(elemento_t));
   dato->m_inicio = !strcmp(inicio, "1") ? TRUE : FALSE;
   dato->m_modulo = 0;
   dato->m_handler = 0;  
-  dato->m_activado = TRUE;
+  dato->m_activado = activado;
   dato->m_nombre = strdup(nombre);
   p->m_nombres = (char **)realloc(p->m_nombres, sizeof(char **) * (g_hash_table_size(p->m_modulos) + 1));
   p->m_nombres[g_hash_table_size(p->m_modulos)] = (char *)nombre;
@@ -201,7 +201,7 @@ static pipeline_t * pipeline_leer_xml(pipeline_t * p, xmlDocPtr doc, xmlNodePtr 
 {
   GHashTable *argumentos = g_hash_table_new_full(g_str_hash, g_str_equal, pipeline_borrar_cadena, pipeline_borrar_cadena);
   char *nombre = xmlGetProp(cur, "nombre");
-  p = pipeline_annadir(p, nombre, xmlGetProp(cur, "ruta"), argumentos,/* dir,*/ xmlGetProp(cur, "inicio"));
+  p = pipeline_annadir(p, nombre, xmlGetProp(cur, "ruta"), argumentos,/* dir,*/ xmlGetProp(cur, "inicio"), (gboolean)xmlGetProp(cur, "activado"));
   if(p == 0) {
     return 0;
   }

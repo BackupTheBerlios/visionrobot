@@ -33,7 +33,7 @@ static char* camara_iniciar(modulo_t *modulo, GHashTable *argumentos) {
   dato->c->Iniciar(cam,
 		   0, dato->imagen.m_ancho,
 		   dato->imagen.m_alto);  
-  //sprintf(dato->buffer_error, "Iniciado. Creado contexto de camara de %ix%i, camara %i", dato->imagen.m_ancho, dato->imagen.m_alto, cam);
+  //sprintf(dato->buffer_error, "Iniciadoh. Creado contexto de camara de %ix%i, camara %i", dato->imagen.m_ancho, dato->imagen.m_alto, cam);
   return 0;//dato->buffer_error;
 }
 
@@ -43,7 +43,7 @@ static char *camara_cerrar(modulo_t *modulo) {
   dato->c = 0; 
   free(modulo->m_dato);
   free(modulo);
-  return 0;//"cerrado";
+  return "cerrado";
 }
 
 modulo_t *get_modulo() {

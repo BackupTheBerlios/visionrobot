@@ -1,0 +1,9 @@
+3
+flare\\flare2.bmp 5000  1 0.8 0.8 1
+flare\\shine1.bmp 8000 1 0.8 0.8 0.1
+flare\\flare6.bmp 4000 1 0.2 0.2 0.1
+4
+flare\\flare6.bmp 300 300  1.0 0.1 0.1 0.2
+flare\\flare6.bmp 130 130  1.0 0.8 0.0 0.1
+flare\\flare4.bmp 50 50    1.0 0.3 0.1 0.2
+flare\\flare4.bmp 80 80    1.0 0.6 0.1 0.05

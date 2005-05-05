@@ -13,9 +13,9 @@ if str(plataforma) == str('win32'):
     optimizar= ' /O2 '
     linker=' /debug '
 else:
-    debug='-ggdb'
-    optimizar = '-O2'
-    linker=''
+	debug='-ggdb'
+	optimizar = '-O2'
+	linker=''
 
 print "-- Compilando para", plataforma, "--"
 
@@ -75,12 +75,27 @@ if str(plataforma) == str('posix'):
     env.Install('bin', ['src/imagenes/letra.xpm', 'src/imagenes/avanzar.xpm', 'src/imagenes/foto.xpm'])
     env.Install('bin', ['src/pipeline/vision.xml'])
 else:
-    cam = env.Copy()
+    cam = glib.Copy()
     cam.Append(LIBS=['strmiids', 'uuid', 'oleaut32', 'ole32', 'quartz', 'user32'])
     cam.SharedLibrary('bin/camara', ['src/camara/camara.cpp', 'src/camara/Captura.cpp'])
     env.Install('bin', ['src/pipeline/camara.xml'])
     env.Install('bin', ['src/pipeline/nulo.xml'])
 
+# Si estamos en win32, construimos el entorno3D
+if str(plataforma) == str('win32'):
+	e3d = glib.Copy()
+	e3d.Append(CPPPATH=['src/entorno_3d/include'])
+	e3d.Append(LIBS=['d3dx9', 'd3d9', 'd3dx9dt', 'strmbasd', 'winmm','kernel32','user32','gdi32','winspool','comdlg32','advapi32','shell32','ole32','oleaut32','uuid','odbc32','odbccp32'])
+	e3d.SharedLibrary('bin/entorno_3d', glob.glob('src/entorno_3d/src/*.cpp'))
+	env.Install('bin', 'src/entorno_3d/luz.txt')
+	env.Install('bin', 'src/entorno_3d/terrenotemplo.txt')
+	env.Install('bin', 'src/entorno_3d/cursor.cur')
+	env.Install('bin/flare', glob.glob('src/entorno_3d/flare/*.bmp'))
+	env.Install('bin/texturas', glob.glob('src/entorno_3d/texturas/*.bmp'))
+	env.Install('bin/texturas', glob.glob('src/entorno_3d/texturas/*.jpg'))
+	env.Install('bin/modelos', 'src/entorno_3d/modelos/r2.x')
+	env.Install('bin/modelos', 'src/entorno_3d/modelos/templo.X')
+	env.Install('bin/modelos', 'src/entorno_3d/modelos/TerrenoTemplo.raw')
 
 # Ocr
 glib.SharedLibrary('bin/ocr', ['src/ocr/ocr.c', 'src/ocr/ocr_code.c'])
@@ -112,7 +127,8 @@ env.Install('bin', ['src/ventana_parametros/ventana_parametros.glade'])
 pip = glade.Copy()
 pip.Prepend(LIBS=['pipeline'])
 pip.ParseConfig('pkg-config xml2 --libs')
-Depends(pip.Program('bin/pipeline', 'src/pipeline/main.c'), libpipeline)
+prog_pip = pip.Program('bin/pipeline', 'src/pipeline/main.c')
+Depends(prog_pip, libpipeline)
 env.Install('bin', ['src/pipeline/ventana_pipeline.glade'])
 
 # Documentacion
