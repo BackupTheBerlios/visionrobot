@@ -18,7 +18,9 @@ VentanaPrincipal * ventana;
 static char *entorno_3d_ciclo(modulo_t *modulo, const char *puerto, const void *dato){
   if(!strcmp(PUERTO_ENTRADA, puerto)) 
   {
-	  ventana->ProcesarComandos(static_cast<const robot_in_t *>(dato));
+	  if(dato) {
+		ventana->ProcesarComandos(static_cast<const robot_in_t *>(dato));
+	  }
   }
   return 0;
 }

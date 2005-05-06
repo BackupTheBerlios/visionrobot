@@ -68,6 +68,12 @@
 
   <!-- Modulo de Prolog (DCG's) -->
   <modulo ruta="prolog" nombre="prolog">
+    <conexion puerto="salida_orden">
+        <destino puerto="entrada_orden">post_gestion</destino>
+    </conexion>
+    <conexion puerto="salida_parametro">
+        <destino puerto="entrada_param">post_gestion</destino>
+    </conexion>    
      <conexion puerto="salida_texto">
       <destino puerto="entrada_texto">salida_pipeline</destino>
     </conexion>
@@ -99,6 +105,7 @@
     <argumento nombre="param_defecto">nula</argumento>
     <conexion puerto="salida_robot">
       <destino puerto="entrada_robot">robot</destino>
+      <destino puerto="entrada_robot">entorno_3d</destino>
     </conexion>
     <conexion puerto="salida_texto">
       <destino puerto="entrada_texto">salida_pipeline</destino>
@@ -120,10 +127,6 @@
     <argumento nombre="rojo">127</argumento>
     <argumento nombre="verde">20</argumento>
     <argumento nombre="azul">64</argumento>
-<!--     <argumento nombre="rojo">0</argumento> -->
-<!--     <argumento nombre="verde">0</argumento> -->
-<!--     <argumento nombre="azul">0</argumento> -->
-
     <argumento nombre="tolerancia_rojo">4</argumento>
     <argumento nombre="tolerancia_verde">6</argumento>
     <argumento nombre="tolerancia_azul">8</argumento>
@@ -194,13 +197,13 @@
   
   <!-- Modulo del entorno 3d -->
   <modulo ruta="entorno_3d" nombre="entorno_3d" activado="0">
-    <argumento nombre="ancho_ventana">320</argumento>  
-    <argumento nombre="alto_ventana">240</argumento>  
-    <argumento nombre="sombras">0</argumento>  
-    <argumento nombre="color_rojo">255</argumento>  
-    <argumento nombre="color_verde">255</argumento>  
+    <argumento nombre="ancho_ventana">800</argumento>  
+    <argumento nombre="alto_ventana">600</argumento>  
+    <argumento nombre="sombras">sombras_desactivadas</argumento>  
+    <argumento nombre="color_rojo">0</argumento>  
+    <argumento nombre="color_verde">0</argumento>  
     <argumento nombre="color_azul">255</argumento>  
-    <argumento nombre="delay">3000</argumento>      
+    <argumento nombre="delay">300</argumento>      
   </modulo>
   
   <!-- Modulo del robot -->
@@ -210,6 +213,14 @@
     <argumento nombre="funcion_fin">fin</argumento>
     <argumento nombre="funcion_iniciar">iniciar</argumento>
     <argumento nombre="puerto">1</argumento>
+  </modulo>
+
+  <!-- Modulo de reconocimiento de texto (OCR) -->
+  <modulo ruta="ocr" nombre="ocr">
+    <argumento nombre="archivo">base_datos</argumento>
+    <conexion puerto="salida_texto">
+      <destino puerto="entrada_red">gestion_ocr</destino>
+    </conexion>
   </modulo>
 
  <!-- Modulo de control de mensajes de la red de ordenes -->

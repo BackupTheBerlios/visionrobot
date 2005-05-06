@@ -1,10 +1,16 @@
 #include "pipeline_sdk.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 //#include <SWI-Prolog.h>
 
 #define PUERTO "entrada_texto"
+
 #define PUERTO_SALIDA "salida_texto"
+
+#define PUERTO_ORDEN "salida_orden"
+
+#define PUERTO_PARAMETRO "salida_parametro"
 
 typedef struct {
   char m_buffer_salida[128];
@@ -38,6 +44,8 @@ static char *prolog_iniciar(modulo_t *modulo, GHashTable *argumentos) {
   plav[1] = NULL;
   sprintf(prolog->m_buffer_salida, "Sin implementar");
   g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, 0);
+  g_hash_table_insert(modulo->m_tabla, PUERTO_ORDEN, 0);
+  g_hash_table_insert(modulo->m_tabla, PUERTO_PARAMETRO, 0);
   //PL_initialise(1, plav);
   return "iniciado";
 }

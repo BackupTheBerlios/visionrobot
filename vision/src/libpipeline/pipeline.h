@@ -63,15 +63,12 @@ extern "C"  {
 
   /*! \brief Carga un archivo XML que define un proyecto de pipeline. Realiza también la validación con el archivo
              <em>pipeline.dtd</em>. Si es válido, lo carga, creando el pipeline correspondiente.
-      \param ruta La ruta del archivo XML que carga
-      \param dir El pipeline carga bibliotecas dinámicas como módulos. Para ello, sólo se especifica el nombre,
-                 sin el prefijo lib* ni la extensión (dll, so...). Para que se puedan cargar los módulos correctamente,
-		 es necesario indicar la ruta en la que se encuentran los módulos. Este parámetro se encarga de ello.
+      \param ruta La ruta del archivo XML que carga      
       \param funcion_error Un puntero a una función de retrollamada que gestiona los mensajes de salida (no sólo de error
                            del pipeline
       \param dato El dato auxiliar que se le pasa a la función de error. Puede ser una estructura de cualquier tipo.
   */
-  pipeline_t * pipeline_cargar(const char *ruta/*, const char *dir*/, funcion_error_t funcion_error, const void *dato) ;
+  pipeline_t * pipeline_cargar(const char *ruta, funcion_error_t funcion_error, const void *dato) ;
 
   /*! \brief Realiza un ciclo completo en el pipeline. Esto corresponde a llamar al ciclo de las funciones
             marcadas como <em>iniciales</em> (incio="1" en el XML), y llamar al ciclo de todos los módulos

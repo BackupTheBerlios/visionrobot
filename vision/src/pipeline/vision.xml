@@ -67,11 +67,16 @@
 
   <!-- Modulo de Prolog (DCG's) -->
   <modulo ruta="prolog" nombre="prolog">
+    <conexion puerto="salida_orden">
+        <destino puerto="entrada_orden">post_gestion</destino>
+    </conexion>
+    <conexion puerto="salida_parametro">
+        <destino puerto="entrada_param">post_gestion</destino>
+    </conexion>    
      <conexion puerto="salida_texto">
       <destino puerto="entrada_texto">salida_pipeline</destino>
     </conexion>
   </modulo>
-
   <!-- Modulo de control de mensajes de la red de ordenes -->
  <modulo ruta="gestion" nombre="gestion_orden">
     <argumento nombre="maximo">3</argumento>

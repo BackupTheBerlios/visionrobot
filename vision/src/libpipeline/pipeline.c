@@ -57,19 +57,15 @@ static void pipeline_salida_error(const pipeline_t *pipeline, const char *nombre
 
 static int  pipeline_set_ruta(pipeline_t* p, const char * elemento, const char *ruta/*, const char *dir*/) {
   elemento_t *dato = g_hash_table_lookup(p->m_modulos, elemento);
-  //const char * ruta_modulo;
-  char ruta_modulo[128];// = 0;
+  char ruta_modulo[128];
   int dev = 0;
   if (ruta) {
     if (dato->m_handler){
       g_module_close(dato->m_handler);
     }
-    //    ruta_modulo = 
 #ifdef G_OS_WIN32
-      //  (char *)malloc(sizeof(char) * strlen(ruta) + 4);
     sprintf(ruta_modulo, "%s.dll", ruta);
 #else
-    //    (char *)malloc(sizeof(char) * strlen(ruta) + 6);
     sprintf(ruta_modulo, "lib%s.so", ruta);
 #endif
     
@@ -90,9 +86,6 @@ static int  pipeline_set_ruta(pipeline_t* p, const char * elemento, const char *
       dev = -1;
     }
     pipeline_salida_error(p, "Pipeline", "Bibliotecas", g_module_error());
-    /* if(ruta_modulo) {
-      g_free(ruta_modulo);
-      }*/
   }
   else {
     dev = -1;
@@ -100,12 +93,16 @@ static int  pipeline_set_ruta(pipeline_t* p, const char * elemento, const char *
   return dev;
 }
 
-static void pipeline_borrar_conexion(gpointer a) {
+static void pipeline_borrar_1_conexion(gpointer a, gpointer u) {
   conexion_t *c = (conexion_t*)a;
-  free(c->m_salida);
-  free(c->m_puerto);
   free(c);
 }
+static void pipeline_borrar_conexion(gpointer a) {
+	GSList *l = (GSList*)a;
+//	g_slist_foreach(l, pipeline_borrar_1_conexion, 0); 
+	g_slist_free(l);
+}
+
 static void pipeline_borrar_cadena(gpointer a) {
   char *c = (char *)a;
   if(c) {
@@ -141,7 +138,6 @@ static void pipeline_borrar_elemento(gpointer a) {
   pipeline_cerrar_elemento(dato);
   if(dato->m_argumentos) g_hash_table_destroy(dato->m_argumentos);
   if(dato->m_enlaces) g_hash_table_destroy(dato->m_enlaces);
-  free((char *)dato->m_nombre);
   free(dato);
 }
 
@@ -155,7 +151,7 @@ char pipeline_get_activo(const pipeline_t *p, const char *e) {
 }
 
 static pipeline_t * pipeline_annadir(pipeline_t * p, const char *nombre, const char *ruta,
-				     GHashTable *argumentos/*, const char *dir*/, const char * inicio, gboolean activado) {
+				     GHashTable *argumentos, const char * inicio, gboolean activado) {
   elemento_t * dato = (elemento_t *)malloc(sizeof(elemento_t));
   dato->m_inicio = !strcmp(inicio, "1") ? TRUE : FALSE;
   dato->m_modulo = 0;
@@ -166,8 +162,8 @@ static pipeline_t * pipeline_annadir(pipeline_t * p, const char *nombre, const c
   p->m_nombres[g_hash_table_size(p->m_modulos)] = (char *)nombre;
   dato->m_pipeline = p;
   dato->m_argumentos = argumentos;
-  g_hash_table_insert(p->m_modulos, (gpointer)strdup(nombre), (gpointer)dato);
-  if(-1 == pipeline_set_ruta(p, nombre, ruta/*, dir*/)) {
+  g_hash_table_insert(p->m_modulos, (gpointer)dato->m_nombre, (gpointer)dato);
+  if(-1 == pipeline_set_ruta(p, nombre, ruta)) {
     return 0;
   }
   dato->m_enlaces = g_hash_table_new_full(g_str_hash, g_str_equal, pipeline_borrar_cadena, pipeline_borrar_conexion);
@@ -176,11 +172,14 @@ static pipeline_t * pipeline_annadir(pipeline_t * p, const char *nombre, const c
 
 static void pipeline_conectar(const pipeline_t * p, const char *origen, const char *salida,
 			      const char *destino, const char *puerto) {
+  GSList* lista_destinos;
   elemento_t *or = g_hash_table_lookup(p->m_modulos, origen);
   conexion_t *conexion = (conexion_t*)malloc(sizeof(conexion_t));
-  conexion->m_salida = strdup(salida);
-  conexion->m_puerto = strdup(puerto);
-  g_hash_table_insert(or->m_enlaces, (gpointer)strdup(destino), (gpointer)conexion);
+  conexion->m_salida = (char*)salida;//strdup(salida);//
+  conexion->m_puerto = (char *)puerto;//strdup(puerto);//
+  lista_destinos = g_hash_table_lookup(or->m_enlaces, destino);  
+  lista_destinos = g_slist_append(lista_destinos, conexion);  
+  g_hash_table_insert(or->m_enlaces, (gpointer)destino, (gpointer)lista_destinos);
 }
 
 int pipeline_borrar(pipeline_t * p) 
@@ -196,12 +195,11 @@ int pipeline_borrar(pipeline_t * p)
   }
 }
 
-static pipeline_t * pipeline_leer_xml(pipeline_t * p, xmlDocPtr doc, xmlNodePtr cur//,
-				      /*const char *dir*/) 
+static pipeline_t * pipeline_leer_xml(pipeline_t * p, xmlDocPtr doc, xmlNodePtr cur) 
 {
   GHashTable *argumentos = g_hash_table_new_full(g_str_hash, g_str_equal, pipeline_borrar_cadena, pipeline_borrar_cadena);
   char *nombre = xmlGetProp(cur, "nombre");
-  p = pipeline_annadir(p, nombre, xmlGetProp(cur, "ruta"), argumentos,/* dir,*/ xmlGetProp(cur, "inicio"), (gboolean)xmlGetProp(cur, "activado"));
+  p = pipeline_annadir(p, nombre, xmlGetProp(cur, "ruta"), argumentos, xmlGetProp(cur, "inicio"), (gboolean)xmlGetProp(cur, "activado"));
   if(p == 0) {
     return 0;
   }
@@ -228,7 +226,7 @@ static pipeline_t * pipeline_leer_xml(pipeline_t * p, xmlDocPtr doc, xmlNodePtr 
   return p;
 }
 
-pipeline_t * pipeline_cargar(const char *ruta/*, const char *dir*/, funcion_error_t funcion_error, const void *dato) 
+pipeline_t * pipeline_cargar(const char *ruta, funcion_error_t funcion_error, const void *dato) 
 {
     xmlDocPtr doc;
     xmlNodePtr cur;
@@ -286,13 +284,26 @@ pipeline_t * pipeline_cargar(const char *ruta/*, const char *dir*/, funcion_erro
 }
 static void pipeline_ciclo_recursivo(pipeline_t *p, elemento_t *e, const char *puerto_entrada, const void *dato_entrada);
 
-static void pipeline_enviar(gpointer key, gpointer value, gpointer user_data) {
+typedef struct {
+	elemento_t *e;
+	char *k;
+} enviar_t;
+
+static void pipeline_enviar_1(gpointer value, gpointer user_data) {
   conexion_t *conexion = (conexion_t*)value;
   char *puerto_salida = conexion->m_salida;
-  elemento_t *d = (elemento_t *)user_data;
-  elemento_t *destino = g_hash_table_lookup(d->m_pipeline->m_modulos, (char *)key);
+  enviar_t *enviar = (enviar_t *)user_data;
+  elemento_t *d = enviar->e;
+  elemento_t *destino = g_hash_table_lookup(d->m_pipeline->m_modulos, enviar->k);
   void *dato = g_hash_table_lookup(d->m_modulo->m_tabla, puerto_salida);
   pipeline_ciclo_recursivo(d->m_pipeline, destino, conexion->m_puerto, dato);
+}
+
+static void pipeline_enviar(gpointer key, gpointer value, gpointer user_data) {
+  GSList *l = (GSList *)value;
+  elemento_t *d = (elemento_t *)user_data;
+  enviar_t e = {d, (char*)key};
+  g_slist_foreach(l, pipeline_enviar_1, &e);
 }
 static void pipeline_ciclo_recursivo(pipeline_t *p, elemento_t *e, const char *puerto_entrada, const void *dato_entrada)
 {

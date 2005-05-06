@@ -313,7 +313,7 @@ HRESULT VentanaPrincipal::InicializarD3D( HWND hWnd )
 
     // Crea el device.
 	int res =  g_pD3D->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd,
-                                      D3DCREATE_HARDWARE_VERTEXPROCESSING,
+                                      D3DCREATE_SOFTWARE_VERTEXPROCESSING,
                                       &d3dpp, &g_pd3dDevice  ) ;
     if( res == D3DERR_INVALIDCALL)
     {
