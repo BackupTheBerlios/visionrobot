@@ -5,44 +5,7 @@
 #include <lualib.h>
 #include <lauxlib.h>
 #include "robot_sdk.h"
-
-#ifdef G_OS_WIN32
-#define LPT1 1
-#define LPT2 2
-#else
-#include <parapin.h>
-#endif
-
-static void sube_pin(int index) {
-#ifdef G_OS_WIN32
-#else
-  set_pin(LP_PIN[index]);
-#endif
-}
-
-static void baja_pin(int index) {
-#ifdef G_OS_WIN32
-#else
-  clear_pin(LP_PIN[index]);
-#endif
-}
-
-static int iniciar_paralelo(int puerto) {
-  return
-#ifdef G_OS_WIN32
-    0;
-#else
-  pin_init_user(puerto);
-#endif
-}
-
-static void pin_salida(int index) {
-#ifdef G_OS_WIN32
-#else
-  pin_output_mode(LP_PIN[index]);
-#endif
-}
-
+#include "paralelo.h"
 
 /*! \brief El puerto de entrada, recibe un <code>char *</code> */
 #define PUERTO "entrada_robot"
@@ -63,6 +26,7 @@ typedef struct {
   lua_State *l;
   char *f;
 } arg_timer_t;
+
 
 
 
@@ -166,13 +130,13 @@ static char *robot_ciclo(modulo_t *modulo, const char *puerto, const void *dato)
 
 static int robot_alta(lua_State *L) {
   int index = luaL_checkint(L, 1);
-  sube_pin(index);
+  paralelo_sube_pin(index);
   return 0;
 }
 
 static int robot_baja(lua_State *L) {
   int index = luaL_checkint(L, 1);
-  baja_pin(index);
+  paralelo_baja_pin(index);
   return 0;
 }
 
@@ -197,7 +161,7 @@ static int robot_timer(lua_State *L) {
 
 static int robot_salida(lua_State *L) {
   int index = luaL_checkint(L, 1);
-  pin_salida(index);
+  paralelo_pin_salida(index);
   return 0;
 }
 
@@ -246,14 +210,14 @@ static char *robot_iniciar(modulo_t *modulo, GHashTable *argumentos) {
   }
   else {
     int p = atoi(puerto);
-    if(iniciar_paralelo(p == 1 ? LPT1 : LPT2)) {
+
+    if(paralelo_iniciar(p == 1 ? PARALELO_LPT1 : PARALELO_LPT2)) {
       devolver = "Fallo al abrir el puerto. Debe ser root (permisos)";
     }
     else {
       robot_llamar_funcion(l, dato->m_funcion_iniciar, "");
     }
   }
-
   return devolver;
 }
 
@@ -270,6 +234,7 @@ static char *robot_cerrar(modulo_t *modulo)
   robot_llamar_funcion(dato->m_lua, dato->m_funcion_fin, "");
   free(dato->m_funcion_ciclo);
   free(dato->m_funcion_iniciar);
+  paralelo_terminar();
   free(dato->m_funcion_fin);
   lua_close(dato->m_lua);
   free(dato);

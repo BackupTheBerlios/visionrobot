@@ -5,7 +5,7 @@ import os
 import glob
     
 plataforma = ARGUMENTS.get('OS', Platform())
-env = Environment(CPPPATH = ['src/robot', 'src/red_neuronal', 'src/libpipeline', 'src/filtro_gestos', 'src/ventana_imagen'], ENV = os.environ, platform = plataforma, PLATFORM=plataforma, LIBPATH=['lib'])
+env = Environment(CPPPATH = ['src/libparalelo', 'src/robot', 'src/red_neuronal', 'src/libpipeline', 'src/filtro_gestos', 'src/ventana_imagen'], ENV = os.environ, platform = plataforma, PLATFORM=plataforma, LIBPATH=['lib'])
 
 
 if str(plataforma) == str('win32'):
@@ -44,6 +44,10 @@ libpip = glib.Copy()
 libpip.ParseConfig('pkg-config xml2 --cflags')
 libpipeline = libpip.Library('lib/pipeline', 'src/libpipeline/pipeline.c')
 env.Install('bin', ['src/libpipeline/pipeline.dtd'])
+
+# Libparalelo
+libpar = glib.Copy()
+libparalelo = libpip.Library('lib/paralelo', 'src/libparalelo/paralelo.c')
 
 # Gestion
 glib.SharedLibrary('bin/gestion', 'src/gestion/gestion.c')
@@ -110,11 +114,7 @@ env.Install('bin', ['src/red_neuronal/orden_net'])
 
 # Robot
 rob = glib.Copy()
-if str(plataforma) == str('posix'):
-    rob.Append(LIBS=['lua', 'lualib', 'parapin'])
-else:
-    rob.Append(LIBS=['lua', 'lualib'])
-    
+rob.Prepend(LIBS=['lua', 'lualib', 'paralelo'])
 rob.SharedLibrary('bin/robot', 'src/robot/robot.c')
 env.Install('bin', ['src/robot/robot.lua'])
 
