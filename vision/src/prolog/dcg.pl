@@ -34,7 +34,7 @@ expresion(Z) -->
     termino(Z).
 
 termino(Z) -->
-    factor(X), multiplicacion, termino(Y), {Z is X * Y}.
+ 	factor(X), multiplicacion, termino(Y), {Z is X * Y}.
 termino(Z) -->
     factor(X), division, termino(Y), {Z is X / Y}.
 termino(Z) -->

@@ -160,4 +160,3 @@ if str(plataforma) == str('posix'):
     Depends(doc, files + dia)
 
     Depends(ps, doc)
-

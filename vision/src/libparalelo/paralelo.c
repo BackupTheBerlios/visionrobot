@@ -19,9 +19,9 @@ static inpfuncPtr inp32;
 
 typedef enum {P_UP = 0, P_DOWN} estado_t;
 
-int paralelo_iniciar(int puerto) {
-#ifdef G_OS_WIN32
-    int p = puerto == PARALELO_LPT1 ? LPT1 : LPT2;
+int paralelo_iniciar(paralelo_puerto_t puerto) {
+	int p = puerto == PARALELO_LPT1 ? LPT1 : LPT2;
+#ifdef G_OS_WIN32    
     puerto_paralelo = p;
     hLib = LoadLibrary("inpout32.dll");
     oup32 = (oupfuncPtr) GetProcAddress(hLib, "Out32");
@@ -32,12 +32,14 @@ int paralelo_iniciar(int puerto) {
 #endif
 }
 
+#ifdef G_OS_WIN32   
 static void paralelo_set(estado_t e, int index) {
 	short biteado = 0x01 << (index - 1);
 	short antes = inp32(puerto_paralelo);
 	short resultado = e == P_UP ? antes | biteado : antes & ~biteado;
     oup32(puerto_paralelo, resultado);
 }
+#endif
 
 void paralelo_sube_pin(int index) {
 #ifdef G_OS_WIN32
