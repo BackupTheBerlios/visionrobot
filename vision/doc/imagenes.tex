@@ -4,7 +4,18 @@
 Este módulo tiene como objetivo la creación y modificación de un búfer de colores (una imagen en formato plano) para la alimentación de la tubería de visión. Obtiene, de diferentes fuentes, imagenes codificadas de diferentes maneras, y genera, en un formato unificado, una imagen sin comprimir.
 
 \section {Imágenes generadas}
-% Hablar de los formatos
+La funcionalidad principal de este módulo es, como hemos comentado antes, la de generar imágenes de un solo formato, independientemente del origen del que se obtengan. Con este procedimiento pretendemos establecer la base del árbol de módulos de nuestro proyecto. Previamente al diseño y la implementación del módulo, establecimos cuáles eran los requisitos que debía cumplir el formato de imágenes que íbamos a usar. En primer lugar, las imágenes debían ser en color. Para esto, debíamos ser capaces de manejar la profundidad de cada punto de la pantalla. Además de esto, queríamos que las dimensiones de las imágenes (ancho y alto) fuesen flexibles, y, a priori, ser capaces de manejar cualquier tamaño (aunque posteriormente esto no ha sido realmente posible, pues la cámara web sólo admite un conjunto de dimensiones determinado).
+
+Estos dos requisitos, más la tendencia que hemos intentado mantener de mantener el proyecto lo más simple posible (filosofía {\em KISS}\footnote{Keep it simple, stupid!}), nos han llevado a definir nuestro formato de imágenes interno de la siguiente forma:
+
+\begin{itemize}
+  \item[Alto] Un entero que determina el alto de la imagen (ej.: 240).
+  \item[Ancho] Un entero que determina el ancho de la imagen (ej.: 320).
+  \item[Bytes] Un entero que determina el número de bytes por punto (ej.: 3).
+  \item[Buffer] Un puntero (en la implementación de C, realmente implementa un vector) de número de 8 bits sin signo (1 byte, corresponde al formato {\tt unsigned char} en C), que contiene la información de colores de la imagen.
+\end{itemize}
+
+Esta ha sido toda la información por imagen que nos ha sido necesaria. El hecho de disponer de un búfer lineal nos ha capacitado para escribir implentaciones muy rápidas del recorrido de las mismas, principalmente por la potencia de los punteros del lenguaje C.
 
 \section {Arquitectura y funcionamiento del módulo}
 El módulo sigue las interfaces de comunicación con el {\em pipeline}, de modo que crea los búferes en la función de iniciar, a la vez que, según se haya instanciado a través de la configuración del XML que define el proyecto, abre la comunicación con las bibliotecas pertinentes, en función de los argumentos.
@@ -17,13 +28,14 @@ En la función de cerrar simplemente libera los recursos.
 Para la generación resultados desde diferentes fuentes, el módulo hace uso de una serie de librerías; son las siguientes:
 
 \begin {itemize}
-\item [SANE]: Sane (Scanner Access Now Easy) es una biblioteca originariamente para interfaces con escáneres, pero ampliada para cualquier dispositivo de imágenes. A través de esta biblioteca accedemos a la cámara.
-\item [Xine]: Xine-lib tiene como objetivo la reproducción de archivos de vídeo en varios formatos (los más usuales, también puede aceptar formatos nuevos a través de {\em plugins}). A través de Xine cargamos un vídeo en el módulo de imágenes y lo reproducimos.
-\item [Gdk]: Usamos Gdk para cargar fácilmente archivos de imágenes, y usarlos así como fuentes sencillas de imágnenes cuyo resultado se conoce.
-\item [Código propio]: También hemos implementado, para pruebas principalmente, las siguientes funcionalidades del módulo:
+\item {\bf DirectX}: Las bibliotecas {\em DirectX} nos han provisto de la interfaz necesaria en su módulo {\em DirectShow}, tanto para la adquisición de imágenes de cámara % TODO: esto no se sabe :P % como para la reproducción de un archivo de vídeo.
+\item {\bf SANE}: Sane (Scanner Access Now Easy) es una biblioteca originariamente para interfaces con escáneres, pero ampliada para cualquier dispositivo de imágenes. A través de esta biblioteca accedemos a la cámara.
+\item {\bf Xine}: Xine-lib tiene como objetivo la reproducción de archivos de vídeo en varios formatos (los más usuales, también puede aceptar formatos nuevos a través de {\em plugins}). A través de Xine cargamos un vídeo en el módulo de imágenes y lo reproducimos.
+\item {\bf Gdk}: Usamos Gdk para cargar fácilmente archivos de imágenes, y usarlos así como fuentes sencillas de imágnenes cuyo resultado se conoce.
+\item {\bf Código propio}: También hemos implementado, para pruebas principalmente, las siguientes funcionalidades del módulo:
   \begin {itemize}
-  \item [Generación de colores planos]: Pintamos todo el búfer de un color. Es muy útil para comprobar el funcionamiento de los filtros.
-  \item [Generación de imágenes aleatorias]: Rellena la matriz de colores con colores al azar, de esta manera vemos cómo los filtros aceptan o dejan de aceptar los valores.
+  \item {\bf Colores planos}: Pintamos todo el búfer de un color. Es muy útil para comprobar el funcionamiento de los filtros.
+  \item {\bf Imágenes aleatorias}: Rellena la matriz de colores con colores al azar, de esta manera vemos cómo los filtros aceptan o dejan de aceptar los valores.
   \end {itemize}
 \end {itemize}
 
