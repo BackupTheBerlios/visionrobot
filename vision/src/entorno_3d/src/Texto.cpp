@@ -24,15 +24,16 @@ Texto::~Texto()
 
 void Texto::SetFuente(LPDIRECT3DDEVICE9 d3dDevice, int anchoVentana, int altoVentana)
 {
-/*
+
     Texto::m_LimitesFuente.right=anchoVentana;
     Texto::m_LimitesFuente.bottom=altoVentana;
 
     
     //Inicializa las fuentes para mostrar texto. 
-    LOGFONT fuenteLog= {16,0,0,0,FW_NORMAL,false,false,false,DEFAULT_CHARSET,OUT_TT_PRECIS,CLIP_DEFAULT_PRECIS,PROOF_QUALITY,DEFAULT_PITCH,"lcdd"};
-    D3DXCreateFontIndirect(d3dDevice,&fuenteLog,&m_Fuente);
-*/
+    //LOGFONT fuenteLog= 
+	D3DXFONT_DESC fDesc = {16,0,0,0,FW_BOLD,false,false,false,DEFAULT_CHARSET,OUT_TT_PRECIS,CLIP_DEFAULT_PRECIS,PROOF_QUALITY,DEFAULT_PITCH,"lcdd"};
+    D3DXCreateFontIndirect(d3dDevice,&fDesc,&m_Fuente);
+
    
 }
 
@@ -44,8 +45,8 @@ void Texto::SetColor(int r, int g, int b)
 }
 void Texto::DibujarTexto(int x, int y, std::string texto,bool bCentrado)
 {
-/*
-  m_Fuente->Begin();
+
+ // m_Fuente->Begin();
   
   // Se inicializa el rectangulo en el que se contendra el texto.
   // Si el texto no es centrado, la esquina superior-izquierda determina el principio
@@ -57,16 +58,16 @@ void Texto::DibujarTexto(int x, int y, std::string texto,bool bCentrado)
   
   if(bCentrado)
   {
-      m_Fuente->DrawText(texto.c_str(),-1,&rect,DT_CENTER,D3DCOLOR_RGBA(m_Rojo,m_Verde,m_Azul,255));
+      m_Fuente->DrawText(NULL,texto.c_str(),-1,&rect,DT_CENTER,D3DCOLOR_RGBA(m_Rojo,m_Verde,m_Azul,255));
   }
   else
   {
       rect.left+=x;
-      m_Fuente->DrawText(texto.c_str(),-1,&rect,DT_LEFT,D3DCOLOR_RGBA(m_Rojo,m_Verde,m_Azul,255));
+      m_Fuente->DrawText(NULL,texto.c_str(),-1,&rect,DT_LEFT,D3DCOLOR_RGBA(m_Rojo,m_Verde,m_Azul,255));
   }
   
-   m_Fuente->End();
-*/
+  // m_Fuente->End();
+
 }
 
 

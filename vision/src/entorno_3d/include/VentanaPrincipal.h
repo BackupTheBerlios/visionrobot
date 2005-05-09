@@ -202,6 +202,11 @@ private:
 	*/
 	DWORD m_DelayTimer;
 
+	/** 
+	Indica si se usara la aceleracion 3d en el programa.
+	*/
+	bool m_Hardware3d;
+
 private:
     
     /**

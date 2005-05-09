@@ -200,6 +200,8 @@
     <argumento nombre="ancho_ventana">800</argumento>  
     <argumento nombre="alto_ventana">600</argumento>  
     <argumento nombre="sombras">sombras_desactivadas</argumento>  
+    <argumento nombre="pantalla_completa">no</argumento>
+    <argumento nombre="hardware3d">no</argumento>
     <argumento nombre="color_rojo">0</argumento>  
     <argumento nombre="color_verde">0</argumento>  
     <argumento nombre="color_azul">255</argumento>  

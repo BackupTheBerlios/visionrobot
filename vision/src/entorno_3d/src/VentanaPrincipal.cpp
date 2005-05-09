@@ -38,6 +38,8 @@ VentanaPrincipal::VentanaPrincipal()
     m_bFrames = false;
 
 	m_bSombras = false;
+
+	m_Hardware3d = true;
     
    
 	// Se parsea los datos de configuracion.
@@ -111,8 +113,8 @@ bool VentanaPrincipal::CrearVentana(int show)
     WindowRect.bottom = VentanaPrincipal::ALTO_VENTANA;
 
     
-    m_PantallaCompleta=(MessageBox(NULL,"¿Desea ejecutar en pantalla completa?",    
-                                   "Pantalla Completa",MB_YESNO)==IDYES);
+   // m_PantallaCompleta=(MessageBox(NULL,"¿Desea ejecutar en pantalla completa?",    
+   //                                "Pantalla Completa",MB_YESNO)==IDYES);
 
 	if(m_PantallaCompleta){
 		DEVMODE devmode;
@@ -148,7 +150,7 @@ bool VentanaPrincipal::CrearVentana(int show)
 
   
    // Se esconde el cursor. 
-   ShowCursor(false);
+  // ShowCursor(false);
 
    return true;
 }
@@ -305,16 +307,28 @@ HRESULT VentanaPrincipal::InicializarD3D( HWND hWnd )
 		d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
 	}
 
-    d3dpp.PresentationInterval   = D3DPRESENT_INTERVAL_DEFAULT;
+    d3dpp.PresentationInterval   = D3DPRESENT_INTERVAL_IMMEDIATE;
     d3dpp.Flags                  = D3DPRESENTFLAG_DISCARD_DEPTHSTENCIL;
     
     
 
 
     // Crea el device.
-	int res =  g_pD3D->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd,
+	int res;
+	if(m_Hardware3d)
+	{
+		res = g_pD3D->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd,
+                                      D3DCREATE_HARDWARE_VERTEXPROCESSING,
+                                      &d3dpp, &g_pd3dDevice  ) ;
+	}
+	else 
+	{
+		res = g_pD3D->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd,
                                       D3DCREATE_SOFTWARE_VERTEXPROCESSING,
                                       &d3dpp, &g_pd3dDevice  ) ;
+
+	}
+
     if( res == D3DERR_INVALIDCALL)
     {
         MessageBox(NULL,"ERROR: No se puede crear el Device D3D. Invalid Call",    
@@ -590,7 +604,7 @@ void VentanaPrincipal::ParsearConfiguracion(GHashTable * configuracion)
 
  
   // Se comprueba que el número de parametros de configuracion es el esperado.	
-	if(g_hash_table_size(configuracion) != 7) 
+	if(g_hash_table_size(configuracion) != 9) 
   {
 	  MessageBox(NULL,"Error en los parámetros de configuracion. Número incorrecto","Error",0);
 	  
@@ -630,7 +644,29 @@ void VentanaPrincipal::ParsearConfiguracion(GHashTable * configuracion)
   // Se establece el delay del timer que controla cómo de a menudo se realizará un ciclo
   argumento = static_cast<const char*>(g_hash_table_lookup(configuracion,"delay"));
   m_DelayTimer = atoi(argumento);
+
+  // Se establece el modo de pantalla completa.
+  argumento = static_cast<const char*>(g_hash_table_lookup(configuracion,"pantalla_completa"));
+  if(strcmp(argumento, "si") == 0)
+  {
+	  m_PantallaCompleta = true;
+  }
+  else if(strcmp(argumento, "no") == 0)
+  {
+	 m_PantallaCompleta = false;
+  }	
   
+  // Se establece el uso de la aceleracion 3d para la aplicacion.
+  argumento = static_cast<const char*>(g_hash_table_lookup(configuracion,"hardware3d"));
+  if(strcmp(argumento, "si") == 0)
+  {
+	  m_Hardware3d = true;
+  }
+  else if(strcmp(argumento, "no") == 0)
+  {
+	 m_Hardware3d = false;
+  }	
+
 
   
 
