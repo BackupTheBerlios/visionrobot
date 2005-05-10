@@ -1,7 +1,26 @@
 /*! \file ventana_imagen.c
     \brief Muestra una ventana con una imagen
-    \author Carlos LeÃ³n
-    \version 0.1
+
+
+          \section modulo Módulo
+	  El módulo de salida se encarga de crear una ventana (con GTK, el ejecutable que llame a esta librería debe inciar con <code>gtk_main()</code>) que muestra una imagen.
+
+	  \section puertos Puertos
+	  El módulo no dispone de puertos de salida, y como entrada tiene:
+	  <ul>
+	    <li><em>entrada_imagen</em>: Recibe un ventana_imagen_in_t * que presenta por la ventana.
+	  </ul>
+
+	  \section argumentos Argumentos
+	  <ul>
+	    <li><em>titulo</em>: El título de la ventana.
+	    <li><em>nombre_foto</em>: El nombre de la foto para las capturas, con extensión.
+	    <li><em>extension</em>: La extensión para guardar la foto.
+	  </ul>
+
+
+    \author Carlos León
+    \version 1.0
 */  
     
 #include "pipeline_sdk.h"
@@ -23,17 +42,22 @@
 #define PACKAGE ""
 #endif
 
-
+//! Estructura de datos de la ventana
 typedef struct {
-  GtkWidget * ventana;
-  char *nombre_foto;
-  char *extension;
-  GdkGC* gc;
-  ventana_imagen_in_t *m_imagen;
+  GtkWidget * ventana; /*!< La ventana en sí. */
+  char *nombre_foto; /*!< El nombre de la foto que puede grabar. */
+  char *extension; /*!< La extensión de la foto (del archivo).*/
+  GdkGC* gc; /*!< Cosas de Gdk. */
+  ventana_imagen_in_t *m_imagen; /*!< La imagen que imprimimos. */
 } datos_ventana_t;
 
 #define PUERTO_IMAGEN "entrada_imagen"
 
+//! Devuelve un pixbuf a partir de la imagen que tenemos.
+/*!
+  \param modulo El módulo en cuestión.
+  \return Un puntero a un GdkPixbuf.
+*/
 static GdkPixbuf *ventana_get_pixbuf(modulo_t * modulo) {  
   datos_ventana_t * datos = (datos_ventana_t *)modulo->m_dato;
   if(datos->m_imagen && datos->m_imagen->m_imagen) {
@@ -55,6 +79,13 @@ static GdkPixbuf *ventana_get_pixbuf(modulo_t * modulo) {
   }
 }
 
+//! Hace una foto.
+/*!
+  \param w La ventana.
+  \param event La tecla.
+  \param data Un módulo.
+  \return FALSE;
+*/
 gboolean ventana_foto(GtkWidget *w, GdkEventKey *event, gpointer data) {
   modulo_t *modulo = (modulo_t *)data;
   datos_ventana_t *datos = (datos_ventana_t *)modulo->m_dato;
@@ -69,6 +100,10 @@ gboolean ventana_foto(GtkWidget *w, GdkEventKey *event, gpointer data) {
   return FALSE;
 }
 
+//! Ajusta el tamaño de la ventana.
+/*!
+  \param modulo El módulo.
+*/
 static void ventana_ajustar_tamanno(modulo_t * modulo) {
   datos_ventana_t * datos = (datos_ventana_t *)modulo->m_dato;
   ventana_imagen_in_t *imagen = datos->m_imagen;
@@ -82,6 +117,10 @@ static void ventana_ajustar_tamanno(modulo_t * modulo) {
   }
 }
 
+//! Pinta la imagen en la ventana.
+/*!
+   \param modulo El módulo.
+*/
 static void ventana_pintar(modulo_t * modulo) {
 
   GdkPixbuf *pixbuf = ventana_get_pixbuf(modulo);
@@ -97,6 +136,16 @@ static void ventana_pintar(modulo_t * modulo) {
     }
 }
 
+//! Realiza un ciclo en el módulo.
+/*! En el ciclo recibe la señal del módulo de gestión de resultados del pipeline.
+  
+\param modulo El módulo actual.
+\param puerto El puerto por el que llega la información.
+\param dato La información que llega.
+
+\return Una cadena que indica qué tal ha ido todo.
+*/
+
 static char *ventana_ciclo(modulo_t *modulo, const char *puerto, const void *value){
   if(!strcmp(puerto, PUERTO_IMAGEN)) {
     ventana_imagen_in_t * imagen = (ventana_imagen_in_t *)value;
@@ -110,6 +159,11 @@ static char *ventana_ciclo(modulo_t *modulo, const char *puerto, const void *val
   return 0;
 }
 
+//! Crea la ventana.
+/*!
+  \param modulo El módulo.
+  \param titulo El título de la ventana.
+*/
 static void ventana_crear_ventana(modulo_t *modulo, const char *titulo) {
   static GladeXML* xml = 0;
   GString *buffer = g_string_new(DATADIR);
@@ -127,6 +181,16 @@ static void ventana_crear_ventana(modulo_t *modulo, const char *titulo) {
                     modulo);
   ((datos_ventana_t*)modulo->m_dato)->gc =gdk_gc_new (((datos_ventana_t*)modulo->m_dato)->ventana->window);
 }
+
+//! Inicia un módulo.
+/*! Crea la memoria, lee los argumentos del XML, y abre el puerto paralelo.
+  
+\param modulo El módulo actual.
+\param argumentos Una tabla con los argumentos.
+
+\return Una cadena que indica qué tal ha ido todo.
+*/
+
 static char *ventana_iniciar(modulo_t *modulo, GHashTable *argumentos)
 {
   char *titulo = (char *)g_hash_table_lookup(argumentos, "titulo");
@@ -136,6 +200,18 @@ static char *ventana_iniciar(modulo_t *modulo, GHashTable *argumentos)
   ventana_crear_ventana(modulo, titulo);
   return "iniciado";
 }
+
+
+//! Cierra un módulo.
+/*! Libera toda la memoria creada.
+  
+\param modulo El módulo actual.
+
+\return Una cadena que indica qué tal ha ido todo.
+*/
+
+
+
 static char *ventana_cerrar(modulo_t *modulo)
 {
   gdk_gc_unref(((datos_ventana_t*)modulo->m_dato)->gc);

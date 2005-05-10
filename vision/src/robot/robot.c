@@ -1,3 +1,29 @@
+/*!
+  \file   robot.c
+  \author Carlos León
+  
+  \brief  Módulo que se encarga de gestionar un script que define el comportamiento de un robot enchufado al puerto paralelo.
+
+          \section modulo Descripción del módulo
+	     Este módulo define funciones de gestión del puerto paralelo para que puedan ser llamadas por un script en Lua (que se pasa como parámetro en el XML), y se encarga de iniciar y finalizar el puerto.
+
+	  \section puertos Puertos
+	  El módulo sólo tiene puertos de entrada:
+	   <ul>
+	      <li><em>entrada_robot</em>: Una entrada de tipo <code>robot_in_t</code>, que define el comportamiento (orden y parámetro) que debe efectuar el robot.
+	   </ul>
+
+	   \section argumentos Argumentos
+	   <ul>
+	     <li><em>guion</em>: La ruta del guión, absoluta o respecto del XML.
+	     <li><em>funcion_ciclo</em>: El nombre de la función del script que usamos para efectuar un ciclo cuando le llega una orden.
+	     <li><em>funcion_fin</em>: El nombre de la función del script que usamos para finalizar el valor de los pines.
+	     <li><em>funcion_iniciar</em>: El nombre de la función del script que usamos para iniciar el puerto y los pines.
+	     <li><em>puerto</em>: El número de puerto paralelo que se usa (1 o 2).
+	   </ul> 
+  
+*/
+
 #include "pipeline_sdk.h"
 #include <stdlib.h>
 #include <glib.h>
@@ -21,10 +47,10 @@ typedef struct {
   //guint m_tiempo;
 } dato_robot_t;
 
-
-typedef struct {
-  lua_State *l;
-  char *f;
+//! El argumento que le pasamos a la función de llamada del timer.
+typedef struct { 
+  lua_State *l; /*!< El <code>lua_State</code> del script. */
+  char *f; /*!< Una cadena que representa el nombre de la función Lua que se llama cuando hay que detener la orden */
 } arg_timer_t;
 
 
@@ -128,17 +154,33 @@ static char *robot_ciclo(modulo_t *modulo, const char *puerto, const void *dato)
   }
 }
 
+//! Pone un pin a alta.
+/*!
+  \param L El lua_State.
+  \return El número de argumentos que se le devuelven a Lua.
+ */
 static int robot_alta(lua_State *L) {
   int index = luaL_checkint(L, 1);
   paralelo_sube_pin(index);
   return 0;
 }
 
+//! Pone un pin a baja.
+/*!
+  \param L El lua_State.
+  \return El número de argumentos que se le devuelven a Lua.
+ */
+
 static int robot_baja(lua_State *L) {
   int index = luaL_checkint(L, 1);
   paralelo_baja_pin(index);
   return 0;
 }
+//! La función del timer del robot, para detener la orden actual.
+/*!
+  \param data Un arg_timer_t.
+  \return FALSE.
+ */
 
 gboolean robot_on_time(gpointer data) {
   arg_timer_t * a = (arg_timer_t *)data;
@@ -147,6 +189,11 @@ gboolean robot_on_time(gpointer data) {
   free(a);
   return FALSE;
 }
+//! Inicia un timer que se detendrá llamando a la función de salida que se le pasa en el script.
+/*!
+  \param L El lua_State.
+  \return El número de argumentos que se le devuelven a Lua.
+ */
 
 static int robot_timer(lua_State *L) {
   arg_timer_t *a = (arg_timer_t*)malloc(sizeof(arg_timer_t));
@@ -158,6 +205,11 @@ static int robot_timer(lua_State *L) {
   g_timeout_add(ms, robot_on_time, a);
   return 0;
 }
+//! Establece pines de salida
+/*!
+  \param L El lua_State.
+  \return El número de argumentos que se le devuelven a Lua.
+ */
 
 static int robot_salida(lua_State *L) {
   int index = luaL_checkint(L, 1);

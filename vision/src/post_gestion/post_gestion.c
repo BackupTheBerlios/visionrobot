@@ -1,7 +1,27 @@
 /*! \file post_gestion.c
     \brief Genera la salida real de todo el proceso, para el robot.
 
-    \author Carlos León
+          \section modulo Descripción del módulo
+	  Se encarga de unificar todos los datos que le llegan, para generar una orden con sentido.
+
+	  \section puertos Puertos
+	  El módulo tiene puertos de entrada y de salida:
+	   <ul>
+	      <li><em>entrada_orden</em>: Un <code>char *</code>, que representa una orden.
+	      <li><em>entrada_param</em>: Un <code>char *</code>, que representa un parámetro.
+	      <li><em>salida_texto</em>: Un <code>char *</code>, que representa una salida formada por la orden y el parámetro actual.
+	      <li><em>salida_robot</em>: Un <code>char *</code>, que representa una orden para un robot (entorno 3D o robot).
+	   </ul>
+
+	   \section argumentos Argumentos
+	   <ul>
+	     <li><em>orden_defecto</em>: Un <code>char *</code>, que representa una orden por defecto.
+	     <li><em>param_defecto</em>: Un <code>char *</code>, que representa un parámetro por defecto.
+	   </ul> 
+  
+
+
+    \author Carlos León
     \version 1.0
 */  
     
@@ -15,7 +35,7 @@
 /*! \brief El puerto de entrada de la orden, recibe un <code>char *</code> */
 #define PUERTO_ORDEN "entrada_orden"
 
-/*! \brief El puerto de entrada del parámetro, recibe un <code>char *</code> */
+/*! \brief El puerto de entrada del parámetro, recibe un <code>char *</code> */
 #define PUERTO_PARAMETRO "entrada_param"
 
 /*! \brief El puerto de salida, una puntero a estructura robot_in_t */
@@ -24,11 +44,21 @@
 /*! \brief El puerto de salida de texto, una puntero a char */
 #define PUERTO_TEXTO "salida_texto"
 
+//! La estructura del módulo.
 typedef struct {
-  robot_in_t m_robot;
-  char m_buffer[64];
+  robot_in_t m_robot; /*!< El dato de la salida "robot". */
+  char m_buffer[64]; /*!< El dato de "texto". */
 } post_gestion_dato_t;
 
+//! Realiza un ciclo en el módulo.
+/*! En el ciclo recibe la señal del módulo de gestión de resultados del pipeline.
+  
+\param modulo El módulo actual.
+\param puerto El puerto por el que llega la información.
+\param dato La información que llega.
+
+\return Una cadena que indica qué tal ha ido todo.
+*/
 
 static char *post_gestion_ciclo(modulo_t *modulo, const char *puerto, const void *dato)
 {
@@ -60,6 +90,15 @@ static char *post_gestion_ciclo(modulo_t *modulo, const char *puerto, const void
   return 0;
 }
 
+//! Inicia un módulo.
+/*! Crea la memoria, lee los argumentos del XML, y abre el puerto paralelo.
+  
+\param modulo El módulo actual.
+\param argumentos Una tabla con los argumentos.
+
+\return Una cadena que indica qué tal ha ido todo.
+*/
+
 static char *post_gestion_iniciar(modulo_t *modulo, GHashTable *argumentos) {
   post_gestion_dato_t *pgd = (post_gestion_dato_t*)modulo->m_dato;
   robot_in_t *robot = (robot_in_t*)&pgd->m_robot;
@@ -67,6 +106,15 @@ static char *post_gestion_iniciar(modulo_t *modulo, GHashTable *argumentos) {
   robot->m_parametro = (char*)g_hash_table_lookup(argumentos,"param_defecto");
   return "iniciado";
 }
+
+//! Cierra un módulo.
+/*! Libera toda la memoria creada.
+  
+\param modulo El módulo actual.
+
+\return Una cadena que indica qué tal ha ido todo.
+*/
+
 static char *post_gestion_cerrar(modulo_t *modulo)
 {
   post_gestion_dato_t *pgd = (post_gestion_dato_t*)modulo->m_dato;

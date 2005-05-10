@@ -4,7 +4,23 @@
   \date   Sat Mar 12 19:54:40 2005
   
   \brief  Módulo que se encarga de filtrar la salida de la red, y generar, a partir de ella, una salida coherente y útil.
-  
+
+          \section modulo Descripción del módulo
+	       Este módulo filtra los mensajes que le llegan, eliminando el ruido generado por los módulos anteriores. Trabaja con una tabla de "elemento" -> "valor", y premia los más reforzados, de tal modo que las fluctuaciones de la red neuronal y el ocr no afecten a la salida general.
+
+	  \section puertos Puertos
+	  El módulo tiene puertos de entrada de salida:
+	   <ul>
+	      <li><em>entrada_red</em>: Una estructura de tipo <code>char *</code>, es decir, una cadena que representa una salida.
+	      <li><em>salida_texto</em>: Una salida de tipo <code>char *</code>, que es la salida ya filtrada. Vale <code>0</code> cuando no hay salida.
+	   </ul>
+
+	   \section argumentos Argumentos
+	   <ul>
+	     <li><em>neutro</em>: Una entrada que corresponde a la señal que va a ser ignorada, y que en ningún caso dará salida.
+	     <li><em>tolerancia</em>: El valor que debe tener un valor para ser aceptado.
+	     <li><em>maximo</em>: El máximo que puede tener un valor de un elemento.
+	   </ul> 
   
 */
 
@@ -32,14 +48,21 @@ typedef struct {
   int m_valor;			/*!< El valor que tiene ese estado en un momento dado. */
 } estado_t;
 
+//! Estructura de datos que usamos para manejar la llamada de la función de sumar.
 typedef struct {
-  estado_t *m_estado;
-  char *m_maximo;
-  int m_valor;
-  int m_maximo_valor;
-  char *m_error;
+  estado_t *m_estado; /*!< El nombre del estado que cambiamos. */
+  char *m_maximo; /*!< La cadena que representa la cadena más usada. */
+  int m_valor; /*!< El valor actual del estado funcional en ese momento. */
+  int m_maximo_valor; /*!< El valor máximo que puede tomar el estado. */
+  char *m_error; /*!< La cadena de error que podemos devolver. */
 } argumento_t;
 
+//! Función que usa la tabla hash para sumar los elementos al estado
+/*! 
+  \param key La clave del elemento.
+  \param value El valor del elemento.
+  \param user_data Un puntero a <code>struct argumento_t</code>
+*/
 static void gestion_sumar(gpointer key, gpointer value, gpointer user_data) {
   estado_t* estado = (estado_t*)value;
   argumento_t *argumento = (argumento_t *)user_data;
@@ -64,6 +87,13 @@ static void gestion_sumar(gpointer key, gpointer value, gpointer user_data) {
   //sprintf(argumento->m_error, "%s[%s=%i] ", argumento->m_error, (char *)key, estado->m_valor);
 }
 
+//! Realiza un ciclo en la gestión
+/*!
+  \param modulo El módulo del que hacemos el ciclo.
+  \param puerto El puerto por el que le llega la información
+  \param entrada El dato de entrada
+  \return Una cadena que representa un mensaje de error o de información, <code>0</code> en caso de no haber salida.
+*/
 static char *gestion_ciclo(modulo_t *modulo, const char *puerto, const void *entrada)
 {
   char *devolver = 0;
@@ -127,7 +157,10 @@ static void gestion_borrar_cadena(gpointer a) {
   }
 }
 
-
+//! Función de retrollamada que libera la memoria de un estado
+/*! 
+  \param a El puntero que borramos
+*/
 static void gestion_borrar_estado(gpointer a) {  
   estado_t *c = (estado_t *)a;
   if(c) {
@@ -136,6 +169,12 @@ static void gestion_borrar_estado(gpointer a) {
 }
 
 
+//! Inicia el módulo de gestión, preparando todos los parámetros
+/*!   
+\param modulo El módulo (de tipo módulo de gestión) que iniciamos.
+
+\return Una cadena que representa un mensaje de respuesta de cualquier tipo.
+*/
 static char *gestion_iniciar(modulo_t *modulo, GHashTable *argumentos) {
   gestion_dato_t *dato = (gestion_dato_t *)modulo->m_dato;
   g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, 0);  

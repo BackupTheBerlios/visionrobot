@@ -35,6 +35,12 @@
 /*! \brief El puerto de entrada, recibe un <code>char *</code> */
 #define PUERTO "entrada_texto"
 
+
+//! Imprime una cadena.
+/*! 
+   \param value La cadena que imprimimos.
+   \param xml Un puntero al GladeXML que define la ventana.
+*/
 static void salida_imprimir(const char *value, GladeXML *xml) {
   if(value) {
     GtkWidget* texto;
@@ -51,12 +57,29 @@ static void salida_imprimir(const char *value, GladeXML *xml) {
   }
 }
 
+//! Función de llamada para recorrer la lista imprimiendo cadenas.
 
+/*!
+  \param key La clave del elemento.
+  \param value El valor.
+  \param user_data Un GladeXML.
+*/
 static void salida_iniciar_aux(gpointer key, gpointer value, gpointer user_data) {
   if(!strcmp(key, "texto")) {
     salida_imprimir((char *)value, (GladeXML *)user_data);
   }
 }
+
+//! Realiza un ciclo en el módulo.
+/*! En el ciclo recibe la señal del módulo de gestión de resultados del pipeline.
+  
+\param modulo El módulo actual.
+\param puerto El puerto por el que llega la información.
+\param dato La información que llega.
+
+\return Una cadena que indica qué tal ha ido todo.
+*/
+
 static char *salida_ciclo(modulo_t *modulo, const char *puerto, const void *dato)
 {
   GladeXML *xml = (GladeXML *)modulo->m_dato;
@@ -66,6 +89,16 @@ static char *salida_ciclo(modulo_t *modulo, const char *puerto, const void *dato
 
   return 0;
 }
+
+//! Inicia un módulo.
+/*! Crea la memoria, lee los argumentos del XML, y abre el puerto paralelo.
+  
+\param modulo El módulo actual.
+\param argumentos Una tabla con los argumentos.
+
+\return Una cadena que indica qué tal ha ido todo.
+*/
+
 
 static char *salida_iniciar(modulo_t *modulo, GHashTable *argumentos) {
 
@@ -79,6 +112,16 @@ static char *salida_iniciar(modulo_t *modulo, GHashTable *argumentos) {
   g_hash_table_foreach(argumentos, salida_iniciar_aux, xml);
   return "iniciado";
 }
+
+//! Cierra un módulo.
+/*! Libera toda la memoria creada.
+  
+\param modulo El módulo actual.
+
+\return Una cadena que indica qué tal ha ido todo.
+*/
+
+
 static char *salida_cerrar(modulo_t *modulo)
 {
   free(modulo);

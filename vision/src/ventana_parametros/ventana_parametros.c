@@ -43,11 +43,11 @@
 #define PACKAGE ""
 #endif
 
-
+//! Estructura de datos del módulo
 typedef struct {
-  char m_cambio;
-  GladeXML* m_xml;
-  filtro_gestos_in_parametros_t m_filtro;
+  char m_cambio; /*!< Si hay que cambiar. */
+  GladeXML* m_xml; /*!< El GladeXML de la ventana. */
+  filtro_gestos_in_parametros_t m_filtro; /*!< La estructura que contiene los colores actuales. */
 } ventana_parametros_dato_t;
 
 static GtkWidget *ventana_parametros_get_widget(GtkWidget *w, const char *nombre) {
@@ -121,6 +121,16 @@ G_MODULE_EXPORT void on_hsc_tolerancia_azul_value_changed(GtkRange *range, gpoin
   ventana_parametros_color_ordenes(GTK_WIDGET(range));
 }
 
+//! Realiza un ciclo en el módulo.
+/*! En el ciclo recibe la señal del módulo de gestión de resultados del pipeline.
+  
+\param modulo El módulo actual.
+\param puerto El puerto por el que llega la información.
+\param dato La información que llega.
+
+\return Una cadena que indica qué tal ha ido todo.
+*/
+
 static char *ventana_parametros_ciclo(modulo_t *modulo, const char *puerto, const void *value){
   ventana_parametros_dato_t *dato = (ventana_parametros_dato_t *)modulo->m_dato;
   if(dato->m_cambio == 1) {
@@ -133,6 +143,15 @@ static char *ventana_parametros_ciclo(modulo_t *modulo, const char *puerto, cons
   }
   return 0;
 }
+
+//! Inicia un módulo.
+/*! Crea la memoria, lee los argumentos del XML, y abre el puerto paralelo.
+  
+\param modulo El módulo actual.
+\param argumentos Una tabla con los argumentos.
+
+\return Una cadena que indica qué tal ha ido todo.
+*/
 
 static char *ventana_parametros_iniciar(modulo_t *modulo, GHashTable *argumentos) {
   ventana_parametros_dato_t *dato = (ventana_parametros_dato_t*)modulo->m_dato;
@@ -182,6 +201,14 @@ static char *ventana_parametros_iniciar(modulo_t *modulo, GHashTable *argumentos
 
   return "iniciado";
 }
+
+//! Cierra un módulo.
+/*! Libera toda la memoria creada.
+  
+\param modulo El módulo actual.
+
+\return Una cadena que indica qué tal ha ido todo.
+*/
 
 static char *ventana_parametros_cerrar(modulo_t *modulo)
 {
