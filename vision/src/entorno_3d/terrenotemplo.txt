@@ -1,1 +1,1 @@
-modelos\TerrenoTemplo.raw texturas\Textura.jpg texturas\detalle.bmp 64 180 1000
+modelos\TerrenoTemplo.raw texturas\Textura3.jpg texturas\detalle.bmp 64 180 1000
