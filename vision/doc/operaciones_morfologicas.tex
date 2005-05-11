@@ -1,0 +1,68 @@
+\chapter{Operaciones Morfológicas}
+
+Las operaciones morfológicas simplifican las imágenes y preservan las formas principales de los objetos. La morfología puede utilizarse para suavizar bordes de una región, separar regiones que el proceso de segmentación presenta unidas o como en nuestro caso unir regiones que fueron separadas durante la segmentación.
+
+Las operaciones matemáticas que se realizan tienen su principal aplicación en imágenes binarias y los fundamentos matemáticos fueron concebidos desde el punto de vista de la posición de cada píxel binario de la imagen en lugar de hacerlo desde el punto de vista de la intensidad. 
+La morfología matemática aprovecha las propiedades de los conjuntos de puntos, los resultados de la geometría integral y la topología.
+
+Un punto se representa como un par de enteros que corresponden a las coordenadas de las imagen digital. Por tanto, una imagen binaria puede tratarse como un conjunto de puntos 2D. Los puntos que pertenecen a los objetos en la imagen representan un conjunto X. En imágenes binarias esos puntos son píxeles con valor uno. Los puntos del conjunto complementario X^{c} corresponden al fondo con valores binarios iguales a cero.
+
+Una transformación morfológica \theta viene dada por una relación de la imagen (conjunto de puntos X) con otro pequeño conjunto de puntos B, llamado elemento estructural. B se expresa con respecto a un origen local O (llamado punto representativo o punto de vista director). Algunos elementos estructurales típicos son estos:
+
+	1    1    1			1			
+	1    1    1		      1    1    1			1    0    1
+	1    1    1			1
+	     (a)			            (b)			     (c)
+
+La transformación morfológica \theta(X) aplicada a la imagen X significa que el elemento estructural B se desplaza por toda la imagen. Suponiendo que B se posiciona sobre algún punto de la imagen, el píxel de la imagen correspondiente al punto representativo O de B se denomina píxel actual. El resultado de la relación entre la imagen X y el elemento estructural B en la posición actual se almacena en el píxel actual de la imagen.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1.67cm,height=1.24cm,bb=0 0 63 47]{original.png}
+  \caption{ original.png}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1.67cm,height=1.24cm,bb=0 0 63 47]{binarizada.png}
+  \caption{ binarizada.png}
+\end{figure}
+
+\section{Dilatación}
+La dilatación es una operación isotrópica ya que se comporta igual en todas las direcciones y expansiona el objeto un píxel. Esta operación en ocasiones se denomina rellenado o crecimiento.
+La dilatación con un elemento estructural 3x3 isótropo puede interpretarse como una dilatación que cambia todos los píxeles de fondo que son vecinos al objeto.
+Gráficamente la dilatación se realiza como sigue: se va recorriendo la imagen por ejemplo de izquierda a derecha y de arriba abajo y, donde nos encontremos un 1, situamos el origen del elemento estructural; en esa posición se realiza la unión del elemento estructural con la parte de la imagen sobre la que se solapa dicho elemento, marcando todos los píxeles de esta parte de la imagen con los valores del elemento B.
+\begin{figure}
+  \centering
+  \includegraphics[width=1.67cm,height=1.24cm,bb=0 0 63 47]{dilatacion.png}
+  \caption{ dilatacion.png}
+\end{figure}
+
+\section{Erosión}
+La erosión re realiza de forma parecida a la dilatación solo que cuando recorriendo la imagen original, nos encontramos un píxel con valor 1, aplicamos el elemento estructural no para asignarle sus valores  a la imagen destino, si no como comparación. Si todos los píxeles del elemento B coinciden con los valores de los píxeles de la región de la imagen entonces ponemos el valor de píxel de la imagen destino con valor 1, si no con valor 0.
+Se puede apreciar la desaparición de muchos contornos existentes en la imagen original. La erosión es denominada como reducción, utilizada para simplificar la estructura de los objetos, ya que los objetos con anchos pequeños desaparecen , por tanto, objetos complicados pueden descomponerse en otros mas simples.
+\begin{figure}
+  \centering
+  \includegraphics[width=1.67cm,height=1.24cm,bb=0 0 63 47]{erosion.png}
+  \caption{ erosion.png}
+\end{figure}
+
+\section{Apertura y Cierre}
+LA erosión y la dilatación son transformaciones no invertibles. Si una imagen es erosionada y luego dilatada, la imagen original no se recupera. En efecto, el resultado es una imagen mas simplificada y menos detallada que la original.
+La erosión seguida de una dilatación crea una transformación morfológica denominada apertura. La dilatación seguida de una erosión crea una transformación llamada cierre.
+La apertura y el cierre con un elemento estructural isótropo se utiliza para eliminar detalles específicos de la imagen mas pequeños que el elemento estructural. La forma global de los objetos no se distorsiona.
+El cierre conecta objetos que están próximos entre sí, y rellena pequeños huecos y suaviza el contorno del objeto rellenando pequeños valles, mientras que la apertura produce el efecto contrario. Los conceptos de pequeño y próximo están relacionados con la forma del elemento estructural.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1.67cm,height=1.24cm,bb=0 0 63 47]{apertura.png}
+  \caption{ apertura.png}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1.67cm,height=1.24cm,bb=0 0 63 47]{cierre.png}
+  \caption{ cierre.png}
+\end{figure}
+
+
