@@ -116,7 +116,10 @@ env.Install('bin', ['src/red_neuronal/orden_net'])
 
 # Robot
 rob = glib.Copy()
-rob.Prepend(LIBS=['lua', 'lualib', 'paralelo'])
+if str(plataforma) == str('posix'):
+	rob.Prepend(LIBS=['lua', 'lualib', 'paralelo', 'parapin'])	
+else:
+	rob.Prepend(LIBS=['lua', 'lualib', 'paralelo'])	
 rob.SharedLibrary('bin/robot', 'src/robot/robot.c')
 env.Install('bin', ['src/robot/robot.lua'])
 

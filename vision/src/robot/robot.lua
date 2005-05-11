@@ -83,7 +83,7 @@ function ciclo(orden, parametro)
       reposo()
    else
       reposo()
-      return "Orden no reconocida"
+      return "Orden \"" .. orden .. "\" no reconocida"
    end
 
    return "Recibido " .. orden .. ", " .. parametro .. "."
@@ -114,5 +114,7 @@ function iniciar()
 
    -- Configuramos el estado de reposo
    reposo()
+   
+   robot.alta(AVANZAR)
 end
 

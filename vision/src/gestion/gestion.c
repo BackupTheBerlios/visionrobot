@@ -110,7 +110,7 @@ static char *gestion_ciclo(modulo_t *modulo, const char *puerto, const void *ent
     if(!estado){      
       estado = (estado_t *)malloc(sizeof(estado_t));
       estado->m_valor = 1;
-      g_hash_table_insert(dato->m_historial, /*strdup(*/cadena/*)*/, estado);
+      g_hash_table_insert(dato->m_historial, /*strdup(*/(char*)cadena/*)*/, estado);
     }
     dato->m_buffer_error [0] = '\0';
     //    argumento = {estado, 0, 0, maximo_valor, dato->m_buffer_error};
