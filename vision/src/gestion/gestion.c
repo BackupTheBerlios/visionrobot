@@ -110,7 +110,7 @@ static char *gestion_ciclo(modulo_t *modulo, const char *puerto, const void *ent
     if(!estado){      
       estado = (estado_t *)malloc(sizeof(estado_t));
       estado->m_valor = 1;
-      g_hash_table_insert(dato->m_historial, strdup(cadena), estado);
+      g_hash_table_insert(dato->m_historial, /*strdup(*/cadena/*)*/, estado);
     }
     dato->m_buffer_error [0] = '\0';
     //    argumento = {estado, 0, 0, maximo_valor, dato->m_buffer_error};
@@ -150,13 +150,13 @@ static char *gestion_ciclo(modulo_t *modulo, const char *puerto, const void *ent
   
 \param a La cadena que se borra
 */
-static void gestion_borrar_cadena(gpointer a) {  
+/*static void gestion_borrar_cadena(gpointer a) {  
   char *c = (char *)a;
   if(c) {
     g_free(c);
   }
 }
-
+*/
 //! Función de retrollamada que libera la memoria de un estado
 /*! 
   \param a El puntero que borramos
@@ -184,7 +184,7 @@ static char *gestion_iniciar(modulo_t *modulo, GHashTable *argumentos) {
   dato->m_maximo_valor = atoi(g_hash_table_lookup(argumentos,"maximo"));
   dato->m_historial = g_hash_table_new_full(g_str_hash,
 					    g_str_equal,
-					    gestion_borrar_cadena,
+					    0,//gestion_borrar_cadena,
 					    gestion_borrar_estado);
   sprintf(dato->m_buffer_error, "iniciado con neutro = \"%s\", tolerancia  = %i, maximo = %i", 
 	  dato->m_neutro,

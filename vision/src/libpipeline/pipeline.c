@@ -102,14 +102,14 @@ static void pipeline_borrar_conexion(gpointer a) {
 //	g_slist_foreach(l, pipeline_borrar_1_conexion, 0); 
 	g_slist_free(l);
 }
-
+/*
 static void pipeline_borrar_cadena(gpointer a) {
   char *c = (char *)a;
   if(c) {
-    g_free(c);
+    free(c);
   }
 }
-
+*/
 char ** pipeline_nombres(pipeline_t *p) {
   return p->m_nombres;
 }
@@ -123,6 +123,7 @@ static void pipeline_cerrar_elemento(elemento_t *dato)
     cadena = strdup(dato->m_modulo->m_cerrar(dato->m_modulo));    
     pipeline_salida_error(dato->m_pipeline, dato->m_nombre, nombre,
 			  cadena);
+	free(dato->m_nombre);
     free(cadena);
     free(nombre);
   }
@@ -166,7 +167,7 @@ static pipeline_t * pipeline_annadir(pipeline_t * p, const char *nombre, const c
   if(-1 == pipeline_set_ruta(p, nombre, ruta)) {
     return 0;
   }
-  dato->m_enlaces = g_hash_table_new_full(g_str_hash, g_str_equal, pipeline_borrar_cadena, pipeline_borrar_conexion);
+  dato->m_enlaces = g_hash_table_new_full(g_str_hash, g_str_equal, 0/*pipeline_borrar_cadena*/, pipeline_borrar_conexion);
   return p;
 }
 
@@ -197,7 +198,7 @@ int pipeline_borrar(pipeline_t * p)
 
 static pipeline_t * pipeline_leer_xml(pipeline_t * p, xmlDocPtr doc, xmlNodePtr cur) 
 {
-  GHashTable *argumentos = g_hash_table_new_full(g_str_hash, g_str_equal, pipeline_borrar_cadena, pipeline_borrar_cadena);
+  GHashTable *argumentos = g_hash_table_new_full(g_str_hash, g_str_equal, 0 /*pipeline_borrar_cadena*/, 0/*pipeline_borrar_cadena*/);
   char *nombre = xmlGetProp(cur, "nombre");
   p = pipeline_annadir(p, nombre, xmlGetProp(cur, "ruta"), argumentos, xmlGetProp(cur, "inicio"), (gboolean)xmlGetProp(cur, "activado"));
   if(p == 0) {
@@ -260,7 +261,7 @@ pipeline_t * pipeline_cargar(const char *ruta, funcion_error_t funcion_error, co
 
     chdir(g_path_get_dirname(ruta));
     p = (pipeline_t*)malloc(sizeof(pipeline_t));
-    p->m_modulos = g_hash_table_new_full(g_str_hash, g_str_equal, pipeline_borrar_cadena, pipeline_borrar_elemento);
+    p->m_modulos = g_hash_table_new_full(g_str_hash, g_str_equal, /*pipeline_borrar_cadena*/0, pipeline_borrar_elemento);
     p->m_funcion_error = funcion_error;
     p->m_dato_funcion_error = (gpointer)dato;
     p->m_nombres = 0;

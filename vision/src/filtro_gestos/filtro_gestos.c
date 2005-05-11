@@ -948,7 +948,7 @@ static char *filtro_cerrar(modulo_t *modulo)
 {
   dato_filtro_t * dato = (dato_filtro_t *)modulo->m_dato;
   if(dato->m_salida.m_imagen) {
-    free(dato->m_salida.m_imagen);
+    //free(dato->m_salida.m_imagen);
   }
   lua_close(dato->m_lua);
   free(dato);

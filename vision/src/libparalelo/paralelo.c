@@ -26,6 +26,7 @@ int paralelo_iniciar(paralelo_puerto_t puerto) {
     hLib = LoadLibrary("inpout32.dll");
     oup32 = (oupfuncPtr) GetProcAddress(hLib, "Out32");
     inp32 = (inpfuncPtr) GetProcAddress(hLib, "Inp32");
+	oup32(puerto_paralelo, 0x00);
     return 0;
 #else
     return pin_init_user(p);
@@ -34,7 +35,7 @@ int paralelo_iniciar(paralelo_puerto_t puerto) {
 
 #ifdef G_OS_WIN32   
 static void paralelo_set(estado_t e, int index) {
-	short biteado = 0x01 << (index - 1);
+	short biteado = 0x01 << (index + 1);
 	short antes = inp32(puerto_paralelo);
 	short resultado = e == P_UP ? antes | biteado : antes & ~biteado;
     oup32(puerto_paralelo, resultado);
