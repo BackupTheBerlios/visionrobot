@@ -18,9 +18,16 @@ VentanaPrincipal * ventana;
 static char *entorno_3d_ciclo(modulo_t *modulo, const char *puerto, const void *dato){
   if(!strcmp(PUERTO_ENTRADA, puerto)) 
   {
-	  if(dato) {
+	 if(dato)
+	 {
+
+#ifdef MODO_DEBUG
+	
+		 MessageBox(NULL,"Llamada a ciclo","Debug",0);
+
+#endif
 		ventana->ProcesarComandos(static_cast<const robot_in_t *>(dato));
-	  }
+	 }
   }
   return 0;
 }
@@ -44,10 +51,10 @@ static char *entorno_3d_cerrar(modulo_t *modulo)
   free(modulo);
   return "cerrado";
 }
-/*
+
 #ifdef _MSC_VER
 	 __declspec(dllexport)
-	 #endif*/
+#endif
 modulo_t * get_modulo()
 {
   modulo_t *modulo = (modulo_t*)malloc(sizeof(modulo_t));

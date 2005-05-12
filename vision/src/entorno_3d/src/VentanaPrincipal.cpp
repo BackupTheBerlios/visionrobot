@@ -40,6 +40,10 @@ VentanaPrincipal::VentanaPrincipal()
 	m_bSombras = false;
 
 	m_Hardware3d = true;
+
+	m_OrdenesRobot.m_orden = new char[255];
+	m_OrdenesRobot.m_parametro = new char[255];
+	
     
    
 	// Se parsea los datos de configuracion.
@@ -453,8 +457,11 @@ void VentanaPrincipal::ActualizarInformacion()
     
 
     
-
+	
     std::stringstream ss;
+
+	ss<<"Orden: "<<m_OrdenesRobot.m_orden<<" Parametro: "<<m_OrdenesRobot.m_parametro<<std::endl;
+
     if (m_bFrames)
     {
         ss<<"FPS: "<<fps<<std::endl;
@@ -511,7 +518,22 @@ void VentanaPrincipal::ActualizarEstado()
 void VentanaPrincipal::ProcesarComandos(const robot_in_t *comando)
 {
 	
+#ifdef MODO_DEBUG	
+
+	char * debugOrden = new char[255];
+	strcpy(debugOrden, comando->m_orden);
+	strcat(debugOrden, comando->m_parametro);
 	
+	MessageBox(NULL,debugOrden,"Debug",0);
+	delete []debugOrden;
+
+#endif
+
+	
+	strcpy(m_OrdenesRobot.m_orden, comando->m_orden);
+	strcpy(m_OrdenesRobot.m_parametro, comando->m_parametro);
+
+
 	// comando->m_orden de parar.
 	if(strcmp(comando->m_orden,"parar") == 0)
 	{
@@ -542,7 +564,7 @@ void VentanaPrincipal::ProcesarComandos(const robot_in_t *comando)
 	}
 
 	// grado nulo.
-	if(strcmp(comando->m_parametro,"nulo") == 0)
+	if(strcmp(comando->m_parametro,"nula") == 0)
 	{
 		
 		Entrada::m_Movimiento.rotacion = 0.0f;
