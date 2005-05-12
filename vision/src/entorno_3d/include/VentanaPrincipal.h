@@ -20,7 +20,7 @@
 #include "robot_sdk.h"
 #include <glib.h>
 
-
+//#define MODO_DEBUG
 
 class VentanaPrincipal  
 {
@@ -206,6 +206,11 @@ private:
 	Indica si se usara la aceleracion 3d en el programa.
 	*/
 	bool m_Hardware3d;
+
+	/**
+	Almacena las ultimas ordenes recibidas desde el exterior.
+	*/
+	robot_in_t  m_OrdenesRobot;
 
 private:
     
