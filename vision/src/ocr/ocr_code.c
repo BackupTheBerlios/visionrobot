@@ -434,8 +434,8 @@ const char* ocr_semantic_match(filtro_gestos_in_imagen_t* dibujo, pack_init_t* p
       //return strdup(total);
       devolver = strdup(total);
     }
-    free(dibujo->m_imagen);
-    free(dibujo);
+    /*free(dibujo->m_imagen);
+    free(dibujo);*/
     freeConstellation(constelacion);
   }
   /*  free(dibujo->m_imagen);
