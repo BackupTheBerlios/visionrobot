@@ -5,7 +5,7 @@ import os
 import glob
     
 plataforma = ARGUMENTS.get('OS', Platform())
-env = Environment(CPPPATH = ['src/libparalelo', 'src/robot', 'src/red_neuronal', 'src/libpipeline', 'src/filtro_gestos', 'src/ventana_imagen'], ENV = os.environ, platform = plataforma, PLATFORM=plataforma, LIBPATH=['lib'])
+env = Environment(CPPPATH = ['src/libimagenes', 'src/libparalelo', 'src/robot', 'src/red_neuronal', 'src/libpipeline', 'src/filtro_gestos', 'src/ventana_imagen'], ENV = os.environ, platform = plataforma, PLATFORM=plataforma, LIBPATH=['lib'])
 
 
 if str(plataforma) == str('win32'):
@@ -45,6 +45,10 @@ libpip.ParseConfig('pkg-config xml2 --cflags')
 libpipeline = libpip.Library('lib/pipeline', 'src/libpipeline/pipeline.c')
 env.Install('bin', ['src/libpipeline/pipeline.dtd'])
 
+# Libimagenes
+libimg = gtk.Copy()
+libimagenes = libimg.Library('lib/imagenes', 'src/libimagenes/imagenes.c')
+
 # Libparalelo
 libpar = glib.Copy()
 libparalelo = libpar.Library('lib/paralelo', 'src/libparalelo/paralelo.c')
@@ -76,8 +80,9 @@ env.Install('bin', ['src/ventana_imagen/ventana_imagen.glade'])
 if str(plataforma) == str('posix'):
     img = gtk.Copy()
     img.ParseConfig('pkg-config libxine --cflags --libs')
-    img.Append(LIBS=['sane'])
-    img.SharedLibrary('bin/imagenes', 'src/imagenes/imagenes.c')
+    img.Append(LIBS=['sane', 'imagenes'])
+    imagen = img.SharedLibrary('bin/imagenes', 'src/imagenes/modulo_imagenes.c')
+    Depends(imagen, libimagenes)
     env.Install('bin', ['src/imagenes/letra.xpm', 'src/imagenes/avanzar.xpm', 'src/imagenes/foto.xpm'])
     env.Install('bin', ['src/pipeline/vision.xml'])
 else:

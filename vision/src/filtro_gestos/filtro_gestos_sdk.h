@@ -1,6 +1,7 @@
 #ifndef _FILTRO_GESTOS_SDK_H_
 #define _FILTRO_GESTOS_SDK_H_
 
+#include "imagenes.h"
 /*
 typedef struct {
   color_t *m_imagen;
