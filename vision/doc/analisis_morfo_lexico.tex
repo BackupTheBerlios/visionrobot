@@ -1,0 +1,48 @@
+\section{Analisis Morfo-Lexico}
+
+Muchas veces a causa del ruido del filtrado o por el formato de las letras, el OCR no asocia el carácter ASCII correcto a la subimagen, por ejemplo puede confundir la letra 'N' con la 'H', ya que en algunos casos aunque lo que hayamos querido expresar en la imagen era una 'N' la 'H' genera menos error. 
+Por este motivo ha sido necesario crear una ultima fase, que asegure la detección y corrección de errores en el mensaje reconocido. Ya que a la salida de este modulo el mensaje ha de ser claro, para que robot pueda tratarlo ya sea como orden o como otra operación.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1.67cm,height=1.24cm,bb=0 0 63 47]{dib_ana_morf.eps}
+  \caption{ dib_ana_morf.png}
+\end{figure}
+Para este ejemplo:
+Frase reconocida por el OCR: ``TEXTO P8D58A''
+Frase corregida por el analizador morfo-léxico: ``texto prueba"
+
+Esta ultima fase la forma una serie de funciones que componen el análizador morfo-léxico del modulo OCR. Todo análisis morfo-léxico se base en:
+\begin{itemize}
+\item Diccionarios (lexicones)
+\item Reglas morfológicas
+\end{itemize} 
+Ambas cosas son interdependientes. Si en el diccionario sólo guardamos lexemas, necesitaremos muchas reglas morfológicas.
+Si guardáramos todas las formas de las palabras en el diccionario, no necesitaríamos reglas morfológicas. Esto es lo que hemos seguido con nuestro diccionario, un diccionario con todas las formas verbales, etc.
+Dificultades con los diccionarios:
+\begin{itemize}
+\item Polisemia: palabra con varios significados. Ej.: banco
+\item Homonimia: palabras distintas con la misma grafía. Ej.: divorciado: nombre, adjetivo y verbo
+\end{itemize} 
+Si fuésemos a hacer un tratamiento total del lenguaje natural del mensaje sería necesario que el diccionario fuese mucho mas completo, es decir, que guarde no solo las palabras si no mas información del tipo:
+\begin{itemize}
+\item Categoría sintáctica: preposiciones, conjunciones, nombre, adjetivo, verbo, etc.
+\item Concordancia. Género, número, persona, caso.
+\item Preposiciones que admite un verbo, tipos de complementos, etc.
+\item Información morfológica (patrón de formación de la palabra).
+\item Información semántica. Concepto correspondiente, palabras sinónimas.
+\end{itemize} 		
+Los diccionarios se suelen organizar utilizando relaciones de herencia múltiple, tanto de tipo gramatical como conceptual.
+Se implementan con tablas hash, tries o árboles B. 
+
+Nuestro diccionario no es tan complejo ya que solo actúa como verificador ortográfico.
+Se organiza por bloques de palabras, cada bloque contiene palabras de la misma longitud, por tanto si la palabra mas larga en español contiene 23 letras, el diccionario posee 23 bloques, con palabras desde longitud 1 a longitud 23. Cada bloque es una tabla hash. 
+La longitud de la palabra es algo en lo que se suelen cometer errores en el OCR, por tanto ya directamente buscamos la palabra de misma longitud, en un bloque determinado del diccionario. Si esta palabra no existe en la tabla hash solo se buscan palabras similares en un conjunto mucho mas restringido de palabras, que son las de su misma longitud.
+
+Como ya hemos dicho el análisis en el modulo OCR no es demasiado amplio, esta parte entraría en el ámbito del modulo DCG. El OCR hace un análisis morfo-léxico sencillo donde solo comprueba que las palabras del mensaje existen dentro del diccionario. Y en el caso de que no exista una palabra actúa de corrector ortográfico buscando la palabra del diccionario del mismo tamaño en letras que mas se aproxime a la palabra de la imagen, es decir, que según el método de reconocimiento del OCR menos valor de error genere.  
+
+El error se calcula viendo los valores de los puntos que describen a cada carácter de la palabra del diccionario en la base de datos del OCR, comparando la diferencia del valor de estos puntos con los obtenidos de su correspondiente carácter asociado de la imagen, se va viendo cual de las palabras que realmente existen en el diccionario genera menos error. Recuerdo que la palabra que menos error genera según este método sería una secuencia de caracteres que no forman ninguna palabra existente. Por eso buscamos una palabra de mayor error, pero que exista. 
+Este método tiene un gran porcentaje de acierto entre el mensaje que representa la imagen y la que saca como salida el analizador.
+
+Es por tanto el diccionario quien en ultima fase, pone la cadena de caracteres a la salida del modulo. Asegurando por tanto que todas las palabras que salgan de este modulo, son palabras que existen en el diccionario de español y que mas se corresponden con el mensaje del cartel.
+
