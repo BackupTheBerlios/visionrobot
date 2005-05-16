@@ -1,14 +1,14 @@
 #ifndef _FILTRO_GESTOS_SDK_H_
 #define _FILTRO_GESTOS_SDK_H_
 
-typedef unsigned char color_t;
-
+/*
 typedef struct {
   color_t *m_imagen;
   int m_alto;
   int m_ancho;
   int m_bytes;
-} filtro_gestos_in_imagen_t;
+} filtro_gestos_in_imagen_t;*/
+typedef frame_imagen_t filtro_gestos_in_imagen_t;
 
 typedef struct {
   color_t m_rojo_sup;

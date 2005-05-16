@@ -51,6 +51,30 @@ Package=<4>
 
 ###############################################################################
 
+Project: "imagenes"=.\imagenes\imagenes.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "libimagenes"=.\libimagenes\libimagenes.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "libparalelo"=.\libparalelo\libparalelo.dsp - Package Owner=<4>
 
 Package=<5>

@@ -217,6 +217,17 @@ static int robot_salida(lua_State *L) {
   return 0;
 }
 
+//! Pausa el script
+/*!
+  \param L El lua_State.
+  \return El número de argumentos que se le devuelven a Lua.
+ */
+static int robot_wait(lua_State *L) {
+	int ms = luaL_checkint(L, 1);
+	g_usleep(ms * 1000);
+	return 0;
+}
+
 //! Inicia un módulo.
 /*! Crea la memoria, lee los argumentos del XML, y abre el puerto paralelo.
   
@@ -234,6 +245,7 @@ static char *robot_iniciar(modulo_t *modulo, GHashTable *argumentos) {
     {"baja", robot_baja},
     {"salida",robot_salida},
     {"timer", robot_timer},
+	{"wait", robot_wait},
     {NULL, NULL}
   };
   const char *ruta;
