@@ -1,0 +1,32 @@
+\chapter{OCR}
+
+Reconocimiento Óptico de Caracteres, Optical Character Recognition.
+Es el modulo encargado de deducir el mensaje que pueda haber en una imagen en formato bmp y convertirlo en un mensaje formado por caracteres ASCII.
+
+Como entrada recibiría una imagen de este estilo:
+\begin{figure}
+  \centering
+  \includegraphics[width=1.67cm,height=1.24cm,bb=0 0 63 47]{dib_ana_morf.eps}
+  \caption{ dib_ana_morf.png}
+\end{figure}
+Y como salida devolvería la cadena de texto: ``texto prueba''.
+
+La cámara cada intervalo de tiempo hace capturas de su entorno, si dentro de este existe algún cartel, la imagen será filtrada y se pasara al modulo OCR para que la analice, la salida de este modulo que como ya hemos dicho es una cadena de texto se pasará a un modulo DCG Gramática de Cláusulas Definidas que realizará sobre el mensaje un análisis sintáctico-semántico, después el robot generará la respuesta correspondiente. En caso de que sea una orden u operación aritmético-lógica la realizara y en caso de que se una pregunta y conozca la respuesta, la responderá.
+
+El lenguaje natural es una forma de comunicación imprecisa y ambigua que se apoya en el conocimiento compartido por los que se comunican. Además el lenguaje natural está en continua expansión y permite expresar una misma idea de muchas formas. Gran dificultad debido a que el lenguaje es algo vivo: expansión, modificación, etc. Con ambigüedad léxica, sintáctica, semántica y referencial. Es por lo que el tratamiento del lenguaje natural suele requerir de 4 fases: Un análisis morfo-léxico, otro sintáctico, otro semántico y otro pragmático. El primero esta implícito dentro de este modulo, los dos siguientes se encuentran dentro del modulo de la DCG. 
+Es decir, no solo se analiza la imagen para sacar el mensaje del cartel, si no que también se hace un análisis del mensaje.
+
+Como vemos en el ejemplo, la imagen esta binarizada formada por regiones negras que son los caracteres a reconocer, es decir, a asociarles un carácter ASCII, y por regiones blancas que forman el fondo. Son las regiones negras por tanto las áreas de la imagen en las que nos debemos centrar. 
+Se puede decir que el análisis no se realiza sobre la imagen global si no sobre un conjunto de pequeñas subimagenes de esta, donde se encuentran los caracteres. Para cada subimagen se hace un reconocimiento de patrones. La región negra de la subimagen se puede describir según su frontera y la distancia relativa desde de puntos concretos de esta hasta puntos de los limites de la subimagen, esta definición es un patrón. Gracias a una base de datos que guarda los patrones de cada carácter y su valor ASCII, se puede establecer una asociación entre una región con un valor ASCII gracias a una aproximación de patrones, con aproximación me refiero a que se elige el que mas se acerque con la descripción de su frontera a algún patrón de la base de datos.
+Como resultado el OCR nos da una cadena de caracteres que a veces tiene caracteres erróneos debido al ruido del filtrado u otras razones. La cuestión es que existe la posibilidad de que las palabras que salgan de este modulo no existan y carezcan de sentido, por eso se realiza posteriormente al reconocimiento de patrones una corrección ortográfica llevada a cabo por un analizador morfo-léxico.
+
+Por tanto la actividad del OCR pasa por 3 fases:
+\begin{enumerate}
+\item Enmarcación de los caracteres de la imagen. \ref {Enmarcado de Caracteres} (página \pageref{Enmarcado de Caracteres}).
+\item Reconocimiento de patrones. \ref {Reconocimiento de patrones} (página \pageref{Reconocimiento de patrones}).
+\item Análisis morfo-léxico. \ref {Analisis Morfo-Lexico} (página \pageref{Analisis Morfo-Lexico}).
+\end{enumerate} 
+
+\section{Codigo Ocr}
+Código del modulo OCR, en \ref {codigo_ocr} (página \pageref{codigo_ocr}).
+
