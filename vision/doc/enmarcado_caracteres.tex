@@ -1,0 +1,52 @@
+\section{Enmarcado de Caracteres}
+
+El análisis de la imagen se podría decir que sigue un esquema parecido al método divide y vencerás, ya que no intenta estudiar toda la imagen a la vez devolviendo la cadena de caracteres que contiene, si no que divide el problema de complejidad muy alta en subproblemas mas pequeños de igual tamaño y que no se solapen entre si, es decir, dividen la imagen en pequeñas subimagenes mas simples. 
+El análisis se realizara para cada una de las subimagenes. Estas ocupan un cierto área dentro de la imagen global, para ello hay que calcular en que región se encuentra cada carácter y almacenar este área, para su posterior análisis como una imagen independiente, imagen que solo contendrá un carácter en negro sobre un fondo blanco. Posteriormente a cada subimagen se le asociará el carácter ASCII que mas se aproxime a la morfología de las fronteras que forman su región negra. 
+Una vez hemos resuelto los subproblemas y tenemos los caracteres, solo queda unirlos formando palabras y estas formando frases, para ello será necesario hacer un calculo de las distancias entre las áreas, que nos darán la información de si existen espacios en blanco entre estos caracteres o no.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1.67cm,height=1.24cm,bb=0 0 63 47]{cartel2.eps}
+  \caption{ cartel2.png}
+\end{figure}
+
+El método de enmarcado es muy sencillo. Se realiza un barrido de arriba a abajo explorando todos los píxeles de cada fila como un solo bloque. 
+Vamos a llamar fila negra aquella que contenga uno o mas píxeles negros, es decir, existen caracteres que intersecan con la fila, y llamaremos fila blanca a aquella cuyos píxeles son todos blancos, es decir, que no hay caracteres que intersequen a esta. Como muestra la fotografía, las imágenes ya llegan binarizadas donde los caracteres son negros y el fondo es blanco, por eso si hacemos un barrido de arriba hacia abajo iríamos encontrando al principio filas blancas hasta encontrar una primera fila negra (el caso de que no haya ninguna fila negra en toda la imagen no se puede dar ya que el filtro cuando no hay caracteres, no pasa la imagen al OCR y este no hace nada) entonces sabríamos que esta es la coordenada Y de la parte superior de la primera línea de caracteres. Debido a que el mensaje fue rotado en el filtro para que fuese horizontal, lo suyo es que a partir de ahora todas las líneas sean negras hasta encontrar una blanca que representara la coordenada Y de la parte inferior de la primera línea de caracteres, por tanto ya tendríamos delimitados los puntos superior e inferior de los caracteres de la primera línea, continuamos con el mismo método para el resto de la imagen. Vamos almacenando las coordenadas Y que nos vamos encontrando superior e inferior para cada línea.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1.67cm,height=1.24cm,bb=0 0 63 47]{enmarcado1.eps}
+  \caption{ enmarcado1.png}
+\end{figure}
+
+Ahora nos queda por saber cuales son las fronteras laterales para cada carácter. El esquema anterior, para hallar los laterales no es útil cuando el mensaje ocupa mas de una línea, ya que en una línea puede haber un carácter en la posición X donde en otra línea en esa posición X hay un espacio, por tanto consideraría que en las dos líneas hay un carácter y en futuro se estudiara una región que contiene un espacio creyendo que dentro hay un carácter.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1.67cm,height=1.24cm,bb=0 0 63 47]{enmarcado2.eps}
+  \caption{ enmarcado2.png}
+\end{figure}
+
+Es necesario realizar un barrido vertical de izquierda a derecha no para toda la imagen si no entre la coordenada Y superior y la inferior da cada una de las líneas de caracteres antes calculada. Así iremos hallando las coordenadas X laterales izquierda y derecha para cada carácter.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1.67cm,height=1.24cm,bb=0 0 63 47]{enmarcado3.eps}
+  \caption{ enmarcado3.png}
+\end{figure}
+
+Ya tenemos los datos mas importantes, ahora para definir un área rectangular solo es necesario guardar 2 coordenadas, por ejemplo la superior izquierda y la inferior derecha, por eso para cada carácter utilizando los valores ya calculados le asociados 2 coordenadas que definirán su área. Esta lista de pares de coordenadas será utilizada en la próxima función de estudio de la morfología del carácter para que sepa que regiones de la imagen debe analizar.
+
+Aun nos quedaría un pequeño problema y es que dentro de una fila hay caracteres mas altos que otros, por ejemplo la 'o' es mas baja que la 'L', y para el posterior análisis nos interesa que las fronteras para cada carácter estén totalmente ajustadas a lo que realmente ocupa. Hay que reajustar las coordenadas de cada carácter acercándolas aun mas a este, este reajustamiento solo afecta a las coordenadas Y que son las que pueden estar desajustadas, el método para ello es igual al utilizado para calcular los limites laterales. Ahora a partir de los limites laterales reajustamos para cada carácter las fronteras superiores e inferiores.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1.67cm,height=1.24cm,bb=0 0 63 47]{enmarcado4.eps}
+  \caption{ enmarcado4.png}
+\end{figure}
+
+Ya sabemos que regiones ocupa cada carácter dentro de la imagen, sabemos que distancia existe entre cada región. Esta información nos permite deducir si esa distancia es un espacio entre palabras o entre letras. Esto es muy útil ya que cuando a cada región le asociemos un carácter ASCII tendremos una lista de caracteres, pero no sabremos que palabras forman. Por ejemplo, si sabemos que entre el carácter 6 y el 7 existe un espacio grande entre sus regiones esto será que el carácter 6 y el 7 pertenecen a palabras distintas. 
+Para esto hacemos la media aritmética de los espacios entre regiones contiguas sin contar las contiguas que están en distintas líneas, aquellos espacios entre regiones que estén por encima de la media serán espacios en blanco en el mensaje. Los espacios se representan como una cadena de booleanos de longitud igual al numero de regiones menos uno, que valdrá falso si entre dos regiones no se considera que exista espacio y cierto en caso contrario.
+
+Ya estamos preparados para resolver el problema por partes y tenemos la información necesaria para combinar las subsoluciones y devolver la solución del problema general, que será una cadena de texto tal y como lo hace la red neuronal.
+
