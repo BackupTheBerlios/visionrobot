@@ -23,6 +23,15 @@ static char *prolog_ciclo(modulo_t *modulo, const char *puerto, const void *dato
   if(!strcmp(PUERTO, puerto)) {
     const char *cadena = (const char *)dato;
     if(cadena) {
+
+	  char entrada_dcg[256];
+	  strcpy(entrada_dcg,"dcg.exe ");
+	  strcat(entrada_dcg,cadena);
+	  system(entrada_dcg);
+	  FILE * archivo_dcg = fopen("salida.txt","r");
+	  fscanf(archivo_dcg,"%s",prolog->m_buffer_salida);
+	  fclose(archivo_dcg);
+
       g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, prolog->m_buffer_salida);
       /*term_t a0 = PL_new_term_refs(2);
       static predicate_t p;

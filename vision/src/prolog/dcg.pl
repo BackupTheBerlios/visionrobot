@@ -6,10 +6,10 @@
   Agradecimientos: a Juan Rodríguez, por "quita_blancos_str", reconocimiento de números, y correcciones y añadidos en general.
   Versión: 1.0  
 */
-:- module(dcg, [camaron/2]).
+:- module(dcg, [camaron/2,prueba/2]).
 
 camaron(StringEntrada, Resultado) :-
-	parser(StringEntrada, Resultado, _).
+	parser(StringEntrada, Resultado, _),open('salida.txt',write,Stream),write(Stream,Resultado),close(Stream).
 
 parser(StringEntrada, Resultado, Resto) :-
 	quita_blancos_str(StringEntrada, StringSinBlancos),
@@ -84,3 +84,6 @@ parentesis_abierto -->
 
 parentesis_cerrado -->
     ")".
+
+
+prueba(X,Y):-open('salida.txt',write,Stream), R is X + Y, write(Stream,R),close(Stream).
