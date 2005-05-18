@@ -15,31 +15,24 @@ otros
 
 %ARCHIVOS PROPIOS CONSULTADOS
 
-/**
-* main(+DirTrabajo): establece el directorio indicado como directorio de trabajo
-y
-* genera una progresion de acordes. Hay que expandirlo con más argumentos
-* @param +DirTrabajo: formato como 'c:/hlocal'
-* */
+
 main(DirTrabajo) :- working_directory(_, DirTrabajo).
 
 
 /**
 * mainArgumentos: este predicado esta pensado para ser compilado en un exe
-siguiendo este
+*siguiendo este
 * procedimiento:
 * -iniciar SWI-Prolog
 * -consultar solamente este modulo
 * -llamar al objetivo:
-biblio_genaro_ES:haz_ejecutable('ruta_relativa/mainArgs.exe',principal:mainArgumentos)
+* haz_ejecutable('ruta_relativa/mainArgs.exe',principal:mainArgumentos)
 * Una vez construido el ejecutable mainArgs.exe su directorio de trabajo al
 ejecutarlo será el directorio
 * desde donde se le llame, asi que sería recomendable situarlo en C:/hlocal o el
-directorio que se use para
-* la comunicacion de archivos que corresponda. para que luego Haskell pueda
-encontrar los archivos
+* directorio que se use. 
 * Por consola esto se debe llamar sin poner "-" delante de los argumentos, por
-ejemplo con ./mainArgs.exe d:/cvsrepo 8 0
+ejemplo con ./mainArgs.exe d:/cvsrepo (5+3)/6
 * En windows hay que poner todos los archivos .dll que hay en la carpeta bin del
 directorio donde
 * este instalado SWI pq si no funcionan los exes
@@ -49,9 +42,9 @@ mainArgumentos :- current_prolog_flag(argv, [_,DirTrabajo,Suma1, Suma2])
 	,atom_number(Suma1,X),atom_number(Suma2,Y) 
 	,working_directory(_, DirTrabajo)
 	,suma(X,Y) 
-        ,halt(0).
+      ,halt(0).
 
-* haz_ejecutable(+NombreArchivo,+Objetivo): salva el estado actual del programa
+/* haz_ejecutable(+NombreArchivo,+Objetivo): salva el estado actual del programa
 en un ejecutable independiente
 * que tendrá como objetivo el atomo especificado
 * En windows hay que poner todos los archivos .dll que hay en la carpeta bin del
