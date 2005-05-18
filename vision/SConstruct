@@ -47,7 +47,13 @@ env.Install('bin', ['src/libpipeline/pipeline.dtd'])
 
 # Libimagenes
 libimg = gtk.Copy()
-libimagenes = libimg.Library('lib/imagenes', 'src/libimagenes/imagenes.c')
+if str(plataforma) == str('win32'):
+    libimagenes = libimg.Library('lib/imagenes', ['src/libimagenes/imagenes.cpp',
+						  'src/libimagenes/Captura.cpp'])
+else:
+    libimagenes = libimg.Library('lib/imagenes', 'src/libimagenes/imagenes.cpp')
+
+
 
 # Libparalelo
 libpar = glib.Copy()
@@ -77,20 +83,26 @@ glade.SharedLibrary('bin/ventana_imagen', 'src/ventana_imagen/ventana_imagen.c')
 env.Install('bin', ['src/ventana_imagen/ventana_imagen.glade'])
 
 # Imagenes o camara, segun sea Linux o Windows
+# if str(plataforma) == str('posix'):
+img = gtk.Copy()
+img.ParseConfig('pkg-config libxine --cflags --libs')
+img.Append(LIBS=['imagenes'])
 if str(plataforma) == str('posix'):
-    img = gtk.Copy()
-    img.ParseConfig('pkg-config libxine --cflags --libs')
-    img.Append(LIBS=['sane', 'imagenes'])
-    imagen = img.SharedLibrary('bin/imagenes', 'src/imagenes/modulo_imagenes.c')
-    Depends(imagen, libimagenes)
-    env.Install('bin', ['src/imagenes/letra.xpm', 'src/imagenes/avanzar.xpm', 'src/imagenes/foto.xpm'])
-    env.Install('bin', ['src/pipeline/vision.xml'])
+    img.Append(LIBS=['sane'])
+    imagen = img.SharedLibrary('bin/imagenes', 'src/imagenes/modulo_imagenes.cpp')
 else:
-    cam = glib.Copy()
-    cam.Append(LIBS=['strmiids', 'uuid', 'oleaut32', 'ole32', 'quartz', 'user32'])
-    cam.SharedLibrary('bin/camara', ['src/camara/camara.cpp', 'src/camara/Captura.cpp'])
-    env.Install('bin', ['src/pipeline/camara.xml'])
-    env.Install('bin', ['src/pipeline/nulo.xml'])
+    img.Append(LIBS=['strmiids', 'uuid', 'oleaut32', 'ole32', 'quartz', 'user32'])
+    imagen = img.SharedLibrary('bin/imagenes', ['src/imagenes/modulo_imagenes.cpp'])
+
+Depends(imagen, libimagenes)
+env.Install('bin', ['src/imagenes/letra.xpm', 'src/imagenes/avanzar.xpm', 'src/imagenes/foto.xpm'])
+env.Install('bin', ['src/pipeline/vision.xml'])
+# else:
+#     cam = glib.Copy()
+#     cam.Append(LIBS=['strmiids', 'uuid', 'oleaut32', 'ole32', 'quartz', 'user32'])
+#     cam.SharedLibrary('bin/camara', ['src/camara/camara.cpp', 'src/camara/Captura.cpp'])
+#     env.Install('bin', ['src/pipeline/camara.xml'])
+#     env.Install('bin', ['src/pipeline/nulo.xml'])
 
 # Si estamos en win32, construimos el entorno3D
 if str(plataforma) == str('win32'):

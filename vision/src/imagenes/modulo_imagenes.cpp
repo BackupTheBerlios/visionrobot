@@ -36,12 +36,9 @@
 */  
     
 #include "pipeline_sdk.h"
-#include "filtro_gestos_sdk.h"
-#include "ventana_imagen_sdk.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <unistd.h>
 #include "imagenes.h"
 
 /*! \brief El nombre del puerto de salida de una imagen */
@@ -71,6 +68,7 @@ static char *modulo_imagenes_ciclo(modulo_t* modulo, const char *puerto, const v
 */
 static char *modulo_imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
 {
+	frame_imagen_t *dir;
   char *devolver = "iniciado";  
     imagenes_t * i = 0;
 
@@ -81,10 +79,10 @@ static char *modulo_imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
   char * azul = (char*)g_hash_table_lookup(argumentos,"azul");  
   char *video = (char*)g_hash_table_lookup(argumentos,"video");
   char *camara = (char*)g_hash_table_lookup(argumentos,"camara");
-  int alto = atoi(g_hash_table_lookup(argumentos,"alto"));
-  int ancho = atoi(g_hash_table_lookup(argumentos,"ancho"));
-  int bytes = atoi(g_hash_table_lookup(argumentos,"bytes"));
-  char * archivo_imagen = g_hash_table_lookup(argumentos,"archivo");
+  int alto = atoi((char*)g_hash_table_lookup(argumentos,"alto"));
+  int ancho = atoi((char*)g_hash_table_lookup(argumentos,"ancho"));
+  int bytes = atoi((char*)g_hash_table_lookup(argumentos,"bytes"));
+  char * archivo_imagen = (char*)g_hash_table_lookup(argumentos,"archivo");
 
   if(video) {
     i = imagenes_iniciar(VIDEO, ancho, alto, bytes, 0, 0, video, 0, 0, 0);
@@ -107,7 +105,7 @@ static char *modulo_imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
   }
       modulo->m_dato = i;
   
-  frame_imagen_t *dir = imagenes_frame(i);
+  dir = imagenes_frame(i);
   g_hash_table_insert(modulo->m_tabla, PUERTO_IMAGEN, dir);
 
   return devolver;

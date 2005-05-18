@@ -1,16 +1,18 @@
-#include "filtro_gestos_sdk.h"
-#include "ventana_imagen_sdk.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <unistd.h>
-
+#include <glib.h>
+#include "Captura.h"
 #include "imagenes.h"
 
+#ifndef G_OS_WIN32
 #include <xine.h>
 #include <sane/sane.h>
+#endif
+
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
+#ifndef G_OS_WIN32
 typedef struct {
   xine_t              *xine;
   xine_stream_t       *stream;
@@ -19,15 +21,22 @@ typedef struct {
   xine_event_queue_t  *event_queue;
   uint8_t *yuv;
 } video_t;
+#endif
 
 typedef struct {
+#ifndef G_OS_WIN32
   int m_ancho_anterior;       /*!< El ancho del frame anterior, para la cámara. Si es diferente del actual, se cambia la imagen. De este modo controlamos el tamaño que tomamos. */
   color_t *m_buffer_camara;   /*!< Un buffer en el que guardamos una línea de la imagen de la cámara. Lo usamos porque la imagen sale invertida. Se guarda la línea y luego se vuelca a la imagen que pasamos por el puerto de salida. */  
   SANE_Handle m_handle;       /*!< El <em>handle</em> de la interfaz con SANE. */
+#else
+	Captura* m_captura;
+#endif
 } camara_t;
 
 typedef union {
+#ifndef G_OS_WIN32
   video_t video;
+#endif
   camara_t camara;    
 } info_imagen_t;
 
@@ -40,15 +49,18 @@ struct imagenes_s{
 imagenes_t* imagenes_iniciar(imagenes_fuente_t fuente, int ancho, int alto, int bytes,
 			     const char *archivo_imagen, int cam, const char *video, color_t r, color_t v, color_t a) {
   guchar * p;
+#ifndef G_OS_WIN32
+  char configfile[2048];
+#endif
   camara_t * dato_camara = 0;
   guchar *aux;
   guchar *fin;
   GdkPixbuf * imagen_archivo = 0;
+#ifndef G_OS_WIN32
   video_t *dato_video = 0;
+#endif
   char *vo_driver    = "auto";
-  char *ao_driver    = "auto";
-    
-  char configfile[2048];
+  char *ao_driver    = "auto";      
   guchar * b;
   imagenes_t * imagenes = (imagenes_t *)malloc(sizeof(imagenes_t));	
   imagenes->m_fuente = fuente;
@@ -56,16 +68,25 @@ imagenes_t* imagenes_iniciar(imagenes_fuente_t fuente, int ancho, int alto, int 
   imagenes->m_frame.m_ancho = ancho;
   imagenes->m_frame.m_bytes = bytes;
 
+#ifdef G_OS_WIN32
+  if(imagenes->m_fuente != CAMARA) {
+#endif
   imagenes->m_frame.m_imagen =
-    (char*)malloc(sizeof(char) *
+    (color_t*)malloc(sizeof(color_t) *
 		  imagenes->m_frame.m_alto *
 		  imagenes->m_frame.m_ancho *
 		  imagenes->m_frame.m_bytes);
+#ifdef G_OS_WIN32
+  }
+#endif
 
+#ifndef G_OS_WIN32
   SANE_Int info;
+#endif
   
   switch (imagenes->m_fuente) {
   case CAMARA:
+#ifndef G_OS_WIN32
     dato_camara = &imagenes->m_info.camara;
     imagenes->m_info.camara.m_buffer_camara = 0;
     imagenes->m_info.camara.m_ancho_anterior = -1;
@@ -104,9 +125,15 @@ imagenes_t* imagenes_iniciar(imagenes_fuente_t fuente, int ancho, int alto, int 
 	
       }
     }
+#else
+	imagenes->m_info.camara.m_captura = new Captura(); 
+	imagenes->m_info.camara.m_captura->Iniciar(cam,
+		   0, imagenes->m_frame.m_ancho,
+		   imagenes->m_frame.m_alto); 
+#endif
     break;
   case VIDEO:
-
+#ifndef G_OS_WIN32
     dato_video = & imagenes->m_info.video;
     dato_video->xine = xine_new();
     sprintf(configfile, "%s%s", xine_get_homedir(), "/.xine/config");
@@ -121,15 +148,15 @@ imagenes_t* imagenes_iniciar(imagenes_fuente_t fuente, int ancho, int alto, int 
     dato_video->event_queue = xine_event_new_queue(dato_video->stream);
     xine_open(dato_video->stream, video);
     xine_play(dato_video->stream, 0, 0);
+#endif
     break;
   case IMAGEN_FIJA:
     if(archivo_imagen) {        
       imagen_archivo = gdk_pixbuf_new_from_file(archivo_imagen, 0);    
       if(imagen_archivo) {
-    
-	int j, i;
+    	
 	p = gdk_pixbuf_get_pixels (imagen_archivo);
-	guchar *fin = &p[ imagenes->m_frame.m_ancho *
+	fin = &p[ imagenes->m_frame.m_ancho *
 			  imagenes->m_frame.m_alto *
 			  imagenes->m_frame.m_bytes];
 	b = imagenes->m_frame.m_imagen;
@@ -140,14 +167,10 @@ imagenes_t* imagenes_iniciar(imagenes_fuente_t fuente, int ancho, int alto, int 
     }
     break;
   case COLOR_PLANO:
-    //dato_colores = &imagenes->m_info.colores;
-    /* dato_colores->m_rojo = r;
-       dato_colores->m_verde = v;
-       dato_colores->m_azul = a;*/
     fin = & imagenes->m_frame.m_imagen[imagenes->m_frame.m_ancho *
 				       imagenes->m_frame.m_alto *
 				       imagenes->m_frame.m_bytes];
-    guchar *aux = imagenes->m_frame.m_imagen;
+    aux = imagenes->m_frame.m_imagen;
     while(aux != fin) {
       *aux = r;
       *(aux + 1) = v;
@@ -162,25 +185,31 @@ imagenes_t* imagenes_iniciar(imagenes_fuente_t fuente, int ancho, int alto, int 
 
 frame_imagen_t * imagenes_frame(imagenes_t * imagenes) {
   int i, j;
+  int tam;
   //char *devolver = 0;
   
   frame_imagen_t* imagen = (frame_imagen_t*)&imagenes->m_frame;
   
   int ancho_for = imagen->m_ancho * imagen->m_bytes;
+#ifndef G_OS_WIN32
   SANE_Int len;
   SANE_Parameters parametros;
   int tam;
   int width, height, ratio_code, format;
+#endif
   camara_t * dato_camara = &imagenes->m_info.camara;
+#ifndef G_OS_WIN32
   video_t * dato_video = &imagenes->m_info.video;
   //#if HAY_XINE == 1
   uint8_t *im;   
   uint8_t *fin = &imagen->m_imagen[imagen->m_ancho * imagen->m_alto * imagen->m_bytes];
   uint8_t *yu;
   uint8_t y, u, v;
+#endif
   //#endif
   switch (imagenes->m_fuente) {
   case CAMARA:
+#ifndef G_OS_WIN32
     if(sane_start(dato_camara->m_handle) != SANE_STATUS_GOOD) {
       return 0;
       //devolver = "No se puede iniciar la captura";
@@ -214,9 +243,14 @@ frame_imagen_t * imagenes_frame(imagenes_t * imagenes) {
 	}
       }
     }
+#else
+	imagenes->m_info.camara.m_captura->CogerFrame();
+	tam = imagenes->m_info.camara.m_captura->GetFrame((BYTE**)&imagenes->m_frame.m_imagen);
+  imagenes->m_frame.m_bytes = (tam / imagenes->m_frame.m_alto) / imagenes->m_frame.m_ancho;
+#endif
     break;
   case VIDEO:
-    //#if HAY_XINE == 1
+#ifndef G_OS_WIN32
     xine_get_current_frame (dato_video->stream,               
 			    &width, &height,
 			    &ratio_code, &format,
@@ -248,8 +282,7 @@ frame_imagen_t * imagenes_frame(imagenes_t * imagenes) {
     case XINE_IMGFMT_XXMC:
       break;
     }
-    //#endif
-    //    devolver = 0;
+#endif
     break;
   case ALEATORIO:
     for(i = 0; i < imagen->m_alto; i++) {
@@ -264,13 +297,21 @@ frame_imagen_t * imagenes_frame(imagenes_t * imagenes) {
 }
 
 void imagenes_cerrar(imagenes_t ** imagenes) {
+#ifndef G_OS_WIN32
   video_t * dato;
+#endif
   switch ((*imagenes)->m_fuente) {
   case CAMARA:
+#ifndef G_OS_WIN32
     sane_close((*imagenes)->m_info.camara.m_handle);
     sane_exit();
+#else 
+	if((*imagenes)->m_info.camara.m_captura) delete (*imagenes)->m_info.camara.m_captura;
+  (*imagenes)->m_info.camara.m_captura = 0; 
+#endif
     break;
   case VIDEO:
+#ifndef G_OS_WIN32
     dato = &((*imagenes)->m_info.video);
     xine_close(dato->stream);
     xine_event_dispose_queue(dato->event_queue);
@@ -281,9 +322,19 @@ void imagenes_cerrar(imagenes_t ** imagenes) {
     xine_close_video_driver(dato->xine, dato->vo_port);  
     xine_exit(dato->xine);
     free(dato->yuv);
+#endif
     break;        
   }
-  free((*imagenes)->m_frame.m_imagen);
+
+  #ifdef G_OS_WIN32
+  if((*imagenes)->m_fuente != CAMARA) {
+#endif
+	  free((*imagenes)->m_frame.m_imagen);
+#ifdef G_OS_WIN32
+  }
+#endif
+
+  
   free(*imagenes);
   *imagenes = 0;
 }

@@ -18,19 +18,20 @@ typedef struct {
 
 static char *prolog_ciclo(modulo_t *modulo, const char *puerto, const void *dato)
 {
+//    FILE * archivo_dcg;
   prolog_dato_t *prolog = (prolog_dato_t*)modulo->m_dato;
   g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, 0);
   if(!strcmp(PUERTO, puerto)) {
     const char *cadena = (const char *)dato;
     if(cadena) {
 
-	  char entrada_dcg[256];
+	  /*char entrada_dcg[256];
 	  strcpy(entrada_dcg,"dcg.exe ");
 	  strcat(entrada_dcg,cadena);
 	  system(entrada_dcg);
-	  FILE * archivo_dcg = fopen("salida.txt","r");
+	  archivo_dcg = fopen("salida.txt","r");
 	  fscanf(archivo_dcg,"%s",prolog->m_buffer_salida);
-	  fclose(archivo_dcg);
+	  fclose(archivo_dcg);*/
 
       g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, prolog->m_buffer_salida);
       /*term_t a0 = PL_new_term_refs(2);
