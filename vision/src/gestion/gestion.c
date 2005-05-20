@@ -50,7 +50,7 @@ typedef struct {
 
 //! Estructura de datos que usamos para manejar la llamada de la función de sumar.
 typedef struct {
-  estado_t *m_estado; /*!< El nombre del estado que cambiamos. */
+  estado_t *m_estado; /*!< El estado que cambiamos. */
   char *m_maximo; /*!< La cadena que representa la cadena más usada. */
   int m_valor; /*!< El valor actual del estado funcional en ese momento. */
   int m_maximo_valor; /*!< El valor máximo que puede tomar el estado. */

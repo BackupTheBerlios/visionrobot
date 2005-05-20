@@ -97,12 +97,6 @@ else:
 Depends(imagen, libimagenes)
 env.Install('bin', ['src/imagenes/letra.xpm', 'src/imagenes/avanzar.xpm', 'src/imagenes/foto.xpm'])
 env.Install('bin', ['src/pipeline/vision.xml'])
-# else:
-#     cam = glib.Copy()
-#     cam.Append(LIBS=['strmiids', 'uuid', 'oleaut32', 'ole32', 'quartz', 'user32'])
-#     cam.SharedLibrary('bin/camara', ['src/camara/camara.cpp', 'src/camara/Captura.cpp'])
-#     env.Install('bin', ['src/pipeline/camara.xml'])
-#     env.Install('bin', ['src/pipeline/nulo.xml'])
 
 # Si estamos en win32, construimos el entorno3D
 if str(plataforma) == str('win32'):

@@ -106,7 +106,7 @@ static char *modulo_imagenes_iniciar(modulo_t* modulo, GHashTable *argumentos)
       modulo->m_dato = i;
   
   dir = imagenes_frame(i);
-  g_hash_table_insert(modulo->m_tabla, PUERTO_IMAGEN, dir);
+  g_hash_table_insert(modulo->m_tabla, (gpointer)PUERTO_IMAGEN, (gpointer)dir);
 
   return devolver;
 }

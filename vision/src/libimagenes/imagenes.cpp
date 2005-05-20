@@ -2,12 +2,14 @@
 #include <string.h>
 #include <stdio.h>
 #include <glib.h>
-#include "Captura.h"
 #include "imagenes.h"
 
 #ifndef G_OS_WIN32
 #include <xine.h>
+#include <xine/xineutils.h>
 #include <sane/sane.h>
+#else 
+#include "Captura.h"
 #endif
 
 #include <gdk-pixbuf/gdk-pixbuf.h>
@@ -194,7 +196,6 @@ frame_imagen_t * imagenes_frame(imagenes_t * imagenes) {
 #ifndef G_OS_WIN32
   SANE_Int len;
   SANE_Parameters parametros;
-  int tam;
   int width, height, ratio_code, format;
 #endif
   camara_t * dato_camara = &imagenes->m_info.camara;

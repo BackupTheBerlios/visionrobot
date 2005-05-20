@@ -1,8 +1,9 @@
 \chapter{Diseño y arquitectura del proyecto}
 
 \section{Introducción}
+En este capítulo vamos a dar una idea global y poco exhaustiva, pero concreta, de la arquitectura de \emph{Visión por Computador}. Tiene dos apartados importantes: la arquitectura modular, y la conexión de estos módulos.
 
-\subsection {Arquitectura de la aplicación}
+\section {Arquitectura de la aplicación. Módulos en tubería}
 Al diseñar la aplicación escogimos implementar un sistema altamente modular para conseguir un alto grado de independencia en el desarrollo y de facilidad de ampliación. Por esta razón hemos invertido parte del trabajo en desarrollar una plataforma propia de enlace de módulos, en la que la una parte de la aplicación (lo que hemos denominado {\em pipeline} o {\em tubería}), se encargue de realizar el trabajo mecánico, que, básicamente, se compone de:
 \begin{itemize}
 \item Conectar los módulos mediante puertos independientes con diferente información por puerto, pudiendo crear conexiones {\em 1 a 1}, {\em n a 1}, {\em 1 a n}, y {\em n a n}.
@@ -15,13 +16,24 @@ El {\em pipeline} es multiplataforma y funciona con módulos compilados desde {\e
 
 
 \section{Diagrama de pipeline de ``Visión por Computador''}
+En la figura \ref{diagrama_vision_computador} hemos esquematizado todo el proceso que siguen los datos de nuestra aplicación hasta llegar a una salida visible por el usuario. Los datos comienzan en la interfaz de imágenes (puede ser una imagen de cámara, un vídeo, una imagen fija...), y descienden por el grafo de módulos hasta el \textbf{robot} o el \textbf{entorno 3D}. Asimismo, tenemos también de entrada las ventanas de parámetros, que dotan a los filtros de los valores necesarios \emph{en tiempo real}.
+
+Tras el filtrado pertinente de cada imagen, se las lleva a un módulo de proceso (redes neuronales para los guantes, y algoritmo de \emph{OCR} para el texto), y, paralelamente, a ventanas de visualización, para depuración y comprobación de resultados. Se filtran las señales erróneas y, para el módulo de texto, se envía la información a un módulo de DCG\footnote{Definite clause grammar} que genera una salida como respuesta ``inteligente''. Cuando la información ya ha sido extraída de cada imagen, sólo queda unificarla con el resto de datos, para dar una salida coherente.
+%\begin{figure}
+%  \label{diagrama_vision_computador}
+%  \centering
+
+  %\includegraphics[width=120mm]{pipeline.eps}
+
+  %\caption{Diagrama de tubería}
+%\end{figure}
 
 \begin{figure}
   \centering
-  
-  \includegraphics[width=120mm]{pipeline.eps}
- 
+  \includegraphics[width=13.608cm,height=11.404cm,bb=0 0 1113 854]{pipeline.eps}
   \caption{Diagrama de tubería}
+  \label{diagrama_vision_computador}
 \end{figure}
+
 
 

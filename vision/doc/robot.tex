@@ -1,0 +1,39 @@
+\chapter{Módulo de control del robot}
+
+\section{Introducción}
+El módulo de control de robot ha sido creado con el fin de tener una pieza de software capaz de controlar nuestro robot de una forma sencilla y transparente para los módulos que generan la información de salida. A este módulo le llega una estructura de datos que contiene la orden y el parámetro, y el robot se encarga de moverse en función de esa información. A continuación detallamos cómo lo hace.
+
+\section{Arquitectura del módulo}
+El módulo en sí tiene una estructura muy simple: consiste en un conjunto de funciones que son exportadas a un \emph{script} programado en el lenguaje \textbf{Lua}, y que funcionan principalmente haciendo llamadas a una librería que hemos creado, y que se encarga de controlar el puerto paralelo.
+
+\subsection{Scripts}
+% TODO: pues tudú
+
+\subsection{Biblioteca de control del puerto paralelo}
+Hemos desarrollado una biblioteca que provee un interfaz lo más simple posible de control de los pines del puerto paralelo, y que además es \textbf{multiplataforma}. A través de ella se puede controlar los pines del cable, con llamadas simples, en las cuales sólo hay que especificar que pin se quiere usar, y si se quiere poner a \emph{alta} o a \emph{baja}. De este modo nos hemos abstraído, en la implementación del módulo en sí, de las pequeñas dificultades que puede ocasionar interactuar directamente con la entrada/salida del ordenador.
+
+Para la implementación de esta biblioteca hemos usado a su vez dos bibliotecas externas: \textbf{parapin} para la implementación en GNU/Linux, y la DLL \textbf{inpout32.dll} para el uso en plataformas Win32.
+
+\section{Construcción del robot}
+Para construir la estructura física del robot, hemos usado piezas de \emph{Lego Technics}. Este material es barato y razonablemente consistente para soportar su propio peso, el de la cámara, el circuito, y el cable paralelo. Además, destaca principalemente por su versatilidad de uso y su capacidad de reconstrucción. El ensamblado de las piezas es inmediato (hay que tener en cuenta que se vende como juguete para niños a partir de 12 años), y los errores de estructura se pueden subsanar con mucha facilidad.
+
+Sin embargo, hemos escogido este material por la facilidad que hemos encontrado para generar máquinas móviles. Los conjuntos de piezas de \emph{Lego Technics} suelen venir acompañados por estructuras más complejas de construcción, como motores y brazos hidráulicos, elementos que hemos usado para nuestro robot.
+
+El circuito ha sido conectado sobre una placa pequeña de entrenador, a pesar de su fiabilidad relativa, es rápida de montar y de depurar. Hemos usado un chip \textbf{L293B}, que sirve para control de motores bidireccionales de corriente contínua, y alimentamos el circuito con una pila de 9 voltios. El circuito que usa el robot es el siguiente:
+
+% TODO: poner la imagen del circuito.
+
+\section {Fotos}
+A continuación mostramos algunas fotos del robot que hemos construido:
+% TODO: pues tudú
+
+%\begin{figure}
+%  \centering
+%  \includegraphics[bb=0 0 88 66]{robot.png}
+%  \caption{Foto del robot}
+%\end{figure}
+
+
+\section {Código}
+% TODO: poner bien la referencia
+Ver anexo: documentación del módulo de robot.c, en \ref {robot_8c} (página \pageref{robot_8c}).
