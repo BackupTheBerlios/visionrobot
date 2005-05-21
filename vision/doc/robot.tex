@@ -1,4 +1,4 @@
-\chapter{Módulo de control del robot}
+?\chapter{Módulo de control del robot}
 
 \section{Introducción}
 El módulo de control de robot ha sido creado con el fin de tener una pieza de software capaz de controlar nuestro robot de una forma sencilla y transparente para los módulos que generan la información de salida. A este módulo le llega una estructura de datos que contiene la orden y el parámetro, y el robot se encarga de moverse en función de esa información. A continuación detallamos cómo lo hace.
@@ -7,7 +7,9 @@ El módulo de control de robot ha sido creado con el fin de tener una pieza de so
 El módulo en sí tiene una estructura muy simple: consiste en un conjunto de funciones que son exportadas a un \emph{script} programado en el lenguaje \textbf{Lua}, y que funcionan principalmente haciendo llamadas a una librería que hemos creado, y que se encarga de controlar el puerto paralelo.
 
 \subsection{Scripts}
-% TODO: pues tudú
+La verdadera programación de la función del robot la hemos delegado en un \emph{script}. Este método de programación nos permite más flexibilidad a la hora de controlar el comportamiento de la máquina.
+
+En el script del robot implementamos algunas funciones determinadas que necesita el módulo de control, y las que nosotros deseemos. En este código definimos de una manera muy simple qué tiene que hacer el robot (realmente el puerto paralelo) cuando le llegan las órdenes de los otros módulos.
 
 \subsection{Biblioteca de control del puerto paralelo}
 Hemos desarrollado una biblioteca que provee un interfaz lo más simple posible de control de los pines del puerto paralelo, y que además es \textbf{multiplataforma}. A través de ella se puede controlar los pines del cable, con llamadas simples, en las cuales sólo hay que especificar que pin se quiere usar, y si se quiere poner a \emph{alta} o a \emph{baja}. De este modo nos hemos abstraído, en la implementación del módulo en sí, de las pequeñas dificultades que puede ocasionar interactuar directamente con la entrada/salida del ordenador.

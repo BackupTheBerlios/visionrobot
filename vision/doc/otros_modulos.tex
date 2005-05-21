@@ -1,0 +1,28 @@
+\chapter {Otros módulos}
+
+\section{Introducción}
+A continuación explicamos el funcionamiento del resto de los módulos. Los aglutinamos en esta sección, por carecer de interés la explicación detallada de los mismos, debido a su sencillez.
+
+% TODO: poner las referencias
+
+\section {Módulo de post-gestión}
+Hemos añadido un módulo que recoja todas las señales que son generadas por las distintas ramas de proceso del \emph{pipeline}, y las agrupe en una sola salida válida, para ofrecer de este modo, a través de sus puertos, datos a todos los módulos de salida.
+
+Puede examinar su documentación de código en \ref{caca}.
+
+\section{Ventana de parámetros}
+La ventana de parámetros es una interfaz gráfica en la que es posible elegir un color, y tres tolerancias (una para el rojo, otra para el verde y otra para el azul), y alimentar así a un módulo de filtro, de tal modo que la parametrización de los valores del mismo se pueda hacer en tiempo real.
+
+Puede examinar su documentación de código en \ref{caca}.
+
+\section{Ventana de imágenes}
+La ventana de imágenes es simplemente un módulo que muestra gráficamente, en una ventana que se redimensiona automáticamente, una imagen que sigue el formato propio de nuestra aplicación (ver sección \ref{formato_imagenes}).
+
+La ventana de imágenes tiene como función añadida la capacidad de guardar una toma de la imagen que se este dibujando en el instante en el que se pulsa \textbf{F5}.
+
+Puede examinar su documentación de código en \ref{caca}.
+
+\section{Módulo de salida}
+Este módulo es simplemente una ventana con un cuadro de texto que es capaz de imprimir en él todas las cadenas (en formato C, \verb|char *|) que le llegan a través de sus puertos.
+
+Puede examinar su documentación de código en \ref{caca}.
