@@ -1,7 +1,7 @@
 /*! \file Captura.h
   \brief Clase de gestión de cámaras web, basada en el trabajo de Sagar K.R.
-  \autor Carlos León
-  \versión 1.0
+  \author Carlos León
+  \version 1.0
 */  
 #ifndef _CAPTURA_H_
 #define _CAPTURA_H_
