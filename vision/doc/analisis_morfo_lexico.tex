@@ -1,4 +1,4 @@
-\section{Analisis Morfo-Lexico}
+\section{Analisis Morfo-Léxico}
 
 Muchas veces a causa del ruido del filtrado o por el formato de las letras, el OCR no asocia el carácter ASCII correcto a la subimagen, por ejemplo puede confundir la letra 'N' con la 'H', ya que en algunos casos aunque lo que hayamos querido expresar en la imagen era una 'N' la 'H' genera menos error. 
 Por este motivo ha sido necesario crear una ultima fase, que asegure la detección y corrección de errores en el mensaje reconocido. Ya que a la salida de este modulo el mensaje ha de ser claro, para que robot pueda tratarlo ya sea como orden o como otra operación.
@@ -10,7 +10,7 @@ Por este motivo ha sido necesario crear una ultima fase, que asegure la detecció
 \end{figure}
 Para este ejemplo:
 Frase reconocida por el OCR: ``TEXTO P8D58A''
-Frase corregida por el analizador morfo-léxico: ``texto prueba"
+Frase corregida por el analizador morfo-léxico: ``texto prueba''
 
 Esta ultima fase la forma una serie de funciones que componen el análizador morfo-léxico del modulo OCR. Todo análisis morfo-léxico se base en:
 \begin{itemize}
