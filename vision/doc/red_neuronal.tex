@@ -21,8 +21,11 @@ La capa oculta debe tener tan pocas unidades como sea posible. Medidas experimen
 Como ya sabemos al robot se le controla con 2 manos, los gestos de la mano izquierda le indican las ordenes y los de las derecha los parámetros, con el objetivo de simplificar el diseño los gestos de ordenes y de parámetros son los mismos, pero significan cosas distintas. Tanto para ordenes como para parámetros hay 5 tipos de gestos. Como recordatorio las ordenes eran: parar, avanzar, girar a la izquierda y girar a la derecha. Y los parámetros eran nula, medio baja, medio alta, alta si la orden actual es la de avanzar, donde los parámetros indican la velocidad a la que debe hacerlo o 0º, 45º, 90º, 180º si la orden actual es una de giro. La 5º gesto tanto para ordenes como para parámetros es el ``gesto no reconocido''. Por tanto dado que hay 5 tipos de gestos ha reconocer, la red tendrá que sacar 5 posibles salidas. Al principio optamos por una capa de salida de una sola unidad. El valor oscila entre 0 y 1 así que por ejemplo si esta unidad valía 0.2 significaba que había reconocido el 2º gesto, si valía 0.8 había reconocido el 4º gesto. Luego se cambio al diseño actual que es una capa de salida de 5 unidades, esto hace a la red mucho mas fiable, se podía decir que la salida de la red antes era analógica y ahora es digital, ya que todas las salidas tendrán valores menores de 0.5 excepto una que será mayor, solo hay que asociar la unidad de la salida que se ha puesto en alta con una cadena de texto. Esta asociación se hace mediante un script en Lua, así es más modificable ya que si se quiere cambiar el texto de salida no hay que recompilar el proyecto, solo cambiar un archivo de texto.
 
 La organización de red por capas es estándar, la salida de cada unidad alimenta a todas las unidades de la siguiente capa.
+
 La tasa de aprendizaje utilizada ha sido 0.3. La mas alta posible para reducir el tiempo de aprendizaje sin disminuir la precisión.
+
 El descenso de gradiente es incremental para reducir el riesgo de quedarnos en mínimos locales.
+
 Los pesos de la unidades de salida y oculta son inicializados con pequeños valores aleatorios entre 0.05 y -0.05.
 
 \section{Entrenamiento}
@@ -56,30 +59,28 @@ Ya tendríamos así unos pesos que representan una aproximación a la función busca
   \caption{ prog\_train.png}
 \end{figure}
 
-
 Estos fueron datos de un entrenamiento de la red:
-
-Datos entrada:
-
-  148 fotos de entrenamiento, 49 fotos de validación y 30 de prueba.
-
-  Índice de aprendizaje: 0.3
-
-  20 iteraciones
-
-Datos salida:
-
-  Porcentaje de aciertos en entrenamiento: 89   Error medio: 0,0141046521582562
-
-  Porcentaje de aciertos en validación: 93    Error medio: 0,00799933215976971
-
-  Porcentaje de aciertos en prueba: 100     Error medio: 0,00645778571591585
+\begin{itemize}
+\item Datos entrada:
+\begin{itemize}
+\item 148 fotos de entrenamiento, 49 fotos de validación y 30 de prueba.
+\item Índice de aprendizaje: 0.3
+\item 20 iteraciones
+\end{itemize} 
+\item Datos salida:
+\begin{itemize}
+\item Porcentaje de aciertos en entrenamiento: 89   Error medio: 0,0141046521582562
+\item Porcentaje de aciertos en validación: 93    Error medio: 0,00799933215976971
+\item Porcentaje de aciertos en prueba: 100     Error medio: 0,00645778571591585
+\end{itemize} 
+\end{itemize}   
 
 \begin{figure} [h]
   \centering
   \includegraphics[scale=0.4,bb=0 0 504 231]{Grafica_Aciertos.png}
   \caption{ Grafica\_Aciertos.png}
 \end{figure}
+
   Gráfica de evolución del porcentaje de aciertos respecto al numero de iteraciones. Sobre las fotos de entrenamiento.
 
 \begin{figure} [h]
@@ -87,6 +88,7 @@ Datos salida:
   \includegraphics[scale=0.4,bb=0 0 491 237]{Grafica_Errores.png}
   \caption{ Grafica\_Errores.png}
 \end{figure}
+
   Gráfica de evolución del error medio respecto al numero de iteraciones. Sobre las fotos de entrenamiento.
 
 \section{Red Neuronal en el proyecto}
@@ -95,36 +97,43 @@ Como cada modulo del pipeline, el modulo de red tiene un pequeño numero de funci
 Documentación del código de la red: en \ref {Codig_red} (página \pageref{Codig_red}).
 
 Estas son 5 imágenes filtradas de ejemplo, cada una representa una orden o un parámetro.
-Recordatorio:
-    1 dedo-->   Orden:  Avanzar     Parámetro:  Medio baja o 45º
-    2 dedos-->  Orden:  Girar derecha   Parámetro:  Medio alta o 90º
-    3 dedos-->  Orden:  Girar Izquierda   Parámetro:  Alta o 180º
-    5 dedos-->  Orden:  Parar     Parámetro:  Nula o 0º
 
+Recordatorio:
+\begin{itemize}
+\item 1 dedo:  Avanzar     Parámetro:  Medio baja o 45º
+\item 2 dedos:  Girar derecha   Parámetro:  Medio alta o 90º
+\item 3 dedos:  Girar Izquierda   Parámetro:  Alta o 180º
+\item  5 dedos:  Parar     Parámetro:  Nula o 0º
+\end{itemize} 
+ 
 \begin{figure} [h]
   \centering
   \includegraphics[scale=0.5,bb=0 0 160 120]{_orden_parada_17.png}
   \caption{ \_orden\_parada\_17.png}
 \end{figure}
   Salida: Si red de ordenes: Parar  Si red de parámetros: Nula o 0º
+
 \begin{figure} [h]
   \centering
   \includegraphics[scale=0.5,bb=0 0 160 120]{_orden_avanza_38.png}
   \caption{ \_orden\_avanza\_38.png}
 \end{figure}
   Salida: Si red de ordenes: Avanzar  Si red de parámetros: Medio baja o 45º
+
 \begin{figure} [h]
   \centering
   \includegraphics[scale=0.5,bb=0 0 160 120]{_orden_angulo_43.png}
   \caption{ \_orden\_angulo\_43.png}
 \end{figure}
   Salida: Si red de ordenes: Girar derecha  Si red de parámetros: Medio alta o 90º
+
 \begin{figure} [h]
   \centering
   \includegraphics[scale=0.5,bb=0 0 160 120]{_orden_negAngulo_84.png}
   \caption{ \_orden\_negAngulo\_84.png}
 \end{figure}
   Salida: Si red de ordenes: Girar izquierda  Si red de parámetros: Alta o 180º
+
 \begin{figure} [h]
   \centering
   \includegraphics[scale=0.5,bb=0 0 160 120]{_no_gesto_36.png}
@@ -134,7 +143,11 @@ Recordatorio:
 
 \section{Evolución}
 El primer sistema utilizado para resolver el problema de reconocimiento de gestos, fue la implementación de dos redes distintas una para ordenes y otra para parámetros, debido a que su estructura era distinta.
+
 Se fueron modificando los filtros con el objetivo de facilitar el aprendizaje a la red.
+
 La segunda elección fue utilizar el mismo numero de gestos tanto en ordenes como en parámetros así se pudo conseguir la misma implementación para ambas.
+
 Luego se redujo considerablemente el código, eliminando la parte de entrenamiento del proyecto. El código de entrenamiento pasaría a ser un programa a parte que generará archivos de redes entrenadas. En este punto había 2 archivos uno para cada red.
+
 Y por ultimo visto que los gestos de las ordenes eran reconocidos con mucha mas facilidad que los asignados a los parámetros, que fallaban constantemente, decidimos que los gestos de los parámetros fuesen iguales a los de las ordenes, solo que en vez de hacer gestos con la izquierda se hacen con la derecha. De esta manera ambas redes cargan el mismo archivo y son igual de fiables. Solo se diferencian por la cadena de texto que devuelven, pero eso va por scripts.
