@@ -161,7 +161,7 @@ if str(plataforma) == str('posix'):
                                      suffix='.dvi',
                                      src_suffix='.tex')
 
-    env.Append(BUILDERS = {'Dia' : Builder(action = 'dia $SOURCE -t eps -e $TARGET')})
+    env.Append(BUILDERS = {'Dia' : Builder(action = 'dia $SOURCE -t png -e $TARGET')})
     
     files = glob.glob('doc/*.tex')
     
@@ -169,7 +169,7 @@ if str(plataforma) == str('posix'):
     
     ps = env.PostScript('bin/vision.ps', 'doc/vision.tex')
 
-    dia = env.Dia('doc/pipeline.eps', 'doc/pipeline.dia')
+    dia = env.Dia('doc/pipeline.png', 'doc/pipeline.dia')
     
     Depends(doc, files + dia)
 
