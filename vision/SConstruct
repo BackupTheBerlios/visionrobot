@@ -148,7 +148,7 @@ Depends(prog_pip, libpipeline)
 env.Install('bin', ['src/pipeline/ventana_pipeline.glade'])
 
 # Documentacion
-if str(plataforma) == str('posix'):
+if str(plataforma) == 'nada':#str('posix'):
     def tex_action(source, target, env, for_signature):
         prog = 'latex'
         (dir, file) = os.path.split(str(source[0]))
@@ -165,12 +165,12 @@ if str(plataforma) == str('posix'):
     
     files = glob.glob('doc/*.tex')
     
-    doc = env.DVI('doc/vision.dvi', 'doc/vision.tex')
+    #doc = env.DVI('doc/vision.dvi', 'doc/vision.tex')
     
-    ps = env.PostScript('bin/vision.ps', 'doc/vision.tex')
+    pdf = env.PDF('bin/vision.pdf', 'doc/vision.tex')
 
     dia = env.Dia('doc/pipeline.png', 'doc/pipeline.dia')
     
-    Depends(doc, files + dia)
+    Depends(pdf, files + dia)
 
-    Depends(ps, doc)
+    #Depends(ps, doc)
