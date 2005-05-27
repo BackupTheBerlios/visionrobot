@@ -1,16 +1,18 @@
-\chapter{Descripción Técnica}
+\section{Descripción Técnica}
 \label{Descripcion_tecnica} 
 
 Hemos utilizado una red multicapa, ya que permiten representar superficies de decisión no lineales. Debido a esto no se puede utilizar unidades lineales ya que solo permitirían representar funciones lineales. Tampoco pudimos utilizar perceptrones porque su función de salida es discontinua, no derivable y por lo tanto no se le puede aplicar el descenso del gradiente. Necesitábamos una unidad que diese como salida una función no lineal y que fuese derivable con respecto a las entradas.
+\linebreak 
 Por eso utilizamos el sigmoide como unidad.
 
-\begin{figure}
+\begin{figure}[h]
   \centering
   \includegraphics[scale=0.5,bb=0 0 378 120]{red2.png}
-  \caption{ red2.png}
+  \caption{ Unidad Sigmoide.}
 \end{figure}
 
 La función sigma  $ \sigma(x)  = \frac{1}{(1+e^{-x})} $ es no lineal y derivable $ \frac{d\sigma(x)}{dx} =  \sigma(x) . (1 - \sigma(x)) $.
+
 El descenso de gradiente se puede utilizar para entrenar:
 \begin{itemize}
 \item Una unidad sigmoide.
@@ -18,7 +20,7 @@ El descenso de gradiente se puede utilizar para entrenar:
 \end{itemize} 
 
 La retropropagación permite aprender los pesos para una red multicapa con un numero de unidades e interconexiones dado. Consideramos una red con múltiples unidades de salida, de forma que el error es la suma de los errores sobre todas las salidas. El espacio de hipótesis viene dado por los valores posibles para los pesos de todas las unidades de red. Utilizamos el descenso de gradiente para encontrar una hipótesis que minimice el error, el descenso utilizado es incremental, es decir, los pesos se actualizan después de considerar cada ejemplo de entrenamiento en lugar de esperar a considerarlos todos. Es mas improbable que el descenso incremental caiga en un mínimo local.
-
+\linebreak 
 La secuencia de pasos utilizada en nuestro entrenamiento viene a ser esta:
 \begin{itemize}
 \item Crear la red. 
@@ -28,16 +30,22 @@ La secuencia de pasos utilizada en nuestro entrenamiento viene a ser esta:
 \end{itemize} 	
 
 Para cada unidad de salida k, se calcula su termino de error: $ \delta_{k} = O_{k} . (1 - O_{k}) . (t_{k} - O_{k}) $
-Para cada unidad oculta h, se calcula su termino de error: $ \delta_{h} = O_{h} . (1 - O_{h}) . \Sigma (W_{kh} . \delta_{k}) $ , siendo k las salidas.
-Se actualiza cada peso de la red $ W_{ji} = W_{ji} + \Delta (W_{ji}) $ donde $ \Delta (w_{ji}) = \eta .\delta_{j} .x_{ji} + \alpha .\Delta w_{ji}. (n-1) $. 
-($ t_{k} $ es la salida dada por ejemplo de entrenamiento para la unidad k. $ o_{t} $ es la salida generada por la red.)
-La actualización de los pesos en la iteración n depende de la actualización en n-1. El 2º termino de la ecuación representa la cantidad de movimiento. Un símil físico seria una pelota que cae por la superficie de error, la cantidad de movimiento hace que la pelota tienda a mantener la misma dirección, con esto se intenta evitar que la pelota pare en un mínimo local o que se pare en un llano.
 
+Para cada unidad oculta h, se calcula su termino de error: $ \delta_{h} = O_{h} . (1 - O_{h}) . \Sigma (W_{kh} . \delta_{k}) $ , siendo k las salidas.
+
+Se actualiza cada peso de la red $ W_{ji} = W_{ji} + \Delta (W_{ji}) $ donde $ \Delta (w_{ji}) = \eta .\delta_{j} .x_{ji} + \alpha .\Delta w_{ji}. (n-1) $. 
+
+($ t_{k} $ es la salida dada por ejemplo de entrenamiento para la unidad k. $ o_{t} $ es la salida generada por la red.)
+
+La actualización de los pesos en la iteración n depende de la actualización en n-1. El 2º termino de la ecuación representa la cantidad de movimiento. Un símil físico seria una pelota que cae por la superficie de error, la cantidad de movimiento hace que la pelota tienda a mantener la misma dirección, con esto se intenta evitar que la pelota pare en un mínimo local o que se pare en un llano.
+\linebreak 
 Respecto el descenso del gradiente en el sigmoide:
 Para el descenso incremental consideramos el cambio en los pesos inducido por cada ejemplo de entrenamiento $ \Delta w_{ji} = \eta \frac{\eta E_{d}}{\eta w_{ji}} $ donde el error sobre un ejemplo de entrenamiento viene dado por la suma de los errores en cada unidad de salida $ E_{d}(w) \equiv \frac{1}{2} . \Sigma (t_{k} - o_{k})^{2} $ , siendo k las salidas
-La salida viene dada por $ net = \Sigma w_{i}.x_{i} $ , i=0..n y $ o = \sigma (net) = \frac{1}{1 + e^{-net}} $, aplicando la regla de la cadena $ \frac{\eta E_{d}}{\eta w_{ji}} = \frac{\eta E_{d}}{\eta net_{j}} . \frac{\eta net_{j}}{\eta w_{ji}} = \frac{\eta E_{d}}{\eta net_{j}} . x_{ji} $. Para calcular $ \frac{\eta E_{d}}{\eta net_{j}} $ distinguimos el caso de las unidades de salida y las ocultas.
-Error en las unidades de salida $ \frac{\eta E_{d}}{\eta net_{j}} = -(t_{j} - o_{j}). o_{j} .(1 - o_{j}) $. Error en la unidades ocultas $ \frac{\eta E_{d}}{\eta net_{j}} = o_{j} . (1 - o_{j}) . \Sigma (-\delta_{k} . w_{kj})  $.
 
+La salida viene dada por $ net = \Sigma w_{i}.x_{i} $ , i=0..n y $ o = \sigma (net) = \frac{1}{1 + e^{-net}} $, aplicando la regla de la cadena $ \frac{\eta E_{d}}{\eta w_{ji}} = \frac{\eta E_{d}}{\eta net_{j}} . \frac{\eta net_{j}}{\eta w_{ji}} = \frac{\eta E_{d}}{\eta net_{j}} . x_{ji} $. Para calcular $ \frac{\eta E_{d}}{\eta net_{j}} $ distinguimos el caso de las unidades de salida y las ocultas.
+
+Error en las unidades de salida $ \frac{\eta E_{d}}{\eta net_{j}} = -(t_{j} - o_{j}). o_{j} .(1 - o_{j}) $. Error en la unidades ocultas $ \frac{\eta E_{d}}{\eta net_{j}} = o_{j} . (1 - o_{j}) . \Sigma (-\delta_{k} . w_{kj})  $.
+\linebreak 
 Para valores pequeños de los pesos (al principio del proceso) la red presenta una función casi lineal donde es menos probable encontrar mínimos locales. Cuando la función es mas compleja (un punto mas avanzado del proceso) es de esperar que nos hayamos acercado tanto al mínimo global que los mínimo locales sean aceptables. Para garantizar que alcanzamos el mínimo global utilizamos heurísticas:
 \begin{itemize}
 \item Añadiendo cantidad de movimiento.
@@ -53,6 +61,8 @@ La capacidad expresiva de este tipo de red es bastante alta ya que:
 \end{itemize} 
 
 Respecto al sesgo inductivo:
-El espacio de hipótesis es continuo a diferencia de los espacios de hipótesis de otros métodos inductivos
+
+El espacio de hipótesis es continuo a diferencia de los espacios de hipótesis de otros métodos inductivos.
+
 Las redes neuronales realizan una interpolación. Dados dos ejemplos positivos que no tienen ejemplos negativos entre ellos se tienden a etiquetar como positivos todos los puntos intermedios
 

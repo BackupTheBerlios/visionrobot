@@ -1,9 +1,11 @@
-\chapter{Introduccion a redes neuronales}
+\section{Introduccion a redes neuronales}
 \label{Introduccion_redes} 
 
 Las Redes Neuronales Artificiales (ANNs de Artificial Neural Networks) fueron originalmente una simulación abstracta de los sistemas nerviosos biológicos, formados por un conjunto de unidades llamadas "neuronas" o "nodos" conectadas unas con otras. Estas conexiones tienen una gran semejanza con las dendritas y los axones en los sistemas nerviosos biológicos. 
+\linebreak 
 
-El Primer modelo de red neuronal fue propuesto en 1943 por McCulloch y Pitts en términos de un modelo computacional de "actividad nerviosa". El modelo de McCulloch-Pitts es un modelo binario, y cada neurona tiene un escalón o umbral prefijado. Este primer modelo sirvió de ejemplo para los modelos posteriores de Jhon Von Neumann, Marvin Minsky, Frank Rosenblatt, y muchos otros. 
+El Primer modelo de red neuronal fue propuesto en 1943 por McCulloch y Pitts en términos de un modelo computacional de ``actividad nerviosa". El modelo de McCulloch-Pitts es un modelo binario, y cada neurona tiene un escalón o umbral prefijado. Este primer modelo sirvió de ejemplo para los modelos posteriores de Jhon Von Neumann, Marvin Minsky, Frank Rosenblatt, y muchos otros. 
+\linebreak 
 
 Pongamos de ejemplo el cerebro humano:
 \begin{itemize}
@@ -16,12 +18,14 @@ Pongamos de ejemplo el cerebro humano:
 \end{itemize} 	
 
 Debido a la inspiración ya mencionada de las ANN en el cerebro, sus aplicaciones principales estarán centradas en campos donde la inteligencia humana no pueda ser emulada de forma satisfactoria por algoritmos aritméticos que pueden ser implementados en ordenadores. Además es de prever que dichas ANN tengan características similares a las del cerebro: 
+
 \begin{itemize}
 \item Serán robustas i tolerantes a fallos. En el cerebro mueren todos los días gran cantidad de neuronas sin afectar sensiblemente a su funcionamiento.
 \item Serán flexibles. El cerebro se adapta a nuevas circunstancias mediante el aprendizaje .
 \item Podrán trabajar con información borrosa, incompleta, probabilística, con ruido o inconsistente. 
 \item Serán altamente paralelas. El cerebro esta formado por muchas neuronas interconectadas entre si y es precisamente el comportamiento colectivo de todas ellas lo que caracteriza su forma de procesar la información.
 \end{itemize} 
+
 Resumiendo una ANN es un gran numero de conmutadores interconectados, donde a las conexiones se les asigna un peso. Este peso será fijado durante la fase de aprendizaje. El procesamiento de información es paralelo distribuido.
 
 En que tipos de problemas se utilizan:
@@ -33,13 +37,14 @@ En que tipos de problemas se utilizan:
 \item Ejemplos: Reconocimiento del habla, clasificación de imágenes, predicciones financieras, etc.
 \end{itemize} 
 
-\begin{figure}
+\begin{figure}[h]
   \centering
   \includegraphics[scale=0.5,bb=0 0 406 203]{red1.png}
-  \caption{ red1.png}
+  \caption{ Ejemplo esquemático de una ANN.}
 \end{figure}
 
 Existen dos fases en toda aplicación de las redes neuronales: la fase de aprendizaje o entrenamiento y la fase de prueba. En la fase de entrenamiento, se usa un conjunto de datos o patrones de entrenamiento para determinar los pesos (parámetros de diseño) que definen el modelo neuronal. Una vez entrenado este modelo, se usará en la llamada fase de prueba o funcionamiento directo, en la que se procesan los patrones de prueba que constituyen la entrada habitual de la red, analizándose de esta manera las prestaciones definitivas de la red.
+\linebreak 
 
 En general, las Redes Neuronales Artificiales han sido claramente aceptadas como nuevos sistemas muy eficaces para el tratamiento de la información en muchas disciplinas. Ellos ha dado como resultado una variedad de aplicaciones comerciales (tanto en productos como en servicios) de esta tecnología de redes neuronales.
 
