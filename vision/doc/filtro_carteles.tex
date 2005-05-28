@@ -1,23 +1,29 @@
-\chapter{Filtro de Carteles}
+\section{Filtro de Carteles}
+\label{filtro_carteles} 
 
-\section{Introducción}
+\subsection{Introducción}
 Los carteles son señales al igual que los gestos percibidos visualmente por el robot. Los carteles llevan impresos mensajes, ya sean ordenes, operaciones aritméticas o preguntas sobre datos que el robot posea en su base de datos. Este debe ser capaz de desechar toda la información de la imagen excepto este mensaje.
+
 Es aquí donde se nos planteó la duda de como resolver este problema, como enseñar al robot a desechar todos los píxeles de la imagen excepto aquellos píxeles negros que forman parte de la región de las letras que forman el mensaje. Hubo distintas soluciones al problema, pero la que mejor ha funcionado es la de crear unos carteles de un color especial, es decir, de un color que no suela encontrarse en el entorno y el mensaje de este impreso en letras negras.
+
 Por tanto ya existe una característica que diferencia a los píxeles del mensaje del resto, y es que son lo únicos píxeles negros rodeados en todas sus direcciones por píxeles con la intensidad propia del color especial. En resumen este filtro lo que hace es binarizar la imagen, el objetivo perseguido es parecido al del filtro de los guantes, sen intenta binarizar la imagen dejando a un color lo importante y en otro color lo que no nos interesa. La diferencia es que el procesamiento llevado a cabo en este filtro es mas complejo que en el de los guantes, requiere pasar por mas fases de procesamiento.
+
 Así pues este filtro convertirá imágenes que contengan un cartel con un mensaje X en una imagen blanca con el mensaje negro centrado, horizontal y con el menor numero de ruidos, también asegura no filtrar la imagen si no se percibe ningún cartel o si este no esta al 100x100 dentro del campo de visión. 
+
 Todo esto son medidas de seguridad para facilitar el futuro análisis del mensaje por parte del OCR, evitando posibles fallos de este y que sea lo mas fiable posible.
+\bigskip 
 
 Estos son ejemplos del filtro. Las imágenes sin cartel no serán procesadas ni pasadas al OCR, para evitar fallos y operaciones innecesarias.
-\begin{figure}
+\begin{figure}[h]
   \centering
-  \includegraphics[width=1.67cm,height=1.24cm,bb=0 0 63 47]{cartel.png}
-  \caption{ cartel.png}
+  \includegraphics[scale=0.5,bb=0 0 253 203]{cartel.png}
+  \caption{ Simulación de la captura de un cartel.}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[h]
   \centering
-  \includegraphics[width=1.67cm,height=1.24cm,bb=0 0 63 47]{cartel2.png}
-  \caption{ cartel2.png}
+  \includegraphics[scale=0.5,bb=0 0 253 203]{cartel2.png}
+  \caption{ Resultado de filtrar la imagen.}
 \end{figure}
 
 Ejemplos de mensajes dentro de un cartel:
@@ -30,53 +36,79 @@ Ejemplos de mensajes dentro de un cartel:
 	Nombres creadores, ...
 \end{itemize} 	
 
-\section{Fases del filtro}
+\subsection{Fases del filtro}
 
-\subsection{Bordes}
-En este proyecto hay un factor que siempre tenemos en contra y es el tiempo. Hay que recordar que la captura, procesamiento y análisis de las imágenes se hacen en tiempo real, si la captura de imágenes se hace cada X milisegundos hay que asegurarse que todas las operaciones que se deban de realizar tardan menos que ese intervalo. Por tanto los filtros no solo tienen el deber de procesar la imagen si no también de mejorar el rendimiento del programa. Por ello son utilizados como sensores de detección de ciertos objetos, en este caso de carteles. 
+\subsubsection{Bordes}
+En este proyecto hay un factor que siempre tenemos en contra y es el tiempo. Hay que recordar que la captura, procesamiento y análisis de las imágenes se hacen en tiempo real, si la captura de imágenes se hace cada X milisegundos hay que asegurarse que todas las operaciones que se deban de realizar tardan menos que ese intervalo. Por tanto los filtros no solo tienen el deber de procesar la imagen si no también de mejorar el rendimiento del programa.
+
+Por ello son utilizados como sensores de detección de ciertos objetos, en este caso de carteles. 
+
 Esta fase es una función que recibe una imagen de entrada y detecta si la imagen esta completamente dentro del campo de visión o solamente en parte, si solo ha sido capturado parte del cartel, el mensaje puede que no haya salido entero por tanto carecería de sentido y no seria valido. Si el cartel ha sido capturado en su 100x100 devuelve cierto si no falso. Al devolver falso el resto de operaciones de filtro sobre el cartel se dejan de hacer y se pasa NULL al modulo de OCR para que tampoco realice ninguna operación, mejorando por tanto la eficiencia del programa, ya que solamente realizara operaciones cuando detecte carteles enteros.
-La idea para implementar este función es simple, solo hay que buscar píxeles cuya intensidad este dentro del rango de color especial del cartel si existe alguna región de estos píxeles en el borde de la imagen capturada implica que el cartel no ha sido capturado en su totalidad.
 
-\subsection{Centrar}
+La idea para implementar este función es simple, solo hay que buscar píxeles cuya intensidad este dentro del rango de color especial del cartel si existe alguna región de estos píxeles en el borde de la imagen capturada implica que el cartel no ha sido capturado en su totalidad.
+\bigskip 
+
+\subsubsection{Centrar}
 Esto significa centrar el cartel dentro de la imagen. La imagen quedara desplazada lo necesario para que el cartel se encuentre justo en el medio y por tanto también lo estará el mensaje. Esto no aporta valor añadido al posterior análisis por parte del OCR, sirve para asegurar la integridad del mensaje en las siguientes fases del filtro, además sirve como al igual que en el filtro de los gesto y como la función anterior de BORDES, como un sensor. El anterior detectaba si el cartel estaba entero y este si existe cartel dentro de la imagen.
+
 El centrado en su implementación cuenta el numero de píxeles de color especial, es decir, del cartel. Haciendo una media aritmética de sus posiciones, por esto si se da el caso en que el numero de píxeles de este color detectados es igual a cero implica que no hay cartel y por tanto que las siguientes operaciones que se realicen sobre la imagen no tiene sentido al igual que el OCR, por tanto como la función BORDES, devuelve NULL si no hay cartel en la imagen, acelerando la ejecución del programa y si resulta que hay cartel, entonces devuelve la imagen centrada.
+\bigskip 
+
 Para saber mas sobre el centrado, \ref {Centrado} (página \pageref{Centrado}).
 
-\subsection{Esquinas}
+\subsubsection{Esquinas}
 Esta función hace un barrido de la imagen sabiendo ya que existe un cartel en ella, con el objetivo de encontrar la cuatro esquinas de este. Las esquinas son coordenadas cartesianas, cuyo conocimiento es de gran utilidad para realizar una posible rotación del cartel, para la extracción de regiones y como sensor.
+
 \begin{itemize}
 \item Respecto a la rotación:
+
 Con saber la posición de al menos dos esquinas contiguas de las cuatro del cartel podemos conocer cuantos grados esta inclinado el cartel, dentro de la imagen. Ya que dos puntos forman un vector, solo hay que calcular el ángulo que forma este vector con algún eje de coordenadas y sabremos cuanto esta inclinado el cartel, para su posterior rotación.
 \item Respecto a la extracción de regiones: 
+
 Conocer las esquinas es conocer los limites de lo que nos interesa y de lo que no, ya sabemos que todo lo que este fuera de las esquinas es desechable y lo que queda dentro es necesario procesarlo. 
 \item Respecto al sensor:
+
 Conocer al menos tres esquinas, es conocer tres coordenadas y por tanto eso nos permite crear dos vectores. Un vector es un lateral del cartel y el otro la base, sabiendo esto si el ángulo que existe entre esos vectores es un ángulo recto, significa que lo que se esta detectando es un cartel, si no cumple esta propiedad es que se ha detectado un objeto del color buscado, pero no es un cartel. Esto evita pasarle al OCR posible información sin sentido que podría generar fallos en el programa principal.
 \end{itemize} 
 
-\subsection{Rotar}
+\subsubsection{Rotar}
 Como ya hemos dicho el análisis siguiente a este procesamiento es llevado a cabo por el OCR, este es un modulo implementado de tal forma que no es sensible al tamaño y en cierta medida al formato de los caracteres, pero si que es sensible cuando estos se encuentran rotados. Muchas veces el robot detectara y procesara carteles que no están completamente horizontales, lo que provocaría fallos en el OCR, por tanto es necesario rotar la imagen lo necesario para que el cartel quede horizontal. Con la función anterior de las esquinas ya sabemos cuantos grados esta girado el cartel, solo hay que pasarle a esta función como parámetros la imagen y los grados a girar.
-Para saber mas sobre la rotación, en \ref {Rotación} (página \pageref{Rotación}).
+\bigskip 
 
-\subsection{Extracción regiones}
+Para saber mas sobre la rotación, en \ref {Rotacion} (página \pageref{Rotacion}).
+
+\subsubsection{Extracción regiones}
 Esta parte es similar a la utilizada en el filtro de gestos. Solo que aquí no nos interesan las regiones de color especial, si no ciertas regiones rodeadas de este color especial, que en este caso serán los caracteres del mensaje.
+
 La extracción de regiones binariza la imagen convirtiendo a un color la región buscada y a otro el resto de la imagen, las regiones del mensaje pasaran a negro y el resto a blanco, como en el ejemplo anterior. 
+
 La función ESQUINAS se realizara otra vez después de la rotación (si esta ha sido necesaria) ya que la posición de estas dentro de la imagen habrá cambiado. Como ya hemos dicho antes, saber las coordenadas de estas esquinas nos informa de que área de la imagen es necesario filtrar y cual directamente es considerada como región no extraíble y puesta directamente a color blanco, en este caso será toda aquella región que quede fuera del cartel.
-La extracción de regiones propiamente dicha se realizara por tanto dentro del área de la imagen perteneciente al interior del cartel. Las regiones que se extraerán serán aquellos píxeles que cumplan la propiedad de ser oscuros rodeados en todas sus direcciones por color especial. La técnica utilizada para la extracción de regiones viene explicada en, \ref {Extracción de regiones} (página \pageref{Extracción de regiones}).
 
-\subsection{Operacion morfológica}
+La extracción de regiones propiamente dicha se realizara por tanto dentro del área de la imagen perteneciente al interior del cartel. Las regiones que se extraerán serán aquellos píxeles que cumplan la propiedad de ser oscuros rodeados en todas sus direcciones por color especial. La técnica utilizada para la extracción de regiones viene explicada en, \ref {Extraccion de regiones} (página \pageref{Extraccion de regiones}).
+
+\subsubsection{Operacion morfológica}
 Después de todas las operaciones anteriores realizadas sobre la imagen los caracteres del cartel puede que hayan quedado dañados, es decir, como si se hubieran erosionado, perdiendo suavidad en sus bordes o incluso dejar un mismo carácter separado en regiones distintas.
-Nuestro cerebro tiene la necesidad de encontrar sentido a lo que ve y a unificar figuras inacabadas, pero esta cualidad no la tiene el OCR, si este detecta regiones separadas las tratara como distintos caracteres y buscara el carácter mas aproximado a estas, lo cual sería un error. Es necesario por tanto juntar regiones que hayan quedado separadas y rellenar huecos de los caracteres del mensaje para asegurar por tanto una mejor comprensión del mensaje.
-La operación morfológica realizada sobre la imagen es una operación de cierre, que como ya he dicho rellenara los caracteres.
-Para saber mas sobre estas operaciones, en \ref {Operaciones Morfológicas} (página \pageref{Operaciones Morfológicas}).
 
-\section{Pseudocódigo}
+Nuestro cerebro tiene la necesidad de encontrar sentido a lo que ve y a unificar figuras inacabadas, pero esta cualidad no la tiene el OCR, si este detecta regiones separadas las tratara como distintos caracteres y buscara el carácter mas aproximado a estas, lo cual sería un error. Es necesario por tanto juntar regiones que hayan quedado separadas y rellenar huecos de los caracteres del mensaje para asegurar por tanto una mejor comprensión del mensaje.
+
+La operación morfológica realizada sobre la imagen es una operación de cierre, que como ya he dicho rellenara los caracteres.
+\bigskip 
+
+Para saber mas sobre estas operaciones, en \ref {Operaciones Morfologicas} (página \pageref{Operaciones Morfologicas}).
+
+\subsection{Pseudocódigo}
   if( not BORDES and CENTRAR and ESQUINAS)
+
      ROTAR
+
      ESQUINAS
+
      EXTACCION DE REGIONES
+
      OPERACIÓN DE CIERRE
+
   end if;
 
-\section{Código}
+\subsection{Código}
 Código disponible en, \ref {Codigo_filtro_carteles} (página \pageref{Codigo_filtro_carteles}).
 

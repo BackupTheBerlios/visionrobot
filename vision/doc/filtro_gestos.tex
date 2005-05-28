@@ -1,25 +1,29 @@
-\chapter{Filtro de Gestos}
+\section{Filtro de Gestos}
+\label{filtro_gestos} 
 
-\section{Introducción}
+\subsection{Introducción}
 Como ya hemos dicho este filtro sirve como preprocesamiento y segmentación de la imagen. Ya que el suavizado reduce los ruidos y la extracción de regiones de color localiza los objetos de interés, con el objetivo de pasarle una información mucho mas comprensible y simplificada a la red neuronal.
-
+\bigskip 
 Los gestos al robot se realizan con la ayuda de 2 guantes, uno para la mano izquierda que dará las ordenes y otro para la derecha que indicará los parámetros para dichas ordenes.
+
 Cada guante tiene en la punta de los dedos unos marcadores de color especial, un color que no se encuentre formando parte del entorno (colores muy llamativos con una textura que no generé brillos o sombras). 
-
+\bigskip 
 Se determinaron una conjunto de ordenes, las justas para que un objeto pueda describir cualquier trayectoria sobre una superficie plana. Concluimos que estas podrían ser únicamente: avanzar y girar. Es necesario decirle la distancia que tiene que avanzar en cada momento, pero como eso no era simple, se introdujo la orden parar, así mientras se mueve el robot tu decides cuando ha recorrido la distancia oportuna y detenerlo con una orden. También se distinguió en la orden girar, entre girar a la izquierda y girar a la derecha. Con esto tenemos 4 tipos de ordenes distintas para dar al robot. Pero aun el robot necesita mas información sobre estas ordenes, como por ejemplo en la orden de giro, con cuantos grados tiene que realizarlo o en la orden de avanzar a cuanta velocidad debe moverse. Siguiendo con el objetivo de la simplicidad en vez de añadir mas gestos diferentes a la misma mano, se utilizo la otra mano, es decir, una mano indicaría las ordenes al robot y otra los parámetros según el tipo de orden. 
-Los parámetros son o de velocidad o de grados de giro, la velocidad puede ser nula, medio baja, medio alta o alta y los ángulos de giro pueden ser 0º, 45º, 90º o 180º, es decir, cuatro parámetros en ambos casos, se utilizan los mismos símbolos para velocidad como para giro, por tanto solo existen 4 gestos diferentes que se puedan dar con la mano derecha para expresar los parámetros al robot. 
-La coincidencia del numero de gestos utilizados para ordenes y el numero de gestos utilizados para parámetros, simplificara la implementación de la red. Y el hecho de usar los mismos gestos para representar las ordenes con la mano izquierda y los parámetros con la mano derecha, simplificara también el entrenamiento de la red.
 
+Los parámetros son o de velocidad o de grados de giro, la velocidad puede ser nula, medio baja, medio alta o alta y los ángulos de giro pueden ser 0º, 45º, 90º o 180º, es decir, cuatro parámetros en ambos casos, se utilizan los mismos símbolos para velocidad como para giro, por tanto solo existen 4 gestos diferentes que se puedan dar con la mano derecha para expresar los parámetros al robot. 
+
+La coincidencia del numero de gestos utilizados para ordenes y el numero de gestos utilizados para parámetros, simplificara la implementación de la red. Y el hecho de usar los mismos gestos para representar las ordenes con la mano izquierda y los parámetros con la mano derecha, simplificara también el entrenamiento de la red.
+\bigskip 
 Resumiendo:
 \begin{itemize}
-\item Mano Izquierda --> Ordenes
+\item Mano Izquierda = Ordenes
   \begin{enumerate}
   \item Parar
   \item Avanzar
   \item Girar Izquierda
   \item Girar Derecha
   \end{enumerate} 
-\item Mano Derecha --> Parámetros
+\item Mano Derecha = Parámetros
   \begin{enumerate}
   \item Si orden == Avanzar entonces
     \begin{itemize}
@@ -39,67 +43,84 @@ Resumiendo:
 \end{itemize} 					
 
 Los gestos elegidos son diferentes posiciones de los marcadores del guante, lo mas claro posible, para que después del filtrado la red no tenga problema para diferenciar unos símbolos de otros.
-Los marcadores son las únicas áreas de la imagen que no se eliminaran de la imagen. Estas regiones pasarán a ser blancas y el resto negro. Por tanto repito los gestos tienen que ser los suficientemente distintos unos de otros, para que una vez filtrados, esas zonas blancas puedan diferenciarse a simple vista y saber a que orden se están refiriendo. 
-Es en ejecución cuando se decide a través de una ventana proporcionada por el pipeline el color de la imagen a filtrar, así que el color de los marcadores del guante no tienen porque ser fijos, se pueden determinar en cada momento. Eso si, los colores de ambos guantes deben de ser distintos y especificarse que color será el que representa a las ordenes y cual representara a los parámetros.
 
+Los marcadores son las únicas áreas de la imagen que no se eliminaran de la imagen. Estas regiones pasarán a ser blancas y el resto negro. Por tanto repito los gestos tienen que ser los suficientemente distintos unos de otros, para que una vez filtrados, esas zonas blancas puedan diferenciarse a simple vista y saber a que orden se están refiriendo. 
+
+Es en ejecución cuando se decide a través de una ventana proporcionada por el pipeline el color de la imagen a filtrar, así que el color de los marcadores del guante no tienen porque ser fijos, se pueden determinar en cada momento. Eso si, los colores de ambos guantes deben de ser distintos y especificarse que color será el que representa a las ordenes y cual representara a los parámetros.
+\bigskip 
 Estos son los 4 posibles gestos:
 \begin{center}
-\includegraphics[scale=1]{parar.png} 
+%\includegraphics[scale=1]{parar.png} 
 Parada
-\includegraphics[scale=1]{avanzar.png} 
+%\includegraphics[scale=1]{avanzar.png} 
 Avanzar
-\includegraphics[scale=1]{girarDcha.png} 
+%\includegraphics[scale=1]{girarDcha.png} 
 Girar Derecha
-\includegraphics[scale=1]{girarIzq.png} 
+%\includegraphics[scale=1]{girarIzq.png} 
 Girar Izquierda
 \end{center} 
 
 Este sería el resultado de aplicar el modulo de filtro de gestos sobre esta imagen con una guante:
 \begin{center}
-\includegraphics[scale=1]{parar.png} 
-\includegraphics[scale=1]{filtrado.png} 
+%\includegraphics[scale=1]{parar.png} 
+%\includegraphics[scale=1]{filtrado.png} 
 \end{center} 
 
 y esta sobre una imagen sin guante:
 \begin{center}
-\includegraphics[scale=1]{no_gesto.png} 
-\includegraphics[scale=1]{filtrado_no_gesto.png} 
+%\includegraphics[scale=1]{no_gesto.png} 
+%\includegraphics[scale=1]{filtrado_no_gesto.png} 
 \end{center} 
 
 Los filtros aplicados para esta simplificación son:
 \begin{itemize}
-\item Suavizado. Por promediado del entorno. \ref {Suavizado de la imagen}
-\item Extracción de regiones por el color. \ref {Extracción de regiones de color}
-\item Centrado de imagen. \ref {Centrado de la imagen}
+\item Suavizado. Por promediado del entorno.
+\item Extracción de regiones por el color.
+\item Centrado de imagen. 
 \end{itemize} 
 
-\section{Suavizado de la imagen}
+\subsection{Suavizado de la imagen}
 Difumina la imagen. Cuando no se aplica, la extracción de regiones posterior no es muy fiable, ya que a causa de la iluminación o de la textura del material utilizado en el color especial, hay zonas del objeto de interés que no tienen el mismo color pudiendo pasar por ejemplo de ser un rojo casi blanco a un rojo casi negro, esta amplitud de color es inadmisible para la extracción de colores, ya que esos píxeles serían considerados fuera de rango y por tanto como elementos del entorno y no como elementos de interés. Esto repercutiría en la red neuronal posterior, la cual tiene que asignar pesos según el valor de los píxeles de entrada, si no podemos determinar unos valores fiables en las imágenes de entrada no se podrá entrenar de forma fiable la red ni poder asegurar un comportamiento seguro en el futuro.
+
 El suavizado es una transformación de vecindad, donde el valor del nuevo píxel depende de los valores de los píxeles que le rodean. Nuestro método de filtro es un suavizado por el promediado del entorno de vecindad.
-Para saber más sobre este filtro:  \ref {Suavizado} (página \pageref{Suavizado}).
+\bigskip 
+
+Para saber más sobre este filtro: \ref {suavizado_label} (página \pageref{suavizado_label}).
+
+\bigskip 
 Gracias a esto, los píxeles dentro de la región de color de interés que sean ruidos generados por reflejos de luz o fallos de iluminación, quedaran mas atenuados y todos los píxeles dentro de la región tendrán mas posibilidades de estar dentro del rango de color especial buscado.
 \begin{center}
-\includegraphics[scale=1]{suavizado.png} 
+%\includegraphics[scale=1]{suavizado.png} 
 \end{center} 
 
-\section{Extracción de regiones de color}
+\subsection{Extracción de regiones de color}
 Como hemos dicho los objetos de interés son las puntas de los dedos, así que tenemos que aislarlas del resto de la fotografía. La forma es delimitar estas regiones y darlas toda la importancia respecto al resto de la imagen.
+
 Queremos que el filtro convierta una imagen capturada por la webcam en una imagen blanca y negra, donde las puntas de los guantes quedaran en blanco y el resto de la imagen en negro. Así la red solamente será entrenada para recibir imágenes con regiones blancas y negras, si hay una sola región de un cierto tamaño implicaría que solo hemos enseñado un dedo del guante, lo que se correspondería con el gesto de avanzar. 
+
 Esto es a lo que llamamos segmentación, ya que estamos localizando los objetos de interés.
-Para saber mas sobre la extracción:  \ref {Extracción de regiones} (página \pageref{Extracción de regiones}).
+\bigskip 
+
+Para saber mas sobre la extracción:  \ref {regiones_label} (página \pageref{regiones_label}).
+
 \begin{center}
-\includegraphics[scale=1]{regiones.png} 
+%\includegraphics[scale=1]{regiones.png} 
 \end{center}  
 
-\section{Centrado de la imagen}
+\subsection{Centrado de la imagen}
 Los gestos realizados con los guantes nunca son capturados por la webcam en la misma posición. Nunca estarán totalmente centrados, si no ligeramente o totalmente desplazados mas a la derecho o mas a la izquierda, arriba o abajo. Esto es de vital importancia para la red, ya que entrena y reconoce en relación a los valores de los píxeles de la imagen, si aprende que el símbolo de avanzar es una región blanca sobre un fondo negro situada siempre en el centro de la imagen, cuando este en fase de reconocimiento y la webcam capture un gesto desplazado, la red lo considerara como gesto no reconocido.
 Otra opción podría ser entrenar la red para que reconociese el mismo gesto en cualquier posición, pero eso no podría nunca servir en el entrenamiento, y que los pesos no terminarían nunca de fijarse, ya que el píxel (x,y) si esta blanco para unas imágenes se considerara como ejemplo de entrenamiento positivo, para otras se considerara negativo y los pesos no podrán ajustarse. Por tanto hay que intentar conseguir que las regiones de interés extraídas estén siempre situadas mas o menos en la misma zona de la imagen. Para eso decidimos que la mejor forma de hacer esto era centrar la imagen según el centro de masas del conjunto de píxeles de interés.
+
 Así siempre las regiones blancas que representan los gestos aparecen centrados en la imagen sobre un fondo negros, totalmente preparados para ser pasados a la entrada de la red neuronal.
-Para saber mas sobre el centrado: \ref {Centrado} (página \pageref{Centrado}).
+\bigskip 
+
+Para saber mas sobre el centrado: \ref {centrado_label} (página \pageref{centrado_label}).
+
+\bigskip 
 \begin{center}
-\includegraphics[scale=1]{filtrado.png} 
+%\includegraphics[scale=1]{filtrado.png} 
 \end{center} 
 
-\section{Código}
+\subsection{Código}
 Documentación del código del filtro de gestos, en \ref {Codigo_filtro_gestos} (página \pageref{Codigo_filtro_gestos}).
 
