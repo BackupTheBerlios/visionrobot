@@ -99,6 +99,8 @@
 
   <!-- Modulo de post-gestion, se encarga de unir las ordenes con los parametros -->
  <modulo ruta="post_gestion" nombre="post_gestion">
+    <argumento nombre="script">post_gestion.lua</argumento>
+    <argumento nombre="funcion">script</argumento>
     <argumento nombre="orden_defecto">parar</argumento>
     <argumento nombre="param_defecto">nula</argumento>
     <conexion puerto="salida_robot">

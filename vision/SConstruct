@@ -120,6 +120,7 @@ env.Install('bin', ['src/ocr/base_datos'])
 
 # Post gestion
 glib.SharedLibrary('bin/post_gestion', 'src/post_gestion/post_gestion.c')
+env.Install('bin', ['src/post_gestion/post_gestion.lua'])
 
 # Red neuronal
 glib.SharedLibrary('bin/red_neuronal', ['src/red_neuronal/red.c', 'src/red_neuronal/red_neuronal.c'])
