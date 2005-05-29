@@ -1,79 +1,135 @@
-\chapter{Extracción de regiones}
+\subsection{Extracción de regiones}
+\label{regiones_label} 
 
-\section{Introducción}
+\subsubsection{Introducción}
 Las unidades de las imágenes son los píxeles. Las únicas propiedades de un píxel son su posición y sus niveles de intensidad.
-En las imágenes aparecen ciertas áreas o zonas caracterizadas por el hecho de que constituyen agrupaciones de píxeles conectados entre sí, pero, además dichos píxeles presentan características o propiedades comunes, por ejemplo tiene el mismo color. Estas agrupaciones son las regiones.
-Nuestro objetivo es binarizar la imagen basándonos en el hecho de que los píxeles de una determinada región presentan una distribución de intensidad similar, por tanto, a partir del histograma de los niveles en los tres colores, determinamos cual es la zona de dicho histograma y por tanto la región de la imagen.
 
-\section{Binarización por detección de umbral}
+En las imágenes aparecen ciertas áreas o zonas caracterizadas por el hecho de que constituyen agrupaciones de píxeles conectados entre sí, pero, además dichos píxeles presentan características o propiedades comunes, por ejemplo tiene el mismo color. Estas agrupaciones son las regiones.
+
+Nuestro objetivo es binarizar la imagen basándonos en el hecho de que los píxeles de una determinada región presentan una distribución de intensidad similar, por tanto, a partir del histograma de los niveles en los tres colores, determinamos cual es la zona de dicho histograma y por tanto la región de la imagen.
+\bigskip 
+
+\subsubsection{Binarización por detección de umbral}
 Supongamos que el histograma de intensidad
 
-\begin{center}
-\includegraphics[scale=1]{regoines_histograma.png} 
-\end{center} 
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.5,bb=0 0 280 210]{regoines_histograma.png}
+  \caption{ Histograma de intensidades.}
+\end{figure}
 
-corresponde a una imagen f(x, y) compuesta por un objeto oscuro sobre un fondo claro, teniendo los píxeles de un objeto y del entorno intensidades agrupadas en dos tonos dominantes. Una forma obvia de extraer los objetos del entorno es seleccionar un nivel T que separe los niveles de intensidad. De esta forma un píxel (x, y) para el cual f(x, y) > T, será un píxel del entorno, en caso contrario será del objeto.
+corresponde a una imagen f(x, y) compuesta por un objeto oscuro sobre un fondo claro, teniendo los píxeles de un objeto y del entorno intensidades agrupadas en dos tonos dominantes. Una forma obvia de extraer los objetos del entorno es seleccionar un nivel T que separe los niveles de intensidad.
+
+De esta forma un píxel (x, y) para el cual f(x, y) > T, será un píxel del entorno, en caso contrario será del objeto.
+
 Basándonos en esto, podemos considerar la fijación del umbral como una operación que implica pruebas con respecto a una función T como sigue:
+\bigskip 
 
 T = T[ x, y, p(x,y), f(x,y)]
+\bigskip 
 
 donde f(x,y) es la intensidad en el punto (x,y) y p(x,y) es alguna propiedad local del punto, por ejemplo, la intensidad media de un entorno de vecindad centrado en (x,y). Se creara una imagen binaria g(x,y) definiendo:
+\bigskip 
 
-Si f(x,y)>T entonces g(x,y)=255 sino g(x,y)=0 fsi
+Si $ f(x,y)\geq T $ entonces g(x,y)=255 sino g(x,y)=0 fsi
+\bigskip 
 
 Examinando g(x,y) se ve que los píxeles a los que se asigna el valor 0 corresponden a los objetos, mientras que los que corresponden al entorno tienen valor 255.
+\bigskip 
 
 Cuando T depende sólo de f(x,y), el umbral se llama global. Si T depende tanto de f(x,y) como de p(x,y), entonces el umbral se llama local. Si T depende de las coordenadas espaciales x e y, se llama umbral dinámico.
+\bigskip 
 
-\section{Extracción de regiones por el color}
-Basándonos en el modelo de color RGB, se pueden extraer de la imagen aquellas regiones en las que predomine una determinada componente de color. El método consiste en elegir un determinado predicado y determinar en toda la imagen los píxeles que cumplen dicho predicado. Esos píxeles los marcamos en blanco y el resto en negro, de esta forma obtenemos una imagen binaria. 
+\subsubsection{Extracción de regiones por el color}
+Basándonos en el modelo de color RGB, se pueden extraer de la imagen aquellas regiones en las que predomine una determinada componente de color.
 
-\section{Selección del umbral óptimo}
+El método consiste en elegir un determinado predicado y determinar en toda la imagen los píxeles que cumplen dicho predicado. Esos píxeles los marcamos en blanco y el resto en negro, de esta forma obtenemos una imagen binaria. 
+
+\subsubsection{Selección del umbral óptimo}
 Es difícil determinar cual es el umbral optimo para poder llevar acabo una binarización adecuada. Además debemos tener en cuenta que la iluminación que habrá de unas ocasiones a otras será distinta, esto influye en la manera en que la cámara percibe los colores del entorno, por ejemplo, si hay poca luz los colores serán mas oscuros y lo contrario si hubiera mucha luz, por tanto no hemos podido determinar un umbral fijo porque este será dependiente del entorno.
+
 La interfaz del pipeline genera para cada modulo de filtro una pequeña ventana que permite la elección de un color de las imágenes que están entrando en ese momento por la webCam. De esta manera nos estamos asegurando de seleccionar y fijar el color exacto en esas condiciones del entorno. 
+
 Debido a que las imágenes son a color, al seleccionar un color del entorno, se estarán fijando automáticamente 3 umbrales, uno para el rojo, otro para el verde y otro para el azul.
+
 Los umbrales en nuestros filtros son rangos, se podrían considerar como un par de umbrales, uno inferior y otro superior, de tal manera que un píxel (x,y) estará dentro del rango si:
-	Para el color rojo 	T_{inf(rojo)}<f(x,y)_{rojo}<T_{sup(rojo) }
-	Para el color verde	T_{inf(verde)}<f(x,y)_{verde}<T_{sup(verde)}
-	Para el color azul	T_{inf(azul)}<f(x,y) _{azul} <T_{sup(azul)}
+\bigskip 
+
+Para el color rojo $ \rightarrow T_{inf(rojo)}<f(x,y)_{rojo}<T_{sup(rojo) } $
+
+Para el color verde $ \rightarrow T_{inf(verde)}<f(x,y)_{verde}<T_{sup(verde)} $	
+
+Para el color azul $ \rightarrow T_{inf(azul)}<f(x,y) _{azul} <T_{sup(azul)} $	
+\bigskip 
+
 Si las tres componentes del píxel (x,y) están dentro del rango seleccionado, entonces las 3 componentes tomaran el valor blanco (255) y si estan fuera de rango tomaran el valor negro (0). Binarizando así la imagen.
+\bigskip 
 
 Como elegir la tolerancia de este rango. Cuanto mas amplio sea el rango mas cantidad de colores entraran dentro de este. Aunque elijamos el color exacto del entorno que queramos filtrar, si no fijamos bien la tolerancia del rango, la imagen no binarizará las regiones correctas.
+\bigskip 
 
-\begin{center}
-\includegraphics[scale=1]{regiones_tol_baja.png} 
-Extracción de una región de color de una imagen con tolerancia baja.
-\includegraphics[scale=1]{regiones_tol_normal.png} 
-Extracción de una región de color de una imagen con tolerancia normal.
-\includegraphics[scale=1]{regiones_tol_alta.png} 
-Extracción de una región de color de una imagen con tolerancia alta.
-\end{center} 
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.5,bb=0 0 175 175]{regiones_tol_baja.png}
+  \caption{ Extracción de una región de color de una imagen con tolerancia baja.}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.5,bb=0 0 175 175]{regiones_tol_normal.png}
+  \caption{ Extracción de una región de color de una imagen con tolerancia normal.}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.5,bb=0 0 175 175]{regiones_tol_alta.png}
+  \caption{ Extracción de una región de color de una imagen con tolerancia alta.}
+\end{figure}
 
 Para ello la ventana proporcionada por el pipeline para el filtro, no solo permite seleccionar un color determinado de la escena, sino también elegir en tiempo de ejecución la tolerancia para cada rango (rojo, verde y azul). Así cada vez que el robot cambie de ambiente se puede cambiar desde su interfaz los parámetros de los 6 umbrales. Así quedaría el color de la región a extraer totalmente acotado y determinado.
+\bigskip 
 
-Si ( T_{inf(rojo)}<f(x,y)_{rojo}<T_{sup(rojo) } and  T_{inf(verde)}<f(x,y)_{verde}<T_{sup(verde)}  and  
-  T_{inf(azul)}<f(x,y) _{azul} <T_{sup(azul)}) entonces
-	g(x,y)_{rojo} = 255; 	//Blanco
-	g(x,y)_{verde}= 255;	//Blanco
-	g(x,y)_{azul}= 255;	//Blanco
+Si ( $ T_{inf(rojo)}<f(x,y)_{rojo}<T_{sup(rojo) }  $ and  $ T_{inf(verde)}<f(x,y)_{verde}<T_{sup(verde)} $  and  
+  $ T_{inf(azul)}<f(x,y) _{azul} <T_{sup(azul)} $) entonces
+
+	$ g(x,y)_{rojo} = 255;  $	//Blanco
+
+	$ g(x,y)_{verde}= 255; $	//Blanco
+
+	$ g(x,y)_{azul}= 255; $	//Blanco
+
 sino
-	g(x,y)_{rojo} = 0; 	//Negro
-	g(x,y)_{verde}= 0;	//Negro
-	g(x,y)_{azul}= 0;		//Negro
+
+	$ g(x,y)_{rojo} = 0;  $	//Negro
+
+	$ g(x,y)_{verde}= 0; $	//Negro
+
+	$ g(x,y)_{azul}= 0; $	//Negro
+
 fsi
+\bigskip 
 
 Ejemplo de los 6 umbrales seleccionados en una de las puebas de extracción de regiones de color. 
+\bigskip 
 
-T_{sup(rojo)}    = 170 	T_{inf(rojo) }   = 255
-T_{sup(verde)} =  60	T_{inf(verde)} = 120
-T_{sup(azul)}   =  70	T_{inf(azul) }  = 125
+$ T_{sup(rojo)}  = 170 	T_{inf(rojo) }   = 255 $
+
+$ T_{sup(verde)} =  60	T_{inf(verde)} = 120 $
+
+$ T_{sup(azul)}   =  70	T_{inf(azul) }  = 125 $
+\bigskip 
 
 los resultados son estos:
+\bigskip 
 
-\begin{center}
-\includegraphics[scale=1]{regiones_fuente.png} 
-Imagen original.
-\includegraphics[scale=1]{regiones_destino.png} 
-Imagen filtrada.
-\end{center} 
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.5,bb=0 0 224 168]{regiones_fuente.png}
+  \caption{ Imagen original.}
+\end{figure}
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.5,bb=0 0 224 168]{regiones_destino.png}
+  \caption{ Imagen filtrada.}
+\end{figure}
 

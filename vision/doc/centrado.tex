@@ -1,47 +1,77 @@
-\chapter{Centrado}
+\subsection{Centrado}
+\label{centrado_label} 
 
 Es una de las etapas del procesamiento de imágenes. Recibe como parámetro de entrada no solo la imagen si no un rango de color previamente seleccionado.
+
 Todos los píxeles cuyo color esté dentro de este rango, formaran un conjunto. El conjunto de las coordenadas cartesianas de estos píxeles dentro de la imagen.
-Vamos a llamar centro de masas (c. m.), a la media de las coordenadas de todos los píxeles que forman el conjunto, de esta manera el centro de masas será la coordenada de un píxel que puede o no pertenecer al conjunto, pero que representa el centro de la mayor concentración de elementos de este. La coordenada x será la media aritmética de todas las coordenadas x de este conjunto y lo mismo con la y.
-$ X = \dfrac{\Sigma x_{i}}{k} $ , desde i=1..k, siendo k el cardinal del conjunto y \forall x_{i} \epsilon conjunto.
-$ Y = \dfrac{\Sigma y_{i}}{k} $ , desde i=1..k, siendo k el cardinal del conjunto y \forall y_{i} \epsilon conjunto.
+
+Vamos a llamar centro de masas (c. m.), a la media de las coordenadas de todos los píxeles que forman el conjunto, de esta manera el centro de masas será la coordenada de un píxel que puede o no pertenecer al conjunto, pero que representa el centro de la mayor concentración de elementos de este.
+
+La coordenada x será la media aritmética de todas las coordenadas x de este conjunto y lo mismo con la y.
+\bigskip 
+
+$ X = \frac{\Sigma x_{i}}{k} $ , desde i=1..k, siendo k el cardinal del conjunto y $ \forall x_{i} \epsilon conjunto $.
+
+$ Y = \frac{\Sigma y_{i}}{k} $ , desde i=1..k, siendo k el cardinal del conjunto y $ \forall y_{i} \epsilon conjunto $.
+\bigskip 
 
 El objetivo es centrar el centro de masas dentro de la imagen. Así estaremos centrando la región de interés. El centrado implica un desplazamiento de todos los píxeles de la imagen.
- 
+\bigskip 
+
 Ejemplo:
-\begin{center}
-\begin{tabular}{|c|c|}
-\hline \includegraphics[scale=1]{centrado.png}  & \includegraphics[scale=1]{centrado2.png}  \\ 
-\hline 
-\end{tabular} 
-La imagen de la izquierda muestra una imagen en blanco y negro. El color elegido es el negro.
-La imagen de la derecha muestra cual sería la coordenada que representa el centro de masas del conjunto de píxeles negros.
-\end{center} 
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.4,bb=0 0 308 201]{centrado.png}
+  \caption{ Imagen en blanco y negro. El color elegido será el negro.}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.4,bb=0 0 308 201]{centrado2.png}
+  \caption{ Esta imagen muestra cual sería la coordenada que representa el centro de masas del conjunto de píxeles negros.}
+\end{figure}
 
 Según esto, los píxeles que cumplen la propiedad de estar dentro del rango del color elegido son:
-{(6,2),(3,3),(4,3),(5,3),(6,3),(7,3),(8,3),(9,3), (3,4),(4,4),(5,4),(6,4),(7,4),(8,4),(9,4),(3,5),(3,6),(3,7),(3,8),(3,9),(9,5),(9,6),(9,7),(9,8),(9,9)}
-y por tanto el c. m. cae en la posición (6, 4.84) \cong (6,5)
+
+{(6,2),(3,3),(4,3),(5,3),(6,3),(7,3),(8,3),(9,3), (3,4),(4,4),(5,4),(6,4),
+
+(7,4),(8,4),(9,4),(3,5),(3,6),(3,7),(3,8),(3,9),(9,5),(9,6),(9,7),(9,8),(9,9)}
+
+y por tanto el c. m. cae en la posición $ (6, 4.84) \cong (6,5) $
+
 siendo el centro de la imagen la posición (6,6)
+\bigskip 
 
 La posición del c. m. no esta en el centro de la imagen. La distancia que hay que desplazar la imagen es el modulo entre el punto central de la imagen y el punto del centro de masas. Por tanto movemos todos los píxeles de la imagen n posiciones verticalmente y m posiciones horizontalmente para cuadrar el c. m. con el centro de la imagen. En este proceso hay píxeles de la imagen original que se pierden y otros que se crean y no tienen un valor concreto, estos serán creados con el color del entorno, ya que se supone que no son de interés.
-Basándonos en el ejemplo anterior, el centro de masas esta desplazado respecto al centro de la imagen una posición hacia arriba, por lo que hay que desplazar todos los píxeles de la imagen una posición hacia abajo. Esto destruye la fila de abajo y crea una fila nueva en la parte superior a cuyos píxeles se les asignara el color blanco.
 
-\begin{center}
-\begin{tabular}{|c|c|}
-\hline \includegraphics[scale=1]{centrado3.png}  & \includegraphics[scale=1]{centrado4.png}  \\ 
-\hline 
-\end{tabular} 
-La imagen de la izquierda muestra la dirección en que se deben desplazar todos los píxeles.
-La imagen de la derecha muestra el resultado del desplazamiento.
-\end{center} 
+Basándonos en el ejemplo anterior, el centro de masas esta desplazado respecto al centro de la imagen una posición hacia arriba, por lo que hay que desplazar todos los píxeles de la imagen una posición hacia abajo. Esto destruye la fila de abajo y crea una fila nueva en la parte superior a cuyos píxeles se les asignara el color blanco.
+\bigskip 
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.4,bb=0 0 308 201]{centrado3.png}
+  \caption{ Imagen que muestra la dirección en que se deben desplazar todos los píxeles.}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.4,bb=0 0 308 201]{centrado4.png}
+  \caption{ Esta imagen muestra el resultado del desplazamiento.}
+\end{figure}
 
 Ejemplo real
-\begin{center}
-\begin{tabular}{|c|c|}
-\hline \includegraphics[scale=1]{regiones.png}  & \includegraphics[scale=1]{filtrado.png}  \\ 
-\hline 
-\end{tabular} 
-\end{center} 
+%\begin{figure}[h]
+ % \centering
+ % \includegraphics[scale=0.5,bb=0 0 308 201]{regiones.png}
+ % \caption{ Imagen filtrada.}
+%\end{figure}
+
+%\begin{figure}[h]
+%  \centering
+%  \includegraphics[scale=0.5,bb=0 0 308 201]{filtrado.png}
+%  \caption{ Imagen filtrada y centrada.}
+%\end{figure}
 
 \section{Curiosidad}
 El centrado tiene otra utilidad. Debido a que necesita hacer el calculo de cuantos píxeles cumplen la propiedad de estar dentro del rango de color, si resulta que no hay en toda la imagen ninguno que la cumpla, el método no devuelve la imagen centrada, si no que devuelve NULL. Tal y como esta implementado el pipeline si un modulo saca como estructura de datos un puntero a NULL, las siguientes operaciones que se realizarían sobre esta estructura dejan de hacerse, esto aumenta la velocidad del programa si no hay gestos o carteles frente al robot, ya que disminuye en gran cantidad el numero de instrucciones realizadas. Se podría decir que el centrado es un detector de objetos de interés que mantiene al pipeline en \textit{stand by} mientras que no se detecten objetos frente a la cámara.
