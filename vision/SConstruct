@@ -156,19 +156,18 @@ env.Install('bin', ['src/pipeline/ventana_pipeline.glade'])
 # Documentacion
 if str(plataforma) == str('posix'):
     def tex_action(source, target, env, for_signature):
-        prog = 'latex'
+        prog = 'pdflatex'
         (dir, file) = os.path.split(str(source[0]))
         cmd = prog + ' ' + file
         if dir != '':
             cmd = 'cd %s && %s' % (dir, cmd)
             return cmd
         
-    env['BUILDERS']['DVI'] = Builder(generator = tex_action,
-                                     suffix='.dvi',
+    env['BUILDERS']['PDFLaTeX'] = Builder(generator = tex_action,
+                                     suffix='.pdf',
                                      src_suffix='.tex')
 
-    env.Append(BUILDERS = {'Dia' : Builder(action = 'dia $SOURCE -t png -e $TARGET')})
-    env.Append(BUILDERS = {'PDFLaTeX' : Builder(action='pdflatex $SOURCE')})
+    env.Append(BUILDERS = {'Dia' : Builder(action = 'dia $SOURCE -t png -e $TARGET')})    
     
     files = glob.glob('doc/*.tex')
         

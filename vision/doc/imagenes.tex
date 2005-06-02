@@ -10,10 +10,10 @@ La funcionalidad principal de este módulo es, como hemos comentado antes, la de 
 Estos dos requisitos, más la tendencia que hemos intentado mantener de mantener el proyecto lo más simple posible (filosofía {\em KISS}\footnote{Keep it simple, stupid.}), nos han llevado a definir nuestro formato de imágenes interno de la siguiente forma:
 
 \begin{itemize}
-  \item{\bf Alto} Un entero que determina el alto de la imagen.
-  \item{\bf Ancho} Un entero que determina el ancho de la imagen.
-  \item{\bf Bytes} Un entero que determina el número de bytes por punto.
-  \item{\bf Buffer} Un puntero (en la implementación de C, realmente implementa un vector) de número de 8 bits sin signo (1 byte, corresponde al formato {\tt unsigned char} en C), que contiene la información de colores de la imagen.
+  \item{\bf Alto}: Un entero que determina el alto de la imagen.
+  \item{\bf Ancho}: Un entero que determina el ancho de la imagen.
+  \item{\bf Bytes}: Un entero que determina el número de bytes por punto.
+  \item{\bf Buffer}: Un puntero (en la implementación de C, realmente implementa un vector) de número de 8 bits sin signo (1 byte, corresponde al formato {\tt unsigned char} en C), que contiene la información de colores de la imagen.
 \end{itemize}
 
 Esta ha sido toda la información por imagen que nos ha sido necesaria. El hecho de disponer de un búfer lineal nos ha capacitado para escribir implentaciones muy rápidas del recorrido de las mismas, principalmente por la potencia de los punteros del lenguaje C.
