@@ -1,24 +1,24 @@
-# Microsoft Developer Studio Project File - Name="post_gestion" - Package Owner=<4>
+# Microsoft Developer Studio Project File - Name="joystick" - Package Owner=<4>
 # Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** DO NOT EDIT **
 
 # TARGTYPE "Win32 (x86) Dynamic-Link Library" 0x0102
 
-CFG=post_gestion - Win32 Debug
+CFG=joystick - Win32 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
-!MESSAGE NMAKE /f "post_gestion.mak".
+!MESSAGE NMAKE /f "joystick.mak".
 !MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "post_gestion.mak" CFG="post_gestion - Win32 Debug"
+!MESSAGE NMAKE /f "joystick.mak" CFG="joystick - Win32 Debug"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
-!MESSAGE "post_gestion - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
-!MESSAGE "post_gestion - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "joystick - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "joystick - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE 
 
 # Begin Project
@@ -29,7 +29,7 @@ CPP=cl.exe
 MTL=midl.exe
 RSC=rc.exe
 
-!IF  "$(CFG)" == "post_gestion - Win32 Release"
+!IF  "$(CFG)" == "joystick - Win32 Release"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
@@ -41,8 +41,8 @@ RSC=rc.exe
 # PROP Output_Dir "Release"
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "POST_GESTION_EXPORTS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "POST_GESTION_EXPORTS" /YX /FD /c
+# ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "JOYSTICK_EXPORTS" /YX /FD /c
+# ADD CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "JOYSTICK_EXPORTS" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0xc0a /d "NDEBUG"
@@ -54,7 +54,7 @@ LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
 
-!ELSEIF  "$(CFG)" == "post_gestion - Win32 Debug"
+!ELSEIF  "$(CFG)" == "joystick - Win32 Debug"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
@@ -67,8 +67,8 @@ LINK32=link.exe
 # PROP Intermediate_Dir "Debug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "POST_GESTION_EXPORTS" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "../libpipeline" /I "../filtro_gestos" /I "../robot" /I "../ventana_imagen" /I "../red_neuronal" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "POST_GESTION_EXPORTS" /YX /FD /GZ /c
+# ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "JOYSTICK_EXPORTS" /YX /FD /GZ  /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "JOYSTICK_EXPORTS" /YX /FD /GZ  /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0xc0a /d "_DEBUG"
@@ -78,20 +78,29 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib gdk-win32-2.0.lib gdk_pixbuf-2.0.lib gmodule-2.0.lib xml2.lib glade-2.0.lib gobject-2.0.lib gtk-win32-2.0.lib glib-2.0.lib /nologo /dll /debug /machine:I386 /out:"../../bin/post_gestion.dll" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib glib-2.0.lib SDL.lib /nologo /dll /debug /machine:I386 /out:"../../bin/joystick.dll" /pdbtype:sept
 
 !ENDIF 
 
 # Begin Target
 
-# Name "post_gestion - Win32 Release"
-# Name "post_gestion - Win32 Debug"
+# Name "joystick - Win32 Release"
+# Name "joystick - Win32 Debug"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=.\post_gestion.c
+SOURCE=.\joystick.c
+
+!IF  "$(CFG)" == "joystick - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "joystick - Win32 Debug"
+
+# ADD CPP /I "../libpipeline" /I "../filtro_gestos" /I "../robot" /I "../ventana_imagen" /I "../red_neuronal"
+
+!ENDIF 
+
 # End Source File
 # End Group
 # Begin Group "Header Files"

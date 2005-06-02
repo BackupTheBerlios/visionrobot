@@ -7,6 +7,7 @@
       El módulo no dispone de puertos de entrada, y como salida tiene:
       <ul>
         <li><em>salida_robot</em>: Una puntero a estructura de tipo <code>robot_in_t</code>.
+		<li><em>salida_texto</em>: Una cadena que define la entrada del joystick.
       </ul>
       \section argumentos Argumentos
         Los únicos argumentos posibles son el número de joystick que se quiere usar (si se omite, se usa el primero encontrado), y los milisegundos del temporizador.
@@ -17,14 +18,18 @@
     \author Carlos León
     \version 1.0
 */  
-   
+
 #include "pipeline_sdk.h"
 #include "robot_sdk.h"
 #include <glib.h>
+#include <stdlib.h>
 #include <SDL/SDL.h>
 
 //! El puerto de salida de este módulo.
 #define PUERTO_SALIDA "salida_robot"
+
+//! El puerto de salida de este módulo.
+#define PUERTO_TEXTO "salida_texto"
 
 //! Función de retrollamada para el timer.
 /*! Gestiona la entrada del joystick.
@@ -33,36 +38,56 @@
  */
 gboolean joystick_on_time(gpointer data) {
     SDL_Event event;
+	int mueve = 0;
     modulo_t * modulo = (modulo_t *)data;
     robot_in_t * robot = (robot_in_t *)modulo->m_dato;
-    robot->m_orden = "parar";
-    robot->m_parametro = "nulo";
-    while(SDL_PollEvent(&event)) {
+	g_hash_table_insert(modulo->m_tabla, PUERTO_TEXTO, 0);
+//	g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, 0);
+    while(SDL_PollEvent(&event)) {		
     switch(event.type)
  {  
+	case SDL_JOYBUTTONDOWN:
+robot->m_orden = "parar";
+          robot->m_parametro = "nula";
+		  g_hash_table_insert(modulo->m_tabla, PUERTO_TEXTO, "Jostick: parar");
+		mueve = 1;
+		break;
         case SDL_JOYHATMOTION:
         if ( event.jhat.value & SDL_HAT_UP )  {
+			mueve = 1;
           robot->m_orden = "avanzar";
-          robot->m_parametro = "alta";
+          robot->m_parametro = "alta";		  
+		  g_hash_table_insert(modulo->m_tabla, PUERTO_TEXTO, "Jostick: avanzar");
         }
 
         if ( event.jhat.value & SDL_HAT_DOWN ){
+			mueve = 1;
           robot->m_orden = "avanzar";
           robot->m_parametro = "nula";
+		  g_hash_table_insert(modulo->m_tabla, PUERTO_TEXTO, "Jostick: retroceder");
         }
 
         if ( event.jhat.value & SDL_HAT_LEFT ){
+			mueve = 1;
           robot->m_orden = "girar";
-          robot->m_parametro = "baja";
+          robot->m_parametro = "alta";
+		  g_hash_table_insert(modulo->m_tabla, PUERTO_TEXTO, "Jostick: girar izquierda");
         }
 
         if ( event.jhat.value & SDL_HAT_RIGHT )  {
-          robot->m_parametro = "girar_negativo";
-          robot->m_parametro = "baja";
-        }
-
+			mueve = 1;
+          robot->m_orden = "girar_negativo";
+          robot->m_parametro = "alta";
+		  g_hash_table_insert(modulo->m_tabla, PUERTO_TEXTO, "Jostick: girar derecha");
+        }		 		
         break;
       }
+	if(!mueve) {
+			g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, 0);
+		}
+		else {
+			g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, robot);
+		}
     }
     return TRUE;
 }
@@ -79,6 +104,7 @@ gboolean joystick_on_time(gpointer data) {
 
 static char *joystick_ciclo(modulo_t *modulo, const char *puerto, const void *dato)
 {
+	joystick_on_time(modulo);
   return 0;
 }
 
@@ -94,16 +120,22 @@ static char *joystick_ciclo(modulo_t *modulo, const char *puerto, const void *da
 
 
 static char *joystick_iniciar(modulo_t *modulo, GHashTable *argumentos) {
-    SDL_Joystick *joystick;
+    SDL_Joystick *joystick;	 
+	robot_in_t *robot = (robot_in_t*)modulo->m_dato;
     const char * numero = g_hash_table_lookup(argumentos, "numero");
     const char *milisegundos = g_hash_table_lookup(argumentos, "milisegundos");
     int numero_int = numero ? atoi(numero) : 0;
     int milisegundos_int = milisegundos ? atoi(milisegundos) : 50;
-    g_timeout_add(milisegundos_int, joystick_on_time, modulo);
+    //g_timeout_add(milisegundos_int, joystick_on_time, modulo);
     
-    SDL_Init(SDL_INIT_JOYSTICK);
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);	
     SDL_JoystickEventState(SDL_ENABLE);
     joystick = SDL_JoystickOpen(numero_int);
+
+	robot->m_orden = "parar";
+    robot->m_parametro = "nula";
+	g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, 0);	
+	g_hash_table_insert(modulo->m_tabla, PUERTO_TEXTO, 0);
   return "iniciado";
 }
 

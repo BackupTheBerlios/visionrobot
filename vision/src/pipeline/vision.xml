@@ -215,11 +215,14 @@
   </modulo>
   
   <!-- Modulo de joystick -->
-  <modulo ruta="joystick" nombre="joystick">
+  <modulo ruta="joystick" nombre="joystick" inicio="1">
     <argumento nombre="numero">0</argumento>
     <argumento nombre="milisegundos">100</argumento>
     <conexion puerto="salida_robot">
-        <destino puerto="entrada_robot">robot</destino>
+        <destino puerto="entrada_robot">robot</destino>	
+    </conexion>
+    <conexion puerto="salida_texto">
+	<destino puerto="entrada_texto">salida_pipeline</destino>
     </conexion>
   </modulo>
 

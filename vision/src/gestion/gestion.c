@@ -185,7 +185,7 @@ static char *gestion_iniciar(modulo_t *modulo, GHashTable *argumentos) {
   dato->m_historial = g_hash_table_new_full(g_str_hash,
 					    g_str_equal,
 					    0,//gestion_borrar_cadena,
-					    gestion_borrar_estado);
+					    0/*gestion_borrar_estado*/);
   sprintf(dato->m_buffer_error, "iniciado con neutro = \"%s\", tolerancia  = %i, maximo = %i", 
 	  dato->m_neutro,
 	  dato->m_tolerancia,

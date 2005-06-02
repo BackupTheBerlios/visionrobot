@@ -51,6 +51,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "joystick"=.\joystick\joystick.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "libimagenes"=.\libimagenes\libimagenes.dsp - Package Owner=<4>
 
 Package=<5>
