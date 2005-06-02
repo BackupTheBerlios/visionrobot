@@ -154,7 +154,7 @@ Depends(prog_pip, libpipeline)
 env.Install('bin', ['src/pipeline/ventana_pipeline.glade'])
 
 # Documentacion
-if str(plataforma) == str('posix'):
+if str(plataforma) == str('posijx'):
     def tex_action(source, target, env, for_signature):
         prog = 'pdflatex'
         (dir, file) = os.path.split(str(source[0]))
