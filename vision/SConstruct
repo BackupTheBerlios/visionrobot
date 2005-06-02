@@ -82,6 +82,11 @@ env.Install('bin', ['src/salida/ventana_salida.glade'])
 glade.SharedLibrary('bin/ventana_imagen', 'src/ventana_imagen/ventana_imagen.c')
 env.Install('bin', ['src/ventana_imagen/ventana_imagen.glade'])
 
+# El modulo de joystick
+joy = glib.Copy()
+joy.Append(LIBS=['SDL'])
+joy.SharedLibrary('bin/joystick', 'src/joystick/joystick.c')
+
 # Imagenes o camara, segun sea Linux o Windows
 # if str(plataforma) == str('posix'):
 img = gtk.Copy()
@@ -149,7 +154,7 @@ Depends(prog_pip, libpipeline)
 env.Install('bin', ['src/pipeline/ventana_pipeline.glade'])
 
 # Documentacion
-if str(plataforma) == 'nada':#str('posix'):
+if str(plataforma) == str('posix'):
     def tex_action(source, target, env, for_signature):
         prog = 'latex'
         (dir, file) = os.path.split(str(source[0]))
@@ -163,15 +168,14 @@ if str(plataforma) == 'nada':#str('posix'):
                                      src_suffix='.tex')
 
     env.Append(BUILDERS = {'Dia' : Builder(action = 'dia $SOURCE -t png -e $TARGET')})
+    env.Append(BUILDERS = {'PDFLaTeX' : Builder(action='pdflatex $SOURCE')})
     
     files = glob.glob('doc/*.tex')
+        
+    env.Append(tools=['pdflatex'])
     
-    #doc = env.DVI('doc/vision.dvi', 'doc/vision.tex')
-    
-    pdf = env.PDF('bin/vision.pdf', 'doc/vision.tex')
+    pdf = env.PDFLaTeX('bin/vision.pdf', 'doc/vision.tex')
 
     dia = env.Dia('doc/pipeline.png', 'doc/pipeline.dia')
     
     Depends(pdf, files + dia)
-
-    #Depends(ps, doc)

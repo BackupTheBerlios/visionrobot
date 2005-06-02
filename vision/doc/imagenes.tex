@@ -7,13 +7,13 @@ Este módulo tiene como objetivo la creación y modificación de un búfer de colore
 \label{formato_imagenes}
 La funcionalidad principal de este módulo es, como hemos comentado antes, la de generar imágenes de un solo formato, independientemente del origen del que se obtengan. Con este procedimiento pretendemos establecer la base del árbol de módulos de nuestro proyecto. Previamente al diseño y la implementación del módulo, establecimos cuáles eran los requisitos que debía cumplir el formato de imágenes que íbamos a usar. En primer lugar, las imágenes debían ser en color. Para esto, debíamos ser capaces de manejar la profundidad de cada punto de la pantalla. Además de esto, queríamos que las dimensiones de las imágenes (ancho y alto) fuesen flexibles, y, a priori, ser capaces de manejar cualquier tamaño (aunque posteriormente esto no ha sido realmente posible, pues la cámara web sólo admite un conjunto de dimensiones determinado).
 
-Estos dos requisitos, más la tendencia que hemos intentado mantener de mantener el proyecto lo más simple posible (filosofía {\em KISS}\footnote{Keep it simple, stupid!}), nos han llevado a definir nuestro formato de imágenes interno de la siguiente forma:
+Estos dos requisitos, más la tendencia que hemos intentado mantener de mantener el proyecto lo más simple posible (filosofía {\em KISS}\footnote{Keep it simple, stupid.}), nos han llevado a definir nuestro formato de imágenes interno de la siguiente forma:
 
 \begin{itemize}
-  \item[Alto] Un entero que determina el alto de la imagen (ej.: 240).
-  \item[Ancho] Un entero que determina el ancho de la imagen (ej.: 320).
-  \item[Bytes] Un entero que determina el número de bytes por punto (ej.: 3).
-  \item[Buffer] Un puntero (en la implementación de C, realmente implementa un vector) de número de 8 bits sin signo (1 byte, corresponde al formato {\tt unsigned char} en C), que contiene la información de colores de la imagen.
+  \item{\bf Alto} Un entero que determina el alto de la imagen.
+  \item{\bf Ancho} Un entero que determina el ancho de la imagen.
+  \item{\bf Bytes} Un entero que determina el número de bytes por punto.
+  \item{\bf Buffer} Un puntero (en la implementación de C, realmente implementa un vector) de número de 8 bits sin signo (1 byte, corresponde al formato {\tt unsigned char} en C), que contiene la información de colores de la imagen.
 \end{itemize}
 
 Esta ha sido toda la información por imagen que nos ha sido necesaria. El hecho de disponer de un búfer lineal nos ha capacitado para escribir implentaciones muy rápidas del recorrido de las mismas, principalmente por la potencia de los punteros del lenguaje C.
@@ -29,7 +29,7 @@ En la función de cerrar simplemente libera los recursos.
 Para la generación resultados desde diferentes fuentes, el módulo hace uso de una serie de librerías; son las siguientes:
 
 \begin {itemize}
-\item {\bf DirectX}: Las bibliotecas {\em DirectX} nos han provisto de la interfaz necesaria en su módulo {\em DirectShow}, tanto para la adquisición de imágenes de cámara % TODO: esto no se sabe :P % como para la reproducción de un archivo de vídeo.
+\item {\bf DirectX}: Las bibliotecas {\em DirectX} nos han provisto de la interfaz necesaria en su módulo {\em DirectShow}, para la adquisición de imágenes de cámara. % TODO: esto no se sabe :P % como para la reproducción de un archivo de vídeo.
 \item {\bf SANE}: Sane (Scanner Access Now Easy) es una biblioteca originariamente para interfaces con escáneres, pero ampliada para cualquier dispositivo de imágenes. A través de esta biblioteca accedemos a la cámara.
 \item {\bf Xine}: Xine-lib tiene como objetivo la reproducción de archivos de vídeo en varios formatos (los más usuales, también puede aceptar formatos nuevos a través de {\em plugins}). A través de Xine cargamos un vídeo en el módulo de imágenes y lo reproducimos.
 \item {\bf Gdk}: Usamos Gdk para cargar fácilmente archivos de imágenes, y usarlos así como fuentes sencillas de imágnenes cuyo resultado se conoce.

@@ -146,8 +146,8 @@
   <!-- Generador de imagenes -->
   <modulo ruta="imagenes" nombre="imagenes" inicio="1">
 <!--     <argumento nombre="video">robot.mpg</argumento> -->
-    <argumento nombre="camara">1</argumento>
-<!--    <argumento nombre="archivo">letra.xpm</argumento> -->
+<!--    <argumento nombre="camara">1</argumento> -->
+    <argumento nombre="archivo">letra.xpm</argumento>
     <argumento nombre="ancho">320</argumento>
     <argumento nombre="alto">240</argumento>
     <argumento nombre="bytes">3</argumento>
@@ -211,6 +211,15 @@
     <argumento nombre="archivo">base_datos</argumento>
     <conexion puerto="salida_texto">
       <destino puerto="entrada_red">gestion_ocr</destino>
+    </conexion>
+  </modulo>
+  
+  <!-- Modulo de joystick -->
+  <modulo ruta="joystick" nombre="joystick">
+    <argumento nombre="numero">0</argumento>
+    <argumento nombre="milisegundos">100</argumento>
+    <conexion puerto="salida_robot">
+        <destino puerto="entrada_robot">robot</destino>
     </conexion>
   </modulo>
 

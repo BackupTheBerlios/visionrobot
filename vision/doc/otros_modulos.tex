@@ -24,6 +24,13 @@ La ventana de imágenes tiene como función añadida la capacidad de guardar una to
 
 Puede examinar su documentación de código en \ref{caca}.
 
+\section{Módulo de control de joystick}
+Hemos añadido también al pipeline un módulo que, a través de un interfaz de joystick, puede traducir sus entradas a las correspondientes órdenes y parámetros del robot y del entorno 3D. De esta forma, la depuración es sencilla y rápida.
+
+Para la implementación hemos utilizado las bibliotecas SDL (Simple Directmedia Library).
+
+Puede examinar su documentación de código en \ref{caca}.
+
 \section{Módulo de salida}
 Este módulo es simplemente una ventana con un cuadro de texto que es capaz de imprimir en él todas las cadenas (en formato C, \verb|char *|) que le llegan a través de sus puertos.
 
