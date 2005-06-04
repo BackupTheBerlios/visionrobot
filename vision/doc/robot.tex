@@ -21,9 +21,16 @@ Para construir la estructura física del robot, hemos usado piezas de \emph{Lego 
 
 Sin embargo, hemos escogido este material por la facilidad que hemos encontrado para generar máquinas móviles. Los conjuntos de piezas de \emph{Lego Technics} suelen venir acompañados por estructuras más complejas de construcción, como motores y brazos hidráulicos, elementos que hemos usado para nuestro robot.
 
-El circuito ha sido conectado sobre una placa pequeña de entrenador, a pesar de su fiabilidad relativa, es rápida de montar y de depurar. Hemos usado un chip \textbf{L293B}, que sirve para control de motores bidireccionales de corriente contínua, y alimentamos el circuito con una pila de 9 voltios. El circuito que usa el robot es el siguiente:
+El circuito ha sido conectado sobre una placa pequeña de entrenador, a pesar de su fiabilidad relativa, es rápida de montar y de depurar. Hemos usado un chip \textbf{L293B}, que sirve para control de motores bidireccionales de corriente contínua, y alimentamos el circuito con una pila de 9 voltios. El circuito que usa el robot es el de la figura \ref{circuito_robot}.
 
-% TODO: poner la imagen del circuito.
+%\usepackage{graphics} is needed for \includegraphics
+\begin{figure}[htp]
+\begin{center}
+  \includegraphics[width=5.68cm,height=4.27cm,bb=0 0 161 121]{circuito.png}
+  \caption{Cirtuito de control robot con chip \emph{L293B}}
+  \label{circuito_robot}
+\end{center}
+\end{figure}
 
 \section {Fotos}
 A continuación mostramos algunas fotos del robot que hemos construido:
