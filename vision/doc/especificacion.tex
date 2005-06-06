@@ -1,0 +1,24 @@
+\section{Especificación}
+ 
+Vamos  a exponer a continuación los requisitos y características que definen el proyecto de Visión por Computador que hemos desarrollado. Esta enumeración ha sido la base a partir de la cuál se ha desarrollado el diseño y la posterior implementación de cada uno de los módulos que constituyen el proyecto. Por tanto describe las funcionalidades que establecimos inicialmente como objetivos que se debían satisfacer una vez concluido el proyecto. Posteriormente será necesario realizar una serie de pruebas que confirmen que cada uno de las siguientes características han sido implementadas adecuadamente para corroborar el éxito del proyecto. Estás pruebas se detallarán de forma exhaustiva en el apartado correspondiente.
+
+\subsection{Interacción con una cámara de video }
+Se deberá poder inicializar, configurar y utilizar una cámara que se comunique con nuestro proyecto suministrando de forma adecuada las imágenes que deberán ser analizadas.
+
+\subsection{Adquisición y tratamiento de las imágenes}
+Los datos suministrados por la cámara deberán ser modificados convenientemente para ajustarse a un formato útil para su manipulación por parte de nuestro proyecto. Además, será necesario que la imagen recibida a través de la cámara sea tratada mediante una serie de filtros que resaltarán y corregirán adecuadamente los elementos necesarios para su posterior análisis.
+
+\subsection{Tolerancia a diferentes condiciones de iluminación }
+Debido a que se trata con elementos visuales (imágenes de una cámara de video), es necesario que el sistema sea tolerante a las diferentes condiciones de iluminación que se pueden dar en distintos entornos. Se debe proporcionar una solución a este respecto que permita la pertinente graduación de los procesos de filtrado y corrección de imágenes para poder adaptarse a unas condiciones ambientales variables (obviamente siempre dentro de unos márgenes mínimos de iluminación).
+
+\subsection{Análisis de las imágenes }
+Una vez tratadas adecuadamente, las imágenes deberán ser analizadas para poder determinar si corresponden a un item reconocido por el sistema. El sistema deberá reconocer dos tipos de items: gestos realizados por el usuario que se interpretarán como comandos de navegación del robot, y textos escritos en carteles.
+Los comandos se generarán a partir de los gestos que el usuario realice con sus dos manos. En cada una de ellas deberá portar unos guantes con unos puntos de color diferenciados para cada mano. Los gestos de una de las manos se interpretarán como órdenes de navegación del tipo avanzar, girar o parar mientras que los gestos de la segunda mano se interpretarán como el grado de intensidad con la que la orden actual debe ser ejecutada. Así se podrá ordenar que el robot gire a la izquierda con mayor o menor velocidad de rotación por ejemplo. En cuanto al texto, deberá estar escrito sobre carteles de un color que destaque en el entorno. El texto podrá consistir en operaciones aritméticas sencillas, órdenes de control para la navegación del robot, o sencillas preguntas sobre datos que el sistema posea en su base de datos. Una vez analizado, el sistema dará respuesta según la naturaleza del texto de entrada. En caso de tratarse de una operación aritmética, se deberá dar la solución del cálculo. Si se trata de una orden de navegación, se deberá considerar como un comando de movimiento para el robot que deberá comportarse en consecuencia. Y por último, si se trata de una pregunta, se deberá dar una respuesta coherente a la semántica y formulación sintáctica de ésta.
+
+\subsection{Simulación del comportamiento del robot según los comandos procesados }
+Para poder comprobar el correcto funcionamiento del sistema de reconocimiento de gestos, se deberá utilizar un sistema que visualice de forma sencilla e intuitiva una simulación del comportamiento que debería presentar el robot en respuesta a las órdenes recibidas. Esta funcionalidad será útil tanto para realizar pruebas como para contar con una salida auxiliar que corrobore el comportamiento de un robot físico que se conecte al sistema. De esta manera se podrá ir verificando que cada orden procesada es interpretada de forma similar por el robot físico en concordancia con lo visualizado en la simulación.
+
+\subsection{Creación y conexión al sistema de reconocimiento de un robot }
+Se deberá construir un robot mecánico con capacidades motrices básicas (avanzar, retroceder, y girar en ambos sentidos) que se conectará al sistema de reconocimiento de gestos y actuará en consecuencia. 
+
+
