@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-//#include <SWI-Prolog.h>
+#include <SWI-Prolog.h>
 
 #define PUERTO "entrada_texto"
 
@@ -22,7 +22,7 @@ typedef struct {
  */
  
  static char * prolog_mayusculas(const char * cadena1) {
-  const char *cadena = strdup(cadena1);
+  char *cadena = strdup(cadena1);  
   int i = 0;
   while(i < strlen(cadena)) {
     if(cadena[i] >= 'a' && cadena[i] <= 'z') {
@@ -30,10 +30,14 @@ typedef struct {
     }
     i++;
   }
+  return cadena;
 }
 static char *prolog_ciclo(modulo_t *modulo, const char *puerto, const void *dato)
 {
-//    FILE * archivo_dcg;
+  predicate_t pred;
+  term_t h0;
+  double f = 0.0f;
+  
   prolog_dato_t *prolog = (prolog_dato_t*)modulo->m_dato;
   g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, 0);
   if(!strcmp(PUERTO, puerto)) {
@@ -56,45 +60,38 @@ static char *prolog_ciclo(modulo_t *modulo, const char *puerto, const void *dato
         g_hash_table_insert(modulo->m_tabla, PUERTO_ORDEN, "girar_negativo");
         g_hash_table_insert(modulo->m_tabla, PUERTO_PARAMETRO, "alta");
       }
-      else {
-	  /*char entrada_dcg[256];
-	  strcpy(entrada_dcg,"dcg.exe ");
-	  strcat(entrada_dcg,cadena);
-	  system(entrada_dcg);
-	  archivo_dcg = fopen("salida.txt","r");
-	  fscanf(archivo_dcg,"%s",prolog->m_buffer_salida);
-	  fclose(archivo_dcg);*/
-      }
+      else {	     
+        pred = PL_predicate("camaron", 2, "dcg");
+        h0 = PL_new_term_refs(2);
+        PL_put_list_codes(h0, cadena);
 
-      g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, prolog->m_buffer_salida);
-      /*term_t a0 = PL_new_term_refs(2);
-      static predicate_t p;
-      p = PL_predicate("frase", 2, "database");
-      PL_put_string_chars(a0, "caca");
-      qid_t qid =  PL_open_query(0, PL_Q_NORMAL, p, a0); 
-      while(PL_next_solution(qid)) {
+        if(PL_call_predicate(NULL, PL_Q_NORMAL, pred, h0)) {
+            PL_get_float(h0 + 1, &f);
+            sprintf(prolog->m_buffer_salida, "Resultado: %f.", f);
+            g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, prolog->m_buffer_salida);
+        } 
+        else {
+            g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, 0);
+        }              
       }
-      PL_close_query(qid);*/
     }
   }
   return 0;
 }
 
 static char *prolog_iniciar(modulo_t *modulo, GHashTable *argumentos) {
-  char *plav[2];
   prolog_dato_t *prolog = (prolog_dato_t*)modulo->m_dato;
-  plav[0] = "pipeline";
-  plav[1] = NULL;
+  char *plav[] = {"pipeline"};
   sprintf(prolog->m_buffer_salida, "Sin implementar");
   g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, 0);
   g_hash_table_insert(modulo->m_tabla, PUERTO_ORDEN, 0);
   g_hash_table_insert(modulo->m_tabla, PUERTO_PARAMETRO, 0);
-  //PL_initialise(1, plav);
+  PL_initialise(1, plav);
   return "iniciado";
 }
 static char *prolog_cerrar(modulo_t *modulo)
 {
-  //PL_halt(0);
+  PL_halt(0);
   prolog_dato_t *prolog = (prolog_dato_t*)modulo->m_dato;
   free(prolog);
   free(modulo);
