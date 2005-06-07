@@ -16,6 +16,21 @@ typedef struct {
   char m_buffer_salida[128];
 } prolog_dato_t;
 
+//! Pasa una cadena a mayúsculas
+/*! \param cadena1 La cadena
+ *  \return La cadena, en mayúsculas
+ */
+ 
+ static char * prolog_mayusculas(const char * cadena1) {
+  const char *cadena = strdup(cadena1);
+  int i = 0;
+  while(i < strlen(cadena)) {
+    if(cadena[i] >= 'a' && cadena[i] <= 'z') {
+      cadena[i] -= 'a' - 'A';
+    }
+    i++;
+  }
+}
 static char *prolog_ciclo(modulo_t *modulo, const char *puerto, const void *dato)
 {
 //    FILE * archivo_dcg;
@@ -24,7 +39,24 @@ static char *prolog_ciclo(modulo_t *modulo, const char *puerto, const void *dato
   if(!strcmp(PUERTO, puerto)) {
     const char *cadena = (const char *)dato;
     if(cadena) {
-
+      const char *cadena_aux = prolog_mayusculas(cadena);
+      if(!strcmp(cadena_aux, "AVANZAR")) {
+        g_hash_table_insert(modulo->m_tabla, PUERTO_ORDEN, "avanzar");
+        g_hash_table_insert(modulo->m_tabla, PUERTO_PARAMETRO, "media");
+      }
+      else if(!strcmp(cadena_aux, "RETROCEDER")) {
+        g_hash_table_insert(modulo->m_tabla, PUERTO_ORDEN, "avanzar");
+        g_hash_table_insert(modulo->m_tabla, PUERTO_PARAMETRO, "nula");
+      }
+      else if(!strcmp(cadena_aux, "GIRAR IZQUIERDA")) {
+        g_hash_table_insert(modulo->m_tabla, PUERTO_ORDEN, "girar");
+        g_hash_table_insert(modulo->m_tabla, PUERTO_PARAMETRO, "alta");
+      }
+      else if(!strcmp(cadena_aux, "GIRAR DERECHA")) {
+        g_hash_table_insert(modulo->m_tabla, PUERTO_ORDEN, "girar_negativo");
+        g_hash_table_insert(modulo->m_tabla, PUERTO_PARAMETRO, "alta");
+      }
+      else {
 	  /*char entrada_dcg[256];
 	  strcpy(entrada_dcg,"dcg.exe ");
 	  strcat(entrada_dcg,cadena);
@@ -32,6 +64,7 @@ static char *prolog_ciclo(modulo_t *modulo, const char *puerto, const void *dato
 	  archivo_dcg = fopen("salida.txt","r");
 	  fscanf(archivo_dcg,"%s",prolog->m_buffer_salida);
 	  fclose(archivo_dcg);*/
+      }
 
       g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, prolog->m_buffer_salida);
       /*term_t a0 = PL_new_term_refs(2);

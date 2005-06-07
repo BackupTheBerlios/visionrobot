@@ -4,7 +4,7 @@
   Archivo: dcg.pl
   Autor: Carlos León
   Agradecimientos: a Juan Rodríguez, por "quita_blancos_str", reconocimiento de números, y correcciones y añadidos en general.
-  Versión: 1.0  
+  Versión: 1.0	
 */
 :- module(dcg, [camaron/2,prueba/2]).
 
@@ -14,7 +14,6 @@ camaron(StringEntrada, Resultado) :-
 parser(StringEntrada, Resultado, Resto) :-
 	quita_blancos_str(StringEntrada, StringSinBlancos),
 	phrase(sintactico(Resultado), StringSinBlancos, Resto).
-
 quita_blancos_str([],[]).
 quita_blancos_str([32|Se],Ss) :-
 	!,
@@ -25,6 +24,12 @@ quita_blancos_str([C|Se],[C|Ss]) :-
 
 sintactico(S) -->
     expresion(S).
+    
+sintactico("!!avanzar") -->
+	"avanzar".
+
+sintactico("!!retroceder") -->
+	"retroceder".
 
 expresion(Z) -->
     termino(X), suma, expresion(Y), {Z is X + Y}.

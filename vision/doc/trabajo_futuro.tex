@@ -2,12 +2,23 @@
 
 Dada la extensión del proyecto y que concierne a varios ámbitos de desarrollo, vamos a dividir esta sección según los apartados del mismo:
 
-%% TODO: Que cada uno ponga aquí lo suyo. No nos extendamos.
-\begin{itemize}
-  \item {\bf Pipeline}: 
-  \item {\bf Robot}:
-  \item {\bf Módulos}:
-  \item {\bf Entorno 3D}:
+%% TODO: Que cada uno ponga aquí lo suyo. No nos extendamos. Está ahora liado, pero ya lo estableceremos mejor. No nos preocupemos por las secciones y eso.
+\section {No sé qué poner}
+
+\subsection{La aplicación y los módulos}
+Los módulos de la aplicación son la parte más interesante del trabajo posterior al que puede dar lugar este proyecto. Cada uno es independiente de los demás, y sólo ``conocen'' entre sí las interfaces de entrada/salida que los definen. Por tanto, cualquiera de estos módulos puede ser incluido en un proyecto de visión por computador (en un principio, algunos módulos tienen una funcionalidad más general). Además, la aplicación que hemos creado puede sera ampliada añadiendo más módulos (para crear un sistema más inteligente, y enlazar esos nuevos módulos con la salida ya existente), o sustituyendo algunos, por ejemplo.
+
+
+\subsection{Pipeline}
+
+El pipeline consiste en una librería en C que conecta módulos y pasa información entre ellos. De este modo, sólo es necesario crear dichos módulos, conectarlos (escribiendo un archivo en \emph{XML}) y establecer sus argumentos (en el \emph{XML} también). Por tanto, esta pieza de código es perfectamente reusable en cualquier aplicación que necesite una arquitectura modular de elementos independientes que necesiten ser conectados entre sí. 
+  
+Por otro lado, podría tener interés la creación, como proyecto futuro, de un editor visual de dichos esquemas de conexión de módulos, que generase y leyese documentos en XML para el pipeline.
+
+\subsection{Robot}
+Mediante la construcción del robot hemos demostrado la simpleza de la interacción entre software y hardware muy cercano al usuario. Los módulos y las rutinas que hemos desarrollado pueden servir bien como ejemplo o base para nuevos proyectos, o como módulos ya escritos que pueden ser usados mediante el \emph{pipeline}.
+
+\section{Entorno 3D}:
 
 A continuación se enumeran una serie de ampliaciones y mejoras que se podrían introducir en el entorno 3d en futuras expansiones del proyecto:
 
@@ -31,8 +42,5 @@ La implementación de esta ampliación sería trivial una vez implementado el siste
 Para incrementar el aspecto visual de la aplicación se pueden introducir en el futuro nuevos efectos gráficos. Por ejemplo, se podría introducir el uso de texturas HDR que optimicen el comportamiento visual de la iluminación y los reflejos de los objetos 3D. Se podría incluir también la novedosa técnica PRT(precomputed radiance transfer) que permite implementar la técnica de iluminación global por radiosidad en tiempo real (esta característica se ha incorporado a la nueva versión de DirectX aparecida en Abril de 2005). Por supuesto, el uso de shaders para desarrollar nuevos efectos sería también muy apropiado, teniendo en cuenta además lo fácil de su programación gracias a las facilidades de Direct3D para integrar esta tecnología.
 
 Cualquier otro tipo de modificación será fácilmente implementada ya que el diseño de la aplicación y su modularidad permiten una sencilla integración de nuevos componentes. Para más detalles consultar el diseño en el Anexo correspondiente al Entorno 3D.
-
-\end{itemize}
-
 
 
