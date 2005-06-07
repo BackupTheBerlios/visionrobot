@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-//#include <SWI-Prolog.h>
+#include <SWI-Prolog.h>
 
 #define PUERTO "entrada_texto"
 
@@ -34,16 +34,16 @@ typedef struct {
 }
 static char *prolog_ciclo(modulo_t *modulo, const char *puerto, const void *dato)
 {
-/*  predicate_t pred;
+  predicate_t pred;
   term_t h0;
-  double f = 0.0f;*/
+  double f = 0.0f;
   
   prolog_dato_t *prolog = (prolog_dato_t*)modulo->m_dato;
   
   if(!strcmp(PUERTO, puerto)) {
-    const char *cadena = (const char *)dato;
+    char *cadena = (char *)dato;
     if(cadena) {
-      const char *cadena_aux = prolog_mayusculas(cadena);
+      char *cadena_aux = prolog_mayusculas(cadena);
       if(!strcmp(cadena_aux, "AVANZAR")) {
         g_hash_table_insert(modulo->m_tabla, PUERTO_ORDEN, "avanzar");
         g_hash_table_insert(modulo->m_tabla, PUERTO_PARAMETRO, "media");
@@ -61,7 +61,7 @@ static char *prolog_ciclo(modulo_t *modulo, const char *puerto, const void *dato
         g_hash_table_insert(modulo->m_tabla, PUERTO_PARAMETRO, "alta");
       }
       else {	     
-        /*pred = PL_predicate("camaron", 2, "dcg");
+        pred = PL_predicate("camaron", 2, "dcg");
         h0 = PL_new_term_refs(2);
         PL_put_list_codes(h0, cadena);
         if(PL_call_predicate(NULL, PL_Q_NORMAL, pred, h0)) {
@@ -71,9 +71,9 @@ static char *prolog_ciclo(modulo_t *modulo, const char *puerto, const void *dato
         } 
         else {
             g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, 0);
-        }    */          
+        }    
       }
-	  free(cadena_aux);
+      free(cadena_aux);
     }
   }
   return 0;
@@ -83,15 +83,15 @@ static char *prolog_iniciar(modulo_t *modulo, GHashTable *argumentos) {
   prolog_dato_t *prolog = (prolog_dato_t*)modulo->m_dato;
   char *plav[] = {""};
   g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, 0);
-  g_hash_table_insert(modulo->m_tabla, PUERTO_ORDEN, "mierda");
-  g_hash_table_insert(modulo->m_tabla, PUERTO_PARAMETRO, "oh, si");
-//  PL_initialise(1, plav);
+  g_hash_table_insert(modulo->m_tabla, PUERTO_ORDEN, 0);
+  g_hash_table_insert(modulo->m_tabla, PUERTO_PARAMETRO, 0);
+  PL_initialise(1, plav);
   return "iniciado";
 }
 static char *prolog_cerrar(modulo_t *modulo)
 {  
   prolog_dato_t *prolog = (prolog_dato_t*)modulo->m_dato;
-//  PL_halt(0);
+  PL_halt(0);
   free(prolog);
   free(modulo);
   return "cerrado";

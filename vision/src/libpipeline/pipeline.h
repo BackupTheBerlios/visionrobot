@@ -71,7 +71,7 @@ extern "C"  {
   pipeline_t * pipeline_cargar(const char *ruta, funcion_error_t funcion_error, const void *dato) ;
 
   /*! \brief Realiza un ciclo completo en el pipeline. Esto corresponde a llamar al ciclo de las funciones
-            marcadas como <em>iniciales</em> (incio="1" en el XML), y llamar al ciclo de todos los módulos
+            marcadas como <em>iniciales</em> (inicio="1" en el XML), y llamar al ciclo de todos los módulos
 	    que estén conectados a la salida de los mismos.
       \param p El pipeline en el que realizamos el ciclo
   */
