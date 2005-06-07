@@ -105,6 +105,7 @@
     <argumento nombre="param_defecto">nula</argumento>
     <conexion puerto="salida_robot">
       <destino puerto="entrada_robot">robot</destino>
+      <destino puerto="entrada_robot">entorno_3d</destino>
     </conexion>
     <conexion puerto="salida_texto">
       <destino puerto="entrada_texto">salida_pipeline</destino>
@@ -123,9 +124,9 @@
 
   <!-- Ventana de parametros del OCR -->
   <modulo ruta="ventana_parametros" nombre="parametros_ocr" inicio="1">
-    <argumento nombre="rojo">247</argumento>
-    <argumento nombre="verde">142</argumento>
-    <argumento nombre="azul">99</argumento>
+    <argumento nombre="rojo">255</argumento>
+    <argumento nombre="verde">0</argumento>
+    <argumento nombre="azul">0</argumento>
     <argumento nombre="tolerancia_rojo">4</argumento>
     <argumento nombre="tolerancia_verde">6</argumento>
     <argumento nombre="tolerancia_azul">8</argumento>
@@ -147,7 +148,7 @@
   <modulo ruta="imagenes" nombre="imagenes" inicio="1">
 <!--     <argumento nombre="video">robot.mpg</argumento> -->
 <!--    <argumento nombre="camara">1</argumento> -->
-    <argumento nombre="archivo">letra.xpm</argumento>
+    <argumento nombre="archivo">suma.xpm</argumento>
     <argumento nombre="ancho">320</argumento>
     <argumento nombre="alto">240</argumento>
     <argumento nombre="bytes">3</argumento>
@@ -220,6 +221,7 @@
     <argumento nombre="milisegundos">100</argumento>
     <conexion puerto="salida_robot">
         <destino puerto="entrada_robot">robot</destino>	
+	<destino puerto="entrada_robot">entorno_3d</destino>
     </conexion>
     <conexion puerto="salida_texto">
 	<destino puerto="entrada_texto">salida_pipeline</destino>
@@ -236,4 +238,16 @@
     </conexion>
   </modulo>
 
+  <!-- Modulo del entorno 3d -->
+  <modulo ruta="entorno_3d" nombre="entorno_3d" activado="0">
+    <argumento nombre="ancho_ventana">800</argumento>  
+    <argumento nombre="alto_ventana">600</argumento>  
+    <argumento nombre="sombras">sombras_desactivadas</argumento>  
+    <argumento nombre="pantalla_completa">no</argumento>
+    <argumento nombre="hardware3d">no</argumento>
+    <argumento nombre="color_rojo">0</argumento>  
+    <argumento nombre="color_verde">0</argumento>  
+    <argumento nombre="color_azul">255</argumento>  
+    <argumento nombre="delay">300</argumento>      
+  </modulo>
 </pipeline>

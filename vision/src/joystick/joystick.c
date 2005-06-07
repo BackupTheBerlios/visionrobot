@@ -10,10 +10,9 @@
 		<li><em>salida_texto</em>: Una cadena que define la entrada del joystick.
       </ul>
       \section argumentos Argumentos
-        Los únicos argumentos posibles son el número de joystick que se quiere usar (si se omite, se usa el primero encontrado), y los milisegundos del temporizador.
+        El único argumento posible es el número de joystick que se quiere usar (si se omite, se usa el primero encontrado).
       <ul>
-        <li><em>numero</em>: El número de joystick.
-        <li><em>milisegundos</em>: Los milisegundos del temporizador de lectura de la entrada de joystick.
+        <li><em>numero</em>: El número de joystick.        
       </ul>
     \author Carlos León
     \version 1.0
@@ -123,11 +122,8 @@ static char *joystick_iniciar(modulo_t *modulo, GHashTable *argumentos) {
     SDL_Joystick *joystick;	 
 	robot_in_t *robot = (robot_in_t*)modulo->m_dato;
     const char * numero = g_hash_table_lookup(argumentos, "numero");
-    const char *milisegundos = g_hash_table_lookup(argumentos, "milisegundos");
     int numero_int = numero ? atoi(numero) : 0;
-    int milisegundos_int = milisegundos ? atoi(milisegundos) : 50;
-    //g_timeout_add(milisegundos_int, joystick_on_time, modulo);
-    
+
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);	
     SDL_JoystickEventState(SDL_ENABLE);
     joystick = SDL_JoystickOpen(numero_int);

@@ -34,7 +34,7 @@ typedef struct {
   modulo_t * m_modulo;
   GHashTable *m_argumentos;
   GHashTable *m_enlaces;
-  const char *m_nombre;
+  char *m_nombre;
   gboolean m_activado;
 } elemento_t;
 

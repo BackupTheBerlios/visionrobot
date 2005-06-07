@@ -215,7 +215,7 @@ static char *ventana_iniciar(modulo_t *modulo, GHashTable *argumentos)
 static char *ventana_cerrar(modulo_t *modulo)
 {
   gdk_gc_unref(((datos_ventana_t*)modulo->m_dato)->gc);
-  gtk_widget_destroy(((datos_ventana_t*)modulo->m_dato)->ventana);
+//  gtk_widget_destroy(((datos_ventana_t*)modulo->m_dato)->ventana);
   free(((datos_ventana_t*)modulo->m_dato)->nombre_foto);
   free(((datos_ventana_t*)modulo->m_dato)->extension);
   free(modulo->m_dato);
