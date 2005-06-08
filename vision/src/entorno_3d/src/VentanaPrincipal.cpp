@@ -559,7 +559,17 @@ void VentanaPrincipal::ProcesarComandos(const robot_in_t *comando)
 	else if(strcmp(comando->m_orden,"avanzar") == 0)
 	{
 		Entrada::Resetear();
-		Entrada::m_Movimiento.arriba = true;
+		
+		if((strcmp(comando->m_parametro,"nula") == 0)||(strcmp(comando->m_parametro,"baja") == 0))
+		{
+			Entrada::m_Movimiento.abajo = true;
+			
+		}
+		else if((strcmp(comando->m_parametro,"media") == 0)||(strcmp(comando->m_parametro,"alta") == 0))
+		{
+				Entrada::m_Movimiento.arriba = true;
+		}
+			
 
 	}
 
