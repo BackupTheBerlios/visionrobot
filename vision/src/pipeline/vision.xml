@@ -74,9 +74,22 @@
         <destino puerto="entrada_param">post_gestion</destino>
     </conexion>    
      <conexion puerto="salida_texto">
+      <destino puerto="entrada_red">gestion_prolog</destino>
+    </conexion>
+  </modulo>
+
+
+  <!-- Modulo de control de mensajes del evaluador de cadenas -->
+ <modulo ruta="gestion" nombre="gestion_prolog">
+    <argumento nombre="maximo">2</argumento>
+    <argumento nombre="tolerancia">1</argumento>
+    <argumento nombre="neutro">no_gesto</argumento>
+   <conexion puerto="salida_texto">
       <destino puerto="entrada_texto">salida_pipeline</destino>
     </conexion>
   </modulo>
+
+
   <!-- Modulo de control de mensajes de la red de ordenes -->
  <modulo ruta="gestion" nombre="gestion_orden">
     <argumento nombre="maximo">3</argumento>

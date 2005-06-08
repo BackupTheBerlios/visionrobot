@@ -14,6 +14,7 @@
 
 typedef struct {
   char m_buffer_salida[128];
+  fid_t m_fid;
 } prolog_dato_t;
 
 //! Pasa una cadena a mayúsculas
@@ -60,18 +61,19 @@ static char *prolog_ciclo(modulo_t *modulo, const char *puerto, const void *dato
         g_hash_table_insert(modulo->m_tabla, PUERTO_ORDEN, "girar_negativo");
         g_hash_table_insert(modulo->m_tabla, PUERTO_PARAMETRO, "alta");
       }
-      else {	     
+      else {		
+
         pred = PL_predicate("camaron", 2, "dcg");
         h0 = PL_new_term_refs(2);
         PL_put_list_codes(h0, cadena);
         if(PL_call_predicate(NULL, PL_Q_NORMAL, pred, h0)) {
-            PL_get_float(h0 + 1, &f);
-            sprintf(prolog->m_buffer_salida, "Resultado: %f.", f);
-            g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, prolog->m_buffer_salida);
+	  PL_get_float(h0 + 1, &f);
+	  sprintf(prolog->m_buffer_salida, "Resultado: %f.", f);
+	  g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, prolog->m_buffer_salida);
         } 
         else {
             g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, 0);
-        }    
+        } 
       }
       free(cadena_aux);
     }
@@ -81,17 +83,31 @@ static char *prolog_ciclo(modulo_t *modulo, const char *puerto, const void *dato
 
 static char *prolog_iniciar(modulo_t *modulo, GHashTable *argumentos) {
   prolog_dato_t *prolog = (prolog_dato_t*)modulo->m_dato;
-  char *plav[] = {""};
+
+  char *av[10];
+  int ac = 0;
+  
+  av[ac++] = "prolog";
+  av[ac++] = "-g";
+  av[ac++] = "true";
+  av[ac++] = "-f";
+  av[ac++] = "none";
+  
+  if(!PL_initialise(ac, av)) {
+    PL_halt(-1);
+  }
+  prolog->m_fid = PL_open_foreign_frame();
   g_hash_table_insert(modulo->m_tabla, PUERTO_SALIDA, 0);
   g_hash_table_insert(modulo->m_tabla, PUERTO_ORDEN, 0);
   g_hash_table_insert(modulo->m_tabla, PUERTO_PARAMETRO, 0);
-  PL_initialise(1, plav);
+
   return "iniciado";
 }
 static char *prolog_cerrar(modulo_t *modulo)
 {  
   prolog_dato_t *prolog = (prolog_dato_t*)modulo->m_dato;
-  PL_halt(0);
+  PL_discard_foreign_frame(prolog->m_fid);
+  PL_cleanup(0);   
   free(prolog);
   free(modulo);
   return "cerrado";

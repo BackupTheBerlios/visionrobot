@@ -48,6 +48,8 @@ static char *ocr_ciclo(modulo_t *modulo, const char *puerto, const void *value)
       const char *respuesta = ocr_semantic_match(ocr_in, pack_init);
       if(respuesta) {
 	sprintf(dato->m_out, "%s", respuesta);
+    // Prueba para prolog
+	//sprintf(dato->m_out, "(2 + 3) - 27"); <-- Funciona!
 	g_hash_table_insert(modulo->m_tabla, PUERTO_TEXTO, &dato->m_out);
       }
       else {
