@@ -1,0 +1,21 @@
+\chapter{Pruebas}
+
+\section{Pruebas de arquitectura}
+
+\subsection{Pruebas de desarrollo}
+Uno de los mayores retos del proyecto ha sido conseguir una arquitectura sólida que satisficiera nuestras necesidades de conexión. La evolución de la generación de la aplicación ha llevado implícitas las pruebas diarias del éxito del diseño y la implementación de nuestro \emph{pipeline}. Por eso detallamos los cambios del mismo, como resultado de nuestros experimentos.
+
+La primera visión del diseño global era mucho más simple que la que finalmente hemos acabado usando: los módulos sólo se conectaban en forma de árbol. Pronto tuvimos que abandonar este enfoque, pues los requisitos de conexión de módulos se mostraron más complejos de lo que estimamos en un principio.
+
+Así pues, pensamos en conectar los módulos \emph{1 a 1} en forma lineal. Los primeros resultados fueron satisfactorios: los módulos se comunicaban una vez que la implementación del diseño dejó de tener errores. La implementación en este punto comenzaba a ser sólida, y pronto ampliamos el diseño para que los módulos tuvieran conexiones de \emph{1 a N}. Con esto conseguimos, por ejemplo, ver las imágenes que generaban los filtros sin tener que cambiar en absoluto los módulos que operaban. El diseño comenzaba a dar sus frutos, empezábamos a ahorrar horas de trabajos y a reutilizar fuertemente el código desarrollado, ya que un módulo de ``ventana de imágenes'' podía, instanciándose varias veces, presentar diferentes imágenes.
+
+El diseño ya comenzaba a ser realmente sólido, sin embargo, nos vimos en la necesidad de que un módulo aceptase varias entradas. Por tanto, añadimos esa funcionalidad. En esta fase del diseño completamos casi toda la aplicación. Las pruebas y la corrección de errores fueron paralelas y terminaron por dar con un conjunto muy fiable, con conexiones \emph{N a N}.
+
+En última instancia, nos dimos cuenta de que el sistema de puertos no era del todo completo. Un módulo sólo se podía conectar a otro por un puerto. Esto nos presentaba el inconveniente en el módulo de cálculo de respuesta, que debía ofrecer la salida de la orden y el parámetro de forma independiente. Finalmente, pues, añadimos más potencia a los puertos, dotando a la estructura de una completitud amplia y sólida.
+
+Como ejemplo global de pruebas y de la utilidad de la arquitectura de \emph{pipeline}, podemos reseñar el del módulo de ``gestión''. Poco valorado al principio, pensamos que iba a ser un simple trámite de la salida global. Sin embargo, finalmente el diagrama total tiene 4 instancias del módulo, para las cuales no hemos tenido que reprogramar nada, sólo variar el archivo de proyecto XML.
+
+\subsection{Eficiencia}
+
+El \emph{pipeline} no es un ejemplo de velocidad de proceso. Las pruebas que hemos realizado nos han permitido, en un ordenador con un microprocesador \emph{Intel Pentium IV} con una frecuencia de reloj de $3.0$ GHz, alcanzar velocidades de ciclo de 200 milisegundos. Para una aplicación del ámbito docente como es la que presentamos, el resultado es desde luego más que suficiente, pero no deja de ser un tiempo de ejecución lento para requisitos como, por ejemplo, de tiempo real. 
+

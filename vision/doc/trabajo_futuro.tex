@@ -8,15 +8,18 @@ Dada la extensión del proyecto y que concierne a varios ámbitos de desarrollo, v
 \subsection{La aplicación y los módulos}
 Los módulos de la aplicación son la parte más interesante del trabajo posterior al que puede dar lugar este proyecto. Cada uno es independiente de los demás, y sólo ``conocen'' entre sí las interfaces de entrada/salida que los definen. Por tanto, cualquiera de estos módulos puede ser incluido en un proyecto de visión por computador (en un principio, algunos módulos tienen una funcionalidad más general). Además, la aplicación que hemos creado puede sera ampliada añadiendo más módulos (para crear un sistema más inteligente, y enlazar esos nuevos módulos con la salida ya existente), o sustituyendo algunos, por ejemplo.
 
-
 \subsection{Pipeline}
 
 El pipeline consiste en una librería en C que conecta módulos y pasa información entre ellos. De este modo, sólo es necesario crear dichos módulos, conectarlos (escribiendo un archivo en \emph{XML}) y establecer sus argumentos (en el \emph{XML} también). Por tanto, esta pieza de código es perfectamente reusable en cualquier aplicación que necesite una arquitectura modular de elementos independientes que necesiten ser conectados entre sí. 
   
-Por otro lado, podría tener interés la creación, como proyecto futuro, de un editor visual de dichos esquemas de conexión de módulos, que generase y leyese documentos en XML para el pipeline.
+Por otro lado, podría tener interés la creación, como proyecto futuro, de un editor visual de dichos esquemas de conexión de módulos, que generase y leyese documentos en XML para el pipeline. Esto supondría una gran ventaja para la creación rápida de aplicaciones y la prueba \emph{in situ} de los proyectos.
+
+Además, tendría gran utilidad una reimplemtación de la especificación del pipeline, de tal modo que la velocidad fuese mayor.
 
 \subsection{Robot}
 Mediante la construcción del robot hemos demostrado la simpleza de la interacción entre software y hardware muy cercano al usuario. Los módulos y las rutinas que hemos desarrollado pueden servir bien como ejemplo o base para nuevos proyectos, o como módulos ya escritos que pueden ser usados mediante el \emph{pipeline}.
+
+Una posible ampliación muy atractiva y visual sería añadir más funcionalidad al robot, ampliando el circuito y añadiendo motores, de forma que tuviese, por ejemplo, un brazo que pudiese coger cosas.
 
 \section{Entorno 3D}:
 
