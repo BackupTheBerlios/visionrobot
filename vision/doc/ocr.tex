@@ -92,6 +92,77 @@ Ya sabemos que regiones ocupa cada carácter dentro de la imagen, sabemos que dis
 Para esto hacemos la media aritmética de los espacios entre regiones contiguas sin contar las contiguas que están en distintas líneas, aquellos espacios entre regiones que estén por encima de la media serán espacios en blanco en el mensaje. Los espacios se representan como una cadena de booleanos de longitud igual al numero de regiones menos uno, que valdrá falso si entre dos regiones no se considera que exista espacio y cierto en caso contrario.
 
 \subsection{Reconocimiento de patrones}
+\subsubsection{Descripción}
+Un reconocedor de patrones se puede considerar como un descriptor. Consiste en extraer características de un objeto para reconocerle.
+
+\bigskip
+Los descriptores se pueden clasificar en:
+\begin{itemize}
+\item Descriptores de frontera. (Códigos de cadena, números de contorno, signaturas, ...)	
+\item Descriptores de región. (Descriptores globales, esqueleto de una región, textura, momentos invariantes, ...)
+\item Descriptores de estructuras tridimensionales.
+\end{itemize} 
+	
+El algoritmo utilizado en el proyecto ha sido desarrollado por nosotros, se puede incluir dentro del área de descriptores de frontera. Ya que se basa en discriminar al objeto aprovechando las relaciones geométricas inherentes a la forma del objeto.
+Definimos por tanto a un carácter por su contorno.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.5,bb=0 0 174 130]{letra.png}
+  \includegraphics[scale=0.5,bb=0 0 174 130]{letra1.png}
+  \caption{ Caracter y su contorno.}
+\end{figure}
+
+El funcionamiento es el siguiente:
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.5,bb=0 0 140 143]{letra2.png}
+  \caption{ Rectas que cortan al caracter en 12 puntos.}
+\end{figure}
+
+\begin{itemize}
+\item Ajustamos un carácter dentro de un marco.
+\item Trazamos una serie de rectas que cortan al carácter por varios puntos de su frontera. Estos puntos serán los que definirán al carácter. Según el dibujo si trazamos 6 rectas conseguiremos 12 puntos para definir al carácter.
+
+\bigskip
+Los puntos tienen que ser independientes de la posición que ocupa el carácter dentro de la imagen en ese momento, también no tiene que importar el tamaño ya que un cartel podrá estar unas veces mas lejos que otras y una A siempre tendrá que seguir siendo una A independientemente de la distancia. También en cierta medida el algoritmo tiene que ser permisivo con distintos tipos de formato.
+\item Por eso, lo que se calcula es la distancia del segmento que se forma entre ese punto y el marco. No guardamos la distancia exacta, sino la proporción de la longitud del segmento con la de toda su recta. De esta forma ya no importara el tamaño de las letras, ya que aunque una A se mas pequeña q otra la proporción seguirá siendo la misma.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.5,bb=0 0 140 143]{letra3.png}
+  \caption{ Los 12 segmentos que definen al caracter.}
+\end{figure}
+\item Son entonces no 12 puntos lo que generamos sino 12 valores que indican la distancia relativa que hay desde esos puntos al marco. 
+\item Para cada carácter o digito calculamos sus 12 valores, y los guardamos en una base de datos junto con su identificador (carácter ASCII).
+
+Así tendremos en un archivo la descripción para cada carácter en forma de 12 valores.
+
+Ejemplo para 3 letras:
+
+\textbf{A}  0.000000 30.882353 20.744681 20.744681 42.647059 26.470588 31.914894 31.914894 42.647059 26.470588 9.574468 9.574468 
+
+\textbf{B}  0.000000 0.000000 0.000000 13.815789 0.000000 0.000000 0.000000 5.921053 2.941176 2.941176 0.000000 0.000000 
+
+\textbf{C}  0.000000 0.000000 0.000000 85.227273 5.714286 5.714286 5.113636 5.113636 4.285714 4.285714 5.113636 1.704545 
+\end{itemize} 
+
+\subsubsection{Reconocimiento}
+El reconocimiento es un proceso de etiquetado. se ocupa de identificar cada objeto segmentado de la escena y asignarle una etiqueta.
+
+\begin{itemize}
+\item Como todo modulo, el modulo OCR tiene su función Iniciar, esta función siempre cargara el archivo de descripciones en memoria para continuas consultas.
+\item En cada ciclo cada vez que le llegue una imagen filtrada, el método anterior llamado enmarcamiento de caracteres nos pasara en cada ciclo, una lista de N áreas o subimagenes q tendremos q tratar.
+\item El ocr ira letra por letra (subimagenes) calculando sus 12 valores y comparándolos con los valores de las letras de la base de datos.
+\item Aquel carácter de la base de datos cuyos valores sean mas parecidos, es decir, generen menor error, será el que asignemos a esa subimagen. Es decir a cada subimagen se le asocia un carácter ASCII.
+\item Así con toda la lista de N subimagenes lo q generara una lista de N caracteres ASCII. Es decir una cadena de texto.
+\item La función anterior de enmarcamiento como dijimos infería por la distancia entre áreas si había o no espacio entre letras, esta información se la pasa al reconocedor que la utiliza sobre la cadena de texto, poniendo o no espacios en blanco.
+\item Así ya tenemos una cadena de texto formada por palabras. Palabras cuyas letras serán las que menos error han cometido según el método utilizado.
+\end{itemize} 
+
+Por tanto este método asegura el reconocimiento de caracteres a distinto tamaño y en formatos distintos (no cursiva). 
+
+La orientación del mensaje se resuelve dentro del modulo de filtro anterior, con la función de rotación.
 
 \subsection{Análisis morfoLexico}
 Muchas veces a causa del ruido del filtrado o por el formato de las letras, el OCR no asocia el carácter ASCII correcto a la subimagen, por ejemplo puede confundir la letra 'N' con la 'H', ya que en algunos casos aunque lo que hayamos querido expresar en la imagen era una 'N' la 'H' genera menos error. 
