@@ -1,5 +1,7 @@
-\chapter{Filtros}
+\chapter{Módulo de Filtro}
+\label{filtro_label} 
 
+\section{Introducción}
 La visión artificial es el proceso sensorial más complejo de todos.
 Las tareas en visón por computador se pueden enumerar en:
 \begin{enumerate}
@@ -37,15 +39,153 @@ La capacidad visual del robot, dependerá de los módulos de visión que estén acti
 \bigskip 
 
 Por tanto los únicos medios para comunicarse con el robot son guantes y carteles especiales, de momento.
-\bigskip 
 
+\bigskip 
 Son especiales por su color. La razón de utilizar colores especiales ha sido crear en las imágenes capturadas, regiones de color con unos rangos de intensidades en los tres colores, mas separadas del resto de intensidades del histograma de la imagen. Así podremos aislar esta región, la del color especial. En el caso de los guantes, es la posición de los dedos la que indica la orden, es en los dedos donde esta el color especial, así que si solo nos quedamos con las regiones de este color y el resto lo despreciamos, estaremos simplificando muchísimo la imagen para un posterior análisis de esta. Lo mismo pasaría con los carteles, desechamos toda la imagen que no forme parte del cartel y dentro del cartel nos quedamos solo con la frase.
-\bigskip 
 
-Filtro de guantes. Seccion \ref{filtro_gestos} (página \pageref{filtro_gestos}).
-
-Filtro de carteles. Seccion \ref{filtro_carteles} (página \pageref{filtro_carteles}).
-\bigskip 
-
+\bigskip
 Los módulos posteriores a los filtros son módulos de análisis que deben de recibir la información lo mas clara posible, en el caso de los gestos se utiliza una red neuronal, la cual tiene que ser entrenada con imágenes muy simplificadas para que el entrenamiento tenga efecto y que las imágenes que reciba una vez entrenada, sean filtradas de la misma manera, para generar imágenes iguales que con las que fue entrenada, para poder reconocerlas. Respecto a los carteles el siguiente modulo es un OCR, muy sensible a ruidos, por tanto hay que asegurar que el filtro es efectivo, para que la salida de este no sea incoherente.
+
+\section{Filtro de gestos}
+Como ya hemos dicho este filtro sirve como preprocesamiento y segmentación de la imagen. Ya que el suavizado reduce los ruidos y la extracción de regiones de color localiza los objetos de interés, con el objetivo de pasarle una información mucho mas comprensible y simplificada a la red neuronal.
+\bigskip 
+Los gestos al robot se realizan con la ayuda de 2 guantes, uno para la mano izquierda que dará las ordenes y otro para la derecha que indicará los parámetros de dichas ordenes.
+
+Cada guante tiene en la punta de los dedos unos marcadores de color especial, un color que no se encuentre formando parte del entorno (colores muy llamativos con una textura que no generé brillos o sombras). 
+
+\bigskip 
+Se determinaron una conjunto de ordenes, las justas para que un objeto pueda describir cualquier trayectoria sobre una superficie plana. Concluimos que estas podrían ser únicamente: avanzar y girar. Es necesario decirle la distancia que tiene que avanzar en cada momento, pero como eso no era simple, se introdujo la orden parar, así mientras se mueve el robot tu decides cuando ha recorrido la distancia oportuna y detenerlo con una orden. También se distinguió en la orden girar, entre girar a la izquierda y girar a la derecha. Con esto tenemos 4 tipos de ordenes distintas para dar al robot. Pero aun el robot necesita mas información sobre estas ordenes, como por ejemplo en la orden de giro, con cuantos grados tiene que realizarlo o en la orden de avanzar a cuanta velocidad debe moverse. Siguiendo con el objetivo de la simplicidad en vez de añadir mas gestos diferentes a la misma mano, se utilizo la otra mano, es decir, una mano indicaría las ordenes al robot y otra los parámetros según el tipo de orden. 
+
+Los parámetros son o de velocidad o de grados de giro, la velocidad puede ser nula, medio baja, medio alta o alta y los ángulos de giro pueden ser 0º, 45º, 90º o 180º, es decir, cuatro parámetros en ambos casos, se utilizan los mismos símbolos para velocidad como para giro, por tanto solo existen 4 gestos diferentes que se puedan dar con la mano derecha para expresar los parámetros al robot. 
+
+La coincidencia del numero de gestos utilizados para ordenes y el numero de gestos utilizados para parámetros, simplificara la implementación de la red. Y el hecho de usar los mismos gestos para representar las ordenes con la mano izquierda y los parámetros con la mano derecha, simplificara también el entrenamiento de la red.
+
+\bigskip 
+Los gestos elegidos son diferentes posiciones de los marcadores del guante, lo mas claro posible, para que después del filtrado la red no tenga problema para diferenciar unos símbolos de otros.
+
+Los marcadores son las únicas áreas de la imagen que no se eliminaran de la imagen. Estas regiones pasarán a ser blancas y el resto negro. Por tanto repito los gestos tienen que ser los suficientemente distintos unos de otros, para que una vez filtrados, esas zonas blancas puedan diferenciarse a simple vista y saber a que orden se están refiriendo. 
+
+Es en ejecución cuando se decide a través de una ventana proporcionada por el pipeline el color de la imagen a filtrar, así que el color de los marcadores del guante no tienen porque ser fijos, se pueden determinar en cada momento. Eso si, los colores de ambos guantes deben de ser distintos y especificarse que color será el que representa a las ordenes y cual representara a los parámetros.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.2,bb=0 0 320 240]{sinFiltrar.png}
+  \includegraphics[scale=0.4,bb=0 0 160 120]{_orden_parada_17.png}
+  \caption{ La imagen de la izquierda muestra la imagen que le llega al filtro. La de la derecha muestra la imagen una vez filtrada.}
+\end{figure}
+
+Los filtros aplicados para esta simplificación son:
+\begin{itemize}
+\item Suavizado. Por promediado del entorno.
+\item Extracción de regiones por el color.
+\item Centrado de imagen. 
+\end{itemize} 
+
+\subsection{Suavizado de la imagen}
+Difumina la imagen. El suavizado es una transformación de vecindad, donde el valor del nuevo píxel depende de los valores de los píxeles que le rodean. Nuestro método de filtro es un suavizado por el promediado del entorno de vecindad.
+\bigskip 
+
+Se utiliza para la eliminación de ruidos y otros efectos debidos a la cuantización o a perturbaciones. La razón de haber utilizado un suavizado al principio fue para crear un difuminado de la imagen y que futuros filtrados sean mas uniformes. 
+
+Cuando no se aplica, la extracción de regiones posterior no es muy fiable, ya que a causa de la iluminación o de la textura del material utilizado en el color especial, hay zonas del objeto de interés que no tienen el mismo color pudiendo pasar por ejemplo de ser un rojo casi blanco a un rojo casi negro, esta amplitud de color es inadmisible para la extracción de colores, ya que esos píxeles serían considerados fuera de rango y por tanto como elementos del entorno y no como elementos de interés. Esto repercutiría en la red neuronal posterior, la cual tiene que asignar pesos según el valor de los píxeles de entrada, si no podemos determinar unos valores fiables en las imágenes de entrada no se podrá entrenar de forma fiable la red ni poder asegurar un comportamiento seguro en el futuro.
+
+\bigskip 
+Las desventajas de este método son que desdibuja contornos y detalles de forma, pero en nuestro caso concreto esto no tiene relevancia.
+\begin{center}
+\textbf{g(x, y) = $ (\frac{1}{K}) * \Sigma f(n, m) $} 
+\end{center} 
+(sumatorio de 0 a K, siendo K el numero total de puntos de la vecindad)
+
+Método:
+\begin{center}
+Se utiliza una máscara de convolución $ 5x5 \rightarrow  wi = 1/25 $
+\end{center} 
+	 
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.4,bb=0 0 240 160]{arbol1.png}
+  \includegraphics[scale=0.4,bb=0 0 240 160]{arbolSuav.png}
+  \caption{ Imagen original e imagen suavizada.}
+\end{figure}
+
+\subsection{Extracción de regiones de color}
+Como hemos dicho los objetos de interés son las puntas de los dedos, así que tenemos que aislarlas del resto de la fotografía. La forma es delimitar estas regiones y darlas toda la importancia respecto al resto de la imagen.
+
+Queremos que el filtro convierta una imagen capturada por la webcam en una imagen blanca y negra, donde las puntas de los guantes quedaran en blanco y el resto de la imagen en negro. Así la red solamente será entrenada para recibir imágenes con regiones blancas y negras, si hay una sola región de un cierto tamaño implicaría que solo hemos enseñado un dedo del guante, lo que se correspondería con el gesto de avanzar. 
+
+Esto es a lo que llamamos segmentación, ya que estamos localizando los objetos de interés.
+
+\bigskip 
+Por tanto nuestro objetivo es binarizar la imagen basándonos en el hecho de que los píxeles de una determinada región presentan una distribución de intensidad similar, por tanto, a partir del histograma de los niveles en los tres colores, determinamos cual es la zona de dicho histograma y por tanto la región de la imagen.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.5,bb=0 0 280 210]{regoines_histograma.png}
+  \caption{ Ejemplo del histograma de intensidades de una imagen.}
+\end{figure}
+
+\bigskip 
+Basándonos en el modelo de color RGB, se pueden extraer de la imagen aquellas regiones en las que predomine una determinada componente de color.
+
+El método consiste en elegir un determinado predicado y determinar en toda la imagen los píxeles que cumplen dicho predicado. Esos píxeles los marcamos en blanco y el resto en negro, de esta forma obtenemos una imagen binaria. 
+
+\bigskip
+Es difícil determinar cual es el umbral optimo para poder llevar acabo una binarización adecuada. Además debemos tener en cuenta que la iluminación que habrá de unas ocasiones a otras será distinta, esto influye en la manera en que la cámara percibe los colores del entorno, por ejemplo, si hay poca luz los colores serán mas oscuros y lo contrario si hubiera mucha luz, por tanto no hemos podido determinar un umbral fijo porque este será dependiente del entorno.
+
+La interfaz del pipeline genera para cada modulo de filtro una pequeña ventana que permite la elección de un color de las imágenes que están entrando en ese momento por la webCam. De esta manera nos estamos asegurando de seleccionar y fijar el color exacto en esas condiciones del entorno. 
+
+Debido a que las imágenes son a color, al seleccionar un color del entorno, se estarán fijando automáticamente 3 umbrales, uno para el rojo, otro para el verde y otro para el azul.
+
+\bigskip 
+Si las tres componentes del píxel (x,y) están dentro del rango seleccionado, entonces las 3 componentes tomaran el valor blanco (255) y si estan fuera de rango tomaran el valor negro (0). Binarizando así la imagen.
+\bigskip 
+
+Como elegir la tolerancia de este rango. Cuanto mas amplio sea el rango mas cantidad de colores entraran dentro de este. Aunque elijamos el color exacto del entorno que queramos filtrar, si no fijamos bien la tolerancia del rango, la imagen no binarizará las regiones correctas.
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.4,bb=0 0 175 175]{regiones_tol_baja.png}
+  \includegraphics[scale=0.4,bb=0 0 175 175]{regiones_tol_normal.png}
+  \includegraphics[scale=0.4,bb=0 0 175 175]{regiones_tol_alta.png}
+  \caption{ Extracción de una región de color de una imagen con tolerancia baja, media y alta.}
+\end{figure}
+
+\subsection{Centrado de la imagen}
+Los gestos realizados con los guantes nunca son capturados por la webcam en la misma posición. Nunca estarán totalmente centrados, si no ligeramente o totalmente desplazados mas a la derecho o mas a la izquierda, arriba o abajo. Esto es de vital importancia para la red, ya que entrena y reconoce en relación a los valores de los píxeles de la imagen, si aprende que el símbolo de avanzar es una región blanca sobre un fondo negro situada siempre en el centro de la imagen, cuando este en fase de reconocimiento y la webcam capture un gesto desplazado, la red lo considerara como gesto no reconocido.
+Otra opción podría ser entrenar la red para que reconociese el mismo gesto en cualquier posición, pero eso no podría nunca servir en el entrenamiento, y que los pesos no terminarían nunca de fijarse, ya que el píxel (x,y) si esta blanco para unas imágenes se considerara como ejemplo de entrenamiento positivo, para otras se considerara negativo y los pesos no podrán ajustarse. Por tanto hay que intentar conseguir que las regiones de interés extraídas estén siempre situadas mas o menos en la misma zona de la imagen. Para eso decidimos que la mejor forma de hacer esto era centrar la imagen según el centro de masas del conjunto de píxeles de interés.
+
+\bigskip
+Todos los píxeles cuyo color esté dentro de este rango, formaran un conjunto. El conjunto de las coordenadas cartesianas de estos píxeles dentro de la imagen.
+
+Vamos a llamar centro de masas (c. m.), a la media de las coordenadas de todos los píxeles que forman el conjunto, de esta manera el centro de masas será la coordenada de un píxel que puede o no pertenecer al conjunto, pero que representa el centro de la mayor concentración de elementos de este.
+La coordenada x será la media aritmética de todas las coordenadas x de este conjunto y lo mismo con la y.
+\bigskip 
+
+$ X = \frac{\Sigma x_{i}}{k} $ , desde i=1..k, siendo k el cardinal del conjunto y $ \forall x_{i} \epsilon conjunto $.
+
+$ Y = \frac{\Sigma y_{i}}{k} $ , desde i=1..k, siendo k el cardinal del conjunto y $ \forall y_{i} \epsilon conjunto $.
+\bigskip 
+
+El objetivo es centrar el centro de masas dentro de la imagen. Así estaremos centrando la región de interés. El centrado implica un desplazamiento de todos los píxeles de la imagen.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.3,bb=0 0 308 201]{centrado.png}
+  \includegraphics[scale=0.3,bb=0 0 308 201]{centrado2.png}
+  \includegraphics[scale=0.3,bb=0 0 308 201]{centrado3.png}
+  \includegraphics[scale=0.3,bb=0 0 308 201]{centrado4.png}
+  \caption{ Imagen en blanco y negro. El color elegido será el negro. La 2º imagen muestra cual sería la coordenada que representa el centro de masas del conjunto de píxeles negros. La 3º cual seria el desplazamiento. Y la 4º el resultado del centrado.}
+\end{figure}
+
+Si la posición del c. m. no esta en el centro de la imagen. La distancia que hay que desplazar la imagen es el modulo entre el punto central de la imagen y el punto del centro de masas. Por tanto movemos todos los píxeles de la imagen n posiciones verticalmente y m posiciones horizontalmente para cuadrar el c. m. con el centro de la imagen. En este proceso hay píxeles de la imagen original que se pierden y otros que se crean y no tienen un valor concreto, estos serán creados con el color del entorno, ya que se supone que no son de interés.
+
+\bigskip 
+Así siempre las regiones blancas que representan los gestos aparecen centrados en la imagen sobre un fondo negros, totalmente preparados para ser pasados a la entrada de la red neuronal.
+
+\subsubsection{Curiosidad del centrado}
+El centrado tiene otra utilidad. Debido a que necesita hacer el calculo de cuantos píxeles cumplen la propiedad de estar dentro del rango de color, si resulta que no hay en toda la imagen ninguno que la cumpla, el método no devuelve la imagen centrada, si no que devuelve NULL. Tal y como esta implementado el pipeline si un modulo saca como estructura de datos un puntero a NULL, las siguientes operaciones que se realizarían sobre esta estructura dejan de hacerse, esto aumenta la velocidad del programa si no hay gestos o carteles frente al robot, ya que disminuye en gran cantidad el numero de instrucciones realizadas. Se podría decir que el centrado es un detector de objetos de interés que mantiene al pipeline en \textit{stand by} mientras que no se detecten objetos frente a la cámara.
+
+\section{Filtro de carteles}
+
+\section{Código}
+Ver anexo: documentación del módulo de filtro\_gestos.c, en \ref {filtro_code} (página \pageref{filtro_code}).
 
