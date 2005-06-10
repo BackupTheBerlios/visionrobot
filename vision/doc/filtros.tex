@@ -74,7 +74,7 @@ Es en ejecución cuando se decide a través de una ventana proporcionada por el pi
   \caption{ La imagen de la izquierda muestra la imagen que le llega al filtro. La de la derecha muestra la imagen una vez filtrada.}
 \end{figure}
 
-Los filtros aplicados para esta simplificación son:
+Las fases de este filtro son:
 \begin{itemize}
 \item Suavizado. Por promediado del entorno.
 \item Extracción de regiones por el color.
@@ -185,6 +185,159 @@ Así siempre las regiones blancas que representan los gestos aparecen centrados e
 El centrado tiene otra utilidad. Debido a que necesita hacer el calculo de cuantos píxeles cumplen la propiedad de estar dentro del rango de color, si resulta que no hay en toda la imagen ninguno que la cumpla, el método no devuelve la imagen centrada, si no que devuelve NULL. Tal y como esta implementado el pipeline si un modulo saca como estructura de datos un puntero a NULL, las siguientes operaciones que se realizarían sobre esta estructura dejan de hacerse, esto aumenta la velocidad del programa si no hay gestos o carteles frente al robot, ya que disminuye en gran cantidad el numero de instrucciones realizadas. Se podría decir que el centrado es un detector de objetos de interés que mantiene al pipeline en \textit{stand by} mientras que no se detecten objetos frente a la cámara.
 
 \section{Filtro de carteles}
+Los carteles son señales al igual que los gestos percibidos visualmente por el robot. Llevan impresos mensajes, ya sean ordenes, operaciones aritméticas o preguntas sobre datos que el robot posea en su base de datos. Este debe ser capaz de desechar toda la información de la imagen excepto este mensaje.
+
+Es aquí donde se nos planteó la duda de como resolver este problema, como enseñar al robot a desechar todos los píxeles de la imagen excepto aquellos píxeles negros que forman parte de la región de las letras que forman el mensaje. Hubo distintas soluciones al problema, pero la que mejor ha funcionado es la de crear unos carteles de un color especial, es decir, de un color que no suela encontrarse en el entorno y el mensaje de este impreso en letras negras.
+
+Por tanto ya existe una característica que diferencia a los píxeles del mensaje del resto, y es que son lo únicos píxeles negros rodeados en todas sus direcciones por píxeles con la intensidad propia del color especial. En resumen este filtro lo que hace es binarizar la imagen, el objetivo perseguido es parecido al del filtro de los guantes, sen intenta binarizar la imagen dejando a un color lo importante y en otro color lo que no nos interesa. La diferencia es que el procesamiento llevado a cabo en este filtro es mas complejo que en el de los guantes, requiere pasar por mas fases de procesamiento.
+
+Así pues este filtro convertirá imágenes que contengan un cartel con un mensaje X en una imagen blanca con el mensaje negro centrado, horizontal y con el menor numero de ruidos, también asegura no filtrar la imagen si no se percibe ningún cartel o si este no esta al 100x100 dentro del campo de visión. 
+
+Todo esto son medidas de seguridad para facilitar el futuro análisis del mensaje por parte del OCR, evitando posibles fallos de este y que sea lo mas fiable posible.
+\bigskip 
+
+Estos son ejemplos del filtro. Las imágenes sin cartel no serán procesadas ni pasadas al OCR, para evitar fallos y operaciones innecesarias.
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.4,bb=0 0 253 203]{cartel.png}
+  \includegraphics[scale=0.4,bb=0 0 253 203]{cartel2.png}
+  \caption{ 1º Simulación de la captura de un cartel. 2º resultado de filtrar la imagen.}
+\end{figure}
+
+Ejemplos de mensajes dentro de un cartel:
+\begin{itemize}
+\item Ordenes y parámetros:
+	Avanzar MediaAlta, Parar, Girar 90, ...
+\item Operaciones aritmético-lógicas:
+	(150mod15)/5, (true and false), ...
+\item Preguntas a su base de datos:
+	Nombres creadores, ...
+\end{itemize} 	
+
+Las fases de este filtro serían estas:
+\bigskip
+
+  if( not BORDES and CENTRAR and ESQUINAS)
+
+     ROTAR
+
+     ESQUINAS
+
+     EXTACCION DE REGIONES
+
+     OPERACIÓN DE CIERRE
+
+  end if;
+
+\subsection{Bordes}
+En este proyecto hay un factor que siempre tenemos en contra y es el tiempo. Hay que recordar que la captura, procesamiento y análisis de las imágenes se hacen en tiempo real, si la captura de imágenes se hace cada X milisegundos hay que asegurarse que todas las operaciones que se deban de realizar tardan menos que ese intervalo. Por tanto los filtros no solo tienen el deber de procesar la imagen si no también de mejorar el rendimiento del programa.
+
+Por ello son utilizados como sensores de detección de ciertos objetos, en este caso de carteles. 
+
+Esta fase es una función que recibe una imagen de entrada y detecta si la imagen esta completamente dentro del campo de visión o solamente en parte, si solo ha sido capturado parte del cartel, el mensaje puede que no haya salido entero por tanto carecería de sentido y no seria valido. Si el cartel ha sido capturado en su 100x100 devuelve cierto si no falso. Al devolver falso el resto de operaciones de filtro sobre el cartel se dejan de hacer y se pasa NULL al modulo de OCR para que tampoco realice ninguna operación, mejorando por tanto la eficiencia del programa, ya que solamente realizara operaciones cuando detecte carteles enteros.
+
+La idea para implementar este función es simple, solo hay que buscar píxeles cuya intensidad este dentro del rango de color especial del cartel si existe alguna región de estos píxeles en el borde de la imagen capturada implica que el cartel no ha sido capturado en su totalidad.
+
+\subsection{Centrar}
+Esto significa centrar el cartel dentro de la imagen. La imagen quedara desplazada lo necesario para que el cartel se encuentre justo en el medio y por tanto también lo estará el mensaje. Esto no aporta valor añadido al posterior análisis por parte del OCR, sirve para asegurar la integridad del mensaje en las siguientes fases del filtro, además sirve como al igual que en el filtro de los gesto y como la función anterior de BORDES, como un sensor. El anterior detectaba si el cartel estaba entero y este si existe cartel dentro de la imagen.
+
+El centrado en su implementación cuenta el numero de píxeles de color especial, es decir, del cartel. Haciendo una media aritmética de sus posiciones, por esto si se da el caso en que el numero de píxeles de este color detectados es igual a cero implica que no hay cartel y por tanto que las siguientes operaciones que se realicen sobre la imagen no tiene sentido al igual que la ejecución del OCR, por tanto como la función BORDES, CENTRAR devuelve NULL si no hay cartel en la imagen, acelerando la ejecución del programa y si resulta que hay cartel, entonces devuelve la imagen centrada.
+
+El método utilizado es el mismo que en centrado del filtro de gestos.
+
+\subsection{Esquinas}
+Esta función hace un barrido de la imagen sabiendo ya que existe un cartel en ella, con el objetivo de encontrar la cuatro esquinas de este. Las esquinas son coordenadas cartesianas, cuyo conocimiento es de gran utilidad para realizar una posible rotación del cartel, para la extracción de regiones y como sensor.
+
+\begin{itemize}
+\item Respecto a la rotación:
+
+Con saber la posición de al menos dos esquinas contiguas de las cuatro del cartel podemos conocer cuantos grados esta inclinado el cartel, dentro de la imagen. Ya que dos puntos forman un vector, solo hay que calcular el ángulo que forma este vector con algún eje de coordenadas y sabremos cuanto esta inclinado el cartel, para su posterior rotación.
+\item Respecto a la extracción de regiones: 
+
+Conocer las esquinas es conocer los limites de lo que nos interesa y de lo que no, ya sabemos que todo lo que este fuera de las esquinas es desechable y lo que queda dentro es necesario procesarlo. 
+\item Respecto al sensor:
+
+Conocer al menos tres esquinas, es conocer tres coordenadas y por tanto eso nos permite crear dos vectores. Un vector es un lateral del cartel y el otro la base, sabiendo esto si el ángulo que existe entre esos vectores es un ángulo recto, significa que lo que se esta detectando es un cartel, si no cumple esta propiedad es que se ha detectado un objeto del color buscado, pero no es un cartel. Esto evita pasarle al OCR posible información sin sentido que podría generar fallos en el programa principal.
+\end{itemize} 
+
+\subsection{Rotar}
+Como ya hemos dicho el análisis siguiente a este procesamiento es llevado a cabo por el OCR, este es un modulo implementado de tal forma que no es sensible al tamaño y en cierta medida al formato de los caracteres, pero si que es sensible cuando estos se encuentran rotados. Muchas veces el robot detectara y procesara carteles que no están completamente horizontales, lo que provocaría fallos en el OCR, por tanto es necesario rotar la imagen lo necesario para que el cartel quede horizontal. Con la función anterior de las esquinas ya sabemos cuantos grados esta girado el cartel, solo hay que pasarle a esta función como parámetros la imagen y los grados a girar.
+
+\bigskip
+Esta transformación implica un cambio en la disposición y distribución de los píxeles respecto de un sistema de coordenadas.
+
+Para estas tres transformaciones elementales, es necesario hacer una interpolación a la imagen resultante. A efectos de notación, la imagen original tendrá coordenadas (i, j) y la imagen resultante coordenadas (x, y). Estas coordenadas están asociadas a un determinado sistema de referencia, que es preciso establecer con su origen y su convenio de ejes.
+
+Vamos ha utilizar coordenadas homogéneas ya que permiten realizar la rotación mediante el uso de matrices.
+
+\bigskip
+La transformación de rotación consiste en que para cada píxel de la imagen original se calcula su correspondiente píxel de la imagen destino. Una vez sabemos la posición del píxel le asignamos a este la misma intensidad que el de la original. Este sistema puede producir una imagen destino rotada con muchos píxeles en blanco, es decir, píxeles que no se asocian con ninguno de la original siguiendo la matriz de transformación vista.
+La única forma de asignar un valor de intensidad a todos los píxeles de la imagen destino, es hacer la transformación inversa, donde en vez de hallar el píxel destino (x, y) a partir de un píxel (i, j), hallamos el píxel (i, j) a partir del (x, y). Ahora podemos recorrer toda la imagen destino viendo cual es el píxel origen asociado a él y asignarle así su intensidad, sin que queden píxeles sin color asignado. Ahora puede que varios píxeles destino compartan el mismo píxel origen, pero eso es menos grave que ver una imagen rotada con casi un tercio de espacios en blanco.
+
+\bigskip
+La rotación en sentido opuesto viene dada por la siguiente transformación:
+
+$ i = x.cos\theta - y.sen\theta $
+
+$ j = -x.sen\theta + y.cos\theta $
+
+(i, j) es un píxel de la imagen origen y (x, y) uno de la imagen destino.
+
+\bigskip
+Los píxeles de la imagen resultante que tras el calculo se les asigna un píxel de la imagen original que se sale de rango, se le asigna una intensidad correspondiente con la del entorno. En el ejemplo anterior se les asigno el color negro.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.4,bb=0 0 250 188]{no_rotada.png}  
+  \includegraphics[scale=0.3,bb=0 0 291 247]{rotada.png} 
+  \caption{ Ejemplo del funcionamiento del algoritmo de rotación.}
+\end{figure}
+
+\subsection{Extracción regiones}
+Esta parte es similar a la utilizada en el filtro de gestos. Solo que aquí no nos interesan las regiones de color especial, si no ciertas regiones rodeadas de este color especial, que en este caso serán los caracteres del mensaje.
+
+La extracción de regiones binariza la imagen convirtiendo a un color la región buscada y a otro el resto de la imagen, las regiones del mensaje pasaran a negro y el resto a blanco, como en el ejemplo anterior. 
+
+La función ESQUINAS se realizara otra vez después de la rotación (si esta ha sido necesaria) ya que la posición de estas dentro de la imagen habrá cambiado. Como ya hemos dicho antes, saber las coordenadas de estas esquinas nos informa de que área de la imagen es necesario filtrar y cual directamente es considerada como región no extraíble y puesta directamente a color blanco, en este caso será toda aquella región que quede fuera del cartel.
+
+La extracción de regiones propiamente dicha se realizara por tanto dentro del área de la imagen perteneciente al interior del cartel. Las regiones que se extraerán serán aquellos píxeles que cumplan la propiedad de ser oscuros rodeados en todas sus direcciones por color especial. 
+
+\subsection{Operacion morfológica}
+Después de todas las operaciones anteriores realizadas sobre la imagen los caracteres del cartel puede que hayan quedado dañados, es decir, como si se hubieran erosionado, perdiendo suavidad en sus bordes o incluso dejar un mismo carácter separado en regiones distintas.
+
+Nuestro cerebro tiene la necesidad de encontrar sentido a lo que ve y a unificar figuras inacabadas, pero esta cualidad no la tiene el OCR, si este detecta regiones separadas las tratara como distintos caracteres y buscara el carácter mas aproximado a estas, lo cual sería un error. Es necesario por tanto juntar regiones que hayan quedado separadas y rellenar huecos de los caracteres del mensaje para asegurar por tanto una mejor comprensión del mensaje.
+
+La operación morfológica realizada sobre la imagen es una operación de cierre para rellenar los caracteres.
+
+\bigskip
+Las operaciones morfológicas simplifican las imágenes y preservan las formas principales de los objetos. La morfología puede utilizarse para suavizar bordes de una región, separar regiones que el proceso de segmentación presenta unidas o como en nuestro caso unir regiones que fueron separadas durante la segmentación.
+
+Una transformación morfológica $ \theta $ viene dada por una relación de la imagen (conjunto de puntos X) con otro pequeño conjunto de puntos B, llamado elemento estructural. B se expresa con respecto a un origen local O (llamado punto representativo o punto de vista director). 
+
+La transformación morfológica $ \theta(X) $ aplicada a la imagen X significa que el elemento estructural B se desplaza por toda la imagen. Suponiendo que B se posiciona sobre algún punto de la imagen, el píxel de la imagen correspondiente al punto representativo O de B se denomina píxel actual. El resultado de la relación entre la imagen X y el elemento estructural B en la posición actual se almacena en el píxel actual de la imagen.
+
+\subsubsection{Dilatación}
+La dilatación es una operación isotrópica ya que se comporta igual en todas las direcciones y expansiona el objeto un píxel. Esta operación en ocasiones se denomina rellenado o crecimiento.
+La dilatación con un elemento estructural 3x3 isótropo puede interpretarse como una dilatación que cambia todos los píxeles de fondo que son vecinos al objeto.
+Gráficamente la dilatación se realiza como sigue: se va recorriendo la imagen por ejemplo de izquierda a derecha y de arriba abajo y, donde nos encontremos un 1, situamos el origen del elemento estructural; en esa posición se realiza la unión del elemento estructural con la parte de la imagen sobre la que se solapa dicho elemento, marcando todos los píxeles de esta parte de la imagen con los valores del elemento B.
+
+\subsubsection{Erosión}
+La erosión re realiza de forma parecida a la dilatación solo que cuando recorriendo la imagen original, nos encontramos un píxel con valor 1, aplicamos el elemento estructural no para asignarle sus valores  a la imagen destino, si no como comparación. Si todos los píxeles del elemento B coinciden con los valores de los píxeles de la región de la imagen entonces ponemos el valor de píxel de la imagen destino con valor 1, si no con valor 0.
+Se puede apreciar la desaparición de muchos contornos existentes en la imagen original. La erosión es denominada como reducción, utilizada para simplificar la estructura de los objetos, ya que los objetos con anchos pequeños desaparecen , por tanto, objetos complicados pueden descomponerse en otros mas simples.
+
+\subsubsection{Apertura y Cierre}
+LA erosión y la dilatación son transformaciones no invertibles. Si una imagen es erosionada y luego dilatada, la imagen original no se recupera. En efecto, el resultado es una imagen mas simplificada y menos detallada que la original.
+La erosión seguida de una dilatación crea una transformación morfológica denominada apertura. La dilatación seguida de una erosión crea una transformación llamada cierre.
+La apertura y el cierre con un elemento estructural isótropo se utiliza para eliminar detalles específicos de la imagen mas pequeños que el elemento estructural. La forma global de los objetos no se distorsiona.
+El cierre conecta objetos que están próximos entre sí, y rellena pequeños huecos y suaviza el contorno del objeto rellenando pequeños valles, mientras que la apertura produce el efecto contrario. Los conceptos de pequeño y próximo están relacionados con la forma del elemento estructural.
+
+\begin{figure}
+  \centering
+  \includegraphics[scale=0.4,bb=0 0 275 215]{original.png}
+  \includegraphics[scale=0.4,bb=0 0 275 215]{binarizada.png}
+  \includegraphics[scale=0.4,bb=0 0 275 215]{cierre.png}
+  \caption{ Original. Binarizada segun un umbral. Y ejemplo de cierre sobre esa imagen.}
+\end{figure}
 
 \section{Código}
 Ver anexo: documentación del módulo de filtro\_gestos.c, en \ref {filtro_code} (página \pageref{filtro_code}).
