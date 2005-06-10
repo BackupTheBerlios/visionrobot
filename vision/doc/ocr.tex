@@ -1,32 +1,99 @@
-\chapter{OCR}
+\chapter{Módulo de OCR}
+\label{ocr_label} 
 
+\section{Introducción}
 Reconocimiento Óptico de Caracteres, Optical Character Recognition.
+
 Es el modulo encargado de deducir el mensaje que pueda haber en una imagen en formato bmp y convertirlo en un mensaje formado por caracteres ASCII.
 
+\bigskip
 Como entrada recibiría una imagen de este estilo:
-\begin{figure}
+\begin{figure}[h]
   \centering
-  \includegraphics[width=1.67cm,height=1.24cm,bb=0 0 63 47]{dib_ana_morf.eps}
-  \caption{ dib_ana_morf.png}
+  \includegraphics[scale=0.4,bb=0 0 254 180]{dib_ana_morf.png}
+  \caption{ Imagen recibida desde modulo filtro.}
 \end{figure}
 Y como salida devolvería la cadena de texto: ``texto prueba''.
 
-La cámara cada intervalo de tiempo hace capturas de su entorno, si dentro de este existe algún cartel, la imagen será filtrada y se pasara al modulo OCR para que la analice, la salida de este modulo que como ya hemos dicho es una cadena de texto se pasará a un modulo DCG Gramática de Cláusulas Definidas que realizará sobre el mensaje un análisis sintáctico-semántico, después el robot generará la respuesta correspondiente. En caso de que sea una orden u operación aritmético-lógica la realizara y en caso de que se una pregunta y conozca la respuesta, la responderá.
+\bigskip
+La cámara, cada intervalo de tiempo hace capturas de su entorno, si dentro de este existe algún cartel, la imagen será filtrada y se pasara al modulo OCR para que la analice, la salida de este modulo que como ya hemos dicho es una cadena de texto que se pasará a un modulo DCG Gramática de Cláusulas Definidas la cual realizará sobre el mensaje un análisis sintáctico-semántico, después el robot generará la respuesta correspondiente. En caso de que sea una orden u operación aritmético-lógica la realizara y en caso de que se una pregunta y conozca la respuesta, la responderá.
 
+\bigskip
 El lenguaje natural es una forma de comunicación imprecisa y ambigua que se apoya en el conocimiento compartido por los que se comunican. Además el lenguaje natural está en continua expansión y permite expresar una misma idea de muchas formas. Gran dificultad debido a que el lenguaje es algo vivo: expansión, modificación, etc. Con ambigüedad léxica, sintáctica, semántica y referencial. Es por lo que el tratamiento del lenguaje natural suele requerir de 4 fases: Un análisis morfo-léxico, otro sintáctico, otro semántico y otro pragmático. El primero esta implícito dentro de este modulo, los dos siguientes se encuentran dentro del modulo de la DCG. 
+
 Es decir, no solo se analiza la imagen para sacar el mensaje del cartel, si no que también se hace un análisis del mensaje.
 
+\bigskip
 Como vemos en el ejemplo, la imagen esta binarizada formada por regiones negras que son los caracteres a reconocer, es decir, a asociarles un carácter ASCII, y por regiones blancas que forman el fondo. Son las regiones negras por tanto las áreas de la imagen en las que nos debemos centrar. 
+
 Se puede decir que el análisis no se realiza sobre la imagen global si no sobre un conjunto de pequeñas subimagenes de esta, donde se encuentran los caracteres. Para cada subimagen se hace un reconocimiento de patrones. La región negra de la subimagen se puede describir según su frontera y la distancia relativa desde de puntos concretos de esta hasta puntos de los limites de la subimagen, esta definición es un patrón. Gracias a una base de datos que guarda los patrones de cada carácter y su valor ASCII, se puede establecer una asociación entre una región con un valor ASCII gracias a una aproximación de patrones, con aproximación me refiero a que se elige el que mas se acerque con la descripción de su frontera a algún patrón de la base de datos.
+
 Como resultado el OCR nos da una cadena de caracteres que a veces tiene caracteres erróneos debido al ruido del filtrado u otras razones. La cuestión es que existe la posibilidad de que las palabras que salgan de este modulo no existan y carezcan de sentido, por eso se realiza posteriormente al reconocimiento de patrones una corrección ortográfica llevada a cabo por un analizador morfo-léxico.
 
-Por tanto la actividad del OCR pasa por 3 fases:
+\section{Diseño}
+La actividad del OCR pasa por 3 fases:
 \begin{enumerate}
-\item Enmarcación de los caracteres de la imagen. \ref {Enmarcado de Caracteres} (página \pageref{Enmarcado de Caracteres}).
-\item Reconocimiento de patrones. \ref {Reconocimiento de patrones} (página \pageref{Reconocimiento de patrones}).
-\item Análisis morfo-léxico. \ref {Analisis Morfo-Lexico} (página \pageref{Analisis Morfo-Lexico}).
+\item Enmarcación de los caracteres de la imagen.
+\item Reconocimiento de patrones. 
+\item Análisis morfo-léxico. 
 \end{enumerate} 
 
-\section{Codigo Ocr}
-Código del modulo OCR, en \ref {codigo_ocr} (página \pageref{codigo_ocr}).
+\subsection{Enmarcación de los caracteres}
+El análisis de la imagen se podría decir que sigue un esquema parecido al método divide y vencerás, ya que no intenta estudiar toda la imagen a la vez devolviendo la cadena de caracteres que contiene, si no que divide el problema de complejidad muy alta en subproblemas mas pequeños de igual tamaño y que no se solapen entre si, es decir, dividen la imagen en pequeñas subimagenes mas simples. 
 
+El análisis se realizara para cada una de las subimagenes. Estas ocupan un cierto área dentro de la imagen global, para ello hay que calcular en que región se encuentra cada carácter y almacenar este área, para su posterior análisis como una imagen independiente, imagen que solo contendrá un carácter en negro sobre un fondo blanco. Posteriormente a cada subimagen se le asociará el carácter ASCII que mas se aproxime a la morfología de las fronteras que forman su región negra. 
+
+Una vez hemos resuelto los subproblemas y tenemos los caracteres, solo queda unirlos formando palabras y estas formando frases, para ello será necesario hacer un calculo de las distancias entre las áreas, que nos darán la información de si existen espacios en blanco entre estos caracteres o no.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.4,bb=0 0 256 203]{cartel2.png}
+  \caption{ Ejemplo de una imagen de entrada al módulo.}
+\end{figure}
+
+El método de enmarcado es muy sencillo. Se realiza un barrido de arriba a abajo explorando todos los píxeles de cada fila como un solo bloque. 
+Vamos a llamar fila negra aquella que contenga uno o mas píxeles negros, es decir, existen caracteres que intersecan con la fila, y llamaremos fila blanca a aquella cuyos píxeles son todos blancos, es decir, que no hay caracteres que intersequen a esta. Como muestra la fotografía, las imágenes ya llegan binarizadas donde los caracteres son negros y el fondo es blanco, por eso si hacemos un barrido de arriba hacia abajo iríamos encontrando al principio filas blancas hasta encontrar una primera fila negra (el caso de que no haya ninguna fila negra en toda la imagen no se puede dar ya que el filtro cuando no hay caracteres, no pasa la imagen al OCR y este no hace nada) entonces sabríamos que esta es la coordenada Y de la parte superior de la primera línea de caracteres. Debido a que el mensaje fue rotado en el filtro para que fuese horizontal, lo suyo es que a partir de ahora todas las líneas sean negras hasta encontrar una blanca que representara la coordenada Y de la parte inferior de la primera línea de caracteres, por tanto ya tendríamos delimitados los puntos superior e inferior de los caracteres de la primera línea, continuamos con el mismo método para el resto de la imagen. Vamos almacenando las coordenadas Y que nos vamos encontrando superior e inferior para cada línea.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.5,bb=0 0 256 203]{enmarcado1.png}
+  \caption{ 1º delimitar las lineas del texto.}
+\end{figure}
+
+Ahora nos queda por saber cuales son las fronteras laterales para cada carácter. El esquema anterior, para hallar los laterales no es útil cuando el mensaje ocupa mas de una línea, ya que en una línea puede haber un carácter en la posición X donde en otra línea en esa posición X hay un espacio, por tanto consideraría que en las dos líneas hay un carácter y en futuro se estudiara una región que contiene un espacio creyendo que dentro hay un carácter.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.5,bb=0 0 256 203]{enmarcado2.png}
+  \caption{ Este sistema fallaría.}
+\end{figure}
+
+Es necesario realizar un barrido vertical de izquierda a derecha no para toda la imagen si no entre la coordenada Y superior y la inferior da cada una de las líneas de caracteres antes calculada. Así iremos hallando las coordenadas X laterales izquierda y derecha para cada carácter.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.5,bb=0 0 256 203]{enmarcado3.png}
+  \caption{ Sistema correcto.}
+\end{figure}
+
+Ya tenemos los datos mas importantes, ahora para definir un área rectangular solo es necesario guardar 2 coordenadas, por ejemplo la superior izquierda y la inferior derecha, por eso para cada carácter utilizando los valores ya calculados le asociados 2 coordenadas que definirán su área. Esta lista de pares de coordenadas será utilizada en la próxima función de estudio de la morfología del carácter para que sepa que regiones de la imagen debe analizar.
+
+\bigskip
+Aun nos quedaría un pequeño problema y es que dentro de una fila hay caracteres mas altos que otros, por ejemplo la 'o' es mas baja que la 'L', y para el posterior análisis nos interesa que las fronteras para cada carácter estén totalmente ajustadas a lo que realmente ocupa. Hay que reajustar las coordenadas de cada carácter acercándolas aun mas a este, este reajustamiento solo afecta a las coordenadas Y que son las que pueden estar desajustadas, el método para ello es igual al utilizado para calcular los limites laterales. Ahora a partir de los limites laterales reajustamos para cada carácter las fronteras superiores e inferiores.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.5,bb=0 0 256 203]{enmarcado4.png}
+  \caption{ Regiones de cada letra finalmente delimitadas.}
+\end{figure}
+
+Ya sabemos que regiones ocupa cada carácter dentro de la imagen, sabemos que distancia existe entre cada región. Esta información nos permite deducir si esa distancia es un espacio entre palabras o entre letras. Esto es muy útil ya que cuando a cada región le asociemos un carácter ASCII tendremos una lista de caracteres, pero no sabremos que palabras forman. Por ejemplo, si sabemos que entre el carácter 6 y el 7 existe un espacio grande entre sus regiones esto será que el carácter 6 y el 7 pertenecen a palabras distintas. 
+
+Para esto hacemos la media aritmética de los espacios entre regiones contiguas sin contar las contiguas que están en distintas líneas, aquellos espacios entre regiones que estén por encima de la media serán espacios en blanco en el mensaje. Los espacios se representan como una cadena de booleanos de longitud igual al numero de regiones menos uno, que valdrá falso si entre dos regiones no se considera que exista espacio y cierto en caso contrario.
+
+\subsection{Reconocimiento de patrones}
+
+\subsection{Análisis morfoLexico}
+
+\section{Código}
+Ver anexo: documentación del módulo de filtro ocr.c y ocr\_code.c, en \ref {ocr_code} (página \pageref{ocr_code}).
