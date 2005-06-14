@@ -1,4 +1,4 @@
-\chapter{Estado del arte}
+\section{Estado del arte}
 
 
 %\section{Punto de partida}
@@ -8,13 +8,13 @@
 %\section{Aportaciones propias}
 
 
-\section{Entornos 3D}
+\subsection{Entornos 3D}
 
-\subsection{Introducción}
+\subsubsection{Introducción}
 
 En los últimos tiempos se ha producido un avance increíble en el desarrollo de aplicaciones que hacen uso de la tecnología gráfica 3D para representar entornos interactivos que puedan ser explorados por el usuario. En el año 1995 se produjo un hito en la tecnología de las tarjetas gráficas al aparecer por primera vez en el mercado placas capaces de realizar cálculos 3D de forma optimizada. Marcas como 3Dfx con su chip Voodoo fueron las pioneras en este sector. Gracias a este avance, se produjo una revolución en el campo de los videojuegos así como en otros sectores que hacían uso de los gráficos tridimensionales. A partir de ese momento, la escalada en la evolución de los chips gráficos fue constantes, habiendo alcanzado hoy en día una situación en la que la tecnología (nº de transistores, velocidad de memoria, ancho de banda, etc) de los chips gráficos está a la par e incluso supera a la de los chips principales de un computador(CPU). Sin embargo, esta incremento en la capacidad de cálculo no hubiera sido suficiente para alcanzar los niveles actuales de realismo en las aplicaciones 3D si no hubiera sido por el desarrollo en paralelo de nuevas soluciones algorítmicas que aprovecharan este nuevo potencial emergente. De esta manera se han realizado innumerables avances en las técnicas de computación gráfica en campos tan dispares como la representación de terrenos virtuales o las técnicas de animación de modelos. Veamos a continuación una breve enumeración de estas nuevas técnicas.
 
-\subsection{Técnicas principales}
+\subsubsection{Técnicas principales}
 
 Terrenos virtuales: El objetivo de todo algoritmo para representar terrenos es la minimización de la cantidad de triángulos(entidad básica  en el procesamiento de geometría en 3d) que se deben procesar para mostrar dicho terreno con una calidad y fluidez adecuada. Con este precepto han surgido algoritmos como el CLOD, ROAM, Geometrical MipMapping, VDPM, etc.  También es común el uso de técnicas de partición del espacio geométrico tales como el uso de Octrees, Quadtress, BSP y KD-Trees que permiten optimizar el cómputo global de los terrenos así como acelerar los cálculos de colisiones, etc.
 
@@ -26,41 +26,41 @@ Sombreado: Aunque la iluminación de modelos tridimensionales es algo solventado 
 
 Sirva la breve descripción anterior como ejemplo de la enorme cantidad de innovaciones que se han producido en el campo de la computación gráfica en los últimos tiempos. Nos encontramos inmersos en una etapa de expansión constante que la que  cada paso supera con creces los éxitos logrados hasta la fecha. Es por tanto necesario preguntarnos acerca de las futuras tendencias del mundo de la computación 3D.
 
-\subsection{Tendencias futuras}
+\subsubsection{Tendencias futuras}
 
 Desde hace poco tiempo se han instaurado en el mercado nuevas tarjetas graficas con Píxel Shaders. Esta nueva tecnología permite el proceso de las imágenes a nivel de píxel(unidad básica que compone cualquier imagen digital). De esta forma, se está abriendo un nuevo abanico de técnicas para elaborar efectos especiales e incrementar de forma asombrosa el foto realismo de las imágenes tridimensionales. Efectos como iluminación por píxel, normal mapping, parallax mapping,  HDR(High Dymic Range Iluminance), Bloom, Blur, Fressnell Refraction \& Reflexion, y un largo etcétera que empiezan a aparecer en las nuevas aplicaciones y que a buen seguro colmarán todas las que aparezcan en el futuro.
 
 
-\section{Redes neuronales}
+\subsection{Redes neuronales}
 
-\subsection{Introducción}
+\subsubsection{Introducción}
 
 Desde la aparición de las computadoras digitales en los años 40 uno de las investigaciones recurrentes ha sido la implementación de sistemas que intentaran simular los procesos cognitivos de los seres humanos. Se ha tratado de crear modelos para reproducir el comportamiento de las neuronas, ya sea de forma individual o en forma de red interconectada por la denominada sinapsis neuronal. Según avanzaba el estudio en el propio campo de la neurología y se iban ampliando los conocimientos sobre las funciones y estructura del cerebro humano, estos modelos simulados fueron evolucionando, aunque no siempre para ajustarse de forma precisa a lo que los nuevos estudios biológicos desvelaban. En muchos casos se ha optado por simplificaciones o modificaciones respecto al modelo biológico para conseguir una arquitectura práctica a nivel de computación.
 
-\subsection{Comienzos}
+\subsubsection{Comienzos}
 
 La nueva tecnología de computación desarrollada a mediados del siglo veinte posibilitó a varios estudiosos la posibilidad de plasmar los conocimientos sobre el proceso de pensamiento humano en modelos de computación. Entre ellos destaca Frank Rossenblant que implementó el Perceptron. Sin embargo pronto se constató la limitada capacidad del sistema, lo que llevó a que se estableciera un gran pesimismo en este campo de estudio en los años venideros.
 
-\subsection{Esquemas actuales}
+\subsubsection{Esquemas actuales}
 
 A finales de los años 80 hubo un resurgimiento de las redes neuronales, aunque esta vez se primó la aplicación práctica de esta tecnología por encima de la consecución de un modelo que simulara el comportamiento humano. Se establecieron una serie de arquitecturas para las redes neuronales atendiendo a aspectos como el método de aprendizaje o de entrenamiento. De esta forma existen redes de tipo Hamming o Hopfield(peso fijo), de aprendizaje competitivo o de Mapa de Características(entrenamiento no supervisado), y basadas en decisiones, perceptron, ADALINE, modelos temporales dinámicos, etc(entrenamiento supervisado). Gracias a estas nuevas aproximaciones, las redes neuronales se han convertido en una herramienta de uso práctico en multitud de aplicaciones que deben tomar decisiones a partir de cálculos no deterministas como pueden ser el reconocimiento de imágenes o patrones, predicciones bursátiles, diseño de sistemas complejos, etc.
 
-\subsection{Futuro}
+\subsubsection{Futuro}
 
 Parece clara que la tendencia actual de buscar el pragmatismo por encima de la fidelidad en la construcción de las redes neuronales se mantendrá en un futuro. Si bien es cierto que el aumento de la capacidad de computación y la previsible revolución que supondría la introducción de la computación cuántica pude hacer que en años venideros se retome el objetivo de modelar  el complejo cerebro humano utilizando redes neuronales artificiales.
 
 
-\section{Robótica}
+\subsection{Robótica}
 
-\subsection{Introducción}
+\subsubsection{Introducción}
 
 El origen de la robótica se difumina a lo largo de la historia debido a que se trata de un área donde se combinan la ingeniería industrial, electrónica, informática, biología, etc, siendo por tanto complejo determinar el momento histórico cuando nace como tal esta disciplina. Sin embargo podemos asumir que la aplicación práctica y comercial de los robots se hizo una realidad a lo largo del siglo veinte, gracias entre otros factores a la revolución electrónica de la miniaturización y el avance derivado del asentamiento de la informática.
 
-\subsection{Evolución}
+\subsubsection{Evolución}
 
 El objetivo de los robots ha sido inicialmente el de desempeñar de forma automáticas tareas complejas para liberar al hombre de la carga que estas suponían. Siguiendo esta premisa, el carácter práctico de la robótica ha ido colmando los procesos industriales de autómatas que han elevado lo que supuso en su momento la revolución industrial a unas cotas de eficiencia y precisión que constituyen el pilar fundamental de los procesos de producción a gran escala. Este tipo de robots se caracterizan por realizar tareas relativamente simples de una manera sistemática y precisa. Normalmente su capacidad sensorial y motriz están limitadas para optimizar el desempeño de sus tareas. Sin embargo, en los últimos tiempos otro tipo de robots más sofisticados han empezado a ser utilizados satisfactoriamente en tareas mucho más complicadas como puede ser la exploración espacial, apoyo logístico militar, etc. Estas nuevas máquinas se enfrentan a retos mucho más arduos tales como  desenvolverse de forma autónoma en entornos no controlados. Estas nuevas tareas han impulsado el desarrollo de las capacidades de los robots para analizar y ``comprender'' su entorno, detectar obstáculos, moverse por terrenos no acondicionados, etc.
 
-\subsection{Tendencias Futuras}
+\subsubsection{Tendencias Futuras}
 
 Los trabajos más recientes hacen prever el establecimiento de tres tendencias principales en la robótica de aquí a unos años.
 
@@ -73,13 +73,13 @@ Por último podemos suponer un amplio desarrollo de los robots en su sentido más 
 
 
 
-\section{OCR (Opticar Character Recognition)}
+\subsection{OCR (Opticar Character Recognition)}
 
-\subsection{Introducción}
+\subsubsection{Introducción}
 
 El problema del reconocimiento óptico de caracteres se trató por primera vez por parte de la NSA (National Security Agency) estadounidense a principio de los años cincuenta. La labor de desencriptar códigos y mensajes cifrados en aquellos años hizo que investigadores como David Sheppard fueran instados a desarrollar un método para reconocer letras de forma automática para su posterior análisis criptográfico. De esta experiencia previa, surgió la empresa IMR que en 1955 desarrolló el primer sistema comercial OCR. Una vez traspasado el campo de seguridad gubernamental, la tecnología OCR se implantó en los servicios postales a partir de la década de los años sesenta para mejorar los procesos de clasificación del correo.
 
-\subsection{Retos de los sistemas OCR}
+\subsubsection{Retos de los sistemas OCR}
 
 Cuando tratamos con sistemas del tipo OCR hay que distinguir entre caracteres escritos de forma regular (mediante máquinas de escribir, imprenta, ordenador, etc) o los escritos a mano.
 
@@ -87,6 +87,6 @@ En el primer caso, el reto de analizar un texto de forma efectiva parece haberse
 
 En el caso de la escritura a mano, aunque se están consiguiendo grandes avances, aún queda margen para seguir investigando y optimizando los procesos de aprendizaje de los sistemas y la adaptación a las diferentes escrituras de forma individual.
 
-\subsection{Futuro}
+\subsubsection{Futuro}
 
 El futuro de esa tecnología parece discurrir en dirección a la consecución de robustos sistemas que permitan, ya no sólo el análisis de un texto, si no la reconstrucción de aquellos cuyas características de conservación y antigüedad han hecho que se deterioren provocando que su legibilidad sea harto compleja.

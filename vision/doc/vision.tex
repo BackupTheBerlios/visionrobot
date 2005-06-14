@@ -16,18 +16,22 @@
 
 \tableofcontents
 
-% TODO: A ver qué título pongo aquí
 \part {Definición del proyecto}
 \label {definicion}
 
-\include {resumen}
-\include {introduccion}
-\include {especificacion}
-\include {estado_arte}
-\include {diseno}
-\include {conclusiones}
-\include {trabajo_futuro}
-\include {pruebas}
+\chapter {Introducción}
+\input {resumen}
+\input {introduccion}
+\input {especificacion}
+\input {estado_arte}
+
+\chapter {Diseño y arquitectura}
+\input {diseno}
+
+\chapter {Resultados del proyecto}
+\input {pruebas}
+\input {trabajo_futuro}
+\input {conclusiones}
 
 \part{Detalles de los módulos}
 \label{anexo1}
@@ -45,4 +49,4 @@
 \part{Interfaz del programador}
 \label{anexo2}
 
-\end{document}
+%\end{document}

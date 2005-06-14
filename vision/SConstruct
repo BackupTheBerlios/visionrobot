@@ -67,8 +67,8 @@ glib.SharedLibrary('bin/gestion', 'src/gestion/gestion.c')
 
 # Prolog
 # La orden en Windows para compilar es: plld -o prolog.dll dcg.pl prolog.c -shared -I..\libpipeline -Ic:\GTK\include\glib-2.0 -Ic:\GTK\lib\glib-2.0\include -Lc:\GTK\lib -l glib-2.0.lib
-glib.Append(BUILDERS = {'Prolog' : Builder(action = 'plld -o $TARGET $SOURCE -shared -Isrc\libpipeline -Ic:\GTK\include\glib-2.0 -Ic:\GTK\lib\glib-2.0\include -Lc:\GTK\lib -l glib-2.0.lib')})    
-glib.Prolog('bin/prolog.dll', ['src/prolog/prolog.c', 'src/prolog/dcg.pl'])
+#glib.Append(BUILDERS = {'Prolog' : Builder(action = 'plld -o $TARGET $SOURCE -shared -Isrc\libpipeline -Ic:\GTK\include\glib-2.0 -Ic:\GTK\lib\glib-2.0\include -Lc:\GTK\lib -l glib-2.0.lib')})    
+#glib.Prolog('bin/prolog.dll', ['src/prolog/prolog.c', 'src/prolog/dcg.pl'])
 # glib.SharedLibrary('bin/prolog', 'src/prolog/prolog.c')
 
 # Filtro gestos
