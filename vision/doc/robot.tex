@@ -3,6 +3,13 @@
 \section{Introducción}
 El módulo de control de robot ha sido creado con el fin de tener una pieza de software capaz de controlar nuestro robot de una forma sencilla y transparente para los módulos que generan la información de salida. A este módulo le llega una estructura de datos que contiene la orden y el parámetro, y el robot se encarga de moverse en función de esa información. A continuación detallamos cómo lo hace.
 
+\section{Detalles}
+\begin{itemize}
+  \item {\bf Entrada}: Una estructura de datos que contiene una cadena de órdenes y otra de parámetros. Un script de comportamiento y la configuración del puerto como argumentos.
+  \item {\bf Salida}: El movimiento del robot.
+  \item {\bf Descripción}: Módulo que, a través de un guión de comportamiento y de unas órdenes, mueve un robot por el puerto paralelo.
+\end{itemize}
+
 \section{Arquitectura del módulo}
 El módulo en sí tiene una estructura muy simple: consiste en un conjunto de funciones que son exportadas a un \emph{script} programado en el lenguaje \textbf{Lua}, y que funcionan principalmente haciendo llamadas a una librería que hemos creado, y que se encarga de controlar el puerto paralelo.
 
@@ -41,20 +48,13 @@ A continuación mostramos algunas fotos del robot que hemos construido:
   \centering
   \includegraphics[scale=0.5,bb=0 0 410 307]{robot6.png}
 % robot1.png: 72.009dpi, width=5.68cm, height=4.27cm, bb=0 0 161 121
-  \caption{Foto lateral del robot}
+  \caption{Foto inferior del robot}
 \end{figure}
 
 \begin{figure}[h]
   \centering
   \includegraphics[scale=0.5,bb=0 0 410 307]{robot1.png}
 % robot1.png: 72.009dpi, width=5.68cm, height=4.27cm, bb=0 0 161 121
-  \caption{Foto inferior del robot}
+  \caption{Foto lateral del robot}
 \end{figure}
 
-
-
-
-
-\section {Código}
-% TODO: poner bien la referencia
-Ver anexo: documentación del módulo de robot.c, en \ref {robot_8c} (página \pageref{robot_8c}).

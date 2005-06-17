@@ -1,7 +1,21 @@
 \chapter{Módulo de generación de imágenes}
 
+% \section{Detalles}
+% \begin{itemize}
+%   \item {\bf Entrada}:
+%   \item {\bf Salida}:
+%   \item {\bf Descripción}:
+% \end{itemize}
+
 \section{Introducción}
 Este módulo tiene como objetivo la creación y modificación de un búfer de colores (una imagen en formato plano) para la alimentación de la tubería de visión. Obtiene, de diferentes fuentes, imagenes codificadas de diferentes maneras, y genera, en un formato unificado, una imagen sin comprimir.
+
+\section{Detalles}
+\begin{itemize}
+  \item {\bf Entrada}: Este módulo no tiene entradas del pipeline. Sólo los datos de la imagene externa. Como argumentos, la función que debe realizar, y el tamaño y los bits de la imagen que genera.
+  \item {\bf Salida}: Una estructura de datos como la que definimos en \ref{formato_imagenes}.
+  \item {\bf Descripción}: Módulo para la captación de imágenes de cámara, archivos, vídeo o generadas automáticamente, que alimenta al pipeline.
+\end{itemize}
 
 \section {Imágenes generadas}
 \label{formato_imagenes}
@@ -39,6 +53,3 @@ Para la generación resultados desde diferentes fuentes, el módulo hace uso de un
   \item {\bf Imágenes aleatorias}: Rellena la matriz de colores con colores al azar, de esta manera vemos cómo los filtros aceptan o dejan de aceptar los valores.
   \end {itemize}
 \end {itemize}
-
-\section {Código}
-Ver anexo: documentación del módulo de imagenes.c, en \ref {imagenes_8c} (página \pageref{imagenes_8c}).

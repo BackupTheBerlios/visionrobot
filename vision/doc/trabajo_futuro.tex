@@ -20,7 +20,7 @@ Mediante la construcción del robot hemos demostrado la simpleza de la interacció
 
 Una posible ampliación muy atractiva y visual sería añadir más funcionalidad al robot, ampliando el circuito y añadiendo motores, de forma que tuviese, por ejemplo, un brazo que pudiese coger cosas.
 
-\subsection{Entorno 3D}:
+\subsection{Entorno 3D}
 
 A continuación se enumeran una serie de ampliaciones y mejoras que se podrían introducir en el entorno 3d en futuras expansiones del proyecto:
 
@@ -38,7 +38,8 @@ Para demostrar la funcionalidad del sistema de visión por computador como sistem
 
 La implementación de esta ampliación sería trivial una vez implementado el sistema de colisiones previamente propuesto. Así, simplemente habría que disponer una serie de objetos que se corresponderían con los puntos de navegación e ir comprobando si el robot colisiona con ellos en el orden adecuado. Obviamente habría que inhibir cualquier respuesta motriz a dicha colisión, ya que estos objetos no debería impedir el movimiento del robot.
 
-\subsubsection{Modificación de los modelos (Robot, Escenario o Terreno)}. Si se quiere cambiar el aspecto de la simulación, incorporando nuevos modelos para los objetos 3d, simplemente habría que convertir los nuevos modelos desde su formato origen (normalmente formatos de programas de modelado 3D como 3Dstudio o Maya) al formato .X que es el que se usa en la aplicación. Dicha conversión se puede realizar a partir de los plugins que incluye el SDK de DirectX. Para modificar el terreno, únicamente hay que crear un nuevo mapa de altura (en formato crudo o RAW) y utilizar la pequeña aplicación auxiliar desarrollada para generar terrenos que configura el tamaño y grado de desnivel de la geometría así como las diferentes capas de texturas que se usarán en función de la altura.
+\subsubsection{Modificación de los modelos (Robot, Escenario o Terreno)}
+Si se quiere cambiar el aspecto de la simulación, incorporando nuevos modelos para los objetos 3d, simplemente habría que convertir los nuevos modelos desde su formato origen (normalmente formatos de programas de modelado 3D como 3Dstudio o Maya) al formato .X que es el que se usa en la aplicación. Dicha conversión se puede realizar a partir de los plugins que incluye el SDK de DirectX. Para modificar el terreno, únicamente hay que crear un nuevo mapa de altura (en formato crudo o RAW) y utilizar la pequeña aplicación auxiliar desarrollada para generar terrenos que configura el tamaño y grado de desnivel de la geometría así como las diferentes capas de texturas que se usarán en función de la altura.
 
 \subsubsection{Mejoras en el apartado gráfico}
 Para incrementar el aspecto visual de la aplicación se pueden introducir en el futuro nuevos efectos gráficos. Por ejemplo, se podría introducir el uso de texturas HDR que optimicen el comportamiento visual de la iluminación y los reflejos de los objetos 3D. Se podría incluir también la novedosa técnica PRT(precomputed radiance transfer) que permite implementar la técnica de iluminación global por radiosidad en tiempo real (esta característica se ha incorporado a la nueva versión de DirectX aparecida en Abril de 2005). Por supuesto, el uso de shaders para desarrollar nuevos efectos sería también muy apropiado, teniendo en cuenta además lo fácil de su programación gracias a las facilidades de Direct3D para integrar esta tecnología.

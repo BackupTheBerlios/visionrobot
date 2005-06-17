@@ -3,6 +3,13 @@
 \section{Introducción}
 Este módulo de la aplicación tiene como misión recoger todos los mensajes que han podido ser generados por módulos de proceso anteriores, y filtrarlos de tal modo que la salida de la línea de ejecución esté dotada de cierta coherencia con el resultado deseado. Para ello, admite las entradas en forma de cadenas de texto, y elige cuáles de ellas son las que deberían dar realmente una salida a los módulos posteriores.
 
+\section{Detalles}
+\begin{itemize}
+  \item {\bf Entrada}: Cualquier cadena de texto, y parámetros para controlar la tolerancia.
+  \item {\bf Salida}: Una cadena de texto, la que más se asemeja a la que realmente debería ser generada.
+  \item {\bf Descripción}: Módulo que, a través de la parametrización, guarda una tabla con las entradas, y, en función de las cantidades de información, presenta la mejor salida.
+\end{itemize}
+
 \section {Arquitectura y funcionamiento del módulo}
 El módulo trabaja con una \emph{tabla hash} inicialmente vacía. Cuando recibe señales procedentes del módulo procesador, realiza una de las dos opciones siguientes:
 \begin{enumerate}
@@ -15,6 +22,3 @@ De esta forma, siempre mantenemos en la tabla todas las señales que van llegando
 
 Como utilidad añadida, este módulo es uno de los más genéricos del \emph{pipeline}. El hecho de que los estados posibles se vayan creando de forma dinámica, y que sean sólo diferenciados por una cadena de texto, ha hecho posible que el módulo sea usado para gestionar diferentes líneas, sin tener que modificar ni una línea de código. La única parte que hay que personalizar son los parámetros de la instanciación del módulo, para que el comportamiento sea lo mejor posible.
 
-\section {Código}
-% TODO: ver la etiqueta buena de esto
-Ver anexo: documentación del módulo de gestion.c, en \ref {gestion_8c} (página \pageref{gestion_8c}).

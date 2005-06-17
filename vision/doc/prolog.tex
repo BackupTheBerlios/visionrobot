@@ -3,6 +3,13 @@
 \section{Introducción}
 Una vez que el OCR ha reconocido una cadena de texto y la ha validado, envía la señal a este módulo, que se encarga de procesarlo, y crear una nueva salida en el formato propio del pipeline para el entorno 3D y el robot.
 
+\section{Detalles}
+\begin{itemize}
+  \item {\bf Entrada}: Una cadena ya preparada del OCR.
+  \item {\bf Salida}: Un resultado en forma de cadena de respuesta o de orden para el robot.
+  \item {\bf Descripción}: Módulo que, a partir de una cadena ya reconocida, calcula un resultado matemático, o da órdenes de conducta a un robot.
+\end{itemize}
+
 \section{Implementación}
 
 Para implementarlo, hemos usado un programa en \textbf{Prolog}, que está formado en su mayor parte por una DCG \footnote{Definite clause grammar}. Este programa recibe la entrada del módulo, y, tras procesarla, crea una salida, que puede ser una cadena de respuesta, el resultado de una operación aritmética (soporta paréntesis y anidamiento de expresiones) o una orden para la salida.
@@ -10,7 +17,3 @@ Para implementarlo, hemos usado un programa en \textbf{Prolog}, que está formado
 \section{Ampliabilidad}
 
 La idea de crear el módulo como antes hemos explicado ha sido propiciada por la idea de que la ``inteligencia del robot'' fuese algo ampliable. Con sólo modificar este archivo, se puede dotar a la máquina de más información (ampliando el diccionario), o de más capacidad de proceso (creando más reglas de reconocimiento en la DCG).
-
-\section {Código}
-% TODO: poner bien la referencia
-Ver anexo: documentación del módulo de prolog.c, en \ref {prolog_8c} (página \pageref{prolog_8c}).
