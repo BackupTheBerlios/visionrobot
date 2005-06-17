@@ -46,6 +46,13 @@ Son especiales por su color. La razón de utilizar colores especiales ha sido cre
 \bigskip
 Los módulos posteriores a los filtros son módulos de análisis que deben de recibir la información lo mas clara posible, en el caso de los gestos se utiliza una red neuronal, la cual tiene que ser entrenada con imágenes muy simplificadas para que el entrenamiento tenga efecto y que las imágenes que reciba una vez entrenada, sean filtradas de la misma manera, para generar imágenes iguales que con las que fue entrenada, para poder reconocerlas. Respecto a los carteles el siguiente modulo es un OCR, muy sensible a ruidos, por tanto hay que asegurar que el filtro es efectivo, para que la salida de este no sea incoherente.
 
+\section{Detalles} 
+\begin{itemize} 
+\item {\bf Entrada}: Una estructura de datos como la que definimos en \ref{formato_imagenes}. Procedente del módulo de generación de imagenes.
+\item {\bf Salida}: Misma estructura de datos. Su contenido ha cambiado debido al filtrado. 
+\item {\bf Descripción}: Este módulo es el preprocesamiento y la segmentación de la imagen de entrada, forma parte de la vision de bajo y medio nivel. Realiza una serie de operaciones para generar una imagen de salida binarizada, con los objetos de interes localizados y centrados, para su posterior analisis en el siguiente módulo. 
+\end{itemize} 
+
 \section{Filtro de gestos}
 Como ya hemos dicho este filtro sirve como preprocesamiento y segmentación de la imagen. Ya que el suavizado reduce los ruidos y la extracción de regiones de color localiza los objetos de interés, con el objetivo de pasarle una información mucho mas comprensible y simplificada a la red neuronal.
 \bigskip 
@@ -340,5 +347,5 @@ El cierre conecta objetos que están próximos entre sí, y rellena pequeños huecos
 \end{figure}
 
 \section{Código}
-Ver anexo: documentación del módulo de filtro\_gestos.c, en \ref {filtro_code} (página \pageref{filtro_code}).
+Ver HTML: documentación del módulo en filtro\_gestos.c.
 

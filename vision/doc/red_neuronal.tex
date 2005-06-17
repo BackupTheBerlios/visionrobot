@@ -26,6 +26,13 @@ En que tipos de problemas se utilizan:
 \bigskip 
 Dicho esto la elección de una red neuronal como medio de resolución del problema de reconocimiento de patrones sería en este caso la más acertada. Es muy útil cuando no se conoce la función objetivo y se estima que los datos de entrada llegan con cierto porcentaje de ruido. La decisión se tomó meses antes de empezar el proyecto. Para asegurarnos de que era viable implementamos la red dentro de un pequeño programa, que a partir de imágenes de entrada devolvía cierto si detectaba una imagen de una persona con una guante blanco y falso si no había guante.
 
+\section{Detalles} 
+\begin{itemize} 
+\item {\bf Entrada}: Una estructura de datos como la que definimos en \ref{formato_imagenes} con la imagen filtrada para ordenes o parametros. Procedente del módulo de filtro.
+\item {\bf Salida}: Una cadena de texto que contiene el parametro o la orden que debe realizar el robot.
+\item {\bf Descripción}: Encargado de la descripción y reconocimiento de patrones, forma la visión de medio y alto nivel. Red multicapa de sigmoides con pesos ajustados por entrenamiento. Cada neurona de la capa de entrada recibe un pixel de la imagen, por retropropagación de esta entrada calcula los valores de las neuronas de salida. Cada una de estas neuronas lleva asociada una cadena de texto, como la retropropagación solo activará una neurona de salida, será su cadena asociada, la salida del modulo. (La descripción de patrones se encuentra en un archivo de pesos).
+\end{itemize} 
+
 \section{Descripción técnica}
 Hemos utilizado una red multicapa, ya que permiten representar superficies de decisión no lineales. Debido a esto no se puede utilizar unidades lineales ya que solo permitirían representar funciones lineales. Tampoco pudimos utilizar perceptrones porque su función de salida es discontinua, no derivable y por lo tanto no se le puede aplicar el descenso del gradiente. Necesitábamos una unidad que diese como salida una función no lineal y que fuese derivable con respecto a las entradas.
 
@@ -207,5 +214,5 @@ Luego se redujo considerablemente el código, eliminando la parte de entrenamient
 Y por ultimo visto que los gestos de las ordenes eran reconocidos con mucha mas facilidad que los asignados a los parámetros, que fallaban constantemente, decidimos que los gestos de los parámetros fuesen iguales a los de las ordenes, solo que en vez de hacer gestos con la izquierda se hacen con la derecha. De esta manera ambas redes cargan el mismo archivo y son igual de fiables. Solo se diferencian por la cadena de texto que devuelven, pero eso va por scripts.
 
 \section{Código}
-Ver anexo: documentación del módulo de red.c y red\_neuronal.c, en \ref {red_code} (página \pageref{red_code}).
+Ver HTML: documentación del módulo en red.c y en red\_neuronal.c.
 

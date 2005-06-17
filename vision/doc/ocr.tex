@@ -30,6 +30,13 @@ Se puede decir que el análisis no se realiza sobre la imagen global si no sobre 
 
 Como resultado el OCR nos da una cadena de caracteres que a veces tiene caracteres erróneos debido al ruido del filtrado u otras razones. La cuestión es que existe la posibilidad de que las palabras que salgan de este modulo no existan y carezcan de sentido, por eso se realiza posteriormente al reconocimiento de patrones una corrección ortográfica llevada a cabo por un analizador morfo-léxico.
 
+\section{Detalles} 
+\begin{itemize} 
+\item {\bf Entrada}: Una estructura de datos como la que definimos en \ref{formato_imagenes} con la imagen filtrada para carteles. Procedente del módulo de filtro.
+\item {\bf Salida}: Una cadena de texto que representa el mensaje contenido en la imagen de entrada. (Una orden, una operación aritmético-lógica o una pregunta.)
+\item {\bf Descripción}: Encargado de la descripción y reconocimiento de patrones, forma la visión de medio y alto nivel. Utiliza un método propio de descripción de fronteras de los objetos. Se basa en discriminar al objeto aprovechando las relaciones geométricas inherentes a la forma del objeto(caracter). (La descripción de patrones se encuentra en un archivo de vectores).
+\end{itemize} 
+
 \section{Diseño}
 La actividad del OCR pasa por 3 fases:
 \begin{enumerate}
@@ -226,4 +233,4 @@ Este método tiene un gran porcentaje de acierto entre el mensaje que representa 
 Es por tanto el diccionario quien en ultima fase, pone la cadena de caracteres a la salida del modulo. Asegurando por tanto que todas las palabras que salgan de este modulo, son palabras que existen en el diccionario de español y que mas se corresponden con el mensaje del cartel.
 
 \section{Código}
-Ver anexo: documentación del módulo de filtro ocr.c y ocr\_code.c, en \ref {ocr_code} (página \pageref{ocr_code}).
+Ver HTML: documentación del módulo en ocr.c y en ocr\_code.c.
