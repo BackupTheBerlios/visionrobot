@@ -21,4 +21,3 @@ Tras este primer paso, se procede a la ``debilitación'' de las otras señales. Co
 De esta forma, siempre mantenemos en la tabla todas las señales que van llegando, y creamos un tipo de diagrama de estados borroso, en el que el estado principal es decidido mediante los valores que el módulo va asignando a cada registro de la tabla.
 
 Como utilidad añadida, este módulo es uno de los más genéricos del \emph{pipeline}. El hecho de que los estados posibles se vayan creando de forma dinámica, y que sean sólo diferenciados por una cadena de texto, ha hecho posible que el módulo sea usado para gestionar diferentes líneas, sin tener que modificar ni una línea de código. La única parte que hay que personalizar son los parámetros de la instanciación del módulo, para que el comportamiento sea lo mejor posible.
-
