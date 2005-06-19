@@ -18,13 +18,9 @@ En la figura \ref{diagrama_vision_computador} hemos esquematizado todo el proces
 
 Tras el filtrado pertinente de cada imagen, se las lleva a un módulo de proceso (redes neuronales para los guantes, y algoritmo de \emph{OCR} para el texto), y, paralelamente, a ventanas de visualización, para depuración y comprobación de resultados. Se filtran las señales erróneas y, para el módulo de texto, se envía la información a un módulo de DCG\footnote{Definite clause grammar} que genera una salida como respuesta ``inteligente''. Cuando la información ya ha sido extraída de cada imagen, sólo queda unificarla con el resto de datos, para dar una salida coherente.
 
-\begin{figure}
+\begin{figure}[h]
   \centering
-  \includegraphics[scale=0.5,bb=0 0 410 307]{pipeline.png}
-%  \includegraphics[width=16.3296cm,height=13.6848cm,bb=0 0 1113 854]{pipeline.png}
+  \includegraphics[scale=0.5]{pipeline.png}
   \caption{Diagrama de tubería}
   \label{diagrama_vision_computador}
 \end{figure}
-
-
-
