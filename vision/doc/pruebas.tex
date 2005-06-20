@@ -24,14 +24,45 @@ A continuación detallamos las pruebas del aspecto arquitectónico de los módulos:
 \begin{itemize}
 \item \textbf{Generación imágenes y ventana de imágenes}: El resultado esperado de este módulo era la generación de imágenes desde diversas fuentes, en un formato unificado. Para esto, usamos principalmente la ventana de imágenes, comprobando que las imágenes correspondiesen a lo esperado. Para ejemplos de resultados, puede remitirse a la sección \ref{imagenes_ejemplos_graficos}.
 
-\item \textbf{Filtros}:
+\item \textbf{Filtros}: La serie de transformaciones que sufre la imagen en el módulo de filtro (gestos o carteles) es el resultado de un largo periodo de investigación sobre imágenes de prueba. 
+
+La elección de una transformación u otra ha estado dirigida siempre con el propósito de conseguir un análisis posterior mucho mas simple y fiable. 
+
+Todos los filtros que fuimos creando que no presentaban valor añadido han sido eliminados, quedando así los mínimos necesarios para facilitar la extracción de información de la imagen en el posterior análisis (red neuronal, OCR). 
+
+La elección del tamaño de las mascaras utilizadas o la creación de varios filtros dentro de los mismos bucles se ha realizado siempre con la intención de que la fase de filtro sea lo mas rápida posible, no impidiendo que la aplicación funcione en tiempo real.
+
+\bigskip
+Tiempo aproximado del filtro de gestos:  5 milisegundos.
+
+Tiempo aproximado del filtro de carteles: 6.5 milisegundos.
+
 \item \textbf{Parámetros}: El módulo de generación de parámetros tuvo algunos inconvenientes. En un principio, hicimos un programa con el código base de lo que iba a ser el módulo, consistente en una ventana que generaba estructuras de datos con los valores elegidos. El funcionamiento del programa fue exitoso, cosa que vimos imprimiendo por pantalla el contenido de dichas estructuras. Cuando integramos el módulo (ya programado como tal) en la aplicación, tuvimos algunos problemas, pues los mensajes no llegaban bien al módulo de filtros. Las pruebas nos llevaron a la conclusión de que fue un fallo de arquitectura, con lo que tuvimos que remodelar el diseño del núcleo del pipeline para que admitiese más tipos de conexiones. Tras esto, el resultado fue satisfactorio. 
-\item \textbf{OCR}:
+\item \textbf{OCR}: Ha sido uno de los principales retos de este proyecto. Al principio pensamos en utilizar un OCR ya implementado, pero tenía el problema de que no se ajustaba completamente a nuestras necesidades. Probamos a implementarlo nosotros con algoritmos ya realizados, como descriptores de regiones, pero esos sistemas resultaban ser demasiado lentos cuando el numero de caracteres a reconocer dentro de la imagen aumentaba y como siempre el tiempo ha sido un factor que ha corrido en nuestra contra. Llegamos a plantearnos usar la red neurnal tambien en este campo, pero comprobamos que su entrenamiento era muy costoso, además que no cumplia con las exigencias como por ejemplo que el tamaño de los caracteres no importe. Desarrollamos por tanto nuestro propio algoritmo descriptor reconocedor de caracteres basado en descripción de fronteras. La cantidad de información que este método necesita para describir la frontera de un objeto es muy pequeña lo que acelero todo el proceso. Si queremos que sea muy preciso y que nunca se equivoque reconociendo un objeto aumentamos la cantidad de información que debe tratar, esto aumenta el tiempo ligeramente, así que en vez de hacer eso decidimos usar a la salida del OCR un diccionario que comprobara si las palabras que salían tenían o no sentido, si no lo tenían las corregía.
 \item \textbf{Gestión de mensajes}: La gestión de mensajes fue probada a través de su funcionamiento, y mostrando la salida por consola. La comprobación de la corrección la hemos realizado imprimiendo por la salida estándar el estado del grafo de mensajes en todo momento.
 \item \textbf{Post-gestión de órdenes}: El módulo de gestión total de la tubería de órdenes ha tenido pruebas triviales, debido a su sencillez, simplemente, hemos certificado mediante el uso que las órdenes llegaban bien a los módulos de salida.
 \item \textbf{Proceso de texto}: El proceso de texto ha sido implementado en Prolog, por lo que las pruebas han sido realizadas de una manera externa a la aplicación, con el intérprete de SWI-Prolog. Gracias a este método, el desarrollo fue más rápido, ya que la comprobación conun intérprete es muy ágil. Cuando funcionó por separado, la integración en la aplicación principal no causó ningún problema, y funcionó tal y como lo habíamos previsto, con lo que no hizo falta realizar más pruebas que la pura comprobación del funcionamiento en ejecuciones normales.
 \item \textbf{Robot}: El desarrollo del robot tuvo un trabajo paralelo. Al principio, las pruebas fueron paralelas a la construcción de la estructura, y controlábamos los motores mediante un control de corriente contínua. Las pruebas nos llevaron a la conclusión de que había que remodelar los árboles de engranajes y los cambios de par, pues en un principio no suministraban la suficiente potencia como para mover todo el peso de la estructura. Tuvimos que cambiar esto, y fue un cambio bastante grande. Una vez que el robot se movía con el control remoto, probamos a crear el circuito que iba a hacer de capa entre el puerto paralelo y los motores. Conectamos el circuito, y sobre la placa las tensiones funcionaban bien. Lo ensamblamos al robot, y, aunque en un principio funcionaba bien, pronto dejó de hacerlo. Tras depurar, vimos que había un fallo en un punto de la placa (nos costó bastante averiguarlo), y, una vez corregido esto, el robot comenzó a funcionar de una manera muy estable.
-\item \textbf{Red neuronal}:
+\item \textbf{Red neuronal}: Las pruebas sobre la red fueron realizadas antes de empezar el proyecto. Se realizaron pruebas sobre cientos de fotos para el reconocimiento de ciertos patrones, para ello implementamos un pequeño programa de entrenamiento donde contabilizamos el índice de aprendizaje sobre el conjunto de fotos de entrenamiento, el índice de fallos que cometía sobre otro conjunto de prueba y sobre otro de validación. Se contabilizaba tanto el índice de aciertos como de error, modificando el factor de aprendizaje, el conjunto de entrenamiento y el numero de iteraciones. 
+
+\bigskip
+Concretamente para el reconocimiento de los 4 gestos que se hacen con la mano al robot se necesitaron 148 fotos de entrenamiento, 49 fotos de validación, 30 de prueba y 20 vueltas de aprendizaje, esto equivale en un Pentium4 a 3 horas de aprendizaje ajustando los pesos de la red. 
+
+Porcentaje de aciertos en entrenamiento: 89   Error medio: 0,0141046521582562
+
+Porcentaje de aciertos en validación: 93    Error medio: 0,00799933215976971
+
+Porcentaje de aciertos en prueba: 100     Error medio: 0,00645778571591585v
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.4,bb=0 0 504 231]{Grafica_Aciertos.png}
+  \includegraphics[scale=0.4,bb=0 0 491 237]{Grafica_Errores.png}
+  \caption{ La imagen de la izquierda muestra como aumenta el aprendizaje cuanto mas se enseña a la red. Aumentando el nº de aciertos. Y la de la derecha muestra como a medida que aprende comete menos errores reconociendo figuras.}
+\end{figure}
+
+Una vez guardados los pesos en un archivo solo hay que cargarlos en una nueva red cada vez que se quieran utilizar y la retropropagación para el reconocimiento de futuros patrones es casi instantánea, que es lo que realmente importa. La eficiencia de la red reconociendo patrones es mejorada por el uso de los filtros previos.
+
 \item \textbf{Entorno 3D}: Inicialmente la simulación 3D se probó exahustivamente de forma aislada para cetificar el correcto funcionamiento de cada uno de los elementos especificados(movimiento del robot, seguimiento de la cámara, iluminación, etc). En dichas pruebas se utilizó una entrada directa por teclado gestionada internamente por la aplicación para controlar la navegación del robot a través del escenario. A la hora de realizar la integración con el resto de módulos, simplemente se sustituyó el control por teclado interno por los comandos recibidos a través de los puertos de conexión resultantes de los análisis previos de los gestos del usuario. Una vez establecida la conexión del módulo con el pipe, sólo hubo que probar que cada uno de los comandos analizados producían el comportamiento deseado en la simulación.Además, como elemento redundante se añadió una salida en texto que mostrara al usuario el comando en ejecución en un instante determinado.
 \begin{figure}[h]
   \centering
