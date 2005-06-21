@@ -12,8 +12,30 @@ Al diseñar la aplicación escogimos implementar un sistema altamente modular para
 \end{itemize}
 El {\em pipeline} es multiplataforma y funciona con módulos compilados desde {\em cualquier lenguaje estándar} como bibliotecas dinámicas. Esto dota a la aplicación de un marco muy amplio de uso en muchos ámbitos de desarrollo, no solamente el propio de la visión por computador o la robótica, sino en cualquier aplicación que necesite una arquitectura modular, ya sea secuencial o paralela.
 
+\subsection{Diagrama general}
 
-\section{Diagrama de pipeline de ``Reconocimiento visual de instrucciones''}
+A continuación representamos, en la figura \ref{diagrama_vision_computador_simple}, un esquema directo de la aplicación:
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.5]{diagrama.png}
+  \caption{Diagrama de la arquitectura}
+  \label{diagrama_vision_computador_simple}
+\end{figure}
+
+En este esquema, como vemos, tenemos las siguientes etapas:
+\begin{itemize}
+  \item \textbf{Entrada}: esta etapa está formada por un lado por la captura o generación de imágenes, y por otro, por el XML que define la aplicación (realmente, el hecho de que la aplicación comience como una captura es debido al archivo de proyecto). Además, la entrada del proyecto tiene como parte importante las ventanas de los parámetros de los filtros. Aquí, por tanto, se genera toda la información que va a ser procesada más tarde.
+  \item \textbf{Preprocesamiento y segmentacion}: esta parte la componen los filtros, que procesan la imagen y localizan los objetos de interés. También incluiríamos la parte de mostrado de imágenes. Preparamos, pues, los datos para reconocer objetos.
+  \item \textbf{Descripcion y reconocimiento}: Son los módulos del OCR, y la red neuronal, que describen los objetos con su base de datos o sus pesos, y los reconocen. Pasada esta etapa, ya tenemos la información en un formato que podemos procesar.
+  \item \textbf{Gestión e interpretación}: forman la etapa los módulos de gestión, post-gestión, procesamiento de texto reconocido (gestión de la salida, y buscar sentido a la salida para responder a ella con una respuesta o acción). Aquí filtramos los ruidos generados, y juntamos las señales que se han generado en paralelo.
+  \item Salida: Entorno 3D, control del robot y modulo de salida (muestran la salida haciendo actuar al robot real o simulado). Por fin, mostramos la salida real de todo el proceso de reconocimiento.
+
+\end{itemize}
+
+
+
+
+\section{Diagrama exhaustivo de pipeline de ``Reconocimiento visual de instrucciones''}
 En la figura \ref{diagrama_vision_computador} hemos esquematizado todo el proceso que siguen los datos de nuestra aplicación hasta llegar a una salida visible por el usuario. Los datos comienzan en la interfaz de imágenes (puede ser una imagen de cámara, un vídeo, una imagen fija...), y descienden por el grafo de módulos hasta el \textbf{robot} o el \textbf{entorno 3D}. Asimismo, tenemos también de entrada las ventanas de parámetros, que dotan a los filtros de los valores necesarios \emph{en tiempo real}.
 
 Tras el filtrado pertinente de cada imagen, se las lleva a un módulo de proceso (redes neuronales para los guantes, y algoritmo de \emph{OCR} para el texto), y, paralelamente, a ventanas de visualización, para depuración y comprobación de resultados. Se filtran las señales erróneas y, para el módulo de texto, se envía la información a un módulo de DCG\footnote{Definite clause grammar} que genera una salida como respuesta ``inteligente''. Cuando la información ya ha sido extraída de cada imagen, sólo queda unificarla con el resto de datos, para dar una salida coherente.
@@ -23,4 +45,23 @@ Tras el filtrado pertinente de cada imagen, se las lleva a un módulo de proceso 
   \includegraphics[scale=0.5]{pipeline.png}
   \caption{Diagrama de tubería}
   \label{diagrama_vision_computador}
+\end{figure}
+
+\section {Diagramas UML}
+La aplicación no ha sido sintácticamente programada orientada a objetos, sólo algunos módulos. Por tanto, sólo podemos dar unos pocos diagramas. Son el diagrama UML que de forma esquemática muestra las relaciones anteriormente descritas entre las principales clases que componen la apliación del entorno 3D en la figura \ref{diseno_uml_3d}, y el diagrama de la clase que, en Win32, usa una cámara web en la figura \ref{diseno_uml_camara}.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.5]{UMLEntorno3D.png}
+% robot1.png: 72.009dpi, width=5.68cm, height=4.27cm, bb=0 0 161 121
+  \caption{Diagrama de clases UML del entorno 3D}
+  \label{diseno_uml_3d}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+ % \includegraphics[scale=1.0,bb=0 0 784 623]{camara_win.png}
+% robot1.png: 72.009dpi, width=5.68cm, height=4.27cm, bb=0 0 161 121
+  \caption{Diagrama de clases UML de la cámara}
+  \label{diseno_uml_camara}
 \end{figure}

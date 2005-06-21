@@ -95,15 +95,6 @@ El diseño de la aplicación es bastante sencillo en cuanto a su estructura jerárq
 
 Respecto al flujo de ejecución, se puede resumir en que existe un método que es llamado externamente de forma periódica. Dicho método hace que en cada ciclo se actualice la posición de cada uno de los objetos de la escena y posteriormente se renderice. Este proceso se hace de forma delegada, de forma que VentanaPrincipal llamará al método Render() de la Escena, la cuál llamará recursivamentea a los respectivos métodos Render() de cada una de las entidades que contiene.
 
-A continuación se muestra un diagrama UML que de forma esquemática muestra las relaciones anteriormente descritas entre las principales clases que componen la apliación:
-
-\begin{figure}[h]
-  \centering
-  \includegraphics[scale=1.0,bb=0 0 784 623]{UMLEntorno3D.png}
-% robot1.png: 72.009dpi, width=5.68cm, height=4.27cm, bb=0 0 161 121
-  \caption{Diagrama de clases UML.}
-\end{figure}
-
 \section{Capturas}
 Se muestran a continuación una serie de capturas de pantalla del módulo en funcionamiento:
 \begin{figure}[h]

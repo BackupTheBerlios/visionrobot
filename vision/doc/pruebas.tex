@@ -38,10 +38,27 @@ Tiempo aproximado del filtro de gestos:  5 milisegundos.
 Tiempo aproximado del filtro de carteles: 6.5 milisegundos.
 
 \item \textbf{Parámetros}: El módulo de generación de parámetros tuvo algunos inconvenientes. En un principio, hicimos un programa con el código base de lo que iba a ser el módulo, consistente en una ventana que generaba estructuras de datos con los valores elegidos. El funcionamiento del programa fue exitoso, cosa que vimos imprimiendo por pantalla el contenido de dichas estructuras. Cuando integramos el módulo (ya programado como tal) en la aplicación, tuvimos algunos problemas, pues los mensajes no llegaban bien al módulo de filtros. Las pruebas nos llevaron a la conclusión de que fue un fallo de arquitectura, con lo que tuvimos que remodelar el diseño del núcleo del pipeline para que admitiese más tipos de conexiones. Tras esto, el resultado fue satisfactorio. 
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.4]{parametros.png}
+% robot1.png: 72.009dpi, width=5.68cm, height=4.27cm, bb=0 0 161 121
+  \caption{Pruebas satisfactorias de los parámetros}
+\end{figure}
+
 \item \textbf{OCR}: Ha sido uno de los principales retos de este proyecto. Al principio pensamos en utilizar un OCR ya implementado, pero tenía el problema de que no se ajustaba completamente a nuestras necesidades. Probamos a implementarlo nosotros con algoritmos ya realizados, como descriptores de regiones, pero esos sistemas resultaban ser demasiado lentos cuando el numero de caracteres a reconocer dentro de la imagen aumentaba y como siempre el tiempo ha sido un factor que ha corrido en nuestra contra. Llegamos a plantearnos usar la red neurnal tambien en este campo, pero comprobamos que su entrenamiento era muy costoso, además que no cumplia con las exigencias como por ejemplo que el tamaño de los caracteres no importe. Desarrollamos por tanto nuestro propio algoritmo descriptor reconocedor de caracteres basado en descripción de fronteras. La cantidad de información que este método necesita para describir la frontera de un objeto es muy pequeña lo que acelero todo el proceso. Si queremos que sea muy preciso y que nunca se equivoque reconociendo un objeto aumentamos la cantidad de información que debe tratar, esto aumenta el tiempo ligeramente, así que en vez de hacer eso decidimos usar a la salida del OCR un diccionario que comprobara si las palabras que salían tenían o no sentido, si no lo tenían las corregía.
 \item \textbf{Gestión de mensajes}: La gestión de mensajes fue probada a través de su funcionamiento, y mostrando la salida por consola. La comprobación de la corrección la hemos realizado imprimiendo por la salida estándar el estado del grafo de mensajes en todo momento.
 \item \textbf{Post-gestión de órdenes}: El módulo de gestión total de la tubería de órdenes ha tenido pruebas triviales, debido a su sencillez, simplemente, hemos certificado mediante el uso que las órdenes llegaban bien a los módulos de salida.
-\item \textbf{Proceso de texto}: El proceso de texto ha sido implementado en Prolog, por lo que las pruebas han sido realizadas de una manera externa a la aplicación, con el intérprete de SWI-Prolog. Gracias a este método, el desarrollo fue más rápido, ya que la comprobación conun intérprete es muy ágil. Cuando funcionó por separado, la integración en la aplicación principal no causó ningún problema, y funcionó tal y como lo habíamos previsto, con lo que no hizo falta realizar más pruebas que la pura comprobación del funcionamiento en ejecuciones normales.
+\item \textbf{Proceso de texto}: El proceso de texto ha sido implementado en Prolog, por lo que las pruebas han sido realizadas de una manera externa a la aplicación, con el intérprete de SWI-Prolog. Gracias a este método, el desarrollo fue más rápido, ya que la comprobación conun intérprete es muy ágil. Cuando funcionó por separado, la integración en la aplicación principal no causó ningún problema, y funcionó tal y como lo habíamos previsto, con lo que no hizo falta realizar más pruebas que la pura comprobación del funcionamiento en ejecuciones normales. Podemos ver un ejemplo en \ref{pruebas_proceso}.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.5]{pruebas_texto.png}
+% robot1.png: 72.009dpi, width=5.68cm, height=4.27cm, bb=0 0 161 121
+  \label{pruebas_proceso}
+  \caption{Proceo de texto}
+\end{figure}\item 
+
 \item \textbf{Robot}: El desarrollo del robot tuvo un trabajo paralelo. Al principio, las pruebas fueron paralelas a la construcción de la estructura, y controlábamos los motores mediante un control de corriente contínua. Las pruebas nos llevaron a la conclusión de que había que remodelar los árboles de engranajes y los cambios de par, pues en un principio no suministraban la suficiente potencia como para mover todo el peso de la estructura. Tuvimos que cambiar esto, y fue un cambio bastante grande. Una vez que el robot se movía con el control remoto, probamos a crear el circuito que iba a hacer de capa entre el puerto paralelo y los motores. Conectamos el circuito, y sobre la placa las tensiones funcionaban bien. Lo ensamblamos al robot, y, aunque en un principio funcionaba bien, pronto dejó de hacerlo. Tras depurar, vimos que había un fallo en un punto de la placa (nos costó bastante averiguarlo), y, una vez corregido esto, el robot comenzó a funcionar de una manera muy estable.
 \item \textbf{Red neuronal}: Las pruebas sobre la red fueron realizadas antes de empezar el proyecto. Se realizaron pruebas sobre cientos de fotos para el reconocimiento de ciertos patrones, para ello implementamos un pequeño programa de entrenamiento donde contabilizamos el índice de aprendizaje sobre el conjunto de fotos de entrenamiento, el índice de fallos que cometía sobre otro conjunto de prueba y sobre otro de validación. Se contabilizaba tanto el índice de aciertos como de error, modificando el factor de aprendizaje, el conjunto de entrenamiento y el numero de iteraciones. 
 
@@ -67,15 +84,16 @@ Una vez guardados los pesos en un archivo solo hay que cargarlos en una nueva re
 \begin{figure}[h]
   \centering
   % No se si los parámetros son correctos para la imagen.(lordarkam)
-  \includegraphics[scale=0.5,bb=0 0 512 384]{templo1.png}
+  \includegraphics[scale=0.5]{templo1.png}
   \caption{Entorno 3D}
 \end{figure}
-\item \textbf{Salida de texto}: Para las pruebas de la salida de texto simplemente hemos comprobado que el texto que mandábamos al módulo salía por la ventana, añadimos un ejemplo:
+\item \textbf{Salida de texto}: Para las pruebas de la salida de texto simplemente hemos comprobado que el texto que mandábamos al módulo salía por la ventana, añadimos un ejemplo en la figura \ref{pruebas_salida}.
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.5,bb=0 0 410 307]{salida_texto.png}
+  \includegraphics[scale=0.5]{salida_texto.png}
 % robot1.png: 72.009dpi, width=5.68cm, height=4.27cm, bb=0 0 161 121
+  \label{pruebas_salida}
   \caption{Salida de texto}
 \end{figure}
 
