@@ -43,9 +43,10 @@ static char *prolog_ciclo(modulo_t *modulo, const char *puerto, const void *dato
   
   if(!strcmp(PUERTO, puerto)) {
     char *cadena = (char *)dato;
-    if(cadena) {
+    if(cadena) {				
       char *cadena_aux = prolog_mayusculas(cadena);
       if(!strcmp(cadena_aux, "AVANZAR")) {
+		  printf("jajajaj");
         g_hash_table_insert(modulo->m_tabla, PUERTO_ORDEN, "avanzar");
         g_hash_table_insert(modulo->m_tabla, PUERTO_PARAMETRO, "media");
       }
