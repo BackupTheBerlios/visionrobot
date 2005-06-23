@@ -41,8 +41,7 @@ Tiempo aproximado del filtro de carteles: 6.5 milisegundos.
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.4, bb=0 0 363 206]{parametros.png}
-% robot1.png: 72.009dpi, width=5.68cm, height=4.27cm, bb=0 0 161 121
+  \includegraphics[scale=0.4]{parametros.png}
   \caption{Pruebas satisfactorias de los parámetros}
 \end{figure}
 
@@ -53,8 +52,7 @@ Tiempo aproximado del filtro de carteles: 6.5 milisegundos.
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.5, bb=0 0 110 35]{pruebas_texto.png}
-% robot1.png: 72.009dpi, width=5.68cm, height=4.27cm, bb=0 0 161 121
+  \includegraphics[scale=0.5]{pruebas_texto.png}
   \label{pruebas_proceso}
   \caption{Proceso de texto}
 \end{figure}
@@ -83,16 +81,14 @@ Una vez guardados los pesos en un archivo solo hay que cargarlos en una nueva re
 \item \textbf{Entorno 3D}: Inicialmente la simulación 3D se probó exahustivamente de forma aislada para cetificar el correcto funcionamiento de cada uno de los elementos especificados(movimiento del robot, seguimiento de la cámara, iluminación, etc). En dichas pruebas se utilizó una entrada directa por teclado gestionada internamente por la aplicación para controlar la navegación del robot a través del escenario. A la hora de realizar la integración con el resto de módulos, simplemente se sustituyó el control por teclado interno por los comandos recibidos a través de los puertos de conexión resultantes de los análisis previos de los gestos del usuario. Una vez establecida la conexión del módulo con el pipe, sólo hubo que probar que cada uno de los comandos analizados producían el comportamiento deseado en la simulación.Además, como elemento redundante se añadió una salida en texto que mostrara al usuario el comando en ejecución en un instante determinado.
 \begin{figure}[h]
   \centering
-  % No se si los parámetros son correctos para la imagen.(lordarkam)
-  \includegraphics[scale=0.5, bb=0 0 202 151]{templo1.png}
+  \includegraphics[scale=0.5]{templo1.png}
   \caption{Entorno 3D}
 \end{figure}
 \item \textbf{Salida de texto}: Para las pruebas de la salida de texto simplemente hemos comprobado que el texto que mandábamos al módulo salía por la ventana, añadimos un ejemplo en la figura \ref{pruebas_salida}.
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.5, bb=0 0 80 35]{salida_texto.png}
-% robot1.png: 72.009dpi, width=5.68cm, height=4.27cm, bb=0 0 161 121
+  \includegraphics[scale=0.5]{salida_texto.png}
   \label{pruebas_salida}
   \caption{Salida de texto}
 \end{figure}
