@@ -96,21 +96,26 @@ El diseño de la aplicación es bastante sencillo en cuanto a su estructura jerárq
 Respecto al flujo de ejecución, se puede resumir en que existe un método que es llamado externamente de forma periódica. Dicho método hace que en cada ciclo se actualice la posición de cada uno de los objetos de la escena y posteriormente se renderice. Este proceso se hace de forma delegada, de forma que VentanaPrincipal llamará al método Render() de la Escena, la cuál llamará recursivamentea a los respectivos métodos Render() de cada una de las entidades que contiene.
 
 \section{Capturas}
+
+% ,bb=0 0 512 384
+%,bb=0 0 512 384
+% ,bb=0 0 512 384
+
 Se muestran a continuación una serie de capturas de pantalla del módulo en funcionamiento:
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=1.0,bb=0 0 512 384]{templo1.png}
+  \includegraphics[scale=1.0]{templo1.png}
   \caption{Primer plano del robot.}
 \end{figure}
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=1.0,bb=0 0 512 384]{templo2.png}
+  \includegraphics[scale=1.0]{templo2.png}
   \caption{Seguimiento del robot con una cámara estática.}
 \end{figure}
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=1.0,bb=0 0 512 384]{templo3.png}
+  \includegraphics[scale=1.0]{templo3.png}
   \caption{Visión general del escenario.}
 \end{figure}

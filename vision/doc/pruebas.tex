@@ -56,8 +56,8 @@ Tiempo aproximado del filtro de carteles: 6.5 milisegundos.
   \includegraphics[scale=0.5]{pruebas_texto.png}
 % robot1.png: 72.009dpi, width=5.68cm, height=4.27cm, bb=0 0 161 121
   \label{pruebas_proceso}
-  \caption{Proceo de texto}
-\end{figure}\item 
+  \caption{Proceso de texto}
+\end{figure}
 
 \item \textbf{Robot}: El desarrollo del robot tuvo un trabajo paralelo. Al principio, las pruebas fueron paralelas a la construcción de la estructura, y controlábamos los motores mediante un control de corriente contínua. Las pruebas nos llevaron a la conclusión de que había que remodelar los árboles de engranajes y los cambios de par, pues en un principio no suministraban la suficiente potencia como para mover todo el peso de la estructura. Tuvimos que cambiar esto, y fue un cambio bastante grande. Una vez que el robot se movía con el control remoto, probamos a crear el circuito que iba a hacer de capa entre el puerto paralelo y los motores. Conectamos el circuito, y sobre la placa las tensiones funcionaban bien. Lo ensamblamos al robot, y, aunque en un principio funcionaba bien, pronto dejó de hacerlo. Tras depurar, vimos que había un fallo en un punto de la placa (nos costó bastante averiguarlo), y, una vez corregido esto, el robot comenzó a funcionar de una manera muy estable.
 \item \textbf{Red neuronal}: Las pruebas sobre la red fueron realizadas antes de empezar el proyecto. Se realizaron pruebas sobre cientos de fotos para el reconocimiento de ciertos patrones, para ello implementamos un pequeño programa de entrenamiento donde contabilizamos el índice de aprendizaje sobre el conjunto de fotos de entrenamiento, el índice de fallos que cometía sobre otro conjunto de prueba y sobre otro de validación. Se contabilizaba tanto el índice de aciertos como de error, modificando el factor de aprendizaje, el conjunto de entrenamiento y el numero de iteraciones. 
