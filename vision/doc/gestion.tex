@@ -11,7 +11,9 @@ Este módulo de la aplicación tiene como misión recoger todos los mensajes que ha
 \end{itemize}
 
 \section {Arquitectura y funcionamiento del módulo}
+
 El módulo trabaja con una \emph{tabla hash} inicialmente vacía. Cuando recibe señales procedentes del módulo procesador, realiza una de las dos opciones siguientes:
+
 \begin{enumerate}
 \item \textbf{El elemento no estaba en la tabla}: Se añade a la tabla y se suma una unidad.
 \item \textbf{El elemento ya estaba en la tabla}: Se suma una unidad al número de llegadas consecutivas de ese elemento.

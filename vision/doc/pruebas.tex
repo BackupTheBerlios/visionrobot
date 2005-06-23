@@ -17,18 +17,18 @@ Como ejemplo global de pruebas y de la utilidad de la arquitectura de \emph{pipe
 
 \subsubsection{Eficiencia}
 
-El \emph{pipeline} no es un ejemplo de velocidad de proceso. Las pruebas que hemos realizado nos han permitido, en un ordenador con un microprocesador \emph{Intel Pentium IV} con una frecuencia de reloj de $3.0$ GHz, alcanzar velocidades de ciclo de 200 milisegundos. Para una aplicación del ámbito docente como es la que presentamos, el resultado es desde luego más que suficiente, pero no deja de ser un tiempo de ejecución lento para requisitos como, por ejemplo, de tiempo real. 
+El \emph{pipeline} no es un ejemplo de velocidad de proceso. Las pruebas que hemos realizado nos han permitido, en un ordenador con un microprocesador \emph{Intel Pentium IV} con una frecuencia de reloj de $3.0$ GHz, alcanzar velocidades de ciclo de 200 milisegundos. Para una aplicación del ámbito docente como es la que presentamos, el resultado es desde luego más que suficiente, pero no deja de ser un tiempo de ejecución lento para requisitos como, por ejemplo, de tiempo real.
 
 \subsubsection{Comprobación de los módulos}
 A continuación detallamos las pruebas del aspecto arquitectónico de los módulos:
 \begin{itemize}
 \item \textbf{Generación imágenes y ventana de imágenes}: El resultado esperado de este módulo era la generación de imágenes desde diversas fuentes, en un formato unificado. Para esto, usamos principalmente la ventana de imágenes, comprobando que las imágenes correspondiesen a lo esperado. Para ejemplos de resultados, puede remitirse a la sección \ref{imagenes_ejemplos_graficos}.
 
-\item \textbf{Filtros}: La serie de transformaciones que sufre la imagen en el módulo de filtro (gestos o carteles) es el resultado de un largo periodo de investigación sobre imágenes de prueba. 
+\item \textbf{Filtros}: La serie de transformaciones que sufre la imagen en el módulo de filtro (gestos o carteles) es el resultado de un largo periodo de investigación sobre imágenes de prueba.
 
-La elección de una transformación u otra ha estado dirigida siempre con el propósito de conseguir un análisis posterior mucho mas simple y fiable. 
+La elección de una transformación u otra ha estado dirigida siempre con el propósito de conseguir un análisis posterior mucho mas simple y fiable.
 
-Todos los filtros que fuimos creando que no presentaban valor añadido han sido eliminados, quedando así los mínimos necesarios para facilitar la extracción de información de la imagen en el posterior análisis (red neuronal, OCR). 
+Todos los filtros que fuimos creando que no presentaban valor añadido han sido eliminados, quedando así los mínimos necesarios para facilitar la extracción de información de la imagen en el posterior análisis (red neuronal, OCR).
 
 La elección del tamaño de las mascaras utilizadas o la creación de varios filtros dentro de los mismos bucles se ha realizado siempre con la intención de que la fase de filtro sea lo mas rápida posible, no impidiendo que la aplicación funcione en tiempo real.
 
@@ -37,11 +37,11 @@ Tiempo aproximado del filtro de gestos:  5 milisegundos.
 
 Tiempo aproximado del filtro de carteles: 6.5 milisegundos.
 
-\item \textbf{Parámetros}: El módulo de generación de parámetros tuvo algunos inconvenientes. En un principio, hicimos un programa con el código base de lo que iba a ser el módulo, consistente en una ventana que generaba estructuras de datos con los valores elegidos. El funcionamiento del programa fue exitoso, cosa que vimos imprimiendo por pantalla el contenido de dichas estructuras. Cuando integramos el módulo (ya programado como tal) en la aplicación, tuvimos algunos problemas, pues los mensajes no llegaban bien al módulo de filtros. Las pruebas nos llevaron a la conclusión de que fue un fallo de arquitectura, con lo que tuvimos que remodelar el diseño del núcleo del pipeline para que admitiese más tipos de conexiones. Tras esto, el resultado fue satisfactorio. 
+\item \textbf{Parámetros}: El módulo de generación de parámetros tuvo algunos inconvenientes. En un principio, hicimos un programa con el código base de lo que iba a ser el módulo, consistente en una ventana que generaba estructuras de datos con los valores elegidos. El funcionamiento del programa fue exitoso, cosa que vimos imprimiendo por pantalla el contenido de dichas estructuras. Cuando integramos el módulo (ya programado como tal) en la aplicación, tuvimos algunos problemas, pues los mensajes no llegaban bien al módulo de filtros. Las pruebas nos llevaron a la conclusión de que fue un fallo de arquitectura, con lo que tuvimos que remodelar el diseño del núcleo del pipeline para que admitiese más tipos de conexiones. Tras esto, el resultado fue satisfactorio.
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.4]{parametros.png}
+  \includegraphics[scale=0.4, bb=0 0 363 206]{parametros.png}
 % robot1.png: 72.009dpi, width=5.68cm, height=4.27cm, bb=0 0 161 121
   \caption{Pruebas satisfactorias de los parámetros}
 \end{figure}
@@ -53,17 +53,17 @@ Tiempo aproximado del filtro de carteles: 6.5 milisegundos.
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.5]{pruebas_texto.png}
+  \includegraphics[scale=0.5, bb=0 0 110 35]{pruebas_texto.png}
 % robot1.png: 72.009dpi, width=5.68cm, height=4.27cm, bb=0 0 161 121
   \label{pruebas_proceso}
   \caption{Proceso de texto}
 \end{figure}
 
 \item \textbf{Robot}: El desarrollo del robot tuvo un trabajo paralelo. Al principio, las pruebas fueron paralelas a la construcción de la estructura, y controlábamos los motores mediante un control de corriente contínua. Las pruebas nos llevaron a la conclusión de que había que remodelar los árboles de engranajes y los cambios de par, pues en un principio no suministraban la suficiente potencia como para mover todo el peso de la estructura. Tuvimos que cambiar esto, y fue un cambio bastante grande. Una vez que el robot se movía con el control remoto, probamos a crear el circuito que iba a hacer de capa entre el puerto paralelo y los motores. Conectamos el circuito, y sobre la placa las tensiones funcionaban bien. Lo ensamblamos al robot, y, aunque en un principio funcionaba bien, pronto dejó de hacerlo. Tras depurar, vimos que había un fallo en un punto de la placa (nos costó bastante averiguarlo), y, una vez corregido esto, el robot comenzó a funcionar de una manera muy estable.
-\item \textbf{Red neuronal}: Las pruebas sobre la red fueron realizadas antes de empezar el proyecto. Se realizaron pruebas sobre cientos de fotos para el reconocimiento de ciertos patrones, para ello implementamos un pequeño programa de entrenamiento donde contabilizamos el índice de aprendizaje sobre el conjunto de fotos de entrenamiento, el índice de fallos que cometía sobre otro conjunto de prueba y sobre otro de validación. Se contabilizaba tanto el índice de aciertos como de error, modificando el factor de aprendizaje, el conjunto de entrenamiento y el numero de iteraciones. 
+\item \textbf{Red neuronal}: Las pruebas sobre la red fueron realizadas antes de empezar el proyecto. Se realizaron pruebas sobre cientos de fotos para el reconocimiento de ciertos patrones, para ello implementamos un pequeño programa de entrenamiento donde contabilizamos el índice de aprendizaje sobre el conjunto de fotos de entrenamiento, el índice de fallos que cometía sobre otro conjunto de prueba y sobre otro de validación. Se contabilizaba tanto el índice de aciertos como de error, modificando el factor de aprendizaje, el conjunto de entrenamiento y el numero de iteraciones.
 
 \bigskip
-Concretamente para el reconocimiento de los 4 gestos que se hacen con la mano al robot se necesitaron 148 fotos de entrenamiento, 49 fotos de validación, 30 de prueba y 20 vueltas de aprendizaje, esto equivale en un Pentium4 a 3 horas de aprendizaje ajustando los pesos de la red. 
+Concretamente para el reconocimiento de los 4 gestos que se hacen con la mano al robot se necesitaron 148 fotos de entrenamiento, 49 fotos de validación, 30 de prueba y 20 vueltas de aprendizaje, esto equivale en un Pentium4 a 3 horas de aprendizaje ajustando los pesos de la red.
 
 Porcentaje de aciertos en entrenamiento: 89   Error medio: 0,0141046521582562
 
@@ -84,14 +84,14 @@ Una vez guardados los pesos en un archivo solo hay que cargarlos en una nueva re
 \begin{figure}[h]
   \centering
   % No se si los parámetros son correctos para la imagen.(lordarkam)
-  \includegraphics[scale=0.5]{templo1.png}
+  \includegraphics[scale=0.5, bb=0 0 202 151]{templo1.png}
   \caption{Entorno 3D}
 \end{figure}
 \item \textbf{Salida de texto}: Para las pruebas de la salida de texto simplemente hemos comprobado que el texto que mandábamos al módulo salía por la ventana, añadimos un ejemplo en la figura \ref{pruebas_salida}.
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.5]{salida_texto.png}
+  \includegraphics[scale=0.5, bb=0 0 80 35]{salida_texto.png}
 % robot1.png: 72.009dpi, width=5.68cm, height=4.27cm, bb=0 0 161 121
   \label{pruebas_salida}
   \caption{Salida de texto}

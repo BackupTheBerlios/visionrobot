@@ -108,13 +108,16 @@ Para saber mas sobre la extracción:  \ref {regiones_label} (página \pageref{regi
 \end{center}  
 
 \subsection{Centrado de la imagen}
+\label{Centrado}
 Los gestos realizados con los guantes nunca son capturados por la webcam en la misma posición. Nunca estarán totalmente centrados, si no ligeramente o totalmente desplazados mas a la derecho o mas a la izquierda, arriba o abajo. Esto es de vital importancia para la red, ya que entrena y reconoce en relación a los valores de los píxeles de la imagen, si aprende que el símbolo de avanzar es una región blanca sobre un fondo negro situada siempre en el centro de la imagen, cuando este en fase de reconocimiento y la webcam capture un gesto desplazado, la red lo considerara como gesto no reconocido.
 Otra opción podría ser entrenar la red para que reconociese el mismo gesto en cualquier posición, pero eso no podría nunca servir en el entrenamiento, y que los pesos no terminarían nunca de fijarse, ya que el píxel (x,y) si esta blanco para unas imágenes se considerara como ejemplo de entrenamiento positivo, para otras se considerara negativo y los pesos no podrán ajustarse. Por tanto hay que intentar conseguir que las regiones de interés extraídas estén siempre situadas mas o menos en la misma zona de la imagen. Para eso decidimos que la mejor forma de hacer esto era centrar la imagen según el centro de masas del conjunto de píxeles de interés.
 
 Así siempre las regiones blancas que representan los gestos aparecen centrados en la imagen sobre un fondo negros, totalmente preparados para ser pasados a la entrada de la red neuronal.
 \bigskip 
 
-Para saber mas sobre el centrado: \ref {centrado_label} (página \pageref{centrado_label}).
+\input{centrado}
+
+%Para saber mas sobre el centrado: \ref {centrado_label} (página \pageref{centrado_label}).
 
 \bigskip 
 \begin{center}

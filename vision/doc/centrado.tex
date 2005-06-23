@@ -1,5 +1,6 @@
-\subsection{Centrado}
-\label{centrado_label} 
+%\subsection{Centrado}
+
+%\label{centrado_label} 
 
 Es una de las etapas del procesamiento de imágenes. Recibe como parámetro de entrada no solo la imagen si no un rango de color previamente seleccionado.
 
@@ -73,6 +74,6 @@ Ejemplo real
 %  \caption{ Imagen filtrada y centrada.}
 %\end{figure}
 
-\section{Curiosidad}
+\subsubsection{Curiosidad}
 El centrado tiene otra utilidad. Debido a que necesita hacer el calculo de cuantos píxeles cumplen la propiedad de estar dentro del rango de color, si resulta que no hay en toda la imagen ninguno que la cumpla, el método no devuelve la imagen centrada, si no que devuelve NULL. Tal y como esta implementado el pipeline si un modulo saca como estructura de datos un puntero a NULL, las siguientes operaciones que se realizarían sobre esta estructura dejan de hacerse, esto aumenta la velocidad del programa si no hay gestos o carteles frente al robot, ya que disminuye en gran cantidad el numero de instrucciones realizadas. Se podría decir que el centrado es un detector de objetos de interés que mantiene al pipeline en \textit{stand by} mientras que no se detecten objetos frente a la cámara.
 

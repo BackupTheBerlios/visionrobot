@@ -1,8 +1,3 @@
-%%% Local Variables: 
-%%% mode: latex
-%%% TeX-master: "vision"
-%%% End: 
-
 \chapter{Módulo de Entorno 3D}
 
 \section{Introducción}
@@ -11,12 +6,12 @@ El entorno virtual 3d constituye un interface visual con el usuario que puede ob
 
 Con esta aplicación, es posible evaluar y testar las funcionalidades que se han implementado sin tener que llegar a la integración del sistema en una entidad robótica real.
 
-\section{Detalles} 
-\begin{itemize} 
-\item {\bf Entrada}: Una estructura de datos que contiene una cadena de órdenes y otra de parámetros.  
+\section{Detalles}
+\begin{itemize}
+\item {\bf Entrada}: Una estructura de datos que contiene una cadena de órdenes y otra de parámetros.
 \item {\bf Salida}: Movimiento del robot virtual.
 \item {\bf Descripción}: Módulo que a partir de unas órdenes representa el desplazamiento de un robot virtual a través de un escenario en tres dimensiones.
-\end{itemize} 
+\end{itemize}
 
 
 \section{Especificación}
@@ -29,10 +24,11 @@ Teniendo en cuenta que una de las principales motivaciones para elaborar un sist
 \subsection{Representación de un robot capaz de desplazarse por su entorno}
 
 Debe existir una entidad (en este caso un modelo 3D) dentro de la simulación que represente la ubicación, orientación y desplazamientos resultantes de las distintas órdenes procesadas por el sistema de control. Aunque en principio no es relevante, se ha intentando que esta entidad cumpla con ciertos criterios de diseño que empaticen con los sistemas motrices más comunes en autómatas (uso de ruedas, orugas, etc).
+
 \subsection{Sistema de control}
 
 Las diferentes órdenes que son procesadas por el sistema de visión artificial, son analizadas para establecer las nuevas propiedades de posicionamiento, dirección, etc de la entidad que representa al robot. Esta interacción se realiza mediante el paso de mensajes distribuidos por el pipe que se encarga de la interconexión entre los diferentes módulos. Además, es necesario que de forma autónoma la aplicación pueda procesar diferentes comandos emitidos por el usuario mediante el teclado y ratón para poder controlar otros aspectos secundarios de la simulación, como son el posicionamiento de la cámara, activación de diferentes efectos gráficos, etc.
- 
+
 \subsection{Sistema de cámaras interactivas}
 
 Para poder visualizar de forma óptima todos los componentes de la simulación, es necesario poseer un sistema de cámaras que permita seguir cómodamente las evoluciones del robot por el escenario, así como permitir al usuario adaptar la posición de las distintas cámaras para obtener el ángulo de visión más relevante en cada momento.
@@ -55,12 +51,12 @@ Como parte del escenario, se ha incluido un terreno que es generado de forma pro
 
 Para otorgar una mayor sensación de integración de la entidad que se desplaza con  el escenario, se ha utilizado iluminación dinámica. De esta forma el robot es iluminado correctamente según su posición actual, incrementando además el realismo en la percepción de los materiales al visualizarse efectos de brillo, luz difusa, variación cromática,etc.
 
- 
+
 \subsection{Iluminación estática. LightMaps}
 
 Los elementos estáticos del escenario no requieren de iluminación dinámica ya que su posición no varía durante la ejecución de la aplicación. Para ahorrar recursos, es habitual el uso de texturas secundarias también llamadas lightmaps que codifican la información sobre la iluminación que ese objeto recibe. En este caso, se ha utilizado una única textura resultado de la fusión de la textura primaria y los lightmaps para optimizar el rendimiento.
 
- 
+
 \subsection{Sombreado Dinámico. Stencil Buffer}
 
 De forma análoga a la iluminación dinámica, el sombreado dinámico es un efecto que permite la integración de objetos móviles en escenarios de forma muy realista. Se ha implementado un algoritmo de sombreado que se basa en el uso del Stencil Buffer. Este algoritmo es bastante costoso en cuanto a recursos de la tarjeta gráfica, por lo que sueles implementarse para ser soportado por tarjetas con aceleración 3D de última generación.
@@ -88,7 +84,7 @@ Se han implementando varios sistemas de cámaras para ofrecer múltiples posibilid
 
 De forma genérica, se ha implementado un sistema de partículas para poder introducir efectos especiales y atmosféricos como pueden ser humo, fuego, lluvia, nieve, etc. Los sistemas de partículas combinan una representación gráfica mediante billboards( polígonos especiales que mantienen siempre su orientación respecto a la cámara) y un sistema de control físico que determina el comportamiento de las partículas en cuanto a aceleración, dirección, tiempo de vida, turbulencia, etc.
 
- 
+
 \section{Diseño}
 
 El diseño de la aplicación es bastante sencillo en cuanto a su estructura jerárquica. Existe una clase que contiene a la VentanaPrincipal de la aplicación y que constituye el núcleo de la ejecución. Esta clase contiene un objeto del tipo Escena que es el que administra el resto de entidades con sus correspondientes representaciones gráficas. Así, la escena es el contenedor para otros objetos como son el Terreno, el Cielo, SistemaPartículas, Cámara, y el resto de entidades como el escenario y el propio robot que pertenecen a la clase Objeto. Respecto a esta última clase, destacar que posee como atributo un objeto de la clase Mesh que constituye la representación gráfica de la entidad (es decir, la maya 3d). Para gestionar la carga de los diferentes modelos 3d, existe una clase estática llamada MeshManager que comprueba que no se carguen en memoria varios modelos del mismo tipo. Por tanto, la creación de objetos del tipo Mesh se realiza siempre a través de esta clase gestora y nunca directamente. Por último, existen dos clases estáticas que se encargan de la interacción del usuario mediante el ratón y teclado ( clase Entrada) y otra que gestiona la impresión de texto en pantalla (clase Texto).
@@ -104,18 +100,18 @@ Respecto al flujo de ejecución, se puede resumir en que existe un método que es 
 Se muestran a continuación una serie de capturas de pantalla del módulo en funcionamiento:
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=1.0]{templo1.png}
+  \includegraphics[scale=1.0 ,bb=0 0 512 384]{templo1.png}
   \caption{Primer plano del robot.}
 \end{figure}
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=1.0]{templo2.png}
+  \includegraphics[scale=1.0 ,bb=0 0 512 384]{templo2.png}
   \caption{Seguimiento del robot con una cámara estática.}
 \end{figure}
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=1.0]{templo3.png}
+  \includegraphics[scale=1.0 ,bb=0 0 512 384]{templo3.png}
   \caption{Visión general del escenario.}
 \end{figure}
