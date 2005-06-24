@@ -160,7 +160,7 @@ El reconocimiento es un proceso de etiquetado. se ocupa de identificar cada obje
 \begin{itemize}
 \item Como todo modulo, el modulo OCR tiene su función Iniciar, esta función siempre cargara el archivo de descripciones en memoria para continuas consultas.
 \item En cada ciclo cada vez que le llegue una imagen filtrada, el método anterior llamado enmarcamiento de caracteres nos pasara en cada ciclo, una lista de N áreas o subimagenes q tendremos q tratar.
-\item El ocr ira letra por letra (subimagenes) calculando sus 12 valores y comparándolos con los valores de las letras de la base de datos.
+\item El OCR irá letra por letra (subimágenes) calculando sus 12 valores y comparándolos con los valores de las letras de la base de datos.
 \item Aquel carácter de la base de datos cuyos valores sean mas parecidos, es decir, generen menor error, será el que asignemos a esa subimagen. Es decir a cada subimagen se le asocia un carácter ASCII.
 \item Así con toda la lista de N subimagenes lo q generara una lista de N caracteres ASCII. Es decir una cadena de texto.
 \item La función anterior de enmarcamiento como dijimos infería por la distancia entre áreas si había o no espacio entre letras, esta información se la pasa al reconocedor que la utiliza sobre la cadena de texto, poniendo o no espacios en blanco.

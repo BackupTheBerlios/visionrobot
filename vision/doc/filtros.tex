@@ -122,9 +122,10 @@ Esto es a lo que llamamos segmentación, ya que estamos localizando los objetos d
 \bigskip 
 Por tanto nuestro objetivo es binarizar la imagen basándonos en el hecho de que los píxeles de una determinada región presentan una distribución de intensidad similar, por tanto, a partir del histograma de los niveles en los tres colores, determinamos cual es la zona de dicho histograma y por tanto la región de la imagen.
 
+%,bb=0 0 280 210
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.5,bb=0 0 280 210]{regoines_histograma.png}
+  \includegraphics[scale=1]{regoines_histograma.png}
   \caption{ Ejemplo del histograma de intensidades de una imagen.}
 \end{figure}
 
@@ -145,11 +146,12 @@ Si las tres componentes del píxel (x,y) están dentro del rango seleccionado, ent
 \bigskip 
 
 Como elegir la tolerancia de este rango. Cuanto mas amplio sea el rango mas cantidad de colores entraran dentro de este. Aunque elijamos el color exacto del entorno que queramos filtrar, si no fijamos bien la tolerancia del rango, la imagen no binarizará las regiones correctas.
+%,bb=0 0 175 175
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.4,bb=0 0 175 175]{regiones_tol_baja.png}
-  \includegraphics[scale=0.4,bb=0 0 175 175]{regiones_tol_normal.png}
-  \includegraphics[scale=0.4,bb=0 0 175 175]{regiones_tol_alta.png}
+  \includegraphics[scale=1]{regiones_tol_baja.png}
+  \includegraphics[scale=1]{regiones_tol_normal.png}
+  \includegraphics[scale=1]{regiones_tol_alta.png}
   \caption{ Extracción de una región de color de una imagen con tolerancia baja, media y alta.}
 \end{figure}
 
@@ -297,7 +299,7 @@ Los píxeles de la imagen resultante que tras el calculo se les asigna un píxel d
   \caption{ Ejemplo del funcionamiento del algoritmo de rotación.}
 \end{figure}
 
-\subsection{Extracción regiones}
+\subsection{Extracción de regiones}
 Esta parte es similar a la utilizada en el filtro de gestos. Solo que aquí no nos interesan las regiones de color especial, si no ciertas regiones rodeadas de este color especial, que en este caso serán los caracteres del mensaje.
 
 La extracción de regiones binariza la imagen convirtiendo a un color la región buscada y a otro el resto de la imagen, las regiones del mensaje pasaran a negro y el resto a blanco, como en el ejemplo anterior. 
